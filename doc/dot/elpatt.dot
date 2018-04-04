@@ -1,0 +1,172 @@
+digraph hierarchy {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 85"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-40"]
+
+
+section_1 -> { header_2 prose_3 prose_4 codeblock_5 section_6 section_7}
+{rank=same; header_2 prose_3 prose_4 codeblock_5 section_6 section_7}
+
+header_2 [label="1 : Extended Lpeg module"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+codeblock_5 [label="code block 10-14"]
+
+section_6 [label="section: 16-40"]
+
+section_7 [label="section: 41-85"]
+
+
+header_2 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Extended Lpeg module"]
+prose_3 -> { raw_9}
+{rank=same; raw_9}
+
+raw_9 [label="raw"]
+
+
+raw_9 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+  This is where we add extended captures a la the old =epeg= 
+module.
+"]
+prose_4 -> { raw_11}
+{rank=same; raw_11}
+
+raw_11 [label="raw"]
+
+
+raw_11 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The difference here is that we include lpeg as a metatable __index
+and can therefore use elpeg as L everywhere we currently use lpeg.
+"]
+codeblock_5 -> leaf_13
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local lpeg = require \"lpeg\"
+local epeg = setmetatable({}, {__index = lpeg})
+"]
+section_6 -> { header_14 prose_15 prose_16 prose_17 codeblock_18}
+{rank=same; header_14 prose_15 prose_16 prose_17 codeblock_18}
+
+header_14 [label="2 : Ppt -- Codepoint pattern"]
+
+prose_15 [label="prose"]
+
+prose_16 [label="prose"]
+
+prose_17 [label="prose"]
+
+codeblock_18 [label="code block 24-38"]
+
+
+header_14 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Ppt -- Codepoint pattern"]
+prose_15 -> { raw_20}
+{rank=same; raw_20}
+
+raw_20 [label="raw"]
+
+
+raw_20 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Captures one Unicode point
+"]
+prose_16 -> { raw_22}
+{rank=same; raw_22}
+
+raw_22 [label="raw"]
+
+
+raw_22 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I actually have no idea how to do this yet...
+"]
+prose_17 -> { raw_24}
+{rank=same; raw_24}
+
+raw_24 [label="raw"]
+
+
+raw_24 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Looks like byte 97 is just =\\97= in Lua. That's easy enough.
+"]
+codeblock_18 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function num_bytes(str)
+--returns the number of bytes in the next character in str
+   local c = str:byte(1)
+   if c >= 0x00 and c <= 0x7F then
+      return 1
+   elseif c >= 0xC2 and c <= 0xDF then
+      return 2
+   elseif c >= 0xE0 and c <= 0xEF then
+      return 3
+   elseif c >= 0xF0 and c <= 0xF4 then
+      return 4
+   end
+end"]
+section_7 -> { header_27 prose_28 codeblock_29 codeblock_30}
+{rank=same; header_27 prose_28 codeblock_29 codeblock_30}
+
+header_27 [label="2 : Csp -- Capture span"]
+
+prose_28 [label="prose"]
+
+codeblock_29 [label="code block 46-67"]
+
+codeblock_30 [label="code block 83-85"]
+
+
+header_27 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Csp -- Capture span"]
+prose_28 -> { raw_32}
+{rank=same; raw_32}
+
+raw_32 [label="raw"]
+
+
+raw_32 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is the old-school capture that plays into making named Nodes using
+epnf.
+"]
+codeblock_29 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function spanner(first, last, str, root)
+   local vals = {}
+   vals.span = true
+   vals.val = string.sub(str, first, last - 1)
+   vals.first = first
+   vals.last = last - 1
+   if vals.last >= vals.first then
+      return vals
+   end
+   -- If a capture contains nothing, we don't want a node for it
+   return nil
+end
+
+function epeg.Csp (patt)
+   return lpeg.Cp() 
+      * lpeg.Cmt(patt, function() return true end) 
+      * lpeg.Cp() 
+      * lpeg.Carg(1) 
+      * lpeg.Carg(2) / spanner
+end"]
+codeblock_30 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return epeg"]
+
+}

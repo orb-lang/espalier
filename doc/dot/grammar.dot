@@ -1,0 +1,466 @@
+digraph hierarchy {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 214"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-9"]
+
+
+section_1 -> { header_2 prose_3 codeblock_4 section_5}
+{rank=same; header_2 prose_3 codeblock_4 section_5}
+
+header_2 [label="1 : Grammar Module"]
+
+prose_3 [label="prose"]
+
+codeblock_4 [label="code block 3-5"]
+
+section_5 [label="section: 10-104"]
+
+
+header_2 -> leaf_6
+leaf_6  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Grammar Module"]
+prose_3 -> { raw_7}
+{rank=same; raw_7}
+
+raw_7 [label="raw"]
+
+
+raw_7 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+codeblock_4 -> leaf_9
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="io.write \"Hello from the Node module!\\n\""]
+section_5 -> { header_10 prose_11 prose_12 prose_13 section_14 section_15 section_16 section_17}
+{rank=same; header_10 prose_11 prose_12 prose_13 section_14 section_15 section_16 section_17}
+
+header_10 [label="2 : Parameters"]
+
+prose_11 [label="prose"]
+
+prose_12 [label="prose"]
+
+prose_13 [label="prose"]
+
+section_14 [label="section: 20-49"]
+
+section_15 [label="section: 50-73"]
+
+section_16 [label="section: 74-104"]
+
+section_17 [label="section: 105-214"]
+
+
+header_10 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Parameters"]
+prose_11 -> { raw_19}
+{rank=same; raw_19}
+
+raw_19 [label="raw"]
+
+
+raw_19 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This function takes two parameters, namely:
+"]
+prose_12 -> { raw_21}
+{rank=same; raw_21}
+
+raw_21 [label="raw"]
+
+
+raw_21 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - grammar_template :  A function with one parameter, which must be =_ENV=.
+  - metas :  A map with keys of string and values of Node subclass constructors.
+"]
+prose_13 -> { raw_23}
+{rank=same; raw_23}
+
+raw_23 [label="raw"]
+
+
+raw_23 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Both of these are reasonably complex.
+
+"]
+section_14 -> { header_25 prose_26 prose_27 prose_28 prose_29 prose_30 prose_31 prose_32}
+{rank=same; header_25 prose_26 prose_27 prose_28 prose_29 prose_30 prose_31 prose_32}
+
+header_25 [label="3 : grammar_template"]
+
+prose_26 [label="prose"]
+
+prose_27 [label="prose"]
+
+prose_28 [label="prose"]
+
+prose_29 [label="prose"]
+
+prose_30 [label="prose"]
+
+prose_31 [label="prose"]
+
+prose_32 [label="prose"]
+
+
+header_25 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** grammar_template"]
+prose_26 -> { raw_34}
+{rank=same; raw_34}
+
+raw_34 [label="raw"]
+
+
+raw_34 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  The internal function @define creates a custom environment variable, neatly
+sidestepping lua's pedantic insistance on prepending =local= to all values of 
+significance. 
+"]
+prose_27 -> { raw_36}
+{rank=same; raw_36}
+
+raw_36 [label="raw"]
+
+
+raw_36 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+More relevantly, it constructs a full grammar, which will return a table of
+type Node. 
+"]
+prose_28 -> { raw_38}
+{rank=same; raw_38}
+
+raw_38 [label="raw"]
+
+
+raw_38 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+If you stick to =lpeg= patterns, as you should, all array values will be of
+Node, as is intended.  Captures will interpolate various other sorts of Lua
+values, which will induce halting in some places and silently corrupt
+execution in others. 
+"]
+prose_29 -> { raw_40}
+{rank=same; raw_40}
+
+raw_40 [label="raw"]
+
+
+raw_40 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Though as yet poorly thought through, the [[elpatt module][./elpatt]] is
+intended to provide only those patterns which are allowed in Grammars, while
+expanding the scope of some favorites to properly respect utf-8 and otherwise
+behave. 
+"]
+prose_30 -> { raw_42}
+{rank=same; raw_42}
+
+raw_42 [label="raw"]
+
+
+raw_42 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+There are examples of the format in the [[spec module][./spec]].
+"]
+prose_31 -> { raw_44}
+{rank=same; raw_44}
+
+raw_44 [label="raw"]
+
+
+raw_44 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Special fields include:
+"]
+prose_32 -> { raw_46}
+{rank=same; raw_46}
+
+raw_46 [label="raw"]
+
+
+raw_46 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  -  START :  a string which must be the same as the starting rule.
+  -  SUPPRESS :  either a string or an array of strings. These rules will be
+                 removed from the Node. 
+  -  P :  The lpeg P function.  Recognizes a certain pattern.
+  -  V :  The lpeg V function.  Used for non-terminal rvalues in a grammar. 
+
+"]
+section_15 -> { header_48 prose_49 prose_50 prose_51 prose_52 prose_53}
+{rank=same; header_48 prose_49 prose_50 prose_51 prose_52 prose_53}
+
+header_48 [label="3 : metas"]
+
+prose_49 [label="prose"]
+
+prose_50 [label="prose"]
+
+prose_51 [label="prose"]
+
+prose_52 [label="prose"]
+
+prose_53 [label="prose"]
+
+
+header_48 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** metas"]
+prose_49 -> { raw_55}
+{rank=same; raw_55}
+
+raw_55 [label="raw"]
+
+
+raw_55 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  By default a node will inherit from the Node class.  If you want custom behavior,
+you must pass in a table of metatable constructors.
+"]
+prose_50 -> { raw_57}
+{rank=same; raw_57}
+
+raw_57 [label="raw"]
+
+
+raw_57 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+That's a fairly specific beast.  Any rule defined above will have an =id=
+corresonding to the name of the rule.  Unless =SUPPRESS=ed, this will become
+a Node.  If the =metas= parameter has a key corresponding to =id=, then it
+must return a function taking two parameters:
+   
+   - node :  The node under construction, which under normal circumstances will
+             already have the =first= and =last= fields.
+   - str  :  The entire str the grammar is parsing.
+"]
+prose_51 -> { raw_59}
+{rank=same; raw_59}
+
+raw_59 [label="raw"]
+
+
+raw_59 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Which must return that same node, decorated in whatever fashion is appropriate.
+"]
+prose_52 -> { raw_61}
+{rank=same; raw_61}
+
+raw_61 [label="raw"]
+
+
+raw_61 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The node will not have a metatable at this point, and the function must attach a
+metatable with =__index= equal to some table which itself has the =__index=
+Node as some recursive backstop.
+"]
+prose_53 -> { raw_63}
+{rank=same; raw_63}
+
+raw_63 [label="raw"]
+
+
+raw_63 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+You might say the return value must /inherit/ from Node, if we were using
+a language that did that sort of thing. 
+
+"]
+section_16 -> { header_65 prose_66 codeblock_67 prose_68 codeblock_69}
+{rank=same; header_65 prose_66 codeblock_67 prose_68 codeblock_69}
+
+header_65 [label="3 : includes"]
+
+prose_66 [label="prose"]
+
+codeblock_67 [label="code block 76-81"]
+
+prose_68 [label="prose"]
+
+codeblock_69 [label="code block 87-102"]
+
+
+header_65 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** includes"]
+prose_66 -> { raw_71}
+{rank=same; raw_71}
+
+raw_71 [label="raw"]
+
+
+raw_71 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+codeblock_67 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
+
+local s = require \"status\" 
+local Node = require \"node/node\""]
+prose_68 -> { raw_74}
+{rank=same; raw_74}
+
+raw_74 [label="raw"]
+
+
+raw_74 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+It's the kind of thing I'd like to automate. 
+"]
+codeblock_69 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local assert = assert
+local string, io = assert( string ), assert( io )
+local V = string.sub( assert( _VERSION ), -4 )
+local _G = assert( _G )
+local error = assert( error )
+local pairs = assert( pairs )
+local next = assert( next )
+local type = assert( type )
+local tostring = assert( tostring )
+local setmetatable = assert( setmetatable )
+if V == \" 5.1\" then
+   local setfenv = assert( setfenv )
+   local getfenv = assert( getfenv )
+end"]
+section_17 -> { header_77 prose_78 codeblock_79 codeblock_80 codeblock_81 codeblock_82}
+{rank=same; header_77 prose_78 codeblock_79 codeblock_80 codeblock_81 codeblock_82}
+
+header_77 [label="3 : define"]
+
+prose_78 [label="prose"]
+
+codeblock_79 [label="code block 107-182"]
+
+codeblock_80 [label="code block 184-193"]
+
+codeblock_81 [label="code block 196-210"]
+
+codeblock_82 [label="code block 212-214"]
+
+
+header_77 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** define"]
+prose_78 -> { raw_84}
+{rank=same; raw_84}
+
+raw_84 [label="raw"]
+
+
+raw_84 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+codeblock_79 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function make_ast_node(id, first, t, last, str, metas, offset)
+   local offset = offset or 0
+   t.first = first + offset
+   t.last  = last + offset - 1
+   t.str   = str
+   if metas[id] then
+      t = metas[id](t, str)
+      assert(t.id == id)
+   else
+    t.id = id
+    setmetatable(t, {__index = Node,
+                     __tostring = Node.toString})
+   end
+   assert(t.isNode, \"failed isNode: \" .. id)
+   assert(t.str)
+   return t
+end
+
+
+-- some useful/common lpeg patterns
+local Cp = L.Cp
+local Cc = L.Cc
+local Ct = L.Ct
+local arg1_str = L.Carg(1)
+local arg2_metas = L.Carg(2)
+local arg3_offset = L.Carg(3)
+
+
+-- setup an environment where you can easily define lpeg grammars
+-- with lots of syntax sugar
+local function define(func, g, e)
+  g = g or {}
+  if e == nil then
+    e = V == \" 5.1\" and getfenv(func) or _G
+  end
+  local suppressed = {}
+  local env = {}
+  local env_index = {
+    START = function(name) g[1] = name end,
+    SUPPRESS = function(...)
+      suppressed = {}
+      for i = 1, select('#', ...) do
+        suppressed[select(i, ... )] = true
+      end
+    end,
+    V = L.V,
+    P = L.P,
+  }
+
+  setmetatable(env_index, { __index = e })
+  setmetatable(env, {
+    __index = env_index,
+    __newindex = function( _, name, val )
+      if suppressed[ name ] then
+        g[ name ] = val
+      else
+        g[ name ] = (Cc(name) 
+              * Cp() 
+              * Ct(val)
+              * Cp()
+              * arg1_str
+              * arg2_metas)
+              * arg3_offset / make_ast_node
+      end
+    end
+  })
+  -- call passed function with custom environment (5.1- and 5.2-style)
+  if V == \" 5.1\" then
+    setfenv( func, env )
+  end
+  func( env )
+  assert( g[ 1 ] and g[ g[ 1 ] ], \"no start rule defined\" )
+  return g
+end"]
+codeblock_80 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
+  for _,v in pairs(metas) do
+    if not v[\"__tostring\"] then
+      v[\"__tostring\"] = Node.toString
+    end
+  end
+  return metas
+end"]
+codeblock_81 -> leaf_88
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
+  if type(grammar_template) == 'function' then
+    local metas = metas or {}
+    local grammar = define(grammar_template, nil, metas)
+    local parse = function(str, offset)
+      local offset = offset or 0
+      return L.match(grammar, str, 1, str, metas, offset) -- other 
+    end
+    return parse
+  else
+    s:halt(\"no way to build grammar out of \" .. type(template))
+  end
+end"]
+codeblock_82 -> leaf_89
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+
+}
