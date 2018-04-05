@@ -30,72 +30,59 @@ section_7 [label="section: 41-85"]
 
 header_2 -> leaf_8
 leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Extended Lpeg module"]
-prose_3 -> { raw_9}
-{rank=same; raw_9}
+prose_3 -> { raw_9 literal_10 raw_11}
+{rank=same; raw_9 literal_10 raw_11}
 
 raw_9 [label="raw"]
 
-
-raw_9 -> leaf_10
-leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-
-  This is where we add extended captures a la the old =epeg= 
-module.
-"]
-prose_4 -> { raw_11}
-{rank=same; raw_11}
+literal_10 [label="literal"]
 
 raw_11 [label="raw"]
 
 
-raw_11 -> leaf_12
+raw_9 -> leaf_12
 leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+  This is where we add extended captures a la the old "]
+literal_10 -> leaf_13
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="epeg"]
+raw_11 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" 
+module.
+"]
+prose_4 -> { raw_15}
+{rank=same; raw_15}
+
+raw_15 [label="raw"]
+
+
+raw_15 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The difference here is that we include lpeg as a metatable __index
 and can therefore use elpeg as L everywhere we currently use lpeg.
 "]
-codeblock_5 -> leaf_13
-leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local lpeg = require \"lpeg\"
+codeblock_5 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local lpeg = require \"lpeg\"
 local epeg = setmetatable({}, {__index = lpeg})
 "]
-section_6 -> { header_14 prose_15 prose_16 prose_17 codeblock_18}
-{rank=same; header_14 prose_15 prose_16 prose_17 codeblock_18}
+section_6 -> { header_18 prose_19 prose_20 prose_21 codeblock_22}
+{rank=same; header_18 prose_19 prose_20 prose_21 codeblock_22}
 
-header_14 [label="2 : Ppt -- Codepoint pattern"]
+header_18 [label="2 : Ppt -- Codepoint pattern"]
 
-prose_15 [label="prose"]
+prose_19 [label="prose"]
 
-prose_16 [label="prose"]
+prose_20 [label="prose"]
 
-prose_17 [label="prose"]
+prose_21 [label="prose"]
 
-codeblock_18 [label="code block 24-38"]
-
-
-header_14 -> leaf_19
-leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Ppt -- Codepoint pattern"]
-prose_15 -> { raw_20}
-{rank=same; raw_20}
-
-raw_20 [label="raw"]
+codeblock_22 [label="code block 24-38"]
 
 
-raw_20 -> leaf_21
-leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Captures one Unicode point
-"]
-prose_16 -> { raw_22}
-{rank=same; raw_22}
-
-raw_22 [label="raw"]
-
-
-raw_22 -> leaf_23
-leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I actually have no idea how to do this yet...
-"]
-prose_17 -> { raw_24}
+header_18 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Ppt -- Codepoint pattern"]
+prose_19 -> { raw_24}
 {rank=same; raw_24}
 
 raw_24 [label="raw"]
@@ -103,10 +90,39 @@ raw_24 [label="raw"]
 
 raw_24 -> leaf_25
 leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Looks like byte 97 is just =\\97= in Lua. That's easy enough.
+
+Captures one Unicode point
 "]
-codeblock_18 -> leaf_26
-leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function num_bytes(str)
+prose_20 -> { raw_26}
+{rank=same; raw_26}
+
+raw_26 [label="raw"]
+
+
+raw_26 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I actually have no idea how to do this yet...
+"]
+prose_21 -> { raw_28 literal_29 raw_30}
+{rank=same; raw_28 literal_29 raw_30}
+
+raw_28 [label="raw"]
+
+literal_29 [label="literal"]
+
+raw_30 [label="raw"]
+
+
+raw_28 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Looks like byte 97 is just "]
+literal_29 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\97"]
+raw_30 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" in Lua. That's easy enough.
+"]
+codeblock_22 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function num_bytes(str)
 --returns the number of bytes in the next character in str
    local c = str:byte(1)
    if c >= 0x00 and c <= 0x7F then
@@ -119,34 +135,34 @@ leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
       return 4
    end
 end"]
-section_7 -> { header_27 prose_28 codeblock_29 codeblock_30}
-{rank=same; header_27 prose_28 codeblock_29 codeblock_30}
+section_7 -> { header_35 prose_36 codeblock_37 codeblock_38}
+{rank=same; header_35 prose_36 codeblock_37 codeblock_38}
 
-header_27 [label="2 : Csp -- Capture span"]
+header_35 [label="2 : Csp -- Capture span"]
 
-prose_28 [label="prose"]
+prose_36 [label="prose"]
 
-codeblock_29 [label="code block 46-67"]
+codeblock_37 [label="code block 46-67"]
 
-codeblock_30 [label="code block 83-85"]
-
-
-header_27 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Csp -- Capture span"]
-prose_28 -> { raw_32}
-{rank=same; raw_32}
-
-raw_32 [label="raw"]
+codeblock_38 [label="code block 83-85"]
 
 
-raw_32 -> leaf_33
-leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_35 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Csp -- Capture span"]
+prose_36 -> { raw_40}
+{rank=same; raw_40}
+
+raw_40 [label="raw"]
+
+
+raw_40 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This is the old-school capture that plays into making named Nodes using
 epnf.
 "]
-codeblock_29 -> leaf_34
-leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function spanner(first, last, str, root)
+codeblock_37 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function spanner(first, last, str, root)
    local vals = {}
    vals.span = true
    vals.val = string.sub(str, first, last - 1)
@@ -166,7 +182,7 @@ function epeg.Csp (patt)
       * lpeg.Carg(1) 
       * lpeg.Carg(2) / spanner
 end"]
-codeblock_30 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return epeg"]
+codeblock_38 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return epeg"]
 
 }

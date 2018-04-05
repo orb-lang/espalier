@@ -1,14 +1,14 @@
 # Grammar Module
 
-```lua
-io.write "Hello from the Node module!\n"
-```
+  The grammar module returns one function, which generates
+a grammar. 
+
 ## Parameters
 
 This function takes two parameters, namely:
 
 
-  - grammar_template :  A function with one parameter, which must be =_ENV=.
+  - grammar_template :  A function with one parameter, which must be `_ENV`.
   - metas :  A map with keys of string and values of Node subclass constructors.
 
 
@@ -18,7 +18,7 @@ Both of these are reasonably complex.
 ### grammar_template
 
   The internal function @define creates a custom environment variable, neatly
-sidestepping lua's pedantic insistance on prepending =local= to all values of 
+sidestepping lua's pedantic insistance on prepending `local` to all values of 
 significance. 
 
 
@@ -26,19 +26,19 @@ More relevantly, it constructs a full grammar, which will return a table of
 type Node. 
 
 
-If you stick to =lpeg= patterns, as you should, all array values will be of
+If you stick to `lpeg` patterns, as you should, all array values will be of
 Node, as is intended.  Captures will interpolate various other sorts of Lua
 values, which will induce halting in some places and silently corrupt
 execution in others. 
 
 
-Though as yet poorly thought through, the [[elpatt module][./elpatt]] is
+Though as yet poorly thought through, the [elpatt module](./elpatt) is
 intended to provide only those patterns which are allowed in Grammars, while
 expanding the scope of some favorites to properly respect utf-8 and otherwise
 behave. 
 
 
-There are examples of the format in the [[spec module][./spec]].
+There are examples of the format in the [spec module](./spec).
 
 
 Special fields include:
@@ -57,13 +57,13 @@ Special fields include:
 you must pass in a table of metatable constructors.
 
 
-That's a fairly specific beast.  Any rule defined above will have an =id=
-corresonding to the name of the rule.  Unless =SUPPRESS=ed, this will become
-a Node.  If the =metas= parameter has a key corresponding to =id=, then it
+That's a fairly specific beast.  Any rule defined above will have an `id`
+corresonding to the name of the rule.  Unless `SUPPRESS`ed, this will become
+a Node.  If the `metas` parameter has a key corresponding to `id`, then it
 must return a function taking two parameters:
    
    - node :  The node under construction, which under normal circumstances will
-             already have the =first= and =last= fields.
+             already have the `first` and `last` fields.
    - str  :  The entire str the grammar is parsing.
 
 
@@ -71,7 +71,7 @@ Which must return that same node, decorated in whatever fashion is appropriate.
 
 
 The node will not have a metatable at this point, and the function must attach a
-metatable with =__index= equal to some table which itself has the =__index=
+metatable with `__index` equal to some table which itself has the `__index`
 Node as some recursive backstop.
 
 
@@ -115,7 +115,12 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
    t.last  = last + offset - 1
    t.str   = str
    if metas[id] then
-      t = metas[id](t, str)
+      local meta = metas[id]
+      if type(meta) == "function" or meta.__call then
+        t = metas[id](t, str)
+      else
+        t = setmetatable(t, meta)
+      end
       assert(t.id == id)
    else
     t.id = id
@@ -186,9 +191,19 @@ end
 ```
 ```lua
 local function refineMetas(metas)
-  for _,v in pairs(metas) do
-    if not v["__tostring"] then
-      v["__tostring"] = Node.toString
+  io.write("refining metatables\n")
+  for id, meta in pairs(metas) do
+    io.write("  id: " .. id .. " type: " .. type(meta) .. "\n")
+    if type(meta) == "table" then
+      if not meta["__tostring"] then
+        meta["__tostring"] = Node.toString
+      end
+      if not meta.id then
+        io.write("    inserting metatable id: " .. id .. "\n")
+        meta.id = id
+      else
+        io.write("    id of " .. id .. " is " .. meta.id .. "\n")
+      end
     end
   end
   return metas
@@ -198,11 +213,14 @@ end
 local function new(grammar_template, metas)
   if type(grammar_template) == 'function' then
     local metas = metas or {}
+    metas = refineMetas(metas)
     local grammar = define(grammar_template, nil, metas)
-    local parse = function(str, offset)
+
+    local function parse(str, offset)
       local offset = offset or 0
       return L.match(grammar, str, 1, str, metas, offset) -- other 
     end
+
     return parse
   else
     s:halt("no way to build grammar out of " .. type(template))

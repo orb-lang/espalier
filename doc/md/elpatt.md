@@ -1,7 +1,7 @@
 # Extended Lpeg module
 
 
-  This is where we add extended captures a la the old =epeg= 
+  This is where we add extended captures a la the old `epeg` 
 module.
 
 
@@ -21,7 +21,7 @@ Captures one Unicode point
 I actually have no idea how to do this yet...
 
 
-Looks like byte 97 is just =\97= in Lua. That's easy enough.
+Looks like byte 97 is just `\97` in Lua. That's easy enough.
 
 ```lua
 local function num_bytes(str)

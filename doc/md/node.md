@@ -13,7 +13,7 @@ local dot = require "node/dot"
 
   The Node metatable is the root table for any Node.  I'm planning to make
 an intermediate class/table called Root that is in common for any instance
-Node.  All Root absolutely has to contain is =str=. 
+Node.  All Root absolutely has to contain is `str`. 
 
 ```lua
 
@@ -139,7 +139,7 @@ end
 #### N.select(node, pred)
 
   Takes the Node and walks it, yielding the Nodes which match the predicate.
-=pred= is either a string, which matches to =id=, or a function, which takes
+`pred` is either a string, which matches to `id`, or a function, which takes
 a Node and returns true or false on some premise. 
 
 ```lua
@@ -221,8 +221,8 @@ and no children, which we should replace with a child string at [1].
 
 
 This gives us a lighter way to handle the circumstance where we have, say,
-a list, =(foo bar baz)=. We currently either need a "left-per" or "pal"
-Node class to hold the =(=, or we would have to skip it entirely.
+a list, `(foo bar baz)`. We currently either need a "left-per" or "pal"
+Node class to hold the `(`, or we would have to skip it entirely.
 
 
 Quipu can't lose any information from the string, so they have to include
@@ -241,12 +241,12 @@ it strikes me as an approach.
 
   There are invariant fields a Node is also expected to have, they are:
  
-  - first :  Index into =str= which begins the span.
-  - last  :  Index into =str= which ends the span.
+  - first :  Index into `str` which begins the span.
+  - last  :  Index into `str` which ends the span.
 
 
 In principle, we want the Node to be localized. We could include a 
-reference to the whole =str= and derive substrings lazily.
+reference to the whole `str` and derive substrings lazily.
 
 
 If we included the full span as a substring on each Node, we'd end up
@@ -282,7 +282,7 @@ a negative number if these aren't assigned.
 
 ### Other fields
 
-  The way the Grammar class will work: each =V"patt"= can have a metatable.
+  The way the Grammar class will work: each `V"patt"` can have a metatable.
 These are passed in as the second parameter during construction, with the key
 the same name as the rule. 
 
@@ -291,11 +291,11 @@ If a pattern doesn't have a metatable, it's given a Node class and consists of
 only the above fields, plus an array representing any subrules. 
 
 
-If it does, the metatable will have a =__call= method, which expects two
+If it does, the metatable will have a `__call` method, which expects two
 parameters, itself, and the node, which will include the span. 
 
 
-This will require reattunement of basically every class in the =/grym= folder,
+This will require reattunement of basically every class in the `/grym` folder,
 but let's build the Prose parse first.  I do want the whole shebang in a single
 grammar eventually.
 
@@ -310,7 +310,7 @@ In the meantime we have things like
 
 
 - lines :  If this exists, there's a collection of lines which need to be
-           joined with =\n= to reconstruct the actual span.
+           joined with `\n` to reconstruct the actual span.
 
 
            We want to do this the other way, and use the span itself for the

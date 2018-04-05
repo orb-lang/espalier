@@ -1,9 +1,5 @@
 * Grammar Module
 
-#!lua
-io.write "Hello from the Node module!\n"
-#/lua
-
   The grammar module returns one function, which generates
 a grammar. 
 
@@ -111,7 +107,12 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
    t.last  = last + offset - 1
    t.str   = str
    if metas[id] then
-      t = metas[id](t, str)
+      local meta = metas[id]
+      if type(meta) == "function" or meta.__call then
+        t = metas[id](t, str)
+      else
+        t = setmetatable(t, meta)
+      end
       assert(t.id == id)
    else
 	  t.id = id
@@ -183,12 +184,22 @@ end
 
 #!lua
 local function refineMetas(metas)
-	for _,v in pairs(metas) do
-		if not v["__tostring"] then
-			v["__tostring"] = Node.toString
-		end
-	end
-	return metas
+  io.write("refining metatables\n")
+  for id, meta in pairs(metas) do
+    io.write("  id: " .. id .. " type: " .. type(meta) .. "\n")
+    if type(meta) == "table" then
+      if not meta["__tostring"] then
+        meta["__tostring"] = Node.toString
+      end
+      if not meta.id then
+        io.write("    inserting metatable id: " .. id .. "\n")
+        meta.id = id
+      else
+        io.write("    id of " .. id .. " is " .. meta.id .. "\n")
+      end
+    end
+  end
+  return metas
 end
 #/lua
 
@@ -197,11 +208,14 @@ end
 local function new(grammar_template, metas)
 	if type(grammar_template) == 'function' then
 		local metas = metas or {}
+    metas = refineMetas(metas)
 		local grammar = define(grammar_template, nil, metas)
-		local parse = function(str, offset)
+
+		local function parse(str, offset)
 			local offset = offset or 0
 			return L.match(grammar, str, 1, str, metas, offset) -- other 
 		end
+
 		return parse
 	else
 		s:halt("no way to build grammar out of " .. type(template))

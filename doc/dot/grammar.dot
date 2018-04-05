@@ -3,103 +3,106 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 214"]
+doc_0 [label="doc - 228"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-9"]
+section_1 [label="section: 1-5"]
 
 
-section_1 -> { header_2 prose_3 codeblock_4 section_5}
-{rank=same; header_2 prose_3 codeblock_4 section_5}
+section_1 -> { header_2 prose_3 section_4}
+{rank=same; header_2 prose_3 section_4}
 
 header_2 [label="1 : Grammar Module"]
 
 prose_3 [label="prose"]
 
-codeblock_4 [label="code block 3-5"]
-
-section_5 [label="section: 10-104"]
+section_4 [label="section: 6-100"]
 
 
-header_2 -> leaf_6
-leaf_6  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Grammar Module"]
-prose_3 -> { raw_7}
-{rank=same; raw_7}
+header_2 -> leaf_5
+leaf_5  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Grammar Module"]
+prose_3 -> { raw_6}
+{rank=same; raw_6}
 
-raw_7 [label="raw"]
+raw_6 [label="raw"]
 
 
-raw_7 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_6 -> leaf_7
+leaf_7  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  The grammar module returns one function, which generates
+a grammar. 
 "]
-codeblock_4 -> leaf_9
-leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="io.write \"Hello from the Node module!\\n\""]
-section_5 -> { header_10 prose_11 prose_12 prose_13 section_14 section_15 section_16 section_17}
-{rank=same; header_10 prose_11 prose_12 prose_13 section_14 section_15 section_16 section_17}
+section_4 -> { header_8 prose_9 prose_10 prose_11 section_12 section_13 section_14 section_15}
+{rank=same; header_8 prose_9 prose_10 prose_11 section_12 section_13 section_14 section_15}
 
-header_10 [label="2 : Parameters"]
+header_8 [label="2 : Parameters"]
+
+prose_9 [label="prose"]
+
+prose_10 [label="prose"]
 
 prose_11 [label="prose"]
 
-prose_12 [label="prose"]
+section_12 [label="section: 16-45"]
 
-prose_13 [label="prose"]
+section_13 [label="section: 46-69"]
 
-section_14 [label="section: 20-49"]
+section_14 [label="section: 70-100"]
 
-section_15 [label="section: 50-73"]
-
-section_16 [label="section: 74-104"]
-
-section_17 [label="section: 105-214"]
+section_15 [label="section: 101-228"]
 
 
-header_10 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Parameters"]
-prose_11 -> { raw_19}
-{rank=same; raw_19}
+header_8 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Parameters"]
+prose_9 -> { raw_17}
+{rank=same; raw_17}
 
-raw_19 [label="raw"]
+raw_17 [label="raw"]
 
 
-raw_19 -> leaf_20
-leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This function takes two parameters, namely:
 "]
-prose_12 -> { raw_21}
-{rank=same; raw_21}
+prose_10 -> { raw_19 literal_20 raw_21}
+{rank=same; raw_19 literal_20 raw_21}
+
+raw_19 [label="raw"]
+
+literal_20 [label="literal"]
 
 raw_21 [label="raw"]
 
 
-raw_21 -> leaf_22
+raw_19 -> leaf_22
 leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-  - grammar_template :  A function with one parameter, which must be =_ENV=.
+  - grammar_template :  A function with one parameter, which must be "]
+literal_20 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_ENV"]
+raw_21 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
   - metas :  A map with keys of string and values of Node subclass constructors.
 "]
-prose_13 -> { raw_23}
-{rank=same; raw_23}
+prose_11 -> { raw_25}
+{rank=same; raw_25}
 
-raw_23 [label="raw"]
+raw_25 [label="raw"]
 
 
-raw_23 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_25 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Both of these are reasonably complex.
 
 "]
-section_14 -> { header_25 prose_26 prose_27 prose_28 prose_29 prose_30 prose_31 prose_32}
-{rank=same; header_25 prose_26 prose_27 prose_28 prose_29 prose_30 prose_31 prose_32}
+section_12 -> { header_27 prose_28 prose_29 prose_30 prose_31 prose_32 prose_33 prose_34}
+{rank=same; header_27 prose_28 prose_29 prose_30 prose_31 prose_32 prose_33 prose_34}
 
-header_25 [label="3 : grammar_template"]
-
-prose_26 [label="prose"]
-
-prose_27 [label="prose"]
+header_27 [label="3 : grammar_template"]
 
 prose_28 [label="prose"]
 
@@ -111,60 +114,35 @@ prose_31 [label="prose"]
 
 prose_32 [label="prose"]
 
+prose_33 [label="prose"]
 
-header_25 -> leaf_33
-leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** grammar_template"]
-prose_26 -> { raw_34}
-{rank=same; raw_34}
-
-raw_34 [label="raw"]
+prose_34 [label="prose"]
 
 
-raw_34 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-  The internal function @define creates a custom environment variable, neatly
-sidestepping lua's pedantic insistance on prepending =local= to all values of 
-significance. 
-"]
-prose_27 -> { raw_36}
-{rank=same; raw_36}
+header_27 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** grammar_template"]
+prose_28 -> { raw_36 literal_37 raw_38}
+{rank=same; raw_36 literal_37 raw_38}
 
 raw_36 [label="raw"]
 
-
-raw_36 -> leaf_37
-leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-More relevantly, it constructs a full grammar, which will return a table of
-type Node. 
-"]
-prose_28 -> { raw_38}
-{rank=same; raw_38}
+literal_37 [label="literal"]
 
 raw_38 [label="raw"]
 
 
-raw_38 -> leaf_39
+raw_36 -> leaf_39
 leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-If you stick to =lpeg= patterns, as you should, all array values will be of
-Node, as is intended.  Captures will interpolate various other sorts of Lua
-values, which will induce halting in some places and silently corrupt
-execution in others. 
+
+  The internal function @define creates a custom environment variable, neatly
+sidestepping lua's pedantic insistance on prepending "]
+literal_37 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local"]
+raw_38 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to all values of 
+significance. 
 "]
-prose_29 -> { raw_40}
-{rank=same; raw_40}
-
-raw_40 [label="raw"]
-
-
-raw_40 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Though as yet poorly thought through, the [[elpatt module][./elpatt]] is
-intended to provide only those patterns which are allowed in Grammars, while
-expanding the scope of some favorites to properly respect utf-8 and otherwise
-behave. 
-"]
-prose_30 -> { raw_42}
+prose_29 -> { raw_42}
 {rank=same; raw_42}
 
 raw_42 [label="raw"]
@@ -172,26 +150,107 @@ raw_42 [label="raw"]
 
 raw_42 -> leaf_43
 leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-There are examples of the format in the [[spec module][./spec]].
+More relevantly, it constructs a full grammar, which will return a table of
+type Node. 
 "]
-prose_31 -> { raw_44}
-{rank=same; raw_44}
+prose_30 -> { raw_44 literal_45 raw_46}
+{rank=same; raw_44 literal_45 raw_46}
 
 raw_44 [label="raw"]
 
-
-raw_44 -> leaf_45
-leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Special fields include:
-"]
-prose_32 -> { raw_46}
-{rank=same; raw_46}
+literal_45 [label="literal"]
 
 raw_46 [label="raw"]
 
 
-raw_46 -> leaf_47
+raw_44 -> leaf_47
 leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+If you stick to "]
+literal_45 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpeg"]
+raw_46 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" patterns, as you should, all array values will be of
+Node, as is intended.  Captures will interpolate various other sorts of Lua
+values, which will induce halting in some places and silently corrupt
+execution in others. 
+"]
+prose_31 -> { raw_50 link_51 raw_52}
+{rank=same; raw_50 link_51 raw_52}
+
+raw_50 [label="raw"]
+
+link_51 [label="link"]
+
+raw_52 [label="raw"]
+
+
+raw_50 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Though as yet poorly thought through, the "]
+link_51 -> { anchortext_54 url_55}
+{rank=same; anchortext_54 url_55}
+
+anchortext_54 [label="anchortext"]
+
+url_55 [label="url"]
+
+
+anchortext_54 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt module"]
+url_55 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="./elpatt"]
+raw_52 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is
+intended to provide only those patterns which are allowed in Grammars, while
+expanding the scope of some favorites to properly respect utf-8 and otherwise
+behave. 
+"]
+prose_32 -> { raw_59 link_60 raw_61}
+{rank=same; raw_59 link_60 raw_61}
+
+raw_59 [label="raw"]
+
+link_60 [label="link"]
+
+raw_61 [label="raw"]
+
+
+raw_59 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+There are examples of the format in the "]
+link_60 -> { anchortext_63 url_64}
+{rank=same; anchortext_63 url_64}
+
+anchortext_63 [label="anchortext"]
+
+url_64 [label="url"]
+
+
+anchortext_63 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="spec module"]
+url_64 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="./spec"]
+raw_61 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+prose_33 -> { raw_68}
+{rank=same; raw_68}
+
+raw_68 [label="raw"]
+
+
+raw_68 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Special fields include:
+"]
+prose_34 -> { raw_70}
+{rank=same; raw_70}
+
+raw_70 [label="raw"]
+
+
+raw_70 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   -  START :  a string which must be the same as the starting rule.
   -  SUPPRESS :  either a string or an array of strings. These rules will be
                  removed from the Node. 
@@ -199,129 +258,193 @@ leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   -  V :  The lpeg V function.  Used for non-terminal rvalues in a grammar. 
 
 "]
-section_15 -> { header_48 prose_49 prose_50 prose_51 prose_52 prose_53}
-{rank=same; header_48 prose_49 prose_50 prose_51 prose_52 prose_53}
+section_13 -> { header_72 prose_73 prose_74 prose_75 prose_76 prose_77}
+{rank=same; header_72 prose_73 prose_74 prose_75 prose_76 prose_77}
 
-header_48 [label="3 : metas"]
+header_72 [label="3 : metas"]
 
-prose_49 [label="prose"]
+prose_73 [label="prose"]
 
-prose_50 [label="prose"]
+prose_74 [label="prose"]
 
-prose_51 [label="prose"]
+prose_75 [label="prose"]
 
-prose_52 [label="prose"]
+prose_76 [label="prose"]
 
-prose_53 [label="prose"]
-
-
-header_48 -> leaf_54
-leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** metas"]
-prose_49 -> { raw_55}
-{rank=same; raw_55}
-
-raw_55 [label="raw"]
+prose_77 [label="prose"]
 
 
-raw_55 -> leaf_56
-leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_72 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** metas"]
+prose_73 -> { raw_79}
+{rank=same; raw_79}
+
+raw_79 [label="raw"]
+
+
+raw_79 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   By default a node will inherit from the Node class.  If you want custom behavior,
 you must pass in a table of metatable constructors.
 "]
-prose_50 -> { raw_57}
-{rank=same; raw_57}
+prose_74 -> { raw_81 literal_82 raw_83 literal_84 raw_85 literal_86 raw_87 literal_88 raw_89 literal_90 raw_91 literal_92 raw_93}
+{rank=same; raw_81 literal_82 raw_83 literal_84 raw_85 literal_86 raw_87 literal_88 raw_89 literal_90 raw_91 literal_92 raw_93}
 
-raw_57 [label="raw"]
+raw_81 [label="raw"]
+
+literal_82 [label="literal"]
+
+raw_83 [label="raw"]
+
+literal_84 [label="literal"]
+
+raw_85 [label="raw"]
+
+literal_86 [label="literal"]
+
+raw_87 [label="raw"]
+
+literal_88 [label="literal"]
+
+raw_89 [label="raw"]
+
+literal_90 [label="literal"]
+
+raw_91 [label="raw"]
+
+literal_92 [label="literal"]
+
+raw_93 [label="raw"]
 
 
-raw_57 -> leaf_58
-leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-That's a fairly specific beast.  Any rule defined above will have an =id=
-corresonding to the name of the rule.  Unless =SUPPRESS=ed, this will become
-a Node.  If the =metas= parameter has a key corresponding to =id=, then it
+raw_81 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+That's a fairly specific beast.  Any rule defined above will have an "]
+literal_82 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
+raw_83 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+corresonding to the name of the rule.  Unless "]
+literal_84 -> leaf_97
+leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="SUPPRESS"]
+raw_85 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ed, this will become
+a Node.  If the "]
+literal_86 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="metas"]
+raw_87 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter has a key corresponding to "]
+literal_88 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
+raw_89 -> leaf_102
+leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", then it
 must return a function taking two parameters:
    
    - node :  The node under construction, which under normal circumstances will
-             already have the =first= and =last= fields.
+             already have the "]
+literal_90 -> leaf_103
+leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
+raw_91 -> leaf_104
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and "]
+literal_92 -> leaf_105
+leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="last"]
+raw_93 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" fields.
    - str  :  The entire str the grammar is parsing.
 "]
-prose_51 -> { raw_59}
-{rank=same; raw_59}
+prose_75 -> { raw_107}
+{rank=same; raw_107}
 
-raw_59 [label="raw"]
+raw_107 [label="raw"]
 
 
-raw_59 -> leaf_60
-leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_107 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Which must return that same node, decorated in whatever fashion is appropriate.
 "]
-prose_52 -> { raw_61}
-{rank=same; raw_61}
+prose_76 -> { raw_109 literal_110 raw_111 literal_112 raw_113}
+{rank=same; raw_109 literal_110 raw_111 literal_112 raw_113}
 
-raw_61 [label="raw"]
+raw_109 [label="raw"]
+
+literal_110 [label="literal"]
+
+raw_111 [label="raw"]
+
+literal_112 [label="literal"]
+
+raw_113 [label="raw"]
 
 
-raw_61 -> leaf_62
-leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_109 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The node will not have a metatable at this point, and the function must attach a
-metatable with =__index= equal to some table which itself has the =__index=
+metatable with "]
+literal_110 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__index"]
+raw_111 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" equal to some table which itself has the "]
+literal_112 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__index"]
+raw_113 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Node as some recursive backstop.
 "]
-prose_53 -> { raw_63}
-{rank=same; raw_63}
+prose_77 -> { raw_119}
+{rank=same; raw_119}
 
-raw_63 [label="raw"]
+raw_119 [label="raw"]
 
 
-raw_63 -> leaf_64
-leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_119 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 You might say the return value must /inherit/ from Node, if we were using
 a language that did that sort of thing. 
 
 "]
-section_16 -> { header_65 prose_66 codeblock_67 prose_68 codeblock_69}
-{rank=same; header_65 prose_66 codeblock_67 prose_68 codeblock_69}
+section_14 -> { header_121 prose_122 codeblock_123 prose_124 codeblock_125}
+{rank=same; header_121 prose_122 codeblock_123 prose_124 codeblock_125}
 
-header_65 [label="3 : includes"]
+header_121 [label="3 : includes"]
 
-prose_66 [label="prose"]
+prose_122 [label="prose"]
 
-codeblock_67 [label="code block 76-81"]
+codeblock_123 [label="code block 72-77"]
 
-prose_68 [label="prose"]
+prose_124 [label="prose"]
 
-codeblock_69 [label="code block 87-102"]
-
-
-header_65 -> leaf_70
-leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** includes"]
-prose_66 -> { raw_71}
-{rank=same; raw_71}
-
-raw_71 [label="raw"]
+codeblock_125 [label="code block 83-98"]
 
 
-raw_71 -> leaf_72
-leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_121 -> leaf_126
+leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** includes"]
+prose_122 -> { raw_127}
+{rank=same; raw_127}
+
+raw_127 [label="raw"]
+
+
+raw_127 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-codeblock_67 -> leaf_73
-leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
+codeblock_123 -> leaf_129
+leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
 
 local s = require \"status\" 
 local Node = require \"node/node\""]
-prose_68 -> { raw_74}
-{rank=same; raw_74}
+prose_124 -> { raw_130}
+{rank=same; raw_130}
 
-raw_74 [label="raw"]
+raw_130 [label="raw"]
 
 
-raw_74 -> leaf_75
-leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_130 -> leaf_131
+leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 It's the kind of thing I'd like to automate. 
 "]
-codeblock_69 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local assert = assert
+codeblock_125 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local assert = assert
 local string, io = assert( string ), assert( io )
 local V = string.sub( assert( _VERSION ), -4 )
 local _G = assert( _G )
@@ -335,41 +458,46 @@ if V == \" 5.1\" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
 end"]
-section_17 -> { header_77 prose_78 codeblock_79 codeblock_80 codeblock_81 codeblock_82}
-{rank=same; header_77 prose_78 codeblock_79 codeblock_80 codeblock_81 codeblock_82}
+section_15 -> { header_133 prose_134 codeblock_135 codeblock_136 codeblock_137 codeblock_138}
+{rank=same; header_133 prose_134 codeblock_135 codeblock_136 codeblock_137 codeblock_138}
 
-header_77 [label="3 : define"]
+header_133 [label="3 : define"]
 
-prose_78 [label="prose"]
+prose_134 [label="prose"]
 
-codeblock_79 [label="code block 107-182"]
+codeblock_135 [label="code block 103-183"]
 
-codeblock_80 [label="code block 184-193"]
+codeblock_136 [label="code block 185-204"]
 
-codeblock_81 [label="code block 196-210"]
+codeblock_137 [label="code block 207-224"]
 
-codeblock_82 [label="code block 212-214"]
-
-
-header_77 -> leaf_83
-leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** define"]
-prose_78 -> { raw_84}
-{rank=same; raw_84}
-
-raw_84 [label="raw"]
+codeblock_138 [label="code block 226-228"]
 
 
-raw_84 -> leaf_85
-leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_133 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** define"]
+prose_134 -> { raw_140}
+{rank=same; raw_140}
+
+raw_140 [label="raw"]
+
+
+raw_140 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-codeblock_79 -> leaf_86
-leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function make_ast_node(id, first, t, last, str, metas, offset)
+codeblock_135 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function make_ast_node(id, first, t, last, str, metas, offset)
    local offset = offset or 0
    t.first = first + offset
    t.last  = last + offset - 1
    t.str   = str
    if metas[id] then
-      t = metas[id](t, str)
+      local meta = metas[id]
+      if type(meta) == \"function\" or meta.__call then
+        t = metas[id](t, str)
+      else
+        t = setmetatable(t, meta)
+      end
       assert(t.id == id)
    else
     t.id = id
@@ -437,30 +565,43 @@ local function define(func, g, e)
   assert( g[ 1 ] and g[ g[ 1 ] ], \"no start rule defined\" )
   return g
 end"]
-codeblock_80 -> leaf_87
-leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
-  for _,v in pairs(metas) do
-    if not v[\"__tostring\"] then
-      v[\"__tostring\"] = Node.toString
+codeblock_136 -> leaf_143
+leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
+  io.write(\"refining metatables\\n\")
+  for id, meta in pairs(metas) do
+    io.write(\"  id: \" .. id .. \" type: \" .. type(meta) .. \"\\n\")
+    if type(meta) == \"table\" then
+      if not meta[\"__tostring\"] then
+        meta[\"__tostring\"] = Node.toString
+      end
+      if not meta.id then
+        io.write(\"    inserting metatable id: \" .. id .. \"\\n\")
+        meta.id = id
+      else
+        io.write(\"    id of \" .. id .. \" is \" .. meta.id .. \"\\n\")
+      end
     end
   end
   return metas
 end"]
-codeblock_81 -> leaf_88
-leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
+codeblock_137 -> leaf_144
+leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
   if type(grammar_template) == 'function' then
     local metas = metas or {}
+    metas = refineMetas(metas)
     local grammar = define(grammar_template, nil, metas)
-    local parse = function(str, offset)
+
+    local function parse(str, offset)
       local offset = offset or 0
       return L.match(grammar, str, 1, str, metas, offset) -- other 
     end
+
     return parse
   else
     s:halt(\"no way to build grammar out of \" .. type(template))
   end
 end"]
-codeblock_82 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+codeblock_138 -> leaf_145
+leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
 
 }
