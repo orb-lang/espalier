@@ -97,7 +97,8 @@ a language that did that sort of thing.
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = true
+s.verbose = false
+s.angry   = false
 
 local Node = require "node/node"
 local elpatt = require "node/elpatt"
@@ -147,14 +148,57 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
        setmetatable(t, {__index = Node,
                      __tostring = Node.toString})
    end
-   for _,v in ipairs(t) do
+
+
+```
+#### DROP
+
+Making DROP work correctly will be somewhat painstaking. 
+
+
+I don't need it in my short path, so I'm likely to leave it for
+now.
+
+
+Here's notes on the algorithm:
+
+
+  -  `````D````` consumes the pattern.  If this is the leftmost match, we need
+     to adjust `````first````` forward by the length of this capture.
+
+
+     If it is the rightmost match, we need to adjust `````last````` accordingly.
+
+
+     Using `````D````` in the middle of a non-terminal capture should simply
+     nil out the capture and adjust accordingly.  The effect is the same
+     as SUPPRESS but only for that instance of the rule, which needn't be
+     a V. 
+
+
+The use case is for eloquently expression 'wrapper' patterns, which occur
+frequently in real languages. In a `````(typical lisp expression)````` we don't need
+the parentheses and would like our span not to include them.
+
+
+We could use a pattern like `````V"formwrap"````` and then SUPPRESS `````formwrap`````, but
+this is less eloquent than `````D(P"(") * V"form" *  D(P")")`````. 
+
+
+Which is admittedly hard to look at.  We prefer the form
+`````D(pal) * V":form" * D(par)````` for this reason among others.
+
+```lua
+   for i=#t,1,-1 do 
+      local v = t[i] 
       if type(v) ~= "table" then
          s:complain("CAPTURE ISSUE", 
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
       if v == DROP then
         s:verb("-- child v of t is DROP")
-      end
+        table.remove(v)
+      end 
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)

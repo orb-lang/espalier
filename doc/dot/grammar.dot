@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 252"]
+doc_0 [label="doc - 289"]
 
 
 doc_0 -> { section_1}
@@ -19,7 +19,7 @@ header_2 [label="1 : Grammar Module"]
 
 prose_3 [label="prose"]
 
-section_4 [label="section: 6-115"]
+section_4 [label="section: 6-116"]
 
 
 header_2 -> leaf_5
@@ -51,9 +51,9 @@ section_12 [label="section: 16-45"]
 
 section_13 [label="section: 46-69"]
 
-section_14 [label="section: 70-115"]
+section_14 [label="section: 70-116"]
 
-section_15 [label="section: 116-252"]
+section_15 [label="section: 117-141"]
 
 
 header_8 -> leaf_16
@@ -422,13 +422,13 @@ prose_127 [label="prose"]
 
 prose_128 [label="prose"]
 
-codeblock_129 [label="code block 82-92"]
+codeblock_129 [label="code block 82-93"]
 
 prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 98-113"]
+codeblock_132 [label="code block 99-114"]
 
 
 header_125 -> leaf_133
@@ -496,7 +496,8 @@ codeblock_129 -> leaf_152
 leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
 
 local s = require \"status\" ()
-s.verbose = true
+s.verbose = false
+s.angry   = false
 
 local Node = require \"node/node\"
 local elpatt = require \"node/elpatt\"
@@ -537,35 +538,31 @@ if V == \" 5.1\" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
 end"]
-section_15 -> { header_158 prose_159 codeblock_160 codeblock_161 codeblock_162 codeblock_163}
-{rank=same; header_158 prose_159 codeblock_160 codeblock_161 codeblock_162 codeblock_163}
+section_15 -> { header_158 prose_159 codeblock_160 section_161}
+{rank=same; header_158 prose_159 codeblock_160 section_161}
 
 header_158 [label="3 : define"]
 
 prose_159 [label="prose"]
 
-codeblock_160 [label="code block 118-207"]
+codeblock_160 [label="code block 119-140"]
 
-codeblock_161 [label="code block 209-228"]
-
-codeblock_162 [label="code block 231-248"]
-
-codeblock_163 [label="code block 250-252"]
+section_161 [label="section: 142-289"]
 
 
-header_158 -> leaf_164
-leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** define"]
-prose_159 -> { raw_165}
-{rank=same; raw_165}
+header_158 -> leaf_162
+leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** define"]
+prose_159 -> { raw_163}
+{rank=same; raw_163}
 
-raw_165 [label="raw"]
+raw_163 [label="raw"]
 
 
-raw_165 -> leaf_166
-leaf_166  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_163 -> leaf_164
+leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-codeblock_160 -> leaf_167
-leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function make_ast_node(id, first, t, last, str, metas, offset)
+codeblock_160 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function make_ast_node(id, first, t, last, str, metas, offset)
    local offset = offset or 0
    t.first = first + offset
    t.last  = last + offset - 1
@@ -583,14 +580,226 @@ leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
        setmetatable(t, {__index = Node,
                      __tostring = Node.toString})
    end
-   for _,v in ipairs(t) do
+
+"]
+section_161 -> { header_166 prose_167 prose_168 prose_169 prose_170 prose_171 prose_172 prose_173 prose_174 prose_175 codeblock_176 codeblock_177 codeblock_178 codeblock_179}
+{rank=same; header_166 prose_167 prose_168 prose_169 prose_170 prose_171 prose_172 prose_173 prose_174 prose_175 codeblock_176 codeblock_177 codeblock_178 codeblock_179}
+
+header_166 [label="4 : DROP"]
+
+prose_167 [label="prose"]
+
+prose_168 [label="prose"]
+
+prose_169 [label="prose"]
+
+prose_170 [label="prose"]
+
+prose_171 [label="prose"]
+
+prose_172 [label="prose"]
+
+prose_173 [label="prose"]
+
+prose_174 [label="prose"]
+
+prose_175 [label="prose"]
+
+codeblock_176 [label="code block 171-244"]
+
+codeblock_177 [label="code block 246-265"]
+
+codeblock_178 [label="code block 268-285"]
+
+codeblock_179 [label="code block 287-289"]
+
+
+header_166 -> leaf_180
+leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" DROP
+
+Mak"]
+prose_167 -> { raw_181}
+{rank=same; raw_181}
+
+raw_181 [label="raw"]
+
+
+raw_181 -> leaf_182
+leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Making DROP work correctly will be somewhat painstaking. 
+"]
+prose_168 -> { raw_183}
+{rank=same; raw_183}
+
+raw_183 [label="raw"]
+
+
+raw_183 -> leaf_184
+leaf_184  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I don't need it in my short path, so I'm likely to leave it for
+now.
+"]
+prose_169 -> { raw_185}
+{rank=same; raw_185}
+
+raw_185 [label="raw"]
+
+
+raw_185 -> leaf_186
+leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Here's notes on the algorithm:
+"]
+prose_170 -> { raw_187 literal_188 raw_189 literal_190 raw_191}
+{rank=same; raw_187 literal_188 raw_189 literal_190 raw_191}
+
+raw_187 [label="raw"]
+
+literal_188 [label="literal"]
+
+raw_189 [label="raw"]
+
+literal_190 [label="literal"]
+
+raw_191 [label="raw"]
+
+
+raw_187 -> leaf_192
+leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  -  "]
+literal_188 -> leaf_193
+leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D"]
+raw_189 -> leaf_194
+leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" consumes the pattern.  If this is the leftmost match, we need
+     to adjust "]
+literal_190 -> leaf_195
+leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
+raw_191 -> leaf_196
+leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" forward by the length of this capture.
+"]
+prose_171 -> { raw_197 literal_198 raw_199}
+{rank=same; raw_197 literal_198 raw_199}
+
+raw_197 [label="raw"]
+
+literal_198 [label="literal"]
+
+raw_199 [label="raw"]
+
+
+raw_197 -> leaf_200
+leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+     If it is the rightmost match, we need to adjust "]
+literal_198 -> leaf_201
+leaf_201  [color=Gray,shape=rectangle,fontname=Inconsolata,label="last"]
+raw_199 -> leaf_202
+leaf_202  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" accordingly.
+"]
+prose_172 -> { raw_203 literal_204 raw_205}
+{rank=same; raw_203 literal_204 raw_205}
+
+raw_203 [label="raw"]
+
+literal_204 [label="literal"]
+
+raw_205 [label="raw"]
+
+
+raw_203 -> leaf_206
+leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+     Using "]
+literal_204 -> leaf_207
+leaf_207  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D"]
+raw_205 -> leaf_208
+leaf_208  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" in the middle of a non-terminal capture should simply
+     nil out the capture and adjust accordingly.  The effect is the same
+     as SUPPRESS but only for that instance of the rule, which needn't be
+     a V. 
+"]
+prose_173 -> { raw_209 literal_210 raw_211}
+{rank=same; raw_209 literal_210 raw_211}
+
+raw_209 [label="raw"]
+
+literal_210 [label="literal"]
+
+raw_211 [label="raw"]
+
+
+raw_209 -> leaf_212
+leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The use case is for eloquently expression 'wrapper' patterns, which occur
+frequently in real languages. In a "]
+literal_210 -> leaf_213
+leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(typical lisp expression)"]
+raw_211 -> leaf_214
+leaf_214  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" we don't need
+the parentheses and would like our span not to include them.
+"]
+prose_174 -> { raw_215 literal_216 raw_217 literal_218 raw_219 literal_220 raw_221}
+{rank=same; raw_215 literal_216 raw_217 literal_218 raw_219 literal_220 raw_221}
+
+raw_215 [label="raw"]
+
+literal_216 [label="literal"]
+
+raw_217 [label="raw"]
+
+literal_218 [label="literal"]
+
+raw_219 [label="raw"]
+
+literal_220 [label="literal"]
+
+raw_221 [label="raw"]
+
+
+raw_215 -> leaf_222
+leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We could use a pattern like "]
+literal_216 -> leaf_223
+leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label="V\"formwrap\""]
+raw_217 -> leaf_224
+leaf_224  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and then SUPPRESS "]
+literal_218 -> leaf_225
+leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label="formwrap"]
+raw_219 -> leaf_226
+leaf_226  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", but
+this is less eloquent than "]
+literal_220 -> leaf_227
+leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(P\"(\") * V\"form\" *  D(P\")\")"]
+raw_221 -> leaf_228
+leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
+"]
+prose_175 -> { raw_229 literal_230 raw_231}
+{rank=same; raw_229 literal_230 raw_231}
+
+raw_229 [label="raw"]
+
+literal_230 [label="literal"]
+
+raw_231 [label="raw"]
+
+
+raw_229 -> leaf_232
+leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Which is admittedly hard to look at.  We prefer the form"]
+literal_230 -> leaf_233
+leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(pal) * V\":form\" * D(par)"]
+raw_231 -> leaf_234
+leaf_234  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for this reason among others.
+"]
+codeblock_176 -> leaf_235
+leaf_235  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i=#t,1,-1 do 
+      local v = t[i] 
       if type(v) ~= \"table\" then
          s:complain(\"CAPTURE ISSUE\", 
                     \"type of capture subgroup is \" .. type(v) .. \"\\n\")
       end
       if v == DROP then
         s:verb(\"-- child v of t is DROP\")
-      end
+        table.remove(v)
+      end 
    end
    assert(t.isNode, \"failed isNode: \" .. id)
    assert(t.str)
@@ -653,8 +862,8 @@ local function define(func, g, e)
   assert( g[ 1 ] and g[ g[ 1 ] ], \"no start rule defined\" )
   return g
 end"]
-codeblock_161 -> leaf_168
-leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
+codeblock_177 -> leaf_236
+leaf_236  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
   s:verb(\"refining metatables\")
   for id, meta in pairs(metas) do
     s:verb(\"  id: \" .. id .. \" type: \" .. type(meta))
@@ -672,8 +881,8 @@ leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
   end
   return metas
 end"]
-codeblock_162 -> leaf_169
-leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
+codeblock_178 -> leaf_237
+leaf_237  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
   if type(grammar_template) == 'function' then
     local metas = metas or {}
     metas = refineMetas(metas)
@@ -689,7 +898,7 @@ leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
     s:halt(\"no way to build grammar out of \" .. type(template))
   end
 end"]
-codeblock_163 -> leaf_170
-leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+codeblock_179 -> leaf_238
+leaf_238  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
 
 }

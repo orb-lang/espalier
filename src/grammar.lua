@@ -83,7 +83,8 @@
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = true
+s.verbose = false
+s.angry   = false
 
 local Node = require "node/node"
 local elpatt = require "node/elpatt"
@@ -134,14 +135,50 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
        setmetatable(t, {__index = Node,
                      __tostring = Node.toString})
    end
-   for _,v in ipairs(t) do
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   for i=#t,1,-1 do 
+      local v = t[i] 
       if type(v) ~= "table" then
          s:complain("CAPTURE ISSUE", 
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
       if v == DROP then
         s:verb("-- child v of t is DROP")
-      end
+        table.remove(v)
+      end 
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
