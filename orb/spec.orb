@@ -11,6 +11,8 @@ local m = require "grym/morphemes"
 
 local Grammar = require "node/grammar"
 local Node = require "node/node"
+local elpatt = require "node/elpatt"
+local D = elpatt.D
 local L = require "lpeg"
 local P = L.P
 local V = L.V
@@ -55,11 +57,11 @@ local function clu_gm(_ENV)
 	START "clu"
 	SUPPRESS "form"
 	clu = V"form"^1
-	form = (V"number" * WS)
-	     + (V"atom" * WS) 
+	form = D((V"number" * WS))
+	     + (V"atom" * D(WS)) 
 	     + (V"expr" * WS)
 	expr = m.pal * WS * V"form"^0 * WS * m.par
-	atom = m.symbol
+	atom = C(m.symbol)
 	number = m.number
 end
 #/lua

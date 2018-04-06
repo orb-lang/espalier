@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 317"]
+doc_0 [label="doc - 341"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-222"]
+section_1 [label="section: 1-246"]
 
 
 section_1 -> { header_2 prose_3 section_4 section_5 section_6 section_7 section_8}
@@ -25,9 +25,9 @@ section_5 [label="section: 13-27"]
 
 section_6 [label="section: 28-44"]
 
-section_7 [label="section: 45-204"]
+section_7 [label="section: 45-228"]
 
-section_8 [label="section: 223-282"]
+section_8 [label="section: 247-306"]
 
 
 header_2 -> leaf_9
@@ -185,9 +185,9 @@ header_50 [label="2 : Methods"]
 
 prose_51 [label="prose"]
 
-section_52 [label="section: 48-185"]
+section_52 [label="section: 48-204"]
 
-section_53 [label="section: 205-222"]
+section_53 [label="section: 229-246"]
 
 
 header_50 -> leaf_54
@@ -202,8 +202,8 @@ raw_55 -> leaf_56
 leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 "]
-section_52 -> { header_57 prose_58 prose_59 codeblock_60 codeblock_61 section_62 section_63 section_64 section_65}
-{rank=same; header_57 prose_58 prose_59 codeblock_60 codeblock_61 section_62 section_63 section_64 section_65}
+section_52 -> { header_57 prose_58 prose_59 codeblock_60 codeblock_61 section_62 section_63 section_64 section_65 section_66}
+{rank=same; header_57 prose_58 prose_59 codeblock_60 codeblock_61 section_62 section_63 section_64 section_65 section_66}
 
 header_57 [label="3 : Visualizers"]
 
@@ -223,33 +223,35 @@ section_64 [label="section: 146-185"]
 
 section_65 [label="section: 186-204"]
 
-
-header_57 -> leaf_66
-leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Visualizers"]
-prose_58 -> { raw_67}
-{rank=same; raw_67}
-
-raw_67 [label="raw"]
+section_66 [label="section: 205-228"]
 
 
-raw_67 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_57 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Visualizers"]
+prose_58 -> { raw_68}
+{rank=same; raw_68}
+
+raw_68 [label="raw"]
+
+
+raw_68 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This gives us a nice, tree-shaped printout of an entire Node.
 "]
-prose_59 -> { raw_69}
-{rank=same; raw_69}
+prose_59 -> { raw_70}
+{rank=same; raw_70}
 
-raw_69 [label="raw"]
+raw_70 [label="raw"]
 
 
-raw_69 -> leaf_70
-leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_70 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 We're less disciplined than we should be about up-assigning this to
 inherited Node classes. 
 "]
-codeblock_60 -> leaf_71
-leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.toString(node, depth)
+codeblock_60 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.toString(node, depth)
    local depth = depth or 0
    local phrase = \"\"
    phrase = (\"  \"):rep(depth) .. \"id: \" .. node.id .. \",  \"
@@ -263,8 +265,8 @@ leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.toSt
   end 
    return phrase
 end"]
-codeblock_61 -> leaf_72
-leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.dotLabel(node)
+codeblock_61 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.dotLabel(node)
   return node.id
 end
 
@@ -291,31 +293,31 @@ function N.toValue(node)
   end
 end
 "]
-section_62 -> { header_73 prose_74 codeblock_75}
-{rank=same; header_73 prose_74 codeblock_75}
+section_62 -> { header_74 prose_75 codeblock_76}
+{rank=same; header_74 prose_75 codeblock_76}
 
-header_73 [label="4 : N.walkDeep"]
+header_74 [label="4 : N.walkPost"]
 
-prose_74 [label="prose"]
+prose_75 [label="prose"]
 
-codeblock_75 [label="code block 106-121"]
-
-
-header_73 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.walkDeep"]
-prose_74 -> { raw_77}
-{rank=same; raw_77}
-
-raw_77 [label="raw"]
+codeblock_76 [label="code block 106-121"]
 
 
-raw_77 -> leaf_78
-leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_74 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.walkPost"]
+prose_75 -> { raw_78}
+{rank=same; raw_78}
 
-Depth-first iterator. 
+raw_78 [label="raw"]
+
+
+raw_78 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Depth-first iterator, postfix 
 "]
-codeblock_75 -> leaf_79
-leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.walkDeep(node)
+codeblock_76 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.walkPost(node)
     local function traverse(ast)
         if not ast.isNode then return nil end
 
@@ -329,31 +331,31 @@ leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.walk
 
     return coroutine.wrap(function() traverse(node) end)
 end"]
-section_63 -> { header_80 prose_81 codeblock_82}
-{rank=same; header_80 prose_81 codeblock_82}
+section_63 -> { header_81 prose_82 codeblock_83}
+{rank=same; header_81 prose_82 codeblock_83}
 
-header_80 [label="4 : N.walk"]
+header_81 [label="4 : N.walk"]
 
-prose_81 [label="prose"]
+prose_82 [label="prose"]
 
-codeblock_82 [label="code block 127-143"]
-
-
-header_80 -> leaf_83
-leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.walk"]
-prose_81 -> { raw_84}
-{rank=same; raw_84}
-
-raw_84 [label="raw"]
+codeblock_83 [label="code block 127-143"]
 
 
-raw_84 -> leaf_85
-leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_81 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.walk"]
+prose_82 -> { raw_85}
+{rank=same; raw_85}
 
-Breadth-first iterator.  This is the default. 
+raw_85 [label="raw"]
+
+
+raw_85 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Presearch iterator.  This is the default. 
 "]
-codeblock_82 -> leaf_86
-leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.walk(node)
+codeblock_83 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.walk(node)
   local function traverse(ast)
     if not ast.isNode then return nil end
 
@@ -368,48 +370,48 @@ leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.walk
   return coroutine.wrap(function() traverse(node) end)
 end
 "]
-section_64 -> { header_87 prose_88 codeblock_89}
-{rank=same; header_87 prose_88 codeblock_89}
+section_64 -> { header_88 prose_89 codeblock_90}
+{rank=same; header_88 prose_89 codeblock_90}
 
-header_87 [label="4 : N.select(node, pred)"]
+header_88 [label="4 : N.select(node, pred)"]
 
-prose_88 [label="prose"]
+prose_89 [label="prose"]
 
-codeblock_89 [label="code block 152-183"]
-
-
-header_87 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.select(node, pred)"]
-prose_88 -> { raw_91 literal_92 raw_93 literal_94 raw_95}
-{rank=same; raw_91 literal_92 raw_93 literal_94 raw_95}
-
-raw_91 [label="raw"]
-
-literal_92 [label="literal"]
-
-raw_93 [label="raw"]
-
-literal_94 [label="literal"]
-
-raw_95 [label="raw"]
+codeblock_90 [label="code block 152-183"]
 
 
-raw_91 -> leaf_96
-leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_88 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.select(node, pred)"]
+prose_89 -> { raw_92 literal_93 raw_94 literal_95 raw_96}
+{rank=same; raw_92 literal_93 raw_94 literal_95 raw_96}
+
+raw_92 [label="raw"]
+
+literal_93 [label="literal"]
+
+raw_94 [label="raw"]
+
+literal_95 [label="literal"]
+
+raw_96 [label="raw"]
+
+
+raw_92 -> leaf_97
+leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   Takes the Node and walks it, yielding the Nodes which match the predicate."]
-literal_92 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pred"]
-raw_93 -> leaf_98
-leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is either a string, which matches to "]
-literal_94 -> leaf_99
-leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
-raw_95 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", or a function, which takes
+literal_93 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pred"]
+raw_94 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is either a string, which matches to "]
+literal_95 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
+raw_96 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", or a function, which takes
 a Node and returns true or false on some premise. 
 "]
-codeblock_89 -> leaf_101
-leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.select(node, pred)
+codeblock_90 -> leaf_102
+leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.select(node, pred)
    local function qualifies(node, pred)
       if type(pred) == 'string' then
          if type(node) == 'table' 
@@ -426,7 +428,7 @@ leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.sel
    end
 
    local function traverse(ast)
-      -- depth first
+      -- breadth first
       if qualifies(ast, pred) then
          coroutine.yield(ast)
       end
@@ -439,31 +441,31 @@ leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.sel
 
    return coroutine.wrap(function() traverse(node) end)
 end"]
-section_65 -> { header_102 prose_103 codeblock_104}
-{rank=same; header_102 prose_103 codeblock_104}
+section_65 -> { header_103 prose_104 codeblock_105}
+{rank=same; header_103 prose_104 codeblock_105}
 
-header_102 [label="4 : N.tokens(node)"]
+header_103 [label="4 : N.tokens(node)"]
 
-prose_103 [label="prose"]
+prose_104 [label="prose"]
 
-codeblock_104 [label="code block 190-202"]
-
-
-header_102 -> leaf_105
-leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.tokens(node)"]
-prose_103 -> { raw_106}
-{rank=same; raw_106}
-
-raw_106 [label="raw"]
+codeblock_105 [label="code block 190-202"]
 
 
-raw_106 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_103 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.tokens(node)"]
+prose_104 -> { raw_107}
+{rank=same; raw_107}
 
-  Iterator returning all 'captured' values as strings.
+raw_107 [label="raw"]
+
+
+raw_107 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  Iterator returning all captured values as strings.
 "]
-codeblock_104 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.tokens(node)
+codeblock_105 -> leaf_109
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.tokens(node)
   local function traverse(ast)
     for node in N.walk(ast) do
       if not node[1] then
@@ -474,99 +476,72 @@ leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.tok
 
   return coroutine.wrap(function() traverse(node) end)
 end  "]
-section_53 -> { header_109 prose_110 prose_111 codeblock_112}
-{rank=same; header_109 prose_110 prose_111 codeblock_112}
+section_66 -> { header_110 prose_111 prose_112 prose_113 codeblock_114}
+{rank=same; header_110 prose_111 prose_112 prose_113 codeblock_114}
 
-header_109 [label="3 : Collectors"]
-
-prose_110 [label="prose"]
+header_110 [label="4 : N.unroll(node)"]
 
 prose_111 [label="prose"]
 
-codeblock_112 [label="code block 212-221"]
+prose_112 [label="prose"]
+
+prose_113 [label="prose"]
+
+codeblock_114 [label="code block 219-226"]
 
 
-header_109 -> leaf_113
-leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Collectors"]
-prose_110 -> { raw_114}
-{rank=same; raw_114}
-
-raw_114 [label="raw"]
-
-
-raw_114 -> leaf_115
-leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-These return an array of all results. 
-"]
-prose_111 -> { raw_116}
-{rank=same; raw_116}
+header_110 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.unroll(node)"]
+prose_111 -> { raw_116 literal_117 raw_118 literal_119 raw_120}
+{rank=same; raw_116 literal_117 raw_118 literal_119 raw_120}
 
 raw_116 [label="raw"]
 
+literal_117 [label="literal"]
 
-raw_116 -> leaf_117
-leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-- [ ] #todo  Add a Forest class to provide the iterator interface for
-             the return arrays of this class.
+raw_118 [label="raw"]
+
+literal_119 [label="literal"]
+
+raw_120 [label="raw"]
+
+
+raw_116 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  This iterator returns all Nodes, in prefix order, while interpolating
+strings.  Specifically: When a Node has a "]
+literal_117 -> leaf_122
+leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
+raw_118 -> leaf_123
+leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" that is less than the"]
+literal_119 -> leaf_124
+leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
+raw_120 -> leaf_125
+leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" if its first child, it makes a slice of the string corresponding to
+that gap, and so on between each child, and once more at the end.
 "]
-codeblock_112 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.gather(node, pred)
-  local gathered = {}
-  for ast in node:select(pred) do
-    gathered[#gathered + 1] = ast
-  end
-  
-  return gathered
-end"]
-section_8 -> { header_119 prose_120 prose_121 prose_122 prose_123 prose_124 section_125 section_126}
-{rank=same; header_119 prose_120 prose_121 prose_122 prose_123 prose_124 section_125 section_126}
+prose_112 -> { raw_126}
+{rank=same; raw_126}
 
-header_119 [label="2 : Node Instances"]
-
-prose_120 [label="prose"]
-
-prose_121 [label="prose"]
-
-prose_122 [label="prose"]
-
-prose_123 [label="prose"]
-
-prose_124 [label="prose"]
-
-section_125 [label="section: 247-269"]
-
-section_126 [label="section: 283-317"]
+raw_126 [label="raw"]
 
 
-header_119 -> leaf_127
-leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Node Instances"]
-prose_120 -> { raw_128}
-{rank=same; raw_128}
+raw_126 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The effect is that any sections of the string which were dropped are now
+interpolated into the unrolled Node.
+"]
+prose_113 -> { raw_128 literal_129 raw_130 literal_131 raw_132 literal_133 raw_134}
+{rank=same; raw_128 literal_129 raw_130 literal_131 raw_132 literal_133 raw_134}
 
 raw_128 [label="raw"]
 
-
-raw_128 -> leaf_129
-leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-  To be a Node, currently, indexed elements of the Array portion must also be 
-Nodes. 
-"]
-prose_121 -> { raw_130}
-{rank=same; raw_130}
+literal_129 [label="literal"]
 
 raw_130 [label="raw"]
 
-
-raw_130 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I'm mostly convinced that indexed elements can also be strings, and that 
-this is the form leaf nodes should take.  Currently, they have a 'val' field
-and no children, which we should replace with a child string at [1].
-"]
-prose_122 -> { raw_132 literal_133 raw_134 literal_135 raw_136}
-{rank=same; raw_132 literal_133 raw_134 literal_135 raw_136}
+literal_131 [label="literal"]
 
 raw_132 [label="raw"]
 
@@ -574,175 +549,174 @@ literal_133 [label="literal"]
 
 raw_134 [label="raw"]
 
-literal_135 [label="literal"]
 
-raw_136 [label="raw"]
-
-
-raw_132 -> leaf_137
-leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This gives us a lighter way to handle the circumstance where we have, say,
-a list, "]
-literal_133 -> leaf_138
-leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(foo bar baz)"]
-raw_134 -> leaf_139
-leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". We currently either need a \"left-per\" or \"pal\"
-Node class to hold the "]
-literal_135 -> leaf_140
-leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="("]
-raw_136 -> leaf_141
-leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", or we would have to skip it entirely.
+raw_128 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The premise is that by calling "]
+literal_129 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label="toValue()"]
+raw_130 -> leaf_137
+leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" or "]
+literal_131 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="span()"]
+raw_132 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" on leaf nodes, and
+grafting these to the interpolated strings in order, you will produce the
+original "]
+literal_133 -> leaf_140
+leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="node.str"]
+raw_134 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
 "]
-prose_123 -> { raw_142}
-{rank=same; raw_142}
+codeblock_114 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.unroll(node)
+  local function traverse(ast)
+  end
 
-raw_142 [label="raw"]
+  return coroutine.wrap(function() traverse(node) end)
+end"]
+section_53 -> { header_143 prose_144 prose_145 codeblock_146}
+{rank=same; header_143 prose_144 prose_145 codeblock_146}
+
+header_143 [label="3 : Collectors"]
+
+prose_144 [label="prose"]
+
+prose_145 [label="prose"]
+
+codeblock_146 [label="code block 236-245"]
 
 
-raw_142 -> leaf_143
-leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Quipu can't lose any information from the string, so they have to include
-whitespace.  We're not limited in the same way and can reconstruct less 
-semantically crucial parts of a document using the span and the original 
-string, since we're not /currently/ editing our strings once they're
-entered in.
+header_143 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Collectors"]
+prose_144 -> { raw_148}
+{rank=same; raw_148}
+
+raw_148 [label="raw"]
+
+
+raw_148 -> leaf_149
+leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+These return an array of all results. 
 "]
-prose_124 -> { raw_144}
-{rank=same; raw_144}
+prose_145 -> { raw_150}
+{rank=same; raw_150}
 
-raw_144 [label="raw"]
+raw_150 [label="raw"]
 
 
-raw_144 -> leaf_145
-leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Nodes are meant to be broadly compatible with everything we intend to
-do with abstract syntax trees.  The more I think about this the better
-it strikes me as an approach. 
-
+raw_150 -> leaf_151
+leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- [ ] #todo  Add a Forest class to provide the iterator interface for
+             the return arrays of this class.
 "]
-section_125 -> { header_146 prose_147 prose_148 prose_149 prose_150 prose_151 section_152}
-{rank=same; header_146 prose_147 prose_148 prose_149 prose_150 prose_151 section_152}
+codeblock_146 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function N.gather(node, pred)
+  local gathered = {}
+  for ast in node:select(pred) do
+    gathered[#gathered + 1] = ast
+  end
+  
+  return gathered
+end"]
+section_8 -> { header_153 prose_154 prose_155 prose_156 prose_157 prose_158 section_159 section_160}
+{rank=same; header_153 prose_154 prose_155 prose_156 prose_157 prose_158 section_159 section_160}
 
-header_146 [label="3 : Fields"]
+header_153 [label="2 : Node Instances"]
 
-prose_147 [label="prose"]
+prose_154 [label="prose"]
 
-prose_148 [label="prose"]
+prose_155 [label="prose"]
 
-prose_149 [label="prose"]
+prose_156 [label="prose"]
 
-prose_150 [label="prose"]
+prose_157 [label="prose"]
 
-prose_151 [label="prose"]
+prose_158 [label="prose"]
 
-section_152 [label="section: 270-282"]
+section_159 [label="section: 271-293"]
 
-
-header_146 -> leaf_153
-leaf_153  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Fields"]
-prose_147 -> { raw_154 literal_155 raw_156 literal_157 raw_158}
-{rank=same; raw_154 literal_155 raw_156 literal_157 raw_158}
-
-raw_154 [label="raw"]
-
-literal_155 [label="literal"]
-
-raw_156 [label="raw"]
-
-literal_157 [label="literal"]
-
-raw_158 [label="raw"]
+section_160 [label="section: 307-341"]
 
 
-raw_154 -> leaf_159
-leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_153 -> leaf_161
+leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Node Instances"]
+prose_154 -> { raw_162}
+{rank=same; raw_162}
 
-  There are invariant fields a Node is also expected to have, they are:
- 
-  - first :  Index into "]
-literal_155 -> leaf_160
-leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-raw_156 -> leaf_161
-leaf_161  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which begins the span.
-  - last  :  Index into "]
-literal_157 -> leaf_162
-leaf_162  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-raw_158 -> leaf_163
-leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which ends the span.
+raw_162 [label="raw"]
+
+
+raw_162 -> leaf_163
+leaf_163  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  To be a Node, currently, indexed elements of the Array portion must also be 
+Nodes. 
 "]
-prose_148 -> { raw_164 literal_165 raw_166}
-{rank=same; raw_164 literal_165 raw_166}
+prose_155 -> { raw_164}
+{rank=same; raw_164}
 
 raw_164 [label="raw"]
 
-literal_165 [label="literal"]
+
+raw_164 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I'm mostly convinced that indexed elements can also be strings, and that 
+this is the form leaf nodes should take.  Currently, they have a 'val' field
+and no children, which we should replace with a child string at [1].
+"]
+prose_156 -> { raw_166 literal_167 raw_168 literal_169 raw_170}
+{rank=same; raw_166 literal_167 raw_168 literal_169 raw_170}
 
 raw_166 [label="raw"]
 
+literal_167 [label="literal"]
 
-raw_164 -> leaf_167
-leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-In principle, we want the Node to be localized. We could include a 
-reference to the whole "]
-literal_165 -> leaf_168
-leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-raw_166 -> leaf_169
-leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and derive substrings lazily.
-"]
-prose_149 -> { raw_170}
-{rank=same; raw_170}
+raw_168 [label="raw"]
+
+literal_169 [label="literal"]
 
 raw_170 [label="raw"]
 
 
-raw_170 -> leaf_171
+raw_166 -> leaf_171
 leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-If we included the full span as a substring on each Node, we'd end up
-with a lot of spans, and wouldn't use most of them. Even slicing a piece
-out is costly if we're not going to use it. 
+This gives us a lighter way to handle the circumstance where we have, say,
+a list, "]
+literal_167 -> leaf_172
+leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(foo bar baz)"]
+raw_168 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". We currently either need a \"left-per\" or \"pal\"
+Node class to hold the "]
+literal_169 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label="("]
+raw_170 -> leaf_175
+leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", or we would have to skip it entirely.
 "]
-prose_150 -> { raw_172}
-{rank=same; raw_172}
+prose_157 -> { raw_176 italic_177 raw_178}
+{rank=same; raw_176 italic_177 raw_178}
 
-raw_172 [label="raw"]
+raw_176 [label="raw"]
+
+italic_177 [label="italic"]
+
+raw_178 [label="raw"]
 
 
-raw_172 -> leaf_173
-leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-So our constructor for a Node class takes (Constructor, node, str) as 
-the standard interface.  If a module needs a non-standard constructor,
-as our Section and Block modules currently take an array of lines, that
-will need to be provided as the second return from the module. 
+raw_176 -> leaf_179
+leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Quipu can't lose any information from the string, so they have to include
+whitespace.  We're not limited in the same way and can reconstruct less 
+semantically crucial parts of a document using the span and the original 
+string, since we're not "]
+italic_177 -> leaf_180
+leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label="currently"]
+raw_178 -> leaf_181
+leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" editing our strings once they're
+entered in.
 "]
-prose_151 -> { raw_174}
-{rank=same; raw_174}
-
-raw_174 [label="raw"]
-
-
-raw_174 -> leaf_175
-leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This will allow for the kind of multi-pass recursive-descent that I'm
-aiming for. 
-
-"]
-section_152 -> { header_176 prose_177 prose_178 prose_179 prose_180}
-{rank=same; header_176 prose_177 prose_178 prose_179 prose_180}
-
-header_176 [label="4 : line tracking (optional)"]
-
-prose_177 [label="prose"]
-
-prose_178 [label="prose"]
-
-prose_179 [label="prose"]
-
-prose_180 [label="prose"]
-
-
-header_176 -> leaf_181
-leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** line tracking (optional)"]
-prose_177 -> { raw_182}
+prose_158 -> { raw_182}
 {rank=same; raw_182}
 
 raw_182 [label="raw"]
@@ -750,193 +724,328 @@ raw_182 [label="raw"]
 
 raw_182 -> leaf_183
 leaf_183  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Nodes are meant to be broadly compatible with everything we intend to
+do with abstract syntax trees.  The more I think about this the better
+it strikes me as an approach. 
+
+"]
+section_159 -> { header_184 prose_185 prose_186 prose_187 prose_188 prose_189 section_190}
+{rank=same; header_184 prose_185 prose_186 prose_187 prose_188 prose_189 section_190}
+
+header_184 [label="3 : Fields"]
+
+prose_185 [label="prose"]
+
+prose_186 [label="prose"]
+
+prose_187 [label="prose"]
+
+prose_188 [label="prose"]
+
+prose_189 [label="prose"]
+
+section_190 [label="section: 294-306"]
+
+
+header_184 -> leaf_191
+leaf_191  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Fields"]
+prose_185 -> { raw_192 literal_193 raw_194 literal_195 raw_196}
+{rank=same; raw_192 literal_193 raw_194 literal_195 raw_196}
+
+raw_192 [label="raw"]
+
+literal_193 [label="literal"]
+
+raw_194 [label="raw"]
+
+literal_195 [label="literal"]
+
+raw_196 [label="raw"]
+
+
+raw_192 -> leaf_197
+leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  There are invariant fields a Node is also expected to have, they are:
+ 
+  - first :  Index into "]
+literal_193 -> leaf_198
+leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+raw_194 -> leaf_199
+leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which begins the span.
+  - last  :  Index into "]
+literal_195 -> leaf_200
+leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+raw_196 -> leaf_201
+leaf_201  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which ends the span.
+"]
+prose_186 -> { raw_202 literal_203 raw_204}
+{rank=same; raw_202 literal_203 raw_204}
+
+raw_202 [label="raw"]
+
+literal_203 [label="literal"]
+
+raw_204 [label="raw"]
+
+
+raw_202 -> leaf_205
+leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+In principle, we want the Node to be localized. We could include a 
+reference to the whole "]
+literal_203 -> leaf_206
+leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+raw_204 -> leaf_207
+leaf_207  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and derive substrings lazily.
+"]
+prose_187 -> { raw_208}
+{rank=same; raw_208}
+
+raw_208 [label="raw"]
+
+
+raw_208 -> leaf_209
+leaf_209  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+If we included the full span as a substring on each Node, we'd end up
+with a lot of spans, and wouldn't use most of them. Even slicing a piece
+out is costly if we're not going to use it. 
+"]
+prose_188 -> { raw_210}
+{rank=same; raw_210}
+
+raw_210 [label="raw"]
+
+
+raw_210 -> leaf_211
+leaf_211  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+So our constructor for a Node class takes (Constructor, node, str) as 
+the standard interface.  If a module needs a non-standard constructor,
+as our Section and Block modules currently take an array of lines, that
+will need to be provided as the second return from the module. 
+"]
+prose_189 -> { raw_212}
+{rank=same; raw_212}
+
+raw_212 [label="raw"]
+
+
+raw_212 -> leaf_213
+leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This will allow for the kind of multi-pass recursive-descent that I'm
+aiming for. 
+
+"]
+section_190 -> { header_214 prose_215 prose_216 prose_217 prose_218}
+{rank=same; header_214 prose_215 prose_216 prose_217 prose_218}
+
+header_214 [label="4 : line tracking (optional)"]
+
+prose_215 [label="prose"]
+
+prose_216 [label="prose"]
+
+prose_217 [label="prose"]
+
+prose_218 [label="prose"]
+
+
+header_214 -> leaf_219
+leaf_219  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** line tracking (optional)"]
+prose_215 -> { raw_220}
+{rank=same; raw_220}
+
+raw_220 [label="raw"]
+
+
+raw_220 -> leaf_221
+leaf_221  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 It may be wise to always track lines, in which case we will include:
 "]
-prose_178 -> { raw_184}
-{rank=same; raw_184}
+prose_216 -> { raw_222}
+{rank=same; raw_222}
 
-raw_184 [label="raw"]
+raw_222 [label="raw"]
 
 
-raw_184 -> leaf_185
-leaf_185  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_222 -> leaf_223
+leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   - line_first :  The line at which the match begins
   - line_last  :  The line at which the match ends
 "]
-prose_179 -> { raw_186}
-{rank=same; raw_186}
+prose_217 -> { raw_224}
+{rank=same; raw_224}
 
-raw_186 [label="raw"]
+raw_224 [label="raw"]
 
 
-raw_186 -> leaf_187
-leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_224 -> leaf_225
+leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 This is, at least, a frequent enough pattern that the metatable should return
 a negative number if these aren't assigned. 
 "]
-prose_180 -> { raw_188}
-{rank=same; raw_188}
+prose_218 -> { raw_226}
+{rank=same; raw_226}
 
-raw_188 [label="raw"]
+raw_226 [label="raw"]
 
 
-raw_188 -> leaf_189
-leaf_189  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_226 -> leaf_227
+leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 - [ ] #todo decide if line tracking is in fact optional
 
 "]
-section_126 -> { header_190 prose_191 prose_192 prose_193 prose_194 prose_195 prose_196 prose_197 prose_198 codeblock_199}
-{rank=same; header_190 prose_191 prose_192 prose_193 prose_194 prose_195 prose_196 prose_197 prose_198 codeblock_199}
+section_160 -> { header_228 prose_229 prose_230 prose_231 prose_232 prose_233 prose_234 prose_235 prose_236 codeblock_237}
+{rank=same; header_228 prose_229 prose_230 prose_231 prose_232 prose_233 prose_234 prose_235 prose_236 codeblock_237}
 
-header_190 [label="3 : Other fields"]
+header_228 [label="3 : Other fields"]
 
-prose_191 [label="prose"]
+prose_229 [label="prose"]
 
-prose_192 [label="prose"]
+prose_230 [label="prose"]
 
-prose_193 [label="prose"]
+prose_231 [label="prose"]
 
-prose_194 [label="prose"]
+prose_232 [label="prose"]
 
-prose_195 [label="prose"]
+prose_233 [label="prose"]
 
-prose_196 [label="prose"]
+prose_234 [label="prose"]
 
-prose_197 [label="prose"]
+prose_235 [label="prose"]
 
-prose_198 [label="prose"]
+prose_236 [label="prose"]
 
-codeblock_199 [label="code block 312-314"]
-
-
-header_190 -> leaf_200
-leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Other fields"]
-prose_191 -> { raw_201 literal_202 raw_203}
-{rank=same; raw_201 literal_202 raw_203}
-
-raw_201 [label="raw"]
-
-literal_202 [label="literal"]
-
-raw_203 [label="raw"]
+codeblock_237 [label="code block 336-338"]
 
 
-raw_201 -> leaf_204
-leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_228 -> leaf_238
+leaf_238  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Other fields"]
+prose_229 -> { raw_239 literal_240 raw_241}
+{rank=same; raw_239 literal_240 raw_241}
+
+raw_239 [label="raw"]
+
+literal_240 [label="literal"]
+
+raw_241 [label="raw"]
+
+
+raw_239 -> leaf_242
+leaf_242  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   The way the Grammar class will work: each "]
-literal_202 -> leaf_205
-leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="V\"patt\""]
-raw_203 -> leaf_206
-leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" can have a metatable.
+literal_240 -> leaf_243
+leaf_243  [color=Gray,shape=rectangle,fontname=Inconsolata,label="V\"patt\""]
+raw_241 -> leaf_244
+leaf_244  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" can have a metatable.
 These are passed in as the second parameter during construction, with the key
 the same name as the rule. 
 "]
-prose_192 -> { raw_207}
-{rank=same; raw_207}
+prose_230 -> { raw_245}
+{rank=same; raw_245}
 
-raw_207 [label="raw"]
+raw_245 [label="raw"]
 
 
-raw_207 -> leaf_208
-leaf_208  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_245 -> leaf_246
+leaf_246  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 If a pattern doesn't have a metatable, it's given a Node class and consists of
 only the above fields, plus an array representing any subrules. 
 "]
-prose_193 -> { raw_209 literal_210 raw_211}
-{rank=same; raw_209 literal_210 raw_211}
+prose_231 -> { raw_247 literal_248 raw_249}
+{rank=same; raw_247 literal_248 raw_249}
 
-raw_209 [label="raw"]
+raw_247 [label="raw"]
 
-literal_210 [label="literal"]
+literal_248 [label="literal"]
 
-raw_211 [label="raw"]
+raw_249 [label="raw"]
 
 
-raw_209 -> leaf_212
-leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_247 -> leaf_250
+leaf_250  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 If it does, the metatable will have a "]
-literal_210 -> leaf_213
-leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__call"]
-raw_211 -> leaf_214
-leaf_214  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" method, which expects two
+literal_248 -> leaf_251
+leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__call"]
+raw_249 -> leaf_252
+leaf_252  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" method, which expects two
 parameters, itself, and the node, which will include the span. 
 "]
-prose_194 -> { raw_215 literal_216 raw_217}
-{rank=same; raw_215 literal_216 raw_217}
+prose_232 -> { raw_253 literal_254 raw_255}
+{rank=same; raw_253 literal_254 raw_255}
 
-raw_215 [label="raw"]
+raw_253 [label="raw"]
 
-literal_216 [label="literal"]
+literal_254 [label="literal"]
 
-raw_217 [label="raw"]
+raw_255 [label="raw"]
 
 
-raw_215 -> leaf_218
-leaf_218  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_253 -> leaf_256
+leaf_256  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 This will require reattunement of basically every class in the "]
-literal_216 -> leaf_219
-leaf_219  [color=Gray,shape=rectangle,fontname=Inconsolata,label="/grym"]
-raw_217 -> leaf_220
-leaf_220  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" folder,
+literal_254 -> leaf_257
+leaf_257  [color=Gray,shape=rectangle,fontname=Inconsolata,label="/grym"]
+raw_255 -> leaf_258
+leaf_258  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" folder,
 but let's build the Prose parse first.  I do want the whole shebang in a single
 grammar eventually.
 "]
-prose_195 -> { raw_221}
-{rank=same; raw_221}
+prose_233 -> { raw_259}
+{rank=same; raw_259}
 
-raw_221 [label="raw"]
+raw_259 [label="raw"]
 
 
-raw_221 -> leaf_222
-leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_259 -> leaf_260
+leaf_260  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The intention is to allow multiple grammars to coexist peacefully. Currently
 the parser is handrolled and we have special case values for everything.
 The idea is to stabilize this, so that multi-pass parsing works but in a
 standard way where the Node constructor is a consistent interface. 
 "]
-prose_196 -> { raw_223}
-{rank=same; raw_223}
+prose_234 -> { raw_261}
+{rank=same; raw_261}
 
-raw_223 [label="raw"]
+raw_261 [label="raw"]
 
 
-raw_223 -> leaf_224
-leaf_224  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_261 -> leaf_262
+leaf_262  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 In the meantime we have things like
 "]
-prose_197 -> { raw_225 literal_226 raw_227}
-{rank=same; raw_225 literal_226 raw_227}
+prose_235 -> { raw_263 literal_264 raw_265}
+{rank=same; raw_263 literal_264 raw_265}
 
-raw_225 [label="raw"]
+raw_263 [label="raw"]
 
-literal_226 [label="literal"]
+literal_264 [label="literal"]
 
-raw_227 [label="raw"]
+raw_265 [label="raw"]
 
 
-raw_225 -> leaf_228
-leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_263 -> leaf_266
+leaf_266  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 - lines :  If this exists, there's a collection of lines which need to be
            joined with "]
-literal_226 -> leaf_229
-leaf_229  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\n"]
-raw_227 -> leaf_230
-leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to reconstruct the actual span.
+literal_264 -> leaf_267
+leaf_267  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\n"]
+raw_265 -> leaf_268
+leaf_268  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to reconstruct the actual span.
 "]
-prose_198 -> { raw_231}
-{rank=same; raw_231}
+prose_236 -> { raw_269}
+{rank=same; raw_269}
 
-raw_231 [label="raw"]
+raw_269 [label="raw"]
 
 
-raw_231 -> leaf_232
-leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_269 -> leaf_270
+leaf_270  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
            We want to do this the other way, and use the span itself for the
            inner parse. 
 "]
-codeblock_199 -> leaf_233
-leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return N"]
+codeblock_237 -> leaf_271
+leaf_271  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return N"]
 
 }

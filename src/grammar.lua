@@ -70,10 +70,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 local L = require "lpeg"
 
-local s = require "status" 
+local s = require "status" ()
+s.verbose = true
+
 local Node = require "node/node"
+local elpatt = require "node/elpatt"
+
+local DROP = elpatt.DROP
 
 
 
@@ -115,9 +130,18 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       end
       assert(t.id == id)
    else
-    t.id = id
-    setmetatable(t, {__index = Node,
+      t.id = id
+       setmetatable(t, {__index = Node,
                      __tostring = Node.toString})
+   end
+   for _,v in ipairs(t) do
+      if type(v) ~= "table" then
+         s:complain("CAPTURE ISSUE", 
+                    "type of capture subgroup is " .. type(v) .. "\n")
+      end
+      if v == DROP then
+        s:verb("-- child v of t is DROP")
+      end
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
@@ -184,18 +208,18 @@ end
 
 
 local function refineMetas(metas)
-  io.write("refining metatables\n")
+  s:verb("refining metatables")
   for id, meta in pairs(metas) do
-    io.write("  id: " .. id .. " type: " .. type(meta) .. "\n")
+    s:verb("  id: " .. id .. " type: " .. type(meta))
     if type(meta) == "table" then
       if not meta["__tostring"] then
         meta["__tostring"] = Node.toString
       end
       if not meta.id then
-        io.write("    inserting metatable id: " .. id .. "\n")
+        s:verb("    inserting metatable id: " .. id)
         meta.id = id
       else
-        io.write("    id of " .. id .. " is " .. meta.id .. "\n")
+        s:verb("    id of " .. id .. " is " .. meta.id)
       end
     end
   end

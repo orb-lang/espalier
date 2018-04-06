@@ -13,7 +13,7 @@ local dot = require "node/dot"
 
   The Node metatable is the root table for any Node.  I'm planning to make
 an intermediate class/table called Root that is in common for any instance
-Node.  All Root absolutely has to contain is `str`. 
+Node.  All Root absolutely has to contain is `````str`````. 
 
 ```lua
 
@@ -95,12 +95,12 @@ function N.toValue(node)
 end
 
 ```
-#### N.walkDeep
+#### N.walkPost
 
-Depth-first iterator. 
+Depth-first iterator, postfix 
 
 ```lua
-function N.walkDeep(node)
+function N.walkPost(node)
     local function traverse(ast)
         if not ast.isNode then return nil end
 
@@ -117,7 +117,7 @@ end
 ```
 #### N.walk
 
-Breadth-first iterator.  This is the default. 
+Presearch iterator.  This is the default. 
 
 ```lua
 function N.walk(node)
@@ -139,7 +139,7 @@ end
 #### N.select(node, pred)
 
   Takes the Node and walks it, yielding the Nodes which match the predicate.
-`pred` is either a string, which matches to `id`, or a function, which takes
+`````pred````` is either a string, which matches to `````id`````, or a function, which takes
 a Node and returns true or false on some premise. 
 
 ```lua
@@ -160,7 +160,7 @@ function N.select(node, pred)
    end
 
    local function traverse(ast)
-      -- depth first
+      -- breadth first
       if qualifies(ast, pred) then
          coroutine.yield(ast)
       end
@@ -176,7 +176,7 @@ end
 ```
 #### N.tokens(node)
 
-  Iterator returning all 'captured' values as strings.
+  Iterator returning all captured values as strings.
 
 ```lua
 function N.tokens(node)
@@ -190,6 +190,30 @@ function N.tokens(node)
 
   return coroutine.wrap(function() traverse(node) end)
 end  
+```
+#### N.unroll(node)
+
+  This iterator returns all Nodes, in prefix order, while interpolating
+strings.  Specifically: When a Node has a `````first````` that is less than the
+`````first````` if its first child, it makes a slice of the string corresponding to
+that gap, and so on between each child, and once more at the end.
+
+
+The effect is that any sections of the string which were dropped are now
+interpolated into the unrolled Node.
+
+
+The premise is that by calling `````toValue()````` or `````span()````` on leaf nodes, and
+grafting these to the interpolated strings in order, you will produce the
+original `````node.str`````. 
+
+```lua
+function N.unroll(node)
+  local function traverse(ast)
+  end
+
+  return coroutine.wrap(function() traverse(node) end)
+end
 ```
 ### Collectors
 
@@ -221,14 +245,14 @@ and no children, which we should replace with a child string at [1].
 
 
 This gives us a lighter way to handle the circumstance where we have, say,
-a list, `(foo bar baz)`. We currently either need a "left-per" or "pal"
-Node class to hold the `(`, or we would have to skip it entirely.
+a list, `````(foo bar baz)`````. We currently either need a "left-per" or "pal"
+Node class to hold the `````(`````, or we would have to skip it entirely.
 
 
 Quipu can't lose any information from the string, so they have to include
 whitespace.  We're not limited in the same way and can reconstruct less 
 semantically crucial parts of a document using the span and the original 
-string, since we're not /currently/ editing our strings once they're
+string, since we're not _currently_ editing our strings once they're
 entered in.
 
 
@@ -241,12 +265,12 @@ it strikes me as an approach.
 
   There are invariant fields a Node is also expected to have, they are:
  
-  - first :  Index into `str` which begins the span.
-  - last  :  Index into `str` which ends the span.
+  - first :  Index into `````str````` which begins the span.
+  - last  :  Index into `````str````` which ends the span.
 
 
 In principle, we want the Node to be localized. We could include a 
-reference to the whole `str` and derive substrings lazily.
+reference to the whole `````str````` and derive substrings lazily.
 
 
 If we included the full span as a substring on each Node, we'd end up
@@ -282,7 +306,7 @@ a negative number if these aren't assigned.
 
 ### Other fields
 
-  The way the Grammar class will work: each `V"patt"` can have a metatable.
+  The way the Grammar class will work: each `````V"patt"````` can have a metatable.
 These are passed in as the second parameter during construction, with the key
 the same name as the rule. 
 
@@ -291,11 +315,11 @@ If a pattern doesn't have a metatable, it's given a Node class and consists of
 only the above fields, plus an array representing any subrules. 
 
 
-If it does, the metatable will have a `__call` method, which expects two
+If it does, the metatable will have a `````__call````` method, which expects two
 parameters, itself, and the node, which will include the span. 
 
 
-This will require reattunement of basically every class in the `/grym` folder,
+This will require reattunement of basically every class in the `````/grym````` folder,
 but let's build the Prose parse first.  I do want the whole shebang in a single
 grammar eventually.
 
@@ -310,7 +334,7 @@ In the meantime we have things like
 
 
 - lines :  If this exists, there's a collection of lines which need to be
-           joined with `\n` to reconstruct the actual span.
+           joined with `````\n````` to reconstruct the actual span.
 
 
            We want to do this the other way, and use the span itself for the

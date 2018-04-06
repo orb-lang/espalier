@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 85"]
+doc_0 [label="doc - 92"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-40"]
+section_1 [label="section: 1-53"]
 
 
 section_1 -> { header_2 prose_3 prose_4 codeblock_5 section_6 section_7}
@@ -21,11 +21,11 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-codeblock_5 [label="code block 10-14"]
+codeblock_5 [label="code block 10-16"]
 
-section_6 [label="section: 16-40"]
+section_6 [label="section: 18-26"]
 
-section_7 [label="section: 41-85"]
+section_7 [label="section: 54-92"]
 
 
 header_2 -> leaf_8
@@ -63,13 +63,15 @@ The difference here is that we include lpeg as a metatable __index
 and can therefore use elpeg as L everywhere we currently use lpeg.
 "]
 codeblock_5 -> leaf_17
-leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local lpeg = require \"lpeg\"
-local epeg = setmetatable({}, {__index = lpeg})
-"]
-section_6 -> { header_18 prose_19 prose_20 prose_21 codeblock_22}
-{rank=same; header_18 prose_19 prose_20 prose_21 codeblock_22}
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
+local elpatt = {}
 
-header_18 [label="2 : Ppt -- Codepoint pattern"]
+local Cc = L.Cc
+"]
+section_6 -> { header_18 prose_19 prose_20 prose_21 section_22}
+{rank=same; header_18 prose_19 prose_20 prose_21 section_22}
+
+header_18 [label="2 : Ppt : Codepoint pattern"]
 
 prose_19 [label="prose"]
 
@@ -77,11 +79,11 @@ prose_20 [label="prose"]
 
 prose_21 [label="prose"]
 
-codeblock_22 [label="code block 24-38"]
+section_22 [label="section: 27-53"]
 
 
 header_18 -> leaf_23
-leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Ppt -- Codepoint pattern"]
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Ppt : Codepoint pattern"]
 prose_19 -> { raw_24}
 {rank=same; raw_24}
 
@@ -120,69 +122,205 @@ literal_29 -> leaf_32
 leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\97"]
 raw_30 -> leaf_33
 leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" in Lua. That's easy enough.
-"]
-codeblock_22 -> leaf_34
-leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function num_bytes(str)
---returns the number of bytes in the next character in str
-   local c = str:byte(1)
-   if c >= 0x00 and c <= 0x7F then
-      return 1
-   elseif c >= 0xC2 and c <= 0xDF then
-      return 2
-   elseif c >= 0xE0 and c <= 0xEF then
-      return 3
-   elseif c >= 0xF0 and c <= 0xF4 then
-      return 4
-   end
-end"]
-section_7 -> { header_35 prose_36 codeblock_37 codeblock_38}
-{rank=same; header_35 prose_36 codeblock_37 codeblock_38}
 
-header_35 [label="2 : Csp -- Capture span"]
+"]
+section_22 -> { header_34 prose_35 prose_36 codeblock_37}
+{rank=same; header_34 prose_35 prose_36 codeblock_37}
+
+header_34 [label="3 : num_bytes(str)"]
+
+prose_35 [label="prose"]
 
 prose_36 [label="prose"]
 
-codeblock_37 [label="code block 46-67"]
-
-codeblock_38 [label="code block 83-85"]
+codeblock_37 [label="code block 35-51"]
 
 
-header_35 -> leaf_39
-leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Csp -- Capture span"]
-prose_36 -> { raw_40}
-{rank=same; raw_40}
+header_34 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** num_bytes(str)"]
+prose_35 -> { raw_39}
+{rank=same; raw_39}
 
-raw_40 [label="raw"]
+raw_39 [label="raw"]
 
 
-raw_40 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_39 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-This is the old-school capture that plays into making named Nodes using
-epnf.
+Captures the number of bytes in the next codepoint of a string.
 "]
-codeblock_37 -> leaf_42
-leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function spanner(first, last, str, root)
-   local vals = {}
-   vals.span = true
-   vals.val = string.sub(str, first, last - 1)
-   vals.first = first
-   vals.last = last - 1
-   if vals.last >= vals.first then
-      return vals
-   end
-   -- If a capture contains nothing, we don't want a node for it
-   return nil
-end
+prose_36 -> { raw_41 literal_42 raw_43}
+{rank=same; raw_41 literal_42 raw_43}
 
-function epeg.Csp (patt)
-   return lpeg.Cp() 
-      * lpeg.Cmt(patt, function() return true end) 
-      * lpeg.Cp() 
-      * lpeg.Carg(1) 
-      * lpeg.Carg(2) / spanner
+raw_41 [label="raw"]
+
+literal_42 [label="literal"]
+
+raw_43 [label="raw"]
+
+
+raw_41 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The string must be well-formed utf-8, more precisely, a malformed
+string will return "]
+literal_42 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nil"]
+raw_43 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  A zero byte is correctly allowed by the
+standard and will match here. 
+"]
+codeblock_37 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function num_bytes(str)
+--returns the number of bytes in the next character in str
+   local c = str:byte(1)
+   if type(c) == 'number' then
+      if c >= 0x00 and c <= 0x7F then
+         return 1
+      elseif c >= 0xC2 and c <= 0xDF then
+         return 2
+      elseif c >= 0xE0 and c <= 0xEF then
+         return 3
+      elseif c >= 0xF0 and c <= 0xF4 then
+         return 4
+      end
+   end
 end"]
-codeblock_38 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return epeg"]
+section_7 -> { header_48 prose_49 prose_50 prose_51 prose_52 prose_53 prose_54 codeblock_55 codeblock_56}
+{rank=same; header_48 prose_49 prose_50 prose_51 prose_52 prose_53 prose_54 codeblock_55 codeblock_56}
+
+header_48 [label="2 : D : Drop a capture"]
+
+prose_49 [label="prose"]
+
+prose_50 [label="prose"]
+
+prose_51 [label="prose"]
+
+prose_52 [label="prose"]
+
+prose_53 [label="prose"]
+
+prose_54 [label="prose"]
+
+codeblock_55 [label="code block 77-87"]
+
+codeblock_56 [label="code block 90-92"]
+
+
+header_48 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** D : Drop a capture"]
+prose_49 -> { raw_58 literal_59 raw_60}
+{rank=same; raw_58 literal_59 raw_60}
+
+raw_58 [label="raw"]
+
+literal_59 [label="literal"]
+
+raw_60 [label="raw"]
+
+
+raw_58 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  We discourage the use of captures in the Node class.  The architecture
+requires that all array values of a Node table be themselves Nodes. This is
+frequently checked for, in that we use "]
+literal_59 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="isNode"]
+raw_60 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to filter in iterators etc,
+but this is defensive. 
+"]
+prose_50 -> { raw_64}
+{rank=same; raw_64}
+
+raw_64 [label="raw"]
+
+
+raw_64 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The use of SUPPRESS lets us drop rules that we don't want to see in the
+final AST.  A normal approach to parsing has explicit captures, but this is
+inelegant compared to treating any Node without children as a leaf.
+"]
+prose_51 -> { raw_66 literal_67 raw_68}
+{rank=same; raw_66 literal_67 raw_68}
+
+raw_66 [label="raw"]
+
+literal_67 [label="literal"]
+
+raw_68 [label="raw"]
+
+
+raw_66 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+What about regions of text that don't interest us?  Canonically this
+includes whitespace.  For those occasions, we have "]
+literal_67 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt.D"]
+raw_68 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
+"]
+prose_52 -> { raw_72 literal_73 raw_74 literal_75 raw_76}
+{rank=same; raw_72 literal_73 raw_74 literal_75 raw_76}
+
+raw_72 [label="raw"]
+
+literal_73 [label="literal"]
+
+raw_74 [label="raw"]
+
+literal_75 [label="literal"]
+
+raw_76 [label="raw"]
+
+
+raw_72 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+literal_73 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D"]
+raw_74 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" needs to take a pattern, and if it succeeds in matching it, return a
+special table, while discarding the captures if any. In "]
+literal_75 -> leaf_80
+leaf_80  [color=Gray,shape=rectangle,fontname=Inconsolata,label="define"]
+raw_76 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we will
+check for this table, and drop it whenever encountered.
+
+"]
+prose_53 -> { raw_82}
+{rank=same; raw_82}
+
+raw_82 [label="raw"]
+
+
+raw_82 -> leaf_83
+leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - patt :  The pattern to match and drop
+"]
+prose_54 -> { raw_84}
+{rank=same; raw_84}
+
+raw_84 [label="raw"]
+
+
+raw_84 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - #return : Special table DROP
+"]
+codeblock_55 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+local DROP = {}
+
+elpatt.DROP = DROP
+
+function elpatt.D(patt)
+   return (patt / 0) * Cc(DROP)
+end
+"]
+codeblock_56 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return elpatt"]
 
 }

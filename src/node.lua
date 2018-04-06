@@ -104,7 +104,7 @@ end
 
 
 
-function N.walkDeep(node)
+function N.walkPost(node)
     local function traverse(ast)
         if not ast.isNode then return nil end
 
@@ -167,7 +167,7 @@ function N.select(node, pred)
    end
 
    local function traverse(ast)
-      -- depth first
+      -- breadth first
       if qualifies(ast, pred) then
          coroutine.yield(ast)
       end
@@ -199,6 +199,30 @@ function N.tokens(node)
 
   return coroutine.wrap(function() traverse(node) end)
 end  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function N.unroll(node)
+  local function traverse(ast)
+  end
+
+  return coroutine.wrap(function() traverse(node) end)
+end
 
 
 

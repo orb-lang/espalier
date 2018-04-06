@@ -8,7 +8,7 @@ a grammar.
 This function takes two parameters, namely:
 
 
-  - grammar_template :  A function with one parameter, which must be `_ENV`.
+  - grammar_template :  A function with one parameter, which must be `````_ENV`````.
   - metas :  A map with keys of string and values of Node subclass constructors.
 
 
@@ -18,7 +18,7 @@ Both of these are reasonably complex.
 ### grammar_template
 
   The internal function @define creates a custom environment variable, neatly
-sidestepping lua's pedantic insistance on prepending `local` to all values of 
+sidestepping lua's pedantic insistance on prepending `````local````` to all values of 
 significance. 
 
 
@@ -26,7 +26,7 @@ More relevantly, it constructs a full grammar, which will return a table of
 type Node. 
 
 
-If you stick to `lpeg` patterns, as you should, all array values will be of
+If you stick to `````lpeg````` patterns, as you should, all array values will be of
 Node, as is intended.  Captures will interpolate various other sorts of Lua
 values, which will induce halting in some places and silently corrupt
 execution in others. 
@@ -57,13 +57,13 @@ Special fields include:
 you must pass in a table of metatable constructors.
 
 
-That's a fairly specific beast.  Any rule defined above will have an `id`
-corresonding to the name of the rule.  Unless `SUPPRESS`ed, this will become
-a Node.  If the `metas` parameter has a key corresponding to `id`, then it
+That's a fairly specific beast.  Any rule defined above will have an `````id`````
+corresonding to the name of the rule.  Unless `````SUPPRESS`````ed, this will become
+a Node.  If the `````metas````` parameter has a key corresponding to `````id`````, then it
 must return a function taking two parameters:
    
    - node :  The node under construction, which under normal circumstances will
-             already have the `first` and `last` fields.
+             already have the `````first````` and `````last````` fields.
    - str  :  The entire str the grammar is parsing.
 
 
@@ -71,22 +71,42 @@ Which must return that same node, decorated in whatever fashion is appropriate.
 
 
 The node will not have a metatable at this point, and the function must attach a
-metatable with `__index` equal to some table which itself has the `__index`
+metatable with `````__index````` equal to some table which itself has the `````__index`````
 Node as some recursive backstop.
 
 
-You might say the return value must /inherit/ from Node, if we were using
+You might say the return value must _inherit_ from Node, if we were using
 a language that did that sort of thing. 
 
 
 ### includes
 
+
+- [ ] #todo  Note the require strings below, which prevent this from
+             being a usable library. 
+
+
+             The problem is almost a philosophical one, and it's what I'm
+             setting out to solve with `````bridge````` and `````manifest`````. 
+
+
+             In the meantime, `````lpegnode````` has one consumer. Let's keep it
+             happy. 
+
 ```lua
 local L = require "lpeg"
 
-local s = require "status" 
+local s = require "status" ()
+s.verbose = true
+
 local Node = require "node/node"
+local elpatt = require "node/elpatt"
+
+local DROP = elpatt.DROP
 ```
+
+I like the dedication shown in this style of import.
+
 
 It's the kind of thing I'd like to automate. 
 
@@ -123,9 +143,18 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       end
       assert(t.id == id)
    else
-    t.id = id
-    setmetatable(t, {__index = Node,
+      t.id = id
+       setmetatable(t, {__index = Node,
                      __tostring = Node.toString})
+   end
+   for _,v in ipairs(t) do
+      if type(v) ~= "table" then
+         s:complain("CAPTURE ISSUE", 
+                    "type of capture subgroup is " .. type(v) .. "\n")
+      end
+      if v == DROP then
+        s:verb("-- child v of t is DROP")
+      end
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
@@ -191,18 +220,18 @@ end
 ```
 ```lua
 local function refineMetas(metas)
-  io.write("refining metatables\n")
+  s:verb("refining metatables")
   for id, meta in pairs(metas) do
-    io.write("  id: " .. id .. " type: " .. type(meta) .. "\n")
+    s:verb("  id: " .. id .. " type: " .. type(meta))
     if type(meta) == "table" then
       if not meta["__tostring"] then
         meta["__tostring"] = Node.toString
       end
       if not meta.id then
-        io.write("    inserting metatable id: " .. id .. "\n")
+        s:verb("    inserting metatable id: " .. id)
         meta.id = id
       else
-        io.write("    id of " .. id .. " is " .. meta.id .. "\n")
+        s:verb("    id of " .. id .. " is " .. meta.id)
       end
     end
   end

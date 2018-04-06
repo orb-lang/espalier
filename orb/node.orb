@@ -99,12 +99,12 @@ end
 
 #/lua
 
-**** N.walkDeep
+**** N.walkPost
 
-Depth-first iterator. 
+Depth-first iterator, postfix 
 
 #!lua
-function N.walkDeep(node)
+function N.walkPost(node)
     local function traverse(ast)
         if not ast.isNode then return nil end
 
@@ -122,7 +122,7 @@ end
 
 **** N.walk
 
-Breadth-first iterator.  This is the default. 
+Presearch iterator.  This is the default. 
 
 #!lua
 function N.walk(node)
@@ -167,7 +167,7 @@ function N.select(node, pred)
    end
 
    local function traverse(ast)
-      -- depth first
+      -- breadth first
       if qualifies(ast, pred) then
          coroutine.yield(ast)
       end
@@ -185,7 +185,7 @@ end
 
 **** N.tokens(node)
 
-  Iterator returning all 'captured' values as strings.
+  Iterator returning all captured values as strings.
 
 #!lua
 function N.tokens(node)
@@ -199,7 +199,31 @@ function N.tokens(node)
 
   return coroutine.wrap(function() traverse(node) end)
 end  
-#/lua  
+#/lua 
+
+
+**** N.unroll(node)
+
+  This iterator returns all Nodes, in prefix order, while interpolating
+strings.  Specifically: When a Node has a =first= that is less than the
+=first= if its first child, it makes a slice of the string corresponding to
+that gap, and so on between each child, and once more at the end.
+
+The effect is that any sections of the string which were dropped are now
+interpolated into the unrolled Node.
+
+The premise is that by calling =toValue()= or =span()= on leaf nodes, and
+grafting these to the interpolated strings in order, you will produce the
+original =node.str=. 
+
+#!lua
+function N.unroll(node)
+  local function traverse(ast)
+  end
+
+  return coroutine.wrap(function() traverse(node) end)
+end
+#/lua
 
 
 *** Collectors
