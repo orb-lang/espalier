@@ -83,7 +83,7 @@
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = false
+s.verbose = true
 s.angry   = false
 
 local a = require "ansi"
@@ -208,7 +208,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
          s:complain("CAPTURE ISSUE", 
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
-      if cap.DROP  then
+      if cap.DROP and getmetatable(cap) == DROP then
          if i == #t then
             s:verb(a.red("rightmost") .. " remaining node")
             s:verb("  t.$: " .. tostring(t.last) .. " Δ: "
@@ -231,7 +231,8 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
             else
                leftmost = true -- provisionally since cap.DROP
                for j = i, 1, -1 do
-                 leftmost = leftmost and t[j].DROP
+                 leftmost = leftmost and t[j].DROP 
+                                     and getmetatable(t[j]) == DROP
                  if not leftmost then break end
                end
                if leftmost then

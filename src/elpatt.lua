@@ -79,15 +79,14 @@ end
 
 
 
-local DROP = { DROP = true }
+local DROP = {}
 
 elpatt.DROP = DROP
 
 local function make_drop(caps)
-   local dropped = setmetatable({}, {__index = DROP})
-   s:verb("dropped: first: " .. tostring(caps[1]) 
-          .. " last: " .. tostring(caps[3])
-          .. " middle: " .. tostring(caps[2]))
+   io.write("making drop\n")
+   local dropped = setmetatable({}, DROP)
+   dropped.DROP = true
    dropped.first = caps[1]
    dropped.last = caps[3]
    return dropped
@@ -102,7 +101,17 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function elpatt.S(a, ...)
+   if not a then return nil end
    local arg = {...}
    local set = P(a)
    for _, patt in ipairs(arg) do
@@ -110,7 +119,6 @@ function elpatt.S(a, ...)
    end
    return set
 end
-
 
 
 

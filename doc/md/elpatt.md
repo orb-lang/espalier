@@ -85,15 +85,14 @@ check for this table, and drop it whenever encountered.
 
 ```lua
 
-local DROP = { DROP = true }
+local DROP = {}
 
 elpatt.DROP = DROP
 
 local function make_drop(caps)
-   local dropped = setmetatable({}, {__index = DROP})
-   s:verb("dropped: first: " .. tostring(caps[1]) 
-          .. " last: " .. tostring(caps[3])
-          .. " middle: " .. tostring(caps[2]))
+   io.write("making drop\n")
+   local dropped = setmetatable({}, DROP)
+   dropped.DROP = true
    dropped.first = caps[1]
    dropped.last = caps[3]
    return dropped
@@ -106,8 +105,19 @@ end
 ```
 ### S : Capture set
 
+  Uses ordered choice to create a pattern which will match any provided
+pattern. 
+
+
+This will patternize anything you feed it, which is convenient for strings.
+
+
+Despite being called "Set", it makes no attempt at uniqueness and will
+match against patterns in the order provided. 
+
 ```lua
 function elpatt.S(a, ...)
+   if not a then return nil end
    local arg = {...}
    local set = P(a)
    for _, patt in ipairs(arg) do
@@ -115,7 +125,6 @@ function elpatt.S(a, ...)
    end
    return set
 end
-
 ```
 ```lua
 return elpatt

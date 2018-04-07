@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 363"]
+doc_0 [label="doc - 364"]
 
 
 doc_0 -> { section_1}
@@ -496,7 +496,7 @@ codeblock_129 -> leaf_152
 leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
 
 local s = require \"status\" ()
-s.verbose = false
+s.verbose = true
 s.angry   = false
 
 local a = require \"ansi\"
@@ -551,7 +551,7 @@ codeblock_160 [label="code block 124-126"]
 
 section_161 [label="section: 129-159"]
 
-section_162 [label="section: 160-363"]
+section_162 [label="section: 160-364"]
 
 
 header_158 -> leaf_163
@@ -698,13 +698,13 @@ prose_207 [label="prose"]
 
 prose_208 [label="prose"]
 
-codeblock_209 [label="code block 204-318"]
+codeblock_209 [label="code block 204-319"]
 
-codeblock_210 [label="code block 320-339"]
+codeblock_210 [label="code block 321-340"]
 
-codeblock_211 [label="code block 342-359"]
+codeblock_211 [label="code block 343-360"]
 
-codeblock_212 [label="code block 361-363"]
+codeblock_212 [label="code block 362-364"]
 
 
 header_196 -> leaf_213
@@ -928,7 +928,7 @@ leaf_274  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t,
          s:complain(\"CAPTURE ISSUE\", 
                     \"type of capture subgroup is \" .. type(v) .. \"\\n\")
       end
-      if cap.DROP  then
+      if cap.DROP and getmetatable(cap) == DROP then
          if i == #t then
             s:verb(a.red(\"rightmost\") .. \" remaining node\")
             s:verb(\"  t.$: \" .. tostring(t.last) .. \" Δ: \"
@@ -951,7 +951,8 @@ leaf_274  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t,
             else
                leftmost = true -- provisionally since cap.DROP
                for j = i, 1, -1 do
-                 leftmost = leftmost and t[j].DROP
+                 leftmost = leftmost and t[j].DROP 
+                                     and getmetatable(t[j]) == DROP
                  if not leftmost then break end
                end
                if leftmost then

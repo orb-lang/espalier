@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 118"]
+doc_0 [label="doc - 126"]
 
 
 doc_0 -> { section_1}
@@ -205,9 +205,9 @@ prose_53 [label="prose"]
 
 prose_54 [label="prose"]
 
-codeblock_55 [label="code block 80-100"]
+codeblock_55 [label="code block 80-99"]
 
-section_56 [label="section: 102-118"]
+section_56 [label="section: 102-126"]
 
 
 header_48 -> leaf_57
@@ -315,15 +315,14 @@ leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
 codeblock_55 -> leaf_86
 leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-local DROP = { DROP = true }
+local DROP = {}
 
 elpatt.DROP = DROP
 
 local function make_drop(caps)
-   local dropped = setmetatable({}, {__index = DROP})
-   s:verb(\"dropped: first: \" .. tostring(caps[1]) 
-          .. \" last: \" .. tostring(caps[3])
-          .. \" middle: \" .. tostring(caps[2]))
+   io.write(\"making drop\\n\")
+   local dropped = setmetatable({}, DROP)
+   dropped.DROP = true
    dropped.first = caps[1]
    dropped.last = caps[3]
    return dropped
@@ -333,40 +332,68 @@ function elpatt.D(patt)
    return Ct(Cp() * Ct(patt) * Cp()) / make_drop
 end
 "]
-section_56 -> { header_87 prose_88 codeblock_89 codeblock_90}
-{rank=same; header_87 prose_88 codeblock_89 codeblock_90}
+section_56 -> { header_87 prose_88 prose_89 prose_90 codeblock_91 codeblock_92}
+{rank=same; header_87 prose_88 prose_89 prose_90 codeblock_91 codeblock_92}
 
 header_87 [label="3 : S : Capture set"]
 
 prose_88 [label="prose"]
 
-codeblock_89 [label="code block 104-114"]
+prose_89 [label="prose"]
 
-codeblock_90 [label="code block 116-118"]
+prose_90 [label="prose"]
 
+codeblock_91 [label="code block 112-122"]
 
-header_87 -> leaf_91
-leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** S : Capture set"]
-prose_88 -> { raw_92}
-{rank=same; raw_92}
-
-raw_92 [label="raw"]
+codeblock_92 [label="code block 124-126"]
 
 
-raw_92 -> leaf_93
-leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_87 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** S : Capture set"]
+prose_88 -> { raw_94}
+{rank=same; raw_94}
+
+raw_94 [label="raw"]
+
+
+raw_94 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  Uses ordered choice to create a pattern which will match any provided
+pattern. 
 "]
-codeblock_89 -> leaf_94
-leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function elpatt.S(a, ...)
+prose_89 -> { raw_96}
+{rank=same; raw_96}
+
+raw_96 [label="raw"]
+
+
+raw_96 -> leaf_97
+leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This will patternize anything you feed it, which is convenient for strings.
+"]
+prose_90 -> { raw_98}
+{rank=same; raw_98}
+
+raw_98 [label="raw"]
+
+
+raw_98 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Despite being called \"Set\", it makes no attempt at uniqueness and will
+match against patterns in the order provided. 
+"]
+codeblock_91 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function elpatt.S(a, ...)
+   if not a then return nil end
    local arg = {...}
    local set = P(a)
    for _, patt in ipairs(arg) do
       set = set + P(patt)
    end
    return set
-end
-"]
-codeblock_90 -> leaf_95
-leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return elpatt"]
+end"]
+codeblock_92 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return elpatt"]
 
 }
