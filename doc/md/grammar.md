@@ -196,6 +196,32 @@ to strip leftmost drops.
 More importantly, if we counted up, we'd be tracking `````#t`````, a moving target.
 Counting to 1 neatly prevents this.
 
+
+   -  [ ] #Todo :Faster:
+
+
+     -  This algorithm, as we discussed, goes quadratic toward the left side.
+        The correct way to go is if we see any drop, flip a dirty bit, and 
+        compact upward.
+
+
+     -  More to the point, the mere inclusion of this much `````s:````` slows the 
+        algorithm to an utter crawl. The concatenations happen anyway, to
+        pass the string into the status module.
+
+
+        This is probably 10x the cost in real work.
+
+
+        Why am I doing it in such a dumb way? This is a literate programming
+        environment, and I'm building a language with templates and macros
+        and other useful access to state at compile time.
+
+
+        That's two ways to remove the verbosity and other printfs when they
+        aren't wanted.  Better to simulate the correct behavior until I can
+        provide it. 
+
 ```lua
    for i = #t, 1, -1 do 
       local cap = t[i] 

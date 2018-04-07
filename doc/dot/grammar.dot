@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 343"]
+doc_0 [label="doc - 363"]
 
 
 doc_0 -> { section_1}
@@ -551,7 +551,7 @@ codeblock_160 [label="code block 124-126"]
 
 section_161 [label="section: 129-159"]
 
-section_162 [label="section: 160-343"]
+section_162 [label="section: 160-363"]
 
 
 header_158 -> leaf_163
@@ -669,8 +669,8 @@ leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   local offse
        setmetatable(t, {__index = Node,
                      __tostring = Node.toString})
    end"]
-section_162 -> { header_196 prose_197 prose_198 prose_199 prose_200 prose_201 prose_202 codeblock_203 codeblock_204 codeblock_205 codeblock_206}
-{rank=same; header_196 prose_197 prose_198 prose_199 prose_200 prose_201 prose_202 codeblock_203 codeblock_204 codeblock_205 codeblock_206}
+section_162 -> { header_196 prose_197 prose_198 prose_199 prose_200 prose_201 prose_202 prose_203 prose_204 prose_205 prose_206 prose_207 prose_208 codeblock_209 codeblock_210 codeblock_211 codeblock_212}
+{rank=same; header_196 prose_197 prose_198 prose_199 prose_200 prose_201 prose_202 prose_203 prose_204 prose_205 prose_206 prose_207 prose_208 codeblock_209 codeblock_210 codeblock_211 codeblock_212}
 
 header_196 [label="4 : DROP"]
 
@@ -686,41 +686,32 @@ prose_201 [label="prose"]
 
 prose_202 [label="prose"]
 
-codeblock_203 [label="code block 184-298"]
+prose_203 [label="prose"]
 
-codeblock_204 [label="code block 300-319"]
+prose_204 [label="prose"]
 
-codeblock_205 [label="code block 322-339"]
+prose_205 [label="prose"]
 
-codeblock_206 [label="code block 341-343"]
+prose_206 [label="prose"]
+
+prose_207 [label="prose"]
+
+prose_208 [label="prose"]
+
+codeblock_209 [label="code block 204-318"]
+
+codeblock_210 [label="code block 320-339"]
+
+codeblock_211 [label="code block 342-359"]
+
+codeblock_212 [label="code block 361-363"]
 
 
-header_196 -> leaf_207
-leaf_207  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" DROP
+header_196 -> leaf_213
+leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" DROP
 
   T"]
-prose_197 -> { raw_208 literal_209 raw_210}
-{rank=same; raw_208 literal_209 raw_210}
-
-raw_208 [label="raw"]
-
-literal_209 [label="literal"]
-
-raw_210 [label="raw"]
-
-
-raw_208 -> leaf_211
-leaf_211  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-  The rule "]
-literal_209 -> leaf_212
-leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt.D"]
-raw_210 -> leaf_213
-leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" causes the match to be dropped. In order for
-this to give use the results we want, we must adjust the peer and
-parent nodes while removing the captured element from the table. 
-"]
-prose_198 -> { raw_214 literal_215 raw_216}
+prose_197 -> { raw_214 literal_215 raw_216}
 {rank=same; raw_214 literal_215 raw_216}
 
 raw_214 [label="raw"]
@@ -732,16 +723,17 @@ raw_216 [label="raw"]
 
 raw_214 -> leaf_217
 leaf_217  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-The use case is for eloquently expressed 'wrapper' patterns, which occur
-frequently in real languages. In a "]
+
+  The rule "]
 literal_215 -> leaf_218
-leaf_218  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(typical lisp expression)"]
+leaf_218  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt.D"]
 raw_216 -> leaf_219
-leaf_219  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" we don't need
-the parentheses and would like our span not to include them.
+leaf_219  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" causes the match to be dropped. In order for
+this to give use the results we want, we must adjust the peer and
+parent nodes while removing the captured element from the table. 
 "]
-prose_199 -> { raw_220 literal_221 raw_222 literal_223 raw_224 literal_225 raw_226}
-{rank=same; raw_220 literal_221 raw_222 literal_223 raw_224 literal_225 raw_226}
+prose_198 -> { raw_220 literal_221 raw_222}
+{rank=same; raw_220 literal_221 raw_222}
 
 raw_220 [label="raw"]
 
@@ -749,51 +741,53 @@ literal_221 [label="literal"]
 
 raw_222 [label="raw"]
 
-literal_223 [label="literal"]
 
-raw_224 [label="raw"]
-
-literal_225 [label="literal"]
+raw_220 -> leaf_223
+leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The use case is for eloquently expressed 'wrapper' patterns, which occur
+frequently in real languages. In a "]
+literal_221 -> leaf_224
+leaf_224  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(typical lisp expression)"]
+raw_222 -> leaf_225
+leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" we don't need
+the parentheses and would like our span not to include them.
+"]
+prose_199 -> { raw_226 literal_227 raw_228 literal_229 raw_230 literal_231 raw_232}
+{rank=same; raw_226 literal_227 raw_228 literal_229 raw_230 literal_231 raw_232}
 
 raw_226 [label="raw"]
 
+literal_227 [label="literal"]
 
-raw_220 -> leaf_227
-leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-We could use a pattern like "]
-literal_221 -> leaf_228
-leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label="V\"formwrap\""]
-raw_222 -> leaf_229
-leaf_229  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and then SUPPRESS "]
-literal_223 -> leaf_230
-leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="formwrap"]
-raw_224 -> leaf_231
-leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", but
-this is less eloquent than "]
-literal_225 -> leaf_232
-leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(P\"(\") * V\"form\" *  D(P\")\")"]
+raw_228 [label="raw"]
+
+literal_229 [label="literal"]
+
+raw_230 [label="raw"]
+
+literal_231 [label="literal"]
+
+raw_232 [label="raw"]
+
+
 raw_226 -> leaf_233
-leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
+leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We could use a pattern like "]
+literal_227 -> leaf_234
+leaf_234  [color=Gray,shape=rectangle,fontname=Inconsolata,label="V\"formwrap\""]
+raw_228 -> leaf_235
+leaf_235  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and then SUPPRESS "]
+literal_229 -> leaf_236
+leaf_236  [color=Gray,shape=rectangle,fontname=Inconsolata,label="formwrap"]
+raw_230 -> leaf_237
+leaf_237  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", but
+this is less eloquent than "]
+literal_231 -> leaf_238
+leaf_238  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(P\"(\") * V\"form\" *  D(P\")\")"]
+raw_232 -> leaf_239
+leaf_239  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
 "]
-prose_200 -> { raw_234 literal_235 raw_236}
-{rank=same; raw_234 literal_235 raw_236}
-
-raw_234 [label="raw"]
-
-literal_235 [label="literal"]
-
-raw_236 [label="raw"]
-
-
-raw_234 -> leaf_237
-leaf_237  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Which is admittedly hard to look at.  We prefer the form"]
-literal_235 -> leaf_238
-leaf_238  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(pal) * V\"form\" * D(par)"]
-raw_236 -> leaf_239
-leaf_239  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for this reason among others.
-"]
-prose_201 -> { raw_240 literal_241 raw_242}
+prose_200 -> { raw_240 literal_241 raw_242}
 {rank=same; raw_240 literal_241 raw_242}
 
 raw_240 [label="raw"]
@@ -805,16 +799,13 @@ raw_242 [label="raw"]
 
 raw_240 -> leaf_243
 leaf_243  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-The algorithm moves from the right to the left, because "]
+Which is admittedly hard to look at.  We prefer the form"]
 literal_241 -> leaf_244
-leaf_244  [color=Gray,shape=rectangle,fontname=Inconsolata,label="table.remove(t)"]
+leaf_244  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(pal) * V\"form\" * D(par)"]
 raw_242 -> leaf_245
-leaf_245  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-is O(1) so we can strip any amount of rightward droppage first.  It is
-correspondingly more expensive to strip middle drops, and most expensive
-to strip leftmost drops.
+leaf_245  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for this reason among others.
 "]
-prose_202 -> { raw_246 literal_247 raw_248}
+prose_201 -> { raw_246 literal_247 raw_248}
 {rank=same; raw_246 literal_247 raw_248}
 
 raw_246 [label="raw"]
@@ -826,15 +817,112 @@ raw_248 [label="raw"]
 
 raw_246 -> leaf_249
 leaf_249  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-More importantly, if we counted up, we'd be tracking "]
+The algorithm moves from the right to the left, because "]
 literal_247 -> leaf_250
-leaf_250  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#t"]
+leaf_250  [color=Gray,shape=rectangle,fontname=Inconsolata,label="table.remove(t)"]
 raw_248 -> leaf_251
-leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", a moving target.
+leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+is O(1) so we can strip any amount of rightward droppage first.  It is
+correspondingly more expensive to strip middle drops, and most expensive
+to strip leftmost drops.
+"]
+prose_202 -> { raw_252 literal_253 raw_254}
+{rank=same; raw_252 literal_253 raw_254}
+
+raw_252 [label="raw"]
+
+literal_253 [label="literal"]
+
+raw_254 [label="raw"]
+
+
+raw_252 -> leaf_255
+leaf_255  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+More importantly, if we counted up, we'd be tracking "]
+literal_253 -> leaf_256
+leaf_256  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#t"]
+raw_254 -> leaf_257
+leaf_257  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", a moving target.
 Counting to 1 neatly prevents this.
 "]
-codeblock_203 -> leaf_252
-leaf_252  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t, 1, -1 do 
+prose_203 -> { raw_258}
+{rank=same; raw_258}
+
+raw_258 [label="raw"]
+
+
+raw_258 -> leaf_259
+leaf_259  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+   -  [ ] #Todo :Faster:
+"]
+prose_204 -> { raw_260}
+{rank=same; raw_260}
+
+raw_260 [label="raw"]
+
+
+raw_260 -> leaf_261
+leaf_261  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+     -  This algorithm, as we discussed, goes quadratic toward the left side.
+        The correct way to go is if we see any drop, flip a dirty bit, and 
+        compact upward.
+"]
+prose_205 -> { raw_262 literal_263 raw_264}
+{rank=same; raw_262 literal_263 raw_264}
+
+raw_262 [label="raw"]
+
+literal_263 [label="literal"]
+
+raw_264 [label="raw"]
+
+
+raw_262 -> leaf_265
+leaf_265  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+     -  More to the point, the mere inclusion of this much "]
+literal_263 -> leaf_266
+leaf_266  [color=Gray,shape=rectangle,fontname=Inconsolata,label="s:"]
+raw_264 -> leaf_267
+leaf_267  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" slows the 
+        algorithm to an utter crawl. The concatenations happen anyway, to
+        pass the string into the status module.
+"]
+prose_206 -> { raw_268}
+{rank=same; raw_268}
+
+raw_268 [label="raw"]
+
+
+raw_268 -> leaf_269
+leaf_269  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+        This is probably 10x the cost in real work.
+"]
+prose_207 -> { raw_270}
+{rank=same; raw_270}
+
+raw_270 [label="raw"]
+
+
+raw_270 -> leaf_271
+leaf_271  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+        Why am I doing it in such a dumb way? This is a literate programming
+        environment, and I'm building a language with templates and macros
+        and other useful access to state at compile time.
+"]
+prose_208 -> { raw_272}
+{rank=same; raw_272}
+
+raw_272 [label="raw"]
+
+
+raw_272 -> leaf_273
+leaf_273  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+        That's two ways to remove the verbosity and other printfs when they
+        aren't wanted.  Better to simulate the correct behavior until I can
+        provide it. 
+"]
+codeblock_209 -> leaf_274
+leaf_274  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t, 1, -1 do 
       local cap = t[i] 
       if type(cap) ~= \"table\" then
          s:complain(\"CAPTURE ISSUE\", 
@@ -947,8 +1035,8 @@ local function define(func, g, e)
   assert( g[ 1 ] and g[ g[ 1 ] ], \"no start rule defined\" )
   return g
 end"]
-codeblock_204 -> leaf_253
-leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
+codeblock_210 -> leaf_275
+leaf_275  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
   s:verb(\"refining metatables\")
   for id, meta in pairs(metas) do
     s:verb(\"  id: \" .. id .. \" type: \" .. type(meta))
@@ -966,8 +1054,8 @@ leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
   end
   return metas
 end"]
-codeblock_205 -> leaf_254
-leaf_254  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
+codeblock_211 -> leaf_276
+leaf_276  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
   if type(grammar_template) == 'function' then
     local metas = metas or {}
     metas = refineMetas(metas)
@@ -983,7 +1071,7 @@ leaf_254  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
     s:halt(\"no way to build grammar out of \" .. type(template))
   end
 end"]
-codeblock_206 -> leaf_255
-leaf_255  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+codeblock_212 -> leaf_277
+leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
 
 }

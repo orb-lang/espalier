@@ -182,6 +182,26 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    for i = #t, 1, -1 do 
       local cap = t[i] 
       if type(cap) ~= "table" then
