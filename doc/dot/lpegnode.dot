@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 15"]
+doc_0 [label="doc - 16"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-15"]
+section_1 [label="section: 1-16"]
 
 
 section_1 -> { header_2 prose_3 codeblock_4}
@@ -19,7 +19,7 @@ header_2 [label="1 : lpegnode"]
 
 prose_3 [label="prose"]
 
-codeblock_4 [label="code block 5-15"]
+codeblock_4 [label="code block 5-16"]
 
 
 header_2 -> leaf_5
@@ -40,6 +40,7 @@ leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local dot = requ
 local elpatt = require \"lpegnode/elpatt\"
 local node = require \"lpegnode/node\"
 local spec = require \"lpegnode/spec\"
+
 
 return { dot = dot,
      elpatt = elpatt,

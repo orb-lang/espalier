@@ -574,7 +574,7 @@ leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
       else
         t = setmetatable(t, meta)
       end
-      assert(t.id == id)
+      assert(t.id)
    else
       t.id = id
        setmetatable(t, {__index = Node,

@@ -142,7 +142,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       else
         t = setmetatable(t, meta)
       end
-      assert(t.id == id)
+      assert(t.id)
    else
       t.id = id
        setmetatable(t, {__index = Node,

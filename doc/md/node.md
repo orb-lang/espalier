@@ -17,9 +17,9 @@ Node.  All Root absolutely has to contain is `````str`````.
 
 ```lua
 
-local N = {}
-N.__index = N
-N.isNode = true
+local Node = {}
+Node.__index = Node
+Node.isNode = true
 ```
 ## Fields
 
@@ -28,12 +28,12 @@ N.isNode = true
            or captures it.
 
 
-   - line_first :  Always -1.
-   - line_last  :  Always -1. 
+   - line_first :  Always -1. #deprecated
+   - line_last  :  Always -1. #deprecated
 
 ```lua
-N.line_first = -1
-N.line_last  = -1
+Node.line_first = -1
+Node.line_last  = -1
 ```
 
 It occurs to me we could lazily calculate these using the [line iterator](httk://).
@@ -41,7 +41,13 @@ It occurs to me we could lazily calculate these using the [line iterator](httk:/
 
 ## Methods
 
+### Scaffolding 
 
+```lua
+function Node.toLua(node)
+  s:halt("No toLua method for " .. node.id)
+end
+```
 ### Visualizers
 
 This gives us a nice, tree-shaped printout of an entire Node.
@@ -51,27 +57,35 @@ We're less disciplined than we should be about up-assigning this to
 inherited Node classes. 
 
 ```lua
-function N.toString(node, depth)
+function Node.toString(node, depth)
    local depth = depth or 0
    local phrase = ""
    phrase = ("  "):rep(depth) .. "id: " .. node.id .. ",  "
-      .. "first: " .. node.first .. ", last: " .. node.last .. "\n"
+      .. "first: " .. node.first .. ", last: " .. node.last
    if node[1] then
-    for _,v in ipairs(node) do
-      if(v.isNode) then
-        phrase = phrase .. N.toString(v, depth + 1)
+      phrase = phrase .. "\n"
+      for _,v in ipairs(node) do
+         if (v.isNode) then
+            phrase = phrase .. Node.toString(v, depth + 1)
+         end
       end
-    end
-  end 
+   else
+      phrase = phrase .. ",  val: " .. node.str:sub(node.first, node.last) .. "\n"
+   end
    return phrase
 end
 ```
 ```lua
-function N.dotLabel(node)
+function Node.span(node)
+   return node.str:sub(node.first, node.last)
+end
+```
+```lua
+function Node.dotLabel(node)
   return node.id
 end
 
-function N.toMarkdown(node)
+function Node.toMarkdown(node)
   if not node[1] then
     return string.sub(node.str, node.first, node.last)
   else
@@ -79,11 +93,11 @@ function N.toMarkdown(node)
   end
 end
 
-function N.dot(node)
+function Node.dot(node)
   return dot.dot(node)
 end
 
-function N.toValue(node)
+function Node.toValue(node)
   if node.__VALUE then
     return node.__VALUE
   end
@@ -95,12 +109,12 @@ function N.toValue(node)
 end
 
 ```
-#### N.walkPost
+#### Node.walkPost
 
 Depth-first iterator, postfix 
 
 ```lua
-function N.walkPost(node)
+function Node.walkPost(node)
     local function traverse(ast)
         if not ast.isNode then return nil end
 
@@ -115,12 +129,12 @@ function N.walkPost(node)
     return coroutine.wrap(function() traverse(node) end)
 end
 ```
-#### N.walk
+#### Node.walk
 
 Presearch iterator.  This is the default. 
 
 ```lua
-function N.walk(node)
+function Node.walk(node)
   local function traverse(ast)
     if not ast.isNode then return nil end
 
@@ -136,14 +150,14 @@ function N.walk(node)
 end
 
 ```
-#### N.select(node, pred)
+#### Node.select(node, pred)
 
   Takes the Node and walks it, yielding the Nodes which match the predicate.
 `````pred````` is either a string, which matches to `````id`````, or a function, which takes
 a Node and returns true or false on some premise. 
 
 ```lua
-function N.select(node, pred)
+function Node.select(node, pred)
    local function qualifies(node, pred)
       if type(pred) == 'string' then
          if type(node) == 'table' 
@@ -174,12 +188,12 @@ function N.select(node, pred)
    return coroutine.wrap(function() traverse(node) end)
 end
 ```
-#### N.tokens(node)
+#### Node.tokens(node)
 
   Iterator returning all captured values as strings.
 
 ```lua
-function N.tokens(node)
+function Node.tokens(node)
   local function traverse(ast)
     for node in N.walk(ast) do
       if not node[1] then
@@ -191,7 +205,7 @@ function N.tokens(node)
   return coroutine.wrap(function() traverse(node) end)
 end  
 ```
-#### N.unroll(node)
+#### Node.unroll(node)
 
   This iterator returns all Nodes, in prefix order, while interpolating
 strings.  Specifically: When a Node has a `````first````` that is less than the
@@ -208,7 +222,7 @@ grafting these to the interpolated strings in order, you will produce the
 original `````node.str`````. 
 
 ```lua
-function N.unroll(node)
+function Node.unroll(node)
   local function traverse(ast)
   end
 
@@ -224,7 +238,7 @@ These return an array of all results.
              the return arrays of this class.
 
 ```lua
-function N.gather(node, pred)
+function Node.gather(node, pred)
   local gathered = {}
   for ast in node:select(pred) do
     gathered[#gathered + 1] = ast
@@ -232,6 +246,26 @@ function N.gather(node, pred)
   
   return gathered
 end
+```
+### Subclassing and construction
+
+
+#### N.inherit(node)
+
+```lua
+function Node.inherit(node)
+  Meta = setmetatable({}, node)
+  Meta.__index = Meta
+  local meta = setmetatable({}, Meta)
+  meta.__index = meta
+  return Meta, meta
+end
+
+function Node.export(_, mod, constructor)
+  mod.__call = constructor
+  return setmetatable({}, mod)
+end
+
 ```
 ## Node Instances
 
@@ -341,5 +375,5 @@ In the meantime we have things like
            inner parse. 
 
 ```lua
-return N
+return Node
 ```

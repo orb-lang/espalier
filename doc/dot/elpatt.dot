@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 92"]
+doc_0 [label="doc - 106"]
 
 
 doc_0 -> { section_1}
@@ -25,7 +25,7 @@ codeblock_5 [label="code block 10-16"]
 
 section_6 [label="section: 18-26"]
 
-section_7 [label="section: 54-92"]
+section_7 [label="section: 54-88"]
 
 
 header_2 -> leaf_8
@@ -66,7 +66,7 @@ codeblock_5 -> leaf_17
 leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
 local elpatt = {}
 
-local Cc = L.Cc
+local P, Cc = L.P, L.Cc
 "]
 section_6 -> { header_18 prose_19 prose_20 prose_21 section_22}
 {rank=same; header_18 prose_19 prose_20 prose_21 section_22}
@@ -185,8 +185,8 @@ leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
       end
    end
 end"]
-section_7 -> { header_48 prose_49 prose_50 prose_51 prose_52 prose_53 prose_54 codeblock_55 codeblock_56}
-{rank=same; header_48 prose_49 prose_50 prose_51 prose_52 prose_53 prose_54 codeblock_55 codeblock_56}
+section_7 -> { header_48 prose_49 prose_50 prose_51 prose_52 prose_53 prose_54 codeblock_55 section_56}
+{rank=same; header_48 prose_49 prose_50 prose_51 prose_52 prose_53 prose_54 codeblock_55 section_56}
 
 header_48 [label="2 : D : Drop a capture"]
 
@@ -204,7 +204,7 @@ prose_54 [label="prose"]
 
 codeblock_55 [label="code block 77-87"]
 
-codeblock_56 [label="code block 90-92"]
+section_56 [label="section: 89-106"]
 
 
 header_48 -> leaf_57
@@ -320,7 +320,41 @@ function elpatt.D(patt)
    return (patt / 0) * Cc(DROP)
 end
 "]
-codeblock_56 -> leaf_87
-leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return elpatt"]
+section_56 -> { header_87 prose_88 codeblock_89 codeblock_90}
+{rank=same; header_87 prose_88 codeblock_89 codeblock_90}
+
+header_87 [label="3 : S : Capture set"]
+
+prose_88 [label="prose"]
+
+codeblock_89 [label="code block 91-102"]
+
+codeblock_90 [label="code block 104-106"]
+
+
+header_87 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** S : Capture set"]
+prose_88 -> { raw_92}
+{rank=same; raw_92}
+
+raw_92 [label="raw"]
+
+
+raw_92 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+codeblock_89 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function elpatt.S(a, ...)
+   local arg = {...}
+   local set = P(a)
+   for _, patt in ipairs(arg) do
+      io.write(patt ..\"\\n\")
+      set = set + P(patt)
+   end
+   return set
+end
+"]
+codeblock_90 -> leaf_95
+leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return elpatt"]
 
 }

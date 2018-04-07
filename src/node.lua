@@ -18,9 +18,9 @@ local dot = require "node/dot"
 
 
 
-local N = {}
-N.__index = N
-N.isNode = true
+local Node = {}
+Node.__index = Node
+Node.isNode = true
 
 
 
@@ -35,8 +35,21 @@ N.isNode = true
 
 
 
-N.line_first = -1
-N.line_last  = -1
+Node.line_first = -1
+Node.line_last  = -1
+
+
+
+
+
+
+
+
+
+
+function Node.toLua(node)
+  s:halt("No toLua method for " .. node.id)
+end
 
 
 
@@ -48,33 +61,37 @@ N.line_last  = -1
 
 
 
-
-
-
-
-
-function N.toString(node, depth)
+function Node.toString(node, depth)
    local depth = depth or 0
    local phrase = ""
    phrase = ("  "):rep(depth) .. "id: " .. node.id .. ",  "
-      .. "first: " .. node.first .. ", last: " .. node.last .. "\n"
+      .. "first: " .. node.first .. ", last: " .. node.last
    if node[1] then
-    for _,v in ipairs(node) do
-      if(v.isNode) then
-        phrase = phrase .. N.toString(v, depth + 1)
+      phrase = phrase .. "\n"
+      for _,v in ipairs(node) do
+         if (v.isNode) then
+            phrase = phrase .. Node.toString(v, depth + 1)
+         end
       end
-    end
-  end 
+   else
+      phrase = phrase .. ",  val: " .. node.str:sub(node.first, node.last) .. "\n"
+   end
    return phrase
 end
 
 
 
-function N.dotLabel(node)
+function Node.span(node)
+   return node.str:sub(node.first, node.last)
+end
+
+
+
+function Node.dotLabel(node)
   return node.id
 end
 
-function N.toMarkdown(node)
+function Node.toMarkdown(node)
   if not node[1] then
     return string.sub(node.str, node.first, node.last)
   else
@@ -82,11 +99,11 @@ function N.toMarkdown(node)
   end
 end
 
-function N.dot(node)
+function Node.dot(node)
   return dot.dot(node)
 end
 
-function N.toValue(node)
+function Node.toValue(node)
   if node.__VALUE then
     return node.__VALUE
   end
@@ -104,7 +121,7 @@ end
 
 
 
-function N.walkPost(node)
+function Node.walkPost(node)
     local function traverse(ast)
         if not ast.isNode then return nil end
 
@@ -125,7 +142,7 @@ end
 
 
 
-function N.walk(node)
+function Node.walk(node)
   local function traverse(ast)
     if not ast.isNode then return nil end
 
@@ -150,7 +167,7 @@ end
 
 
 
-function N.select(node, pred)
+function Node.select(node, pred)
    local function qualifies(node, pred)
       if type(pred) == 'string' then
          if type(node) == 'table' 
@@ -188,7 +205,7 @@ end
 
 
 
-function N.tokens(node)
+function Node.tokens(node)
   local function traverse(ast)
     for node in N.walk(ast) do
       if not node[1] then
@@ -217,7 +234,7 @@ end
 
 
 
-function N.unroll(node)
+function Node.unroll(node)
   local function traverse(ast)
   end
 
@@ -234,13 +251,33 @@ end
 
 
 
-function N.gather(node, pred)
+function Node.gather(node, pred)
   local gathered = {}
   for ast in node:select(pred) do
     gathered[#gathered + 1] = ast
   end
   
   return gathered
+end
+
+
+
+
+
+
+
+
+function Node.inherit(node)
+  Meta = setmetatable({}, node)
+  Meta.__index = Meta
+  local meta = setmetatable({}, Meta)
+  meta.__index = meta
+  return Meta, meta
+end
+
+function Node.export(_, mod, constructor)
+  mod.__call = constructor
+  return setmetatable({}, mod)
 end
 
 
@@ -334,4 +371,5 @@ end
 
 
 
-return N
+
+return Node

@@ -12,7 +12,7 @@ and can therefore use elpeg as L everywhere we currently use lpeg.
 local L = require "lpeg"
 local elpatt = {}
 
-local Cc = L.Cc
+local P, Cc = L.P, L.Cc
 
 ```
 ## Ppt : Codepoint pattern
@@ -88,6 +88,20 @@ elpatt.DROP = DROP
 
 function elpatt.D(patt)
    return (patt / 0) * Cc(DROP)
+end
+
+```
+### S : Capture set
+
+```lua
+function elpatt.S(a, ...)
+   local arg = {...}
+   local set = P(a)
+   for _, patt in ipairs(arg) do
+      io.write(patt .."\n")
+      set = set + P(patt)
+   end
+   return set
 end
 
 ```
