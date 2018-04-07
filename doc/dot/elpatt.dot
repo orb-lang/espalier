@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 126"]
+doc_0 [label="doc - 125"]
 
 
 doc_0 -> { section_1}
@@ -25,7 +25,7 @@ codeblock_5 [label="code block 10-19"]
 
 section_6 [label="section: 21-29"]
 
-section_7 [label="section: 57-101"]
+section_7 [label="section: 57-100"]
 
 
 header_2 -> leaf_8
@@ -205,9 +205,9 @@ prose_53 [label="prose"]
 
 prose_54 [label="prose"]
 
-codeblock_55 [label="code block 80-99"]
+codeblock_55 [label="code block 80-98"]
 
-section_56 [label="section: 102-126"]
+section_56 [label="section: 101-125"]
 
 
 header_48 -> leaf_57
@@ -320,7 +320,6 @@ local DROP = {}
 elpatt.DROP = DROP
 
 local function make_drop(caps)
-   io.write(\"making drop\\n\")
    local dropped = setmetatable({}, DROP)
    dropped.DROP = true
    dropped.first = caps[1]
@@ -343,9 +342,9 @@ prose_89 [label="prose"]
 
 prose_90 [label="prose"]
 
-codeblock_91 [label="code block 112-122"]
+codeblock_91 [label="code block 111-121"]
 
-codeblock_92 [label="code block 124-126"]
+codeblock_92 [label="code block 123-125"]
 
 
 header_87 -> leaf_93

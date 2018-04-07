@@ -209,11 +209,12 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
       if cap.DROP and getmetatable(cap) == DROP then
+         s:verb("drops in " .. a.bright(t.id))
          if i == #t then
             s:verb(a.red("rightmost") .. " remaining node")
             s:verb("  t.$: " .. tostring(t.last) .. " Δ: "
-                   .. tostring(cap.last - cap.first + 1))
-            t.last = t.last - (cap.last - cap.first + 1)
+                   .. tostring(cap.last - cap.first))
+            t.last = t.last - (cap.last - cap.first)
             table.remove(t)
             s:verb("  new t.$: " .. tostring(t.last))
          else
@@ -222,11 +223,11 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
             -- all children to the left, down to 1, are all DROPs. 
             local leftmost = (i == 1)
             if leftmost then
-               s:verb(a.cyan("leftmost") .. " remaining node")
-               s:verb("  t.^: " .. tostring(t.first)
+               s:verb(a.cyan("  leftmost") .. " remaining node")
+               s:verb("    t.^: " .. tostring(t.first)
                       .. " D.$: " .. tostring(cap.last))
-               t.first = cap.last + 1
-               s:verb("  new t.^: " .. tostring(t.first))
+               t.first = cap.last
+               s:verb("    new t.^: " .. tostring(t.first))
                table.remove(t, 1)
             else
                leftmost = true -- provisionally since cap.DROP
@@ -236,11 +237,11 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                  if not leftmost then break end
                end
                if leftmost then
-                  s:verb(a.cyan("leftmost inner") .. " remaining node")
-                  s:verb("  t.^: " .. tostring(t.first)
+                  s:verb(a.cyan("  leftmost inner") .. " remaining node")
+                  s:verb("    t.^: " .. tostring(t.first)
                          .. " D.$: " .. tostring(cap.last))
-                  t.first = cap.last + 1
-                  s:verb("  new t.^: " .. tostring(t.first))
+                  t.first = cap.last
+                  s:verb("    new t.^: " .. tostring(t.first))
                   for j = i, 1, -1 do
                      -- this is quadradic but correct 
                      -- and easy to understand.
@@ -248,7 +249,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                      break
                   end
                else
-                  s:verb(a.green("middle") .. " node dropped")
+                  s:verb(a.green("  middle") .. " node dropped")
                   table.remove(t, i)
                end
             end

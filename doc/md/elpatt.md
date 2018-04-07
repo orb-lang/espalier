@@ -90,7 +90,6 @@ local DROP = {}
 elpatt.DROP = DROP
 
 local function make_drop(caps)
-   io.write("making drop\n")
    local dropped = setmetatable({}, DROP)
    dropped.DROP = true
    dropped.first = caps[1]

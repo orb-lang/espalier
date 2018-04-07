@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 445"]
+doc_0 [label="doc - 454"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-350"]
+section_1 [label="section: 1-359"]
 
 
 section_1 -> { header_2 prose_3 section_4 section_5 section_6 section_7 section_8}
@@ -25,9 +25,9 @@ section_5 [label="section: 14-28"]
 
 section_6 [label="section: 29-45"]
 
-section_7 [label="section: 46-329"]
+section_7 [label="section: 46-338"]
 
-section_8 [label="section: 351-410"]
+section_8 [label="section: 360-419"]
 
 
 header_2 -> leaf_9
@@ -188,13 +188,13 @@ prose_51 [label="prose"]
 
 section_52 [label="section: 48-49"]
 
-section_53 [label="section: 62-89"]
+section_53 [label="section: 62-98"]
 
-section_54 [label="section: 90-287"]
+section_54 [label="section: 99-296"]
 
-section_55 [label="section: 312-329"]
+section_55 [label="section: 321-338"]
 
-section_56 [label="section: 330-332"]
+section_56 [label="section: 339-341"]
 
 
 header_50 -> leaf_57
@@ -266,7 +266,7 @@ prose_74 [label="prose"]
 
 prose_75 [label="prose"]
 
-codeblock_76 [label="code block 69-88"]
+codeblock_76 [label="code block 69-97"]
 
 
 header_73 -> leaf_77
@@ -297,17 +297,26 @@ codeblock_76 -> leaf_82
 leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.toString(node, depth)
    local depth = depth or 0
    local phrase = \"\"
-   phrase = (\"  \"):rep(depth) .. \"id: \" .. node.id .. \",  \"
+   phrase = (\"  \"):rep(depth) .. \"id: \" .. ansi.bright(node.id) .. \",  \"
       .. \"first: \" .. node.first .. \", last: \" .. node.last
    if node[1] then
-      phrase = phrase .. \"\\n\"
+      local extra = \" span:  \"
+      if Node.len(node) > 56 then
+         local span = Node.span(node)
+         local pre, post = string.sub(span, 1, 28), string.sub(span, -28, -1)
+         extra = extra .. ansi.dim(pre) .. ansi.bright(\"…\") .. ansi.dim(post)
+         extra = extra:gsub(\"\\n\", \"◼︎\")
+      else
+         extra = extra .. ansi.dim(Node.span(node):gsub(\"\\n\", \"◼︎\"))
+      end
+      phrase = phrase .. extra .. \"\\n\"
       for _,v in ipairs(node) do
          if (v.isNode) then
             phrase = phrase .. Node.toString(v, depth + 1)
          end
       end
    else
-      phrase = phrase .. \",  val: \" 
+      phrase = phrase .. \",  val:  \" 
              .. ansi.green(node.str:sub(node.first, node.last)) .. \"\\n\"
    end
    return phrase
@@ -319,21 +328,21 @@ header_83 [label="3 : Metrics"]
 
 prose_84 [label="prose"]
 
-section_85 [label="section: 93-101"]
+section_85 [label="section: 102-110"]
 
-section_86 [label="section: 102-112"]
+section_86 [label="section: 111-121"]
 
-section_87 [label="section: 113-184"]
+section_87 [label="section: 122-193"]
 
-section_88 [label="section: 185-205"]
+section_88 [label="section: 194-214"]
 
-section_89 [label="section: 206-228"]
+section_89 [label="section: 215-237"]
 
-section_90 [label="section: 229-268"]
+section_90 [label="section: 238-277"]
 
-section_91 [label="section: 269-287"]
+section_91 [label="section: 278-296"]
 
-section_92 [label="section: 288-311"]
+section_92 [label="section: 297-320"]
 
 
 header_83 -> leaf_93
@@ -355,7 +364,7 @@ header_96 [label="4 : span"]
 
 prose_97 [label="prose"]
 
-codeblock_98 [label="code block 95-99"]
+codeblock_98 [label="code block 104-108"]
 
 
 header_96 -> leaf_99
@@ -380,7 +389,7 @@ header_103 [label="4 : len"]
 
 prose_104 [label="prose"]
 
-codeblock_105 [label="code block 106-110"]
+codeblock_105 [label="code block 115-119"]
 
 
 header_103 -> leaf_106
@@ -415,9 +424,9 @@ prose_114 [label="prose"]
 
 prose_115 [label="prose"]
 
-codeblock_116 [label="code block 132-152"]
+codeblock_116 [label="code block 141-161"]
 
-codeblock_117 [label="code block 155-183"]
+codeblock_117 [label="code block 164-192"]
 
 
 header_110 -> leaf_118
@@ -637,7 +646,7 @@ header_183 [label="4 : Node.walkPost"]
 
 prose_184 [label="prose"]
 
-codeblock_185 [label="code block 189-204"]
+codeblock_185 [label="code block 198-213"]
 
 
 header_183 -> leaf_186
@@ -675,7 +684,7 @@ header_190 [label="4 : Node.walk"]
 
 prose_191 [label="prose"]
 
-codeblock_192 [label="code block 210-226"]
+codeblock_192 [label="code block 219-235"]
 
 
 header_190 -> leaf_193
@@ -714,7 +723,7 @@ header_197 [label="4 : Node.select(node, pred)"]
 
 prose_198 [label="prose"]
 
-codeblock_199 [label="code block 235-266"]
+codeblock_199 [label="code block 244-275"]
 
 
 header_197 -> leaf_200
@@ -785,7 +794,7 @@ header_212 [label="4 : Node.tokens(node)"]
 
 prose_213 [label="prose"]
 
-codeblock_214 [label="code block 273-285"]
+codeblock_214 [label="code block 282-294"]
 
 
 header_212 -> leaf_215
@@ -824,7 +833,7 @@ prose_221 [label="prose"]
 
 prose_222 [label="prose"]
 
-codeblock_223 [label="code block 302-309"]
+codeblock_223 [label="code block 311-318"]
 
 
 header_219 -> leaf_224
@@ -921,7 +930,7 @@ prose_253 [label="prose"]
 
 prose_254 [label="prose"]
 
-codeblock_255 [label="code block 319-328"]
+codeblock_255 [label="code block 328-337"]
 
 
 header_252 -> leaf_256
@@ -964,7 +973,7 @@ header_262 [label="3 : Subclassing and construction"]
 
 prose_263 [label="prose"]
 
-section_264 [label="section: 333-350"]
+section_264 [label="section: 342-359"]
 
 
 header_262 -> leaf_265
@@ -986,7 +995,7 @@ header_268 [label="4 : N.inherit(node)"]
 
 prose_269 [label="prose"]
 
-codeblock_270 [label="code block 335-349"]
+codeblock_270 [label="code block 344-358"]
 
 
 header_268 -> leaf_271
@@ -1029,9 +1038,9 @@ prose_279 [label="prose"]
 
 prose_280 [label="prose"]
 
-section_281 [label="section: 375-397"]
+section_281 [label="section: 384-406"]
 
-section_282 [label="section: 411-445"]
+section_282 [label="section: 420-454"]
 
 
 header_275 -> leaf_283
@@ -1138,7 +1147,7 @@ prose_310 [label="prose"]
 
 prose_311 [label="prose"]
 
-section_312 [label="section: 398-410"]
+section_312 [label="section: 407-419"]
 
 
 header_306 -> leaf_313
@@ -1310,7 +1319,7 @@ prose_357 [label="prose"]
 
 prose_358 [label="prose"]
 
-codeblock_359 [label="code block 440-442"]
+codeblock_359 [label="code block 449-451"]
 
 
 header_350 -> leaf_360
