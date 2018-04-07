@@ -83,7 +83,7 @@ a language that did that sort of thing.
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = false
+s.verbose = true
 s.angry   = false
 
 local Node = require "node/node"
@@ -177,7 +177,9 @@ Which is admittedly hard to look at.  We prefer the form
       end
       if v == DROP then
         s:verb("-- child v of t is DROP")
-        table.remove(v)
+        if i == #t then
+          s:verb("---  rightmost remaining node")
+        end
       end 
    end
    assert(t.isNode, "failed isNode: " .. id)

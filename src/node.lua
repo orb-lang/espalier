@@ -7,6 +7,7 @@
 
 
 local s = require "status"
+local ansi = require "ansi"
 local dot = require "node/dot"
 
 
@@ -74,7 +75,8 @@ function Node.toString(node, depth)
          end
       end
    else
-      phrase = phrase .. ",  val: " .. node.str:sub(node.first, node.last) .. "\n"
+      phrase = phrase .. ",  val: " 
+             .. ansi.green(node.str:sub(node.first, node.last)) .. "\n"
    end
    return phrase
 end
@@ -82,7 +84,13 @@ end
 
 
 function Node.span(node)
-   return node.str:sub(node.first, node.last)
+   return string.sub(node.str, node.first, node.last)
+end
+
+
+
+function Node.len(node)
+    return #Node.span(node)
 end
 
 
@@ -207,7 +215,7 @@ end
 
 function Node.tokens(node)
   local function traverse(ast)
-    for node in N.walk(ast) do
+    for node in Node.walk(ast) do
       if not node[1] then
         coroutine.yield(node:toValue())
       end

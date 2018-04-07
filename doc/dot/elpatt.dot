@@ -9,7 +9,7 @@ doc_0 [label="doc - 106"]
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-53"]
+section_1 [label="section: 1-54"]
 
 
 section_1 -> { header_2 prose_3 prose_4 codeblock_5 section_6 section_7}
@@ -21,11 +21,11 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-codeblock_5 [label="code block 10-16"]
+codeblock_5 [label="code block 10-17"]
 
-section_6 [label="section: 18-26"]
+section_6 [label="section: 19-27"]
 
-section_7 [label="section: 54-88"]
+section_7 [label="section: 55-89"]
 
 
 header_2 -> leaf_8
@@ -65,6 +65,7 @@ and can therefore use elpeg as L everywhere we currently use lpeg.
 codeblock_5 -> leaf_17
 leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
 local elpatt = {}
+elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
 local P, Cc = L.P, L.Cc
 "]
@@ -79,7 +80,7 @@ prose_20 [label="prose"]
 
 prose_21 [label="prose"]
 
-section_22 [label="section: 27-53"]
+section_22 [label="section: 28-54"]
 
 
 header_18 -> leaf_23
@@ -133,7 +134,7 @@ prose_35 [label="prose"]
 
 prose_36 [label="prose"]
 
-codeblock_37 [label="code block 35-51"]
+codeblock_37 [label="code block 36-52"]
 
 
 header_34 -> leaf_38
@@ -202,9 +203,9 @@ prose_53 [label="prose"]
 
 prose_54 [label="prose"]
 
-codeblock_55 [label="code block 77-87"]
+codeblock_55 [label="code block 78-88"]
 
-section_56 [label="section: 89-106"]
+section_56 [label="section: 90-106"]
 
 
 header_48 -> leaf_57
@@ -327,7 +328,7 @@ header_87 [label="3 : S : Capture set"]
 
 prose_88 [label="prose"]
 
-codeblock_89 [label="code block 91-102"]
+codeblock_89 [label="code block 92-102"]
 
 codeblock_90 [label="code block 104-106"]
 
@@ -348,7 +349,6 @@ leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function elpatt
    local arg = {...}
    local set = P(a)
    for _, patt in ipairs(arg) do
-      io.write(patt ..\"\\n\")
       set = set + P(patt)
    end
    return set

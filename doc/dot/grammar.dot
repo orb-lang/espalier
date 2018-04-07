@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 289"]
+doc_0 [label="doc - 291"]
 
 
 doc_0 -> { section_1}
@@ -496,7 +496,7 @@ codeblock_129 -> leaf_152
 leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
 
 local s = require \"status\" ()
-s.verbose = false
+s.verbose = true
 s.angry   = false
 
 local Node = require \"node/node\"
@@ -547,7 +547,7 @@ prose_159 [label="prose"]
 
 codeblock_160 [label="code block 119-140"]
 
-section_161 [label="section: 142-289"]
+section_161 [label="section: 142-291"]
 
 
 header_158 -> leaf_162
@@ -605,13 +605,13 @@ prose_174 [label="prose"]
 
 prose_175 [label="prose"]
 
-codeblock_176 [label="code block 171-244"]
+codeblock_176 [label="code block 171-246"]
 
-codeblock_177 [label="code block 246-265"]
+codeblock_177 [label="code block 248-267"]
 
-codeblock_178 [label="code block 268-285"]
+codeblock_178 [label="code block 270-287"]
 
-codeblock_179 [label="code block 287-289"]
+codeblock_179 [label="code block 289-291"]
 
 
 header_166 -> leaf_180
@@ -798,7 +798,9 @@ leaf_235  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i=#t,1,
       end
       if v == DROP then
         s:verb(\"-- child v of t is DROP\")
-        table.remove(v)
+        if i == #t then
+          s:verb(\"---  rightmost remaining node\")
+        end
       end 
    end
    assert(t.isNode, \"failed isNode: \" .. id)

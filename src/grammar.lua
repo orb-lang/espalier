@@ -83,7 +83,7 @@
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = false
+s.verbose = true
 s.angry   = false
 
 local Node = require "node/node"
@@ -177,7 +177,9 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       end
       if v == DROP then
         s:verb("-- child v of t is DROP")
-        table.remove(v)
+        if i == #t then
+          s:verb("---  rightmost remaining node")
+        end
       end 
    end
    assert(t.isNode, "failed isNode: " .. id)

@@ -11,6 +11,7 @@ and can therefore use elpeg as L everywhere we currently use lpeg.
 ```lua
 local L = require "lpeg"
 local elpatt = {}
+elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
 local P, Cc = L.P, L.Cc
 
@@ -98,7 +99,6 @@ function elpatt.S(a, ...)
    local arg = {...}
    local set = P(a)
    for _, patt in ipairs(arg) do
-      io.write(patt .."\n")
       set = set + P(patt)
    end
    return set
