@@ -83,7 +83,7 @@
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = true
+s.verbose = false
 s.angry   = false
 
 local a = require "ansi"
@@ -119,7 +119,24 @@ end
 
 
 
+
+
+
 local function make_ast_node(id, first, t, last, str, metas, offset)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    local offset = offset or 0
    t.first = first + offset
    t.last  = last + offset - 1
@@ -165,12 +182,6 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
-
-
-
-
-
-
    for i = #t, 1, -1 do 
       local cap = t[i] 
       if type(cap) ~= "table" then
@@ -178,27 +189,24 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
       if cap.DROP  then
-         s:verb("-- child v of t is DROP, ^: " 
-                .. tostring(cap.first) .. " $: " .. tostring(cap.last))
          if i == #t then
-            s:verb("---  " .. a.red("rightmost") .. " remaining node")
-            s:verb(" ~~~   t.last:     " .. tostring(t.last) .. " Δ: "
-                  .. tostring(cap.last - cap.first + 1))
+            s:verb(a.red("rightmost") .. " remaining node")
+            s:verb("  t.$: " .. tostring(t.last) .. " Δ: "
+                   .. tostring(cap.last - cap.first + 1))
             t.last = t.last - (cap.last - cap.first + 1)
             table.remove(t)
-            s:verb("   -   new t.last: " .. tostring(t.last))
+            s:verb("  new t.$: " .. tostring(t.last))
          else
-            -- This is annoying because we have to check all the way down to
-            -- 1 to see if we have DROPS the whole way. 
-            -- 
-            -- If so, remove them all and adjust. If not, simply remove.
+            -- Here we may be either in the middle or at the leftmost
+            -- margin.  Leftmost means either we're at index 1, or that
+            -- all children to the left, down to 1, are all DROPs. 
             local leftmost = (i == 1)
             if leftmost then
-               s:verb("+++  " .. a.cyan("leftmost") .. " remaining node")
-               s:verb("       t.first: " .. tostring(t.first)
-                      .. " D.last: " .. tostring(cap.last))
+               s:verb(a.cyan("leftmost") .. " remaining node")
+               s:verb("  t.^: " .. tostring(t.first)
+                      .. " D.$: " .. tostring(cap.last))
                t.first = cap.last + 1
-               s:verb("   new t.first: " .. tostring(t.first))
+               s:verb("  new t.^: " .. tostring(t.first))
                table.remove(t, 1)
             else
                leftmost = true -- provisionally since cap.DROP
@@ -207,18 +215,19 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                  if not leftmost then break end
                end
                if leftmost then
-                  s:verb("+++  " .. a.cyan("leftmost inner") .. " remaining node")
-                  s:verb("       t.first: " .. tostring(t.first)
-                         .. " D.last: " .. tostring(cap.last))
+                  s:verb(a.cyan("leftmost inner") .. " remaining node")
+                  s:verb("  t.^: " .. tostring(t.first)
+                         .. " D.$: " .. tostring(cap.last))
                   t.first = cap.last + 1
-                  s:verb("   new t.first: " .. tostring(t.first))
+                  s:verb("  new t.^: " .. tostring(t.first))
                   for j = i, 1, -1 do
-                     -- this is quadradic but correct and easy to understand.
+                     -- this is quadradic but correct 
+                     -- and easy to understand.
                      table.remove(t, j)
                      break
                   end
                else
-                  s:verb("===  " .. a.green("middle") .. " node")
+                  s:verb(a.green("middle") .. " node dropped")
                   table.remove(t, i)
                end
             end

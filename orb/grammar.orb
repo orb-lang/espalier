@@ -83,7 +83,7 @@ a language that did that sort of thing.
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = true
+s.verbose = false
 s.angry   = false
 
 local a = require "ansi"
@@ -116,10 +116,27 @@ end
 #/lua
 
 
-*** define
+*** make_ast_node
+
+  This takes a lot of parameters and does a lot of things. 
+
 
 #!lua
 local function make_ast_node(id, first, t, last, str, metas, offset)
+#/lua
+
+
+**** setup values and metatables
+
+  As [[covered elsewhere][httk://]], we accept three varieties of
+metatable verb.  An ordinary table is assigned; a table with __call is 
+called, as is an ordinary function.
+
+The latter two are expected to return the original table, now a descendent
+of =Node=.  This need not have an =id= field which is the same as the =id=
+parameter.
+
+#!lua
    local offset = offset or 0
    t.first = first + offset
    t.last  = last + offset - 1
@@ -137,28 +154,14 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 	     setmetatable(t, {__index = Node,
 	  	               __tostring = Node.toString})
    end
-
-
 #/lua
+
 
 **** DROP
 
-Making DROP work correctly will be somewhat painstaking. 
-
-I don't need it in my short path, so I'm likely to leave it for
-now.
-
-Here's notes on the algorithm:
-
-  -  =D= consumes the pattern.  If this is the leftmost match, we need
-     to adjust =first= forward by the length of this capture.
-
-     If it is the rightmost match, we need to adjust =last= accordingly.
-
-     Using =D= in the middle of a non-terminal capture should simply
-     nil out the capture and adjust accordingly.  The effect is the same
-     as SUPPRESS but only for that instance of the rule, which needn't be
-     a V. 
+  The rule =elpatt.D= causes the match to be dropped. In order for
+this to give use the results we want, we must adjust the peer and
+parent nodes while removing the captured element from the table. 
 
 The use case is for eloquently expressed 'wrapper' patterns, which occur
 frequently in real languages. In a =(typical lisp expression)= we don't need
@@ -170,6 +173,14 @@ this is less eloquent than =D(P"(") * V"form" *  D(P")")=.
 Which is admittedly hard to look at.  We prefer the form
 =D(pal) * V"form" * D(par)= for this reason among others.
 
+The algorithm moves from the right to the left, because =table.remove(t)=
+is O(1) so we can strip any amount of rightward droppage first.  It is
+correspondingly more expensive to strip middle drops, and most expensive
+to strip leftmost drops.
+
+More importantly, if we counted up, we'd be tracking =#t=, a moving target.
+Counting to 1 neatly prevents this.
+
 #!lua
    for i = #t, 1, -1 do 
       local cap = t[i] 
@@ -178,27 +189,24 @@ Which is admittedly hard to look at.  We prefer the form
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
       if cap.DROP  then
-         s:verb("-- child v of t is DROP, ^: " 
-                .. tostring(cap.first) .. " $: " .. tostring(cap.last))
          if i == #t then
-            s:verb("---  " .. a.red("rightmost") .. " remaining node")
-            s:verb(" ~~~   t.last:     " .. tostring(t.last) .. " Δ: "
-                  .. tostring(cap.last - cap.first + 1))
+            s:verb(a.red("rightmost") .. " remaining node")
+            s:verb("  t.$: " .. tostring(t.last) .. " Δ: "
+                   .. tostring(cap.last - cap.first + 1))
             t.last = t.last - (cap.last - cap.first + 1)
             table.remove(t)
-            s:verb("   -   new t.last: " .. tostring(t.last))
+            s:verb("  new t.$: " .. tostring(t.last))
          else
-            -- This is annoying because we have to check all the way down to
-            -- 1 to see if we have DROPS the whole way. 
-            -- 
-            -- If so, remove them all and adjust. If not, simply remove.
+            -- Here we may be either in the middle or at the leftmost
+            -- margin.  Leftmost means either we're at index 1, or that
+            -- all children to the left, down to 1, are all DROPs. 
             local leftmost = (i == 1)
             if leftmost then
-               s:verb("+++  " .. a.cyan("leftmost") .. " remaining node")
-               s:verb("       t.first: " .. tostring(t.first)
-                      .. " D.last: " .. tostring(cap.last))
+               s:verb(a.cyan("leftmost") .. " remaining node")
+               s:verb("  t.^: " .. tostring(t.first)
+                      .. " D.$: " .. tostring(cap.last))
                t.first = cap.last + 1
-               s:verb("   new t.first: " .. tostring(t.first))
+               s:verb("  new t.^: " .. tostring(t.first))
                table.remove(t, 1)
             else
                leftmost = true -- provisionally since cap.DROP
@@ -207,18 +215,19 @@ Which is admittedly hard to look at.  We prefer the form
                  if not leftmost then break end
                end
                if leftmost then
-                  s:verb("+++  " .. a.cyan("leftmost inner") .. " remaining node")
-                  s:verb("       t.first: " .. tostring(t.first)
-                         .. " D.last: " .. tostring(cap.last))
+                  s:verb(a.cyan("leftmost inner") .. " remaining node")
+                  s:verb("  t.^: " .. tostring(t.first)
+                         .. " D.$: " .. tostring(cap.last))
                   t.first = cap.last + 1
-                  s:verb("   new t.first: " .. tostring(t.first))
+                  s:verb("  new t.^: " .. tostring(t.first))
                   for j = i, 1, -1 do
-                     -- this is quadradic but correct and easy to understand.
+                     -- this is quadradic but correct 
+                     -- and easy to understand.
                      table.remove(t, j)
                      break
                   end
                else
-                  s:verb("===  " .. a.green("middle") .. " node")
+                  s:verb(a.green("middle") .. " node dropped")
                   table.remove(t, i)
                end
             end
