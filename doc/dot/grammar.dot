@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 291"]
+doc_0 [label="doc - 334"]
 
 
 doc_0 -> { section_1}
@@ -19,7 +19,7 @@ header_2 [label="1 : Grammar Module"]
 
 prose_3 [label="prose"]
 
-section_4 [label="section: 6-116"]
+section_4 [label="section: 6-118"]
 
 
 header_2 -> leaf_5
@@ -51,9 +51,9 @@ section_12 [label="section: 16-45"]
 
 section_13 [label="section: 46-69"]
 
-section_14 [label="section: 70-116"]
+section_14 [label="section: 70-118"]
 
-section_15 [label="section: 117-141"]
+section_15 [label="section: 119-143"]
 
 
 header_8 -> leaf_16
@@ -422,13 +422,13 @@ prose_127 [label="prose"]
 
 prose_128 [label="prose"]
 
-codeblock_129 [label="code block 82-93"]
+codeblock_129 [label="code block 82-95"]
 
 prose_130 [label="prose"]
 
 prose_131 [label="prose"]
 
-codeblock_132 [label="code block 99-114"]
+codeblock_132 [label="code block 101-116"]
 
 
 header_125 -> leaf_133
@@ -499,6 +499,8 @@ local s = require \"status\" ()
 s.verbose = true
 s.angry   = false
 
+local a = require \"ansi\"
+
 local Node = require \"node/node\"
 local elpatt = require \"node/elpatt\"
 
@@ -545,9 +547,9 @@ header_158 [label="3 : define"]
 
 prose_159 [label="prose"]
 
-codeblock_160 [label="code block 119-140"]
+codeblock_160 [label="code block 121-142"]
 
-section_161 [label="section: 142-291"]
+section_161 [label="section: 144-334"]
 
 
 header_158 -> leaf_162
@@ -605,13 +607,13 @@ prose_174 [label="prose"]
 
 prose_175 [label="prose"]
 
-codeblock_176 [label="code block 171-246"]
+codeblock_176 [label="code block 173-289"]
 
-codeblock_177 [label="code block 248-267"]
+codeblock_177 [label="code block 291-310"]
 
-codeblock_178 [label="code block 270-287"]
+codeblock_178 [label="code block 313-330"]
 
-codeblock_179 [label="code block 289-291"]
+codeblock_179 [label="code block 332-334"]
 
 
 header_166 -> leaf_180
@@ -728,7 +730,7 @@ raw_211 [label="raw"]
 
 raw_209 -> leaf_212
 leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-The use case is for eloquently expression 'wrapper' patterns, which occur
+The use case is for eloquently expressed 'wrapper' patterns, which occur
 frequently in real languages. In a "]
 literal_210 -> leaf_213
 leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(typical lisp expression)"]
@@ -785,22 +787,63 @@ raw_229 -> leaf_232
 leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Which is admittedly hard to look at.  We prefer the form"]
 literal_230 -> leaf_233
-leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(pal) * V\":form\" * D(par)"]
+leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(pal) * V\"form\" * D(par)"]
 raw_231 -> leaf_234
 leaf_234  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for this reason among others.
 "]
 codeblock_176 -> leaf_235
-leaf_235  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i=#t,1,-1 do 
-      local v = t[i] 
-      if type(v) ~= \"table\" then
+leaf_235  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t, 1, -1 do 
+      local cap = t[i] 
+      if type(cap) ~= \"table\" then
          s:complain(\"CAPTURE ISSUE\", 
                     \"type of capture subgroup is \" .. type(v) .. \"\\n\")
       end
-      if v == DROP then
-        s:verb(\"-- child v of t is DROP\")
-        if i == #t then
-          s:verb(\"---  rightmost remaining node\")
-        end
+      if cap.DROP  then
+         s:verb(\"-- child v of t is DROP, ^: \" 
+                .. tostring(cap.first) .. \" $: \" .. tostring(cap.last))
+         if i == #t then
+            s:verb(\"---  \" .. a.red(\"rightmost\") .. \" remaining node\")
+            s:verb(\" ~~~   t.last:     \" .. tostring(t.last) .. \" Δ: \"
+                  .. tostring(cap.last - cap.first + 1))
+            t.last = t.last - (cap.last - cap.first + 1)
+            table.remove(t)
+            s:verb(\"   -   new t.last: \" .. tostring(t.last))
+         else
+            -- This is annoying because we have to check all the way down to
+            -- 1 to see if we have DROPS the whole way. 
+            -- 
+            -- If so, remove them all and adjust. If not, simply remove.
+            local leftmost = (i == 1)
+            if leftmost then
+               s:verb(\"+++  \" .. a.cyan(\"leftmost\") .. \" remaining node\")
+               s:verb(\"       t.first: \" .. tostring(t.first)
+                      .. \" D.last: \" .. tostring(cap.last))
+               t.first = cap.last + 1
+               s:verb(\"   new t.first: \" .. tostring(t.first))
+               table.remove(t, 1)
+            else
+               leftmost = true -- provisionally since cap.DROP
+               for j = i, 1, -1 do
+                 leftmost = leftmost and t[j].DROP
+                 if not leftmost then break end
+               end
+               if leftmost then
+                  s:verb(\"+++  \" .. a.cyan(\"leftmost inner\") .. \" remaining node\")
+                  s:verb(\"       t.first: \" .. tostring(t.first)
+                         .. \" D.last: \" .. tostring(cap.last))
+                  t.first = cap.last + 1
+                  s:verb(\"   new t.first: \" .. tostring(t.first))
+                  for j = i, 1, -1 do
+                     -- this is quadradic but correct and easy to understand.
+                     table.remove(t, j)
+                     break
+                  end
+               else
+                  s:verb(\"===  \" .. a.green(\"middle\") .. \" node\")
+                  table.remove(t, i)
+               end
+            end
+         end
       end 
    end
    assert(t.isNode, \"failed isNode: \" .. id)

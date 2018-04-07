@@ -53,15 +53,15 @@ local function ab(_ENV)
 end
 
 local function clu_gm(_ENV)
-  local WS = P(m._ + m.NL)^0
+  local WS = D(P(m._ + m.NL)^0)
   START "clu"
   SUPPRESS "form"
   clu = V"form"^1
   form = D((V"number" * WS))
-       + (V"atom" * D(WS)) 
+       + (V"atom" * WS) 
        + (V"expr" * WS)
-  expr = m.pal * WS * V"form"^0 * WS * m.par
-  atom = C(m.symbol)
+  expr = D(m.pal) * WS * V"form"^0 * WS * D(m.par)
+  atom = m.symbol
   number = m.number
 end
 

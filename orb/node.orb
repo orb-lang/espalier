@@ -6,7 +6,7 @@
 *** includes
 
 #!lua
-local s = require "status"
+local s = require "status" ()
 local ansi = require "ansi"
 local dot = require "node/dot"
 #/lua
@@ -47,6 +47,11 @@ It occurs to me we could lazily calculate these using the [[line iterator][httk:
 
 *** Scaffolding 
 
+**** toLua
+
+This is not a general method in any sense, it's here as a backstop
+while I build out Clu. 
+
 #!lua
 function Node.toLua(node)
   s:halt("No toLua method for " .. node.id)
@@ -54,7 +59,7 @@ end
 #/lua
 
 
-*** Visualizers
+*** Visualizer
 
 This gives us a nice, tree-shaped printout of an entire Node.
 
@@ -82,17 +87,70 @@ function Node.toString(node, depth)
 end
 #/lua
 
+*** Metrics
+
+
+**** span
+
 #!lua
 function Node.span(node)
    return string.sub(node.str, node.first, node.last)
 end
 #/lua
 
+
+**** len
+
+ahh, the pleasure of indexing by one. 
+
 #!lua
 function Node.len(node)
-    return #Node.span(node)
+    return 1 + node.last - node.first
 end
 #/lua
+
+
+**** Node:gap(node)
+
+=Node.gap(left, right)= compares the =last= field of the =left= parameter
+with the =first= field of the =right= parameter, *if* this is greater than
+0. 
+
+If it is negative, =Node.gap= attempts to measure the =first= field of the
+=right= parameter against the =last= field of the =left= parameter.
+
+If this is a natural number we return the *negation* of this value.  If both
+should prove to be positive, we halt. 
+
+No effort is made to check that the =str= field matches between nodes unless
+we have an error, in which case it could prove helpful for diagnosis.  
+
+Indeed such a check would be a disaster in streams or other sort of
+piecewise parse.  Which will require implementation in and of itself, but
+in the meantime...
+
+#!lua
+function Node.gap(left, right)
+  assert(left.last, "no left.last")
+  assert(right.first, "no right.first")
+  assert(right.last, "no right.last")
+  assert(left.first, "no left.first")
+  if left.first >= right.last then
+    local left, right = right, left
+  elseif left.last > right.first then
+    s:halt("overlapping regions or str issue")
+  end
+  local gap = left
+  if gap >= 0 then
+    return gap
+  else
+    s:halt("some kind of situation where gap is " .. tostring(gap))
+  end
+
+  return nil 
+end
+#/lua
+
 
 #!lua
 function Node.dotLabel(node)

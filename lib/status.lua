@@ -10,6 +10,8 @@ local a = require "ansi"
 
 local status = {}
 
+status.DjikstraWasRight = true -- I swear I'm going to use this for something. Watch.
+
 status.chatty = true
 status.verbose = false 
 status.grumpy = true
@@ -58,7 +60,7 @@ function status.complain(statusQuo, topic, message)
 end
 
 local function call(statusQuo)
-    return setmetatable({}, {__index = statusQuo})
+    return setmetatable({}, {__index = statusQuo, __call = call})
 end
 
 

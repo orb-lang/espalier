@@ -9,10 +9,12 @@
 
 
 local L = require "lpeg"
+local s = require "status" ()
+s.verbose = false
 local elpatt = {}
 elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
-local P, Cc = L.P, L.Cc
+local P, C, Cc, Cp, Ct = L.P, L.C, L.Cc, L.Cp, L.Ct
 
 
 
@@ -77,12 +79,22 @@ end
 
 
 
-local DROP = {}
+local DROP = { DROP = true }
 
 elpatt.DROP = DROP
 
-function elpatt.D(patt)
-   return (patt / 0) * Cc(DROP)
+local function make_drop(caps)
+   local dropped = setmetatable({}, {__index = DROP})
+   s:verb("dropped: first: " .. tostring(caps[1]) 
+          .. " last: " .. tostring(caps[3])
+          .. " middle: " .. tostring(caps[2]))
+   dropped.first = caps[1]
+   dropped.last = caps[3]
+   return dropped
+end
+
+function elpatt.D(patt)  
+   return Ct(Cp() * Ct(patt) * Cp()) / make_drop
 end
 
 

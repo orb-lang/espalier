@@ -6,7 +6,7 @@
 
 
 
-local s = require "status"
+local s = require "status" ()
 local ansi = require "ansi"
 local dot = require "node/dot"
 
@@ -38,6 +38,11 @@ Node.isNode = true
 
 Node.line_first = -1
 Node.line_last  = -1
+
+
+
+
+
 
 
 
@@ -83,15 +88,68 @@ end
 
 
 
+
+
+
+
+
 function Node.span(node)
    return string.sub(node.str, node.first, node.last)
 end
 
 
 
+
+
+
+
+
 function Node.len(node)
-    return #Node.span(node)
+    return 1 + node.last - node.first
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Node.gap(left, right)
+  assert(left.last, "no left.last")
+  assert(right.first, "no right.first")
+  assert(right.last, "no right.last")
+  assert(left.first, "no left.first")
+  if left.first >= right.last then
+    local left, right = right, left
+  elseif left.last > right.first then
+    s:halt("overlapping regions or str issue")
+  end
+  local gap = left
+  if gap >= 0 then
+    return gap
+  else
+    s:halt("some kind of situation where gap is " .. tostring(gap))
+  end
+
+  return nil 
+end
+
 
 
 

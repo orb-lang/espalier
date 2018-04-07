@@ -100,6 +100,8 @@ local s = require "status" ()
 s.verbose = true
 s.angry   = false
 
+local a = require "ansi"
+
 local Node = require "node/node"
 local elpatt = require "node/elpatt"
 
@@ -176,7 +178,7 @@ Here's notes on the algorithm:
      a V. 
 
 
-The use case is for eloquently expression 'wrapper' patterns, which occur
+The use case is for eloquently expressed 'wrapper' patterns, which occur
 frequently in real languages. In a `````(typical lisp expression)````` we don't need
 the parentheses and would like our span not to include them.
 
@@ -186,20 +188,61 @@ this is less eloquent than `````D(P"(") * V"form" *  D(P")")`````.
 
 
 Which is admittedly hard to look at.  We prefer the form
-`````D(pal) * V":form" * D(par)````` for this reason among others.
+`````D(pal) * V"form" * D(par)````` for this reason among others.
 
 ```lua
-   for i=#t,1,-1 do 
-      local v = t[i] 
-      if type(v) ~= "table" then
+   for i = #t, 1, -1 do 
+      local cap = t[i] 
+      if type(cap) ~= "table" then
          s:complain("CAPTURE ISSUE", 
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
-      if v == DROP then
-        s:verb("-- child v of t is DROP")
-        if i == #t then
-          s:verb("---  rightmost remaining node")
-        end
+      if cap.DROP  then
+         s:verb("-- child v of t is DROP, ^: " 
+                .. tostring(cap.first) .. " $: " .. tostring(cap.last))
+         if i == #t then
+            s:verb("---  " .. a.red("rightmost") .. " remaining node")
+            s:verb(" ~~~   t.last:     " .. tostring(t.last) .. " Δ: "
+                  .. tostring(cap.last - cap.first + 1))
+            t.last = t.last - (cap.last - cap.first + 1)
+            table.remove(t)
+            s:verb("   -   new t.last: " .. tostring(t.last))
+         else
+            -- This is annoying because we have to check all the way down to
+            -- 1 to see if we have DROPS the whole way. 
+            -- 
+            -- If so, remove them all and adjust. If not, simply remove.
+            local leftmost = (i == 1)
+            if leftmost then
+               s:verb("+++  " .. a.cyan("leftmost") .. " remaining node")
+               s:verb("       t.first: " .. tostring(t.first)
+                      .. " D.last: " .. tostring(cap.last))
+               t.first = cap.last + 1
+               s:verb("   new t.first: " .. tostring(t.first))
+               table.remove(t, 1)
+            else
+               leftmost = true -- provisionally since cap.DROP
+               for j = i, 1, -1 do
+                 leftmost = leftmost and t[j].DROP
+                 if not leftmost then break end
+               end
+               if leftmost then
+                  s:verb("+++  " .. a.cyan("leftmost inner") .. " remaining node")
+                  s:verb("       t.first: " .. tostring(t.first)
+                         .. " D.last: " .. tostring(cap.last))
+                  t.first = cap.last + 1
+                  s:verb("   new t.first: " .. tostring(t.first))
+                  for j = i, 1, -1 do
+                     -- this is quadradic but correct and easy to understand.
+                     table.remove(t, j)
+                     break
+                  end
+               else
+                  s:verb("===  " .. a.green("middle") .. " node")
+                  table.remove(t, i)
+               end
+            end
+         end
       end 
    end
    assert(t.isNode, "failed isNode: " .. id)
