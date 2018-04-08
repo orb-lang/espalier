@@ -879,28 +879,27 @@ leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(P\"(\") * V\
 raw_275 -> leaf_285
 leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
 "]
-prose_236 -> { raw_286 prespace_287 bold_288 raw_289}
-{rank=same; raw_286 prespace_287 bold_288 raw_289}
+prose_236 -> { raw_286 prespace_287 literal_288 raw_289}
+{rank=same; raw_286 prespace_287 literal_288 raw_289}
 
 raw_286 [label="raw"]
 
 prespace_287 [label="prespace"]
 
-bold_288 [label="bold"]
+literal_288 [label="literal"]
 
 raw_289 [label="raw"]
 
 
 raw_286 -> leaf_290
 leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Which is admittedly hard to look at.  We prefer the form
-=D(pal)"]
+Which is admittedly hard to look at.  We prefer the form"]
 prespace_287 -> leaf_291
-leaf_291  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-bold_288 -> leaf_292
-leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" V\"form\" "]
+leaf_291  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+literal_288 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(pal) * V\"form\" * D(par)"]
 raw_289 -> leaf_293
-leaf_293  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" D(par)= for this reason among others.
+leaf_293  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for this reason among others.
 "]
 prose_237 -> { raw_294 prespace_295 literal_296 raw_297}
 {rank=same; raw_294 prespace_295 literal_296 raw_297}

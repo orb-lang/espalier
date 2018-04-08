@@ -73,7 +73,7 @@ What about regions of text that don't interest us?  Canonically this
 includes whitespace.  For those occasions, we have ``elpatt.D``. 
 
 
-=D= needs to take a pattern, and if it succeeds in matching it, return a
+``D`` needs to take a pattern, and if it succeeds in matching it, return a
 special table, while discarding the captures if any. In ``define``, we will
 check for this table, and drop it whenever encountered.
 

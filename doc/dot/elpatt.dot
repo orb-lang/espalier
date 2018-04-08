@@ -288,53 +288,60 @@ leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt.D"]
 raw_78 -> leaf_82
 leaf_82  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
 "]
-prose_58 -> { raw_83 prespace_84 literal_85 raw_86}
-{rank=same; raw_83 prespace_84 literal_85 raw_86}
+prose_58 -> { prespace_83 literal_84 raw_85 prespace_86 literal_87 raw_88}
+{rank=same; prespace_83 literal_84 raw_85 prespace_86 literal_87 raw_88}
 
-raw_83 [label="raw"]
+prespace_83 [label="prespace"]
 
-prespace_84 [label="prespace"]
+literal_84 [label="literal"]
 
-literal_85 [label="literal"]
+raw_85 [label="raw"]
 
-raw_86 [label="raw"]
+prespace_86 [label="prespace"]
+
+literal_87 [label="literal"]
+
+raw_88 [label="raw"]
 
 
-raw_83 -> leaf_87
-leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-=D= needs to take a pattern, and if it succeeds in matching it, return a
+prespace_83 -> leaf_89
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+literal_84 -> leaf_90
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D"]
+raw_85 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" needs to take a pattern, and if it succeeds in matching it, return a
 special table, while discarding the captures if any. In"]
-prespace_84 -> leaf_88
-leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_85 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="define"]
-raw_86 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we will
+prespace_86 -> leaf_92
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_87 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="define"]
+raw_88 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we will
 check for this table, and drop it whenever encountered.
 
 "]
-prose_59 -> { raw_91}
-{rank=same; raw_91}
+prose_59 -> { raw_95}
+{rank=same; raw_95}
 
-raw_91 [label="raw"]
+raw_95 [label="raw"]
 
 
-raw_91 -> leaf_92
-leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_95 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   - patt :  The pattern to match and drop
 "]
-prose_60 -> { raw_93}
-{rank=same; raw_93}
+prose_60 -> { raw_97}
+{rank=same; raw_97}
 
-raw_93 [label="raw"]
+raw_97 [label="raw"]
 
 
-raw_93 -> leaf_94
-leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_97 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   - #return : Special table DROP
 "]
-codeblock_61 -> leaf_95
-leaf_95  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+codeblock_61 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 local DROP = {}
 
 elpatt.DROP = DROP
@@ -351,57 +358,57 @@ function elpatt.D(patt)
    return Ct(Cp() * Ct(patt) * Cp()) / make_drop
 end
 "]
-section_62 -> { header_96 prose_97 prose_98 codeblock_99}
-{rank=same; header_96 prose_97 prose_98 codeblock_99}
+section_62 -> { header_100 prose_101 prose_102 codeblock_103}
+{rank=same; header_100 prose_101 prose_102 codeblock_103}
 
-header_96 [label="3 : E : Capture an Error"]
+header_100 [label="3 : E : Capture an Error"]
 
-prose_97 [label="prose"]
+prose_101 [label="prose"]
 
-prose_98 [label="prose"]
+prose_102 [label="prose"]
 
-codeblock_99 [label="code block 110-131"]
-
-
-header_96 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** E : Capture an Error"]
-prose_97 -> { raw_101}
-{rank=same; raw_101}
-
-raw_101 [label="raw"]
+codeblock_103 [label="code block 110-131"]
 
 
-raw_101 -> leaf_102
-leaf_102  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_100 -> leaf_104
+leaf_104  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** E : Capture an Error"]
+prose_101 -> { raw_105}
+{rank=same; raw_105}
+
+raw_105 [label="raw"]
+
+
+raw_105 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Rather than throwing errors, we prefer to add them to the parse tree in some
 cases.
 "]
-prose_98 -> { raw_103 prespace_104 literal_105 raw_106}
-{rank=same; raw_103 prespace_104 literal_105 raw_106}
+prose_102 -> { raw_107 prespace_108 literal_109 raw_110}
+{rank=same; raw_107 prespace_108 literal_109 raw_110}
 
-raw_103 [label="raw"]
+raw_107 [label="raw"]
 
-prespace_104 [label="prespace"]
+prespace_108 [label="prespace"]
 
-literal_105 [label="literal"]
+literal_109 [label="literal"]
 
-raw_106 [label="raw"]
+raw_110 [label="raw"]
 
 
-raw_103 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_107 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 optionally, we can include a pattern which, if the parse were to be correct,
 would succeed. So a"]
-prespace_104 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_105 -> leaf_109
-leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="( ])"]
-raw_106 -> leaf_110
-leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" type error could be \"fail to close (\" and =P\")\".
+prespace_108 -> leaf_112
+leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_109 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="( ])"]
+raw_110 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" type error could be \"fail to close (\" and =P\")\".
 "]
-codeblock_99 -> leaf_111
-leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Err = Node:inherit()
+codeblock_103 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Err = Node:inherit()
 Err.id = \"ERROR\"
 
 local function parse_error(pos, msg, patt, str )
@@ -421,47 +428,25 @@ end
 function elpatt.EOF( msg )
   return -P( 1 ) + elpatt.E( msg )
 end"]
-section_63 -> { header_112 prose_113 prose_114 prose_115 codeblock_116 codeblock_117}
-{rank=same; header_112 prose_113 prose_114 prose_115 codeblock_116 codeblock_117}
+section_63 -> { header_116 prose_117 prose_118 prose_119 codeblock_120 codeblock_121}
+{rank=same; header_116 prose_117 prose_118 prose_119 codeblock_120 codeblock_121}
 
-header_112 [label="3 : S : Capture set"]
+header_116 [label="3 : S : Capture set"]
 
-prose_113 [label="prose"]
+prose_117 [label="prose"]
 
-prose_114 [label="prose"]
+prose_118 [label="prose"]
 
-prose_115 [label="prose"]
+prose_119 [label="prose"]
 
-codeblock_116 [label="code block 143-153"]
+codeblock_120 [label="code block 143-153"]
 
-codeblock_117 [label="code block 155-157"]
-
-
-header_112 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** S : Capture set"]
-prose_113 -> { raw_119}
-{rank=same; raw_119}
-
-raw_119 [label="raw"]
+codeblock_121 [label="code block 155-157"]
 
 
-raw_119 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-  Uses ordered choice to create a pattern which will match any provided
-pattern. 
-"]
-prose_114 -> { raw_121}
-{rank=same; raw_121}
-
-raw_121 [label="raw"]
-
-
-raw_121 -> leaf_122
-leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This will patternize anything you feed it, which is convenient for strings.
-"]
-prose_115 -> { raw_123}
+header_116 -> leaf_122
+leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** S : Capture set"]
+prose_117 -> { raw_123}
 {rank=same; raw_123}
 
 raw_123 [label="raw"]
@@ -469,11 +454,33 @@ raw_123 [label="raw"]
 
 raw_123 -> leaf_124
 leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  Uses ordered choice to create a pattern which will match any provided
+pattern. 
+"]
+prose_118 -> { raw_125}
+{rank=same; raw_125}
+
+raw_125 [label="raw"]
+
+
+raw_125 -> leaf_126
+leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This will patternize anything you feed it, which is convenient for strings.
+"]
+prose_119 -> { raw_127}
+{rank=same; raw_127}
+
+raw_127 [label="raw"]
+
+
+raw_127 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Despite being called \"Set\", it makes no attempt at uniqueness and will
 match against patterns in the order provided. 
 "]
-codeblock_116 -> leaf_125
-leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function elpatt.S(a, ...)
+codeblock_120 -> leaf_129
+leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function elpatt.S(a, ...)
    if not a then return nil end
    local arg = {...}
    local set = P(a)
@@ -482,7 +489,7 @@ leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function elpat
    end
    return set
 end"]
-codeblock_117 -> leaf_126
-leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return elpatt"]
+codeblock_121 -> leaf_130
+leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return elpatt"]
 
 }

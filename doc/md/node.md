@@ -114,13 +114,13 @@ end
 ```
 #### Node:gap(node)
 
-=Node.gap(left, right)= compares the ``last`` field of the ``left`` parameter
+``Node.gap(left, right)`` compares the ``last`` field of the ``left`` parameter
 with the ``first`` field of the ``right`` parameter, **if** this is greater than
 0. 
 
 
 If it is negative, ``Node.gap`` attempts to measure the ``first`` field of the
-=right= parameter against the ``last`` field of the ``left`` parameter.
+``right`` parameter against the ``last`` field of the ``left`` parameter.
 
 
 If this is a natural number we return the **negation** of this value.  If both
@@ -229,7 +229,7 @@ end
 #### Node.select(node, pred)
 
   Takes the Node and walks it, yielding the Nodes which match the predicate.
-=pred= is either a string, which matches to ``id``, or a function, which takes
+``pred`` is either a string, which matches to ``id``, or a function, which takes
 a Node and returns true or false on some premise. 
 
 ```lua
@@ -285,7 +285,7 @@ end
 
   This iterator returns all Nodes, in prefix order, while interpolating
 strings.  Specifically: When a Node has a ``first`` that is less than the
-=first= if its first child, it makes a slice of the string corresponding to
+``first`` if its first child, it makes a slice of the string corresponding to
 that gap, and so on between each child, and once more at the end.
 
 

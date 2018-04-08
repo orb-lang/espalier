@@ -184,7 +184,7 @@ this is less eloquent than ``D(P"(") * V"form" *  D(P")")``.
 
 
 Which is admittedly hard to look at.  We prefer the form
-=D(pal) ** V"form" ** D(par)= for this reason among others.
+``D(pal) * V"form" * D(par)`` for this reason among others.
 
 
 The algorithm moves from the right to the left, because ``table.remove(t)``
