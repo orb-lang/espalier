@@ -17,7 +17,6 @@ an intermediate class/table called Root that is in common for any instance
 Node.  All Root absolutely has to contain is ``str``. 
 
 ```lua
-
 local Node = {}
 Node.__index = Node
 Node.isNode = true
@@ -281,7 +280,7 @@ function Node.tokens(node)
   return coroutine.wrap(function() traverse(node) end)
 end  
 ```
-#### Node.unroll(node)
+#### Node.unroll(node) 
 
   This iterator returns all Nodes, in prefix order, while interpolating
 strings.  Specifically: When a Node has a ``first`` that is less than the

@@ -148,7 +148,7 @@ parameter.
       else
         t = setmetatable(t, meta)
       end
-      assert(t.id)
+      assert(t.id, "no id on Node")
    else
 	    t.id = id
 	     setmetatable(t, {__index = Node,

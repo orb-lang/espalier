@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 456"]
+doc_0 [label="doc - 455"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-361"]
+section_1 [label="section: 1-360"]
 
 
 section_1 -> { header_2 prose_3 section_4 section_5 section_6 section_7 section_8}
@@ -21,13 +21,13 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-13"]
 
-section_5 [label="section: 14-28"]
+section_5 [label="section: 14-27"]
 
-section_6 [label="section: 29-45"]
+section_6 [label="section: 28-44"]
 
-section_7 [label="section: 46-340"]
+section_7 [label="section: 45-339"]
 
-section_8 [label="section: 362-421"]
+section_8 [label="section: 361-420"]
 
 
 header_2 -> leaf_9
@@ -76,7 +76,7 @@ header_19 [label="2 : Node metatable"]
 
 prose_20 [label="prose"]
 
-codeblock_21 [label="code block 20-25"]
+codeblock_21 [label="code block 20-24"]
 
 
 header_19 -> leaf_22
@@ -107,8 +107,7 @@ raw_26 -> leaf_30
 leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
 "]
 codeblock_21 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-local Node = {}
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Node = {}
 Node.__index = Node
 Node.isNode = true"]
 section_6 -> { header_32 prose_33 prose_34 codeblock_35 prose_36}
@@ -120,7 +119,7 @@ prose_33 [label="prose"]
 
 prose_34 [label="prose"]
 
-codeblock_35 [label="code block 38-41"]
+codeblock_35 [label="code block 37-40"]
 
 prose_36 [label="prose"]
 
@@ -190,15 +189,15 @@ header_52 [label="2 : Methods"]
 
 prose_53 [label="prose"]
 
-section_54 [label="section: 48-49"]
+section_54 [label="section: 47-48"]
 
-section_55 [label="section: 62-100"]
+section_55 [label="section: 61-99"]
 
-section_56 [label="section: 101-298"]
+section_56 [label="section: 100-297"]
 
-section_57 [label="section: 323-340"]
+section_57 [label="section: 322-339"]
 
-section_58 [label="section: 341-343"]
+section_58 [label="section: 340-342"]
 
 
 header_52 -> leaf_59
@@ -219,7 +218,7 @@ header_62 [label="3 : Scaffolding "]
 
 prose_63 [label="prose"]
 
-section_64 [label="section: 50-61"]
+section_64 [label="section: 49-60"]
 
 
 header_62 -> leaf_65
@@ -240,7 +239,7 @@ header_68 [label="4 : toLua"]
 
 prose_69 [label="prose"]
 
-codeblock_70 [label="code block 55-59"]
+codeblock_70 [label="code block 54-58"]
 
 
 header_68 -> leaf_71
@@ -270,7 +269,7 @@ prose_76 [label="prose"]
 
 prose_77 [label="prose"]
 
-codeblock_78 [label="code block 69-99"]
+codeblock_78 [label="code block 68-98"]
 
 
 header_75 -> leaf_79
@@ -334,21 +333,21 @@ header_85 [label="3 : Metrics"]
 
 prose_86 [label="prose"]
 
-section_87 [label="section: 104-112"]
+section_87 [label="section: 103-111"]
 
-section_88 [label="section: 113-123"]
+section_88 [label="section: 112-122"]
 
-section_89 [label="section: 124-195"]
+section_89 [label="section: 123-194"]
 
-section_90 [label="section: 196-216"]
+section_90 [label="section: 195-215"]
 
-section_91 [label="section: 217-239"]
+section_91 [label="section: 216-238"]
 
-section_92 [label="section: 240-279"]
+section_92 [label="section: 239-278"]
 
-section_93 [label="section: 280-298"]
+section_93 [label="section: 279-297"]
 
-section_94 [label="section: 299-322"]
+section_94 [label="section: 298-321"]
 
 
 header_85 -> leaf_95
@@ -370,7 +369,7 @@ header_98 [label="4 : span"]
 
 prose_99 [label="prose"]
 
-codeblock_100 [label="code block 106-110"]
+codeblock_100 [label="code block 105-109"]
 
 
 header_98 -> leaf_101
@@ -395,7 +394,7 @@ header_105 [label="4 : len"]
 
 prose_106 [label="prose"]
 
-codeblock_107 [label="code block 117-121"]
+codeblock_107 [label="code block 116-120"]
 
 
 header_105 -> leaf_108
@@ -430,9 +429,9 @@ prose_116 [label="prose"]
 
 prose_117 [label="prose"]
 
-codeblock_118 [label="code block 143-163"]
+codeblock_118 [label="code block 142-162"]
 
-codeblock_119 [label="code block 166-194"]
+codeblock_119 [label="code block 165-193"]
 
 
 header_112 -> leaf_120
@@ -703,7 +702,7 @@ header_211 [label="4 : Node.walkPost"]
 
 prose_212 [label="prose"]
 
-codeblock_213 [label="code block 200-215"]
+codeblock_213 [label="code block 199-214"]
 
 
 header_211 -> leaf_214
@@ -741,7 +740,7 @@ header_218 [label="4 : Node.walk"]
 
 prose_219 [label="prose"]
 
-codeblock_220 [label="code block 221-237"]
+codeblock_220 [label="code block 220-236"]
 
 
 header_218 -> leaf_221
@@ -780,7 +779,7 @@ header_225 [label="4 : Node.select(node, pred)"]
 
 prose_226 [label="prose"]
 
-codeblock_227 [label="code block 246-277"]
+codeblock_227 [label="code block 245-276"]
 
 
 header_225 -> leaf_228
@@ -859,7 +858,7 @@ header_244 [label="4 : Node.tokens(node)"]
 
 prose_245 [label="prose"]
 
-codeblock_246 [label="code block 284-296"]
+codeblock_246 [label="code block 283-295"]
 
 
 header_244 -> leaf_247
@@ -890,7 +889,7 @@ end  "]
 section_94 -> { header_251 prose_252 prose_253 prose_254 codeblock_255}
 {rank=same; header_251 prose_252 prose_253 prose_254 codeblock_255}
 
-header_251 [label="4 : Node.unroll(node)"]
+header_251 [label="4 : Node.unroll(node) "]
 
 prose_252 [label="prose"]
 
@@ -898,11 +897,11 @@ prose_253 [label="prose"]
 
 prose_254 [label="prose"]
 
-codeblock_255 [label="code block 313-320"]
+codeblock_255 [label="code block 312-319"]
 
 
 header_251 -> leaf_256
-leaf_256  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.unroll(node)"]
+leaf_256  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.unroll(node) "]
 prose_252 -> { raw_257 prespace_258 literal_259 raw_260 prespace_261 literal_262 raw_263}
 {rank=same; raw_257 prespace_258 literal_259 raw_260 prespace_261 literal_262 raw_263}
 
@@ -1015,7 +1014,7 @@ prose_295 [label="prose"]
 
 prose_296 [label="prose"]
 
-codeblock_297 [label="code block 330-339"]
+codeblock_297 [label="code block 329-338"]
 
 
 header_294 -> leaf_298
@@ -1058,7 +1057,7 @@ header_304 [label="3 : Subclassing and construction"]
 
 prose_305 [label="prose"]
 
-section_306 [label="section: 344-361"]
+section_306 [label="section: 343-360"]
 
 
 header_304 -> leaf_307
@@ -1080,7 +1079,7 @@ header_310 [label="4 : N.inherit(node)"]
 
 prose_311 [label="prose"]
 
-codeblock_312 [label="code block 346-360"]
+codeblock_312 [label="code block 345-359"]
 
 
 header_310 -> leaf_313
@@ -1123,9 +1122,9 @@ prose_321 [label="prose"]
 
 prose_322 [label="prose"]
 
-section_323 [label="section: 386-408"]
+section_323 [label="section: 385-407"]
 
-section_324 [label="section: 422-456"]
+section_324 [label="section: 421-455"]
 
 
 header_317 -> leaf_325
@@ -1244,7 +1243,7 @@ prose_358 [label="prose"]
 
 prose_359 [label="prose"]
 
-section_360 [label="section: 409-421"]
+section_360 [label="section: 408-420"]
 
 
 header_354 -> leaf_361
@@ -1428,7 +1427,7 @@ prose_411 [label="prose"]
 
 prose_412 [label="prose"]
 
-codeblock_413 [label="code block 451-453"]
+codeblock_413 [label="code block 450-452"]
 
 
 header_404 -> leaf_414

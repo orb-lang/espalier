@@ -2849,7 +2849,7 @@
 <text text-anchor="middle" x="17989.5" y="-1067.3818" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;else</text>
 <text text-anchor="middle" x="17989.5" y="-1051.9818" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;t = setmetatable(t, meta)</text>
 <text text-anchor="middle" x="17989.5" y="-1036.5817" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="17989.5" y="-1021.1817" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;assert(t.id)</text>
+<text text-anchor="middle" x="17989.5" y="-1021.1817" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;assert(t.id, &quot;no id on Node&quot;)</text>
 <text text-anchor="middle" x="17989.5" y="-1005.7817" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;else</text>
 <text text-anchor="middle" x="17989.5" y="-990.3817" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;t.id = id</text>
 <text text-anchor="middle" x="17989.5" y="-974.9816" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;setmetatable(t, {__index = Node,</text>

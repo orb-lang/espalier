@@ -18,7 +18,6 @@ local dot = require "node/dot"
 
 
 
-
 local Node = {}
 Node.__index = Node
 Node.isNode = true
