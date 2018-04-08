@@ -1,7 +1,7 @@
 # Extended Lpeg module
 
 
-  This is where we add extended captures a la the old `````epeg````` 
+  This is where we add extended captures a la the old ``epeg`` 
 module.
 
 
@@ -12,10 +12,11 @@ and can therefore use elpeg as L everywhere we currently use lpeg.
 local L = require "lpeg"
 local s = require "status" ()
 s.verbose = false
+local Node = require "node"
 local elpatt = {}
 elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
-local P, C, Cc, Cp, Ct = L.P, L.C, L.Cc, L.Cp, L.Ct
+local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg
 
 ```
 ## Ppt : Codepoint pattern
@@ -26,7 +27,7 @@ Captures one Unicode point
 I actually have no idea how to do this yet...
 
 
-Looks like byte 97 is just `````\97````` in Lua. That's easy enough.
+Looks like byte 97 is just ``\97`` in Lua. That's easy enough.
 
 
 ### num_bytes(str)
@@ -35,7 +36,7 @@ Captures the number of bytes in the next codepoint of a string.
 
 
 The string must be well-formed utf-8, more precisely, a malformed
-string will return `````nil`````.  A zero byte is correctly allowed by the
+string will return ``nil``.  A zero byte is correctly allowed by the
 standard and will match here. 
 
 ```lua
@@ -59,7 +60,7 @@ end
 
   We discourage the use of captures in the Node class.  The architecture
 requires that all array values of a Node table be themselves Nodes. This is
-frequently checked for, in that we use `````isNode````` to filter in iterators etc,
+frequently checked for, in that we use ``isNode`` to filter in iterators etc,
 but this is defensive. 
 
 
@@ -69,11 +70,11 @@ inelegant compared to treating any Node without children as a leaf.
 
 
 What about regions of text that don't interest us?  Canonically this
-includes whitespace.  For those occasions, we have `````elpatt.D`````. 
+includes whitespace.  For those occasions, we have ``elpatt.D``. 
 
 
-`````D````` needs to take a pattern, and if it succeeds in matching it, return a
-special table, while discarding the captures if any. In `````define`````, we will
+=D= needs to take a pattern, and if it succeeds in matching it, return a
+special table, while discarding the captures if any. In ``define``, we will
 check for this table, and drop it whenever encountered.
 
 
@@ -101,6 +102,37 @@ function elpatt.D(patt)
    return Ct(Cp() * Ct(patt) * Cp()) / make_drop
 end
 
+```
+### E : Capture an Error
+
+Rather than throwing errors, we prefer to add them to the parse tree in some
+cases.
+
+
+optionally, we can include a pattern which, if the parse were to be correct,
+would succeed. So a ``( ])`` type error could be "fail to close (" and =P")".
+
+```lua
+local Err = Node:inherit()
+Err.id = "ERROR"
+
+local function parse_error(pos, msg, patt, str )
+   local errorNode = setmetatable({}, Err)
+   errorNode.first = pos
+   errorNode.last  = pos
+   errorNode.msg   = msg
+   errorNode.str   = str
+   errorNode.patt  = patt
+   return errorNode
+end
+
+function elpatt.E( msg, patt)
+  return Cp() * Cc(msg) * Cc(patt) * Carg(1) / parse_error
+end
+
+function elpatt.EOF( msg )
+  return -P( 1 ) + elpatt.E( msg )
+end
 ```
 ### S : Capture set
 

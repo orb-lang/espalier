@@ -83,7 +83,7 @@ a language that did that sort of thing.
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = true
+s.verbose = false
 s.angry   = false
 
 local a = require "ansi"
@@ -350,7 +350,7 @@ local function new(grammar_template, metas)
 
 		local function parse(str, offset)
 			local offset = offset or 0
-			return L.match(grammar, str, 1, str, metas, offset) -- other 
+			return L.match(grammar, str, 1, str, metas, offset)
 		end
 
 		return parse

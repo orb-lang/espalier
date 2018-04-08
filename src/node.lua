@@ -7,7 +7,7 @@
 
 
 local s = require "status" ()
-local ansi = require "ansi"
+local a = require "ansi"
 local dot = require "node/dot"
 
 
@@ -70,17 +70,17 @@ end
 function Node.toString(node, depth)
    local depth = depth or 0
    local phrase = ""
-   phrase = ("  "):rep(depth) .. "id: " .. ansi.bright(node.id) .. ",  "
-      .. "first: " .. node.first .. ", last: " .. node.last
+   phrase = ("  "):rep(depth) .. a.bright(node.id) .. "    "
+      .. a.cyan(node.first) .. "-" .. a.cyan(node.last)
    if node[1] then
-      local extra = " span:  "
+      local extra = "    "
       if Node.len(node) > 56 then
          local span = Node.span(node)
          local pre, post = string.sub(span, 1, 28), string.sub(span, -28, -1)
-         extra = extra .. ansi.dim(pre) .. ansi.bright("…") .. ansi.dim(post)
+         extra = extra .. a.dim(pre) .. a.bright("…") .. a.dim(post)
          extra = extra:gsub("\n", "◼︎")
       else
-         extra = extra .. ansi.dim(Node.span(node):gsub("\n", "◼︎"))
+         extra = extra .. a.dim(Node.span(node):gsub("\n", "◼︎"))
       end
       phrase = phrase .. extra .. "\n"
       for _,v in ipairs(node) do
@@ -89,8 +89,10 @@ function Node.toString(node, depth)
          end
       end
    else
-      phrase = phrase .. ",  val:  " 
-             .. ansi.green(node.str:sub(node.first, node.last)) .. "\n"
+      local val = node.str:sub(node.first, node.last)
+                          :gsub(" ", a.clear() .. a.dim("_") .. a.green())
+      val = a.green(val)
+      phrase = phrase .. "    " .. val  .. "\n"
    end
    return phrase
 end
@@ -343,7 +345,7 @@ end
 
 
 function Node.inherit(node)
-  Meta = setmetatable({}, node)
+  local Meta = setmetatable({}, node)
   Meta.__index = Meta
   local meta = setmetatable({}, Meta)
   meta.__index = meta

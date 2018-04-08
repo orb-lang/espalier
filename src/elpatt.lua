@@ -11,10 +11,11 @@
 local L = require "lpeg"
 local s = require "status" ()
 s.verbose = false
+local Node = require "node"
 local elpatt = {}
 elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
-local P, C, Cc, Cp, Ct = L.P, L.C, L.Cc, L.Cp, L.Ct
+local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg
 
 
 
@@ -96,6 +97,37 @@ function elpatt.D(patt)
 end
 
 
+
+
+
+
+
+
+
+
+
+
+
+local Err = Node:inherit()
+Err.id = "ERROR"
+
+local function parse_error(pos, msg, patt, str )
+   local errorNode = setmetatable({}, Err)
+   errorNode.first = pos
+   errorNode.last  = pos
+   errorNode.msg   = msg
+   errorNode.str   = str
+   errorNode.patt  = patt
+   return errorNode
+end
+
+function elpatt.E( msg, patt)
+  return Cp() * Cc(msg) * Cc(patt) * Carg(1) / parse_error
+end
+
+function elpatt.EOF( msg )
+  return -P( 1 ) + elpatt.E( msg )
+end
 
 
 

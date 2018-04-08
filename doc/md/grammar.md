@@ -8,7 +8,7 @@ a grammar.
 This function takes two parameters, namely:
 
 
-  - grammar_template :  A function with one parameter, which must be `````_ENV`````.
+  - grammar_template :  A function with one parameter, which must be ``_ENV``.
   - metas :  A map with keys of string and values of Node subclass constructors.
 
 
@@ -18,7 +18,7 @@ Both of these are reasonably complex.
 ### grammar_template
 
   The internal function @define creates a custom environment variable, neatly
-sidestepping lua's pedantic insistance on prepending `````local````` to all values of 
+sidestepping lua's pedantic insistance on prepending ``local`` to all values of 
 significance. 
 
 
@@ -26,7 +26,7 @@ More relevantly, it constructs a full grammar, which will return a table of
 type Node. 
 
 
-If you stick to `````lpeg````` patterns, as you should, all array values will be of
+If you stick to ``lpeg`` patterns, as you should, all array values will be of
 Node, as is intended.  Captures will interpolate various other sorts of Lua
 values, which will induce halting in some places and silently corrupt
 execution in others. 
@@ -57,13 +57,13 @@ Special fields include:
 you must pass in a table of metatable constructors.
 
 
-That's a fairly specific beast.  Any rule defined above will have an `````id`````
-corresonding to the name of the rule.  Unless `````SUPPRESS`````ed, this will become
-a Node.  If the `````metas````` parameter has a key corresponding to `````id`````, then it
+That's a fairly specific beast.  Any rule defined above will have an ``id``
+corresonding to the name of the rule.  Unless ``SUPPRESS``ed, this will become
+a Node.  If the ``metas`` parameter has a key corresponding to ``id``, then it
 must return a function taking two parameters:
    
    - node :  The node under construction, which under normal circumstances will
-             already have the `````first````` and `````last````` fields.
+             already have the ``first`` and ``last`` fields.
    - str  :  The entire str the grammar is parsing.
 
 
@@ -71,7 +71,7 @@ Which must return that same node, decorated in whatever fashion is appropriate.
 
 
 The node will not have a metatable at this point, and the function must attach a
-metatable with `````__index````` equal to some table which itself has the `````__index`````
+metatable with ``__index`` equal to some table which itself has the ``__index``
 Node as some recursive backstop.
 
 
@@ -87,17 +87,17 @@ a language that did that sort of thing.
 
 
              The problem is almost a philosophical one, and it's what I'm
-             setting out to solve with `````bridge````` and `````manifest`````. 
+             setting out to solve with ``bridge`` and ``manifest``. 
 
 
-             In the meantime, `````lpegnode````` has one consumer. Let's keep it
+             In the meantime, ``lpegnode`` has one consumer. Let's keep it
              happy. 
 
 ```lua
 local L = require "lpeg"
 
 local s = require "status" ()
-s.verbose = true
+s.verbose = false
 s.angry   = false
 
 local a = require "ansi"
@@ -145,7 +145,7 @@ called, as is an ordinary function.
 
 
 The latter two are expected to return the original table, now a descendent
-of `````Node`````.  This need not have an `````id````` field which is the same as the `````id`````
+of ``Node``.  This need not have an ``id`` field which is the same as the ``id``
 parameter.
 
 ```lua
@@ -169,31 +169,31 @@ parameter.
 ```
 #### DROP
 
-  The rule `````elpatt.D````` causes the match to be dropped. In order for
+  The rule ``elpatt.D`` causes the match to be dropped. In order for
 this to give use the results we want, we must adjust the peer and
 parent nodes while removing the captured element from the table. 
 
 
 The use case is for eloquently expressed 'wrapper' patterns, which occur
-frequently in real languages. In a `````(typical lisp expression)````` we don't need
+frequently in real languages. In a ``(typical lisp expression)`` we don't need
 the parentheses and would like our span not to include them.
 
 
-We could use a pattern like `````V"formwrap"````` and then SUPPRESS `````formwrap`````, but
-this is less eloquent than `````D(P"(") * V"form" *  D(P")")`````. 
+We could use a pattern like ``V"formwrap"`` and then SUPPRESS ``formwrap``, but
+this is less eloquent than ``D(P"(") * V"form" *  D(P")")``. 
 
 
 Which is admittedly hard to look at.  We prefer the form
-`````D(pal) * V"form" * D(par)````` for this reason among others.
+=D(pal) ** V"form" ** D(par)= for this reason among others.
 
 
-The algorithm moves from the right to the left, because `````table.remove(t)`````
+The algorithm moves from the right to the left, because ``table.remove(t)``
 is O(1) so we can strip any amount of rightward droppage first.  It is
 correspondingly more expensive to strip middle drops, and most expensive
 to strip leftmost drops.
 
 
-More importantly, if we counted up, we'd be tracking `````#t`````, a moving target.
+More importantly, if we counted up, we'd be tracking ``#t``, a moving target.
 Counting to 1 neatly prevents this.
 
 
@@ -205,7 +205,7 @@ Counting to 1 neatly prevents this.
         compact upward.
 
 
-     -  More to the point, the mere inclusion of this much `````s:````` slows the 
+     -  More to the point, the mere inclusion of this much ``s:`` slows the 
         algorithm to an utter crawl. The concatenations happen anyway, to
         pass the string into the status module.
 
@@ -368,7 +368,7 @@ local function new(grammar_template, metas)
 
     local function parse(str, offset)
       local offset = offset or 0
-      return L.match(grammar, str, 1, str, metas, offset) -- other 
+      return L.match(grammar, str, 1, str, metas, offset)
     end
 
     return parse

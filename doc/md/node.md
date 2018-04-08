@@ -7,14 +7,14 @@
 
 ```lua
 local s = require "status" ()
-local ansi = require "ansi"
+local a = require "ansi"
 local dot = require "node/dot"
 ```
 ## Node metatable
 
   The Node metatable is the root table for any Node.  I'm planning to make
 an intermediate class/table called Root that is in common for any instance
-Node.  All Root absolutely has to contain is `````str`````. 
+Node.  All Root absolutely has to contain is ``str``. 
 
 ```lua
 
@@ -66,17 +66,17 @@ inherited Node classes.
 function Node.toString(node, depth)
    local depth = depth or 0
    local phrase = ""
-   phrase = ("  "):rep(depth) .. "id: " .. ansi.bright(node.id) .. ",  "
-      .. "first: " .. node.first .. ", last: " .. node.last
+   phrase = ("  "):rep(depth) .. a.bright(node.id) .. "    "
+      .. a.cyan(node.first) .. "-" .. a.cyan(node.last)
    if node[1] then
-      local extra = " span:  "
+      local extra = "    "
       if Node.len(node) > 56 then
          local span = Node.span(node)
          local pre, post = string.sub(span, 1, 28), string.sub(span, -28, -1)
-         extra = extra .. ansi.dim(pre) .. ansi.bright("…") .. ansi.dim(post)
+         extra = extra .. a.dim(pre) .. a.bright("…") .. a.dim(post)
          extra = extra:gsub("\n", "◼︎")
       else
-         extra = extra .. ansi.dim(Node.span(node):gsub("\n", "◼︎"))
+         extra = extra .. a.dim(Node.span(node):gsub("\n", "◼︎"))
       end
       phrase = phrase .. extra .. "\n"
       for _,v in ipairs(node) do
@@ -85,8 +85,10 @@ function Node.toString(node, depth)
          end
       end
    else
-      phrase = phrase .. ",  val:  " 
-             .. ansi.green(node.str:sub(node.first, node.last)) .. "\n"
+      local val = node.str:sub(node.first, node.last)
+                          :gsub(" ", a.clear() .. a.dim("_") .. a.green())
+      val = a.green(val)
+      phrase = phrase .. "    " .. val  .. "\n"
    end
    return phrase
 end
@@ -112,20 +114,20 @@ end
 ```
 #### Node:gap(node)
 
-`````Node.gap(left, right)````` compares the `````last````` field of the `````left````` parameter
-with the `````first````` field of the `````right````` parameter, **if** this is greater than
+=Node.gap(left, right)= compares the ``last`` field of the ``left`` parameter
+with the ``first`` field of the ``right`` parameter, **if** this is greater than
 0. 
 
 
-If it is negative, `````Node.gap````` attempts to measure the `````first````` field of the
-`````right````` parameter against the `````last````` field of the `````left````` parameter.
+If it is negative, ``Node.gap`` attempts to measure the ``first`` field of the
+=right= parameter against the ``last`` field of the ``left`` parameter.
 
 
 If this is a natural number we return the **negation** of this value.  If both
 should prove to be positive, we halt. 
 
 
-No effort is made to check that the `````str````` field matches between nodes unless
+No effort is made to check that the ``str`` field matches between nodes unless
 we have an error, in which case it could prove helpful for diagnosis.  
 
 
@@ -227,7 +229,7 @@ end
 #### Node.select(node, pred)
 
   Takes the Node and walks it, yielding the Nodes which match the predicate.
-`````pred````` is either a string, which matches to `````id`````, or a function, which takes
+=pred= is either a string, which matches to ``id``, or a function, which takes
 a Node and returns true or false on some premise. 
 
 ```lua
@@ -282,8 +284,8 @@ end
 #### Node.unroll(node)
 
   This iterator returns all Nodes, in prefix order, while interpolating
-strings.  Specifically: When a Node has a `````first````` that is less than the
-`````first````` if its first child, it makes a slice of the string corresponding to
+strings.  Specifically: When a Node has a ``first`` that is less than the
+=first= if its first child, it makes a slice of the string corresponding to
 that gap, and so on between each child, and once more at the end.
 
 
@@ -291,9 +293,9 @@ The effect is that any sections of the string which were dropped are now
 interpolated into the unrolled Node.
 
 
-The premise is that by calling `````toValue()````` or `````span()````` on leaf nodes, and
+The premise is that by calling ``toValue()`` or ``span()`` on leaf nodes, and
 grafting these to the interpolated strings in order, you will produce the
-original `````node.str`````. 
+original ``node.str``. 
 
 ```lua
 function Node.unroll(node)
@@ -328,7 +330,7 @@ end
 
 ```lua
 function Node.inherit(node)
-  Meta = setmetatable({}, node)
+  local Meta = setmetatable({}, node)
   Meta.__index = Meta
   local meta = setmetatable({}, Meta)
   meta.__index = meta
@@ -353,8 +355,8 @@ and no children, which we should replace with a child string at [1].
 
 
 This gives us a lighter way to handle the circumstance where we have, say,
-a list, `````(foo bar baz)`````. We currently either need a "left-per" or "pal"
-Node class to hold the `````(`````, or we would have to skip it entirely.
+a list, ``(foo bar baz)``. We currently either need a "left-per" or "pal"
+Node class to hold the ``(``, or we would have to skip it entirely.
 
 
 Quipu can't lose any information from the string, so they have to include
@@ -373,12 +375,12 @@ it strikes me as an approach.
 
   There are invariant fields a Node is also expected to have, they are:
  
-  - first :  Index into `````str````` which begins the span.
-  - last  :  Index into `````str````` which ends the span.
+  - first :  Index into ``str`` which begins the span.
+  - last  :  Index into ``str`` which ends the span.
 
 
 In principle, we want the Node to be localized. We could include a 
-reference to the whole `````str````` and derive substrings lazily.
+reference to the whole ``str`` and derive substrings lazily.
 
 
 If we included the full span as a substring on each Node, we'd end up
@@ -414,7 +416,7 @@ a negative number if these aren't assigned.
 
 ### Other fields
 
-  The way the Grammar class will work: each `````V"patt"````` can have a metatable.
+  The way the Grammar class will work: each ``V"patt"`` can have a metatable.
 These are passed in as the second parameter during construction, with the key
 the same name as the rule. 
 
@@ -423,11 +425,11 @@ If a pattern doesn't have a metatable, it's given a Node class and consists of
 only the above fields, plus an array representing any subrules. 
 
 
-If it does, the metatable will have a `````__call````` method, which expects two
+If it does, the metatable will have a ``__call`` method, which expects two
 parameters, itself, and the node, which will include the span. 
 
 
-This will require reattunement of basically every class in the `````/grym````` folder,
+This will require reattunement of basically every class in the ``/grym`` folder,
 but let's build the Prose parse first.  I do want the whole shebang in a single
 grammar eventually.
 
@@ -442,7 +444,7 @@ In the meantime we have things like
 
 
 - lines :  If this exists, there's a collection of lines which need to be
-           joined with `````\n````` to reconstruct the actual span.
+           joined with ``\n`` to reconstruct the actual span.
 
 
            We want to do this the other way, and use the span itself for the
