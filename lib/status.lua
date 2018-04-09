@@ -15,7 +15,7 @@ status.DjikstraWasRight = true -- I swear I'm going to use this for something. W
 status.chatty = true
 status.verbose = false 
 status.grumpy = true
-status.angry = true
+status.angry = false
 
 -- ** Status:halt(message)
 --

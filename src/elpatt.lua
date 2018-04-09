@@ -111,22 +111,33 @@ end
 local Err = Node:inherit()
 Err.id = "ERROR"
 
-local function parse_error(pos, msg, patt, str )
-   local errorNode = setmetatable({}, Err)
-   errorNode.first = pos
-   errorNode.last  = pos
-   errorNode.msg   = msg
-   errorNode.str   = str
-   errorNode.patt  = patt
+function Err.toLua(err)
+  return "gabba gabba he"
+end
+
+
+local function parse_error(pos, name, msg, patt, str)
+   local message = msg or name or "Not Otherwise Specified"
+  io.write("remaining: " .. string.sub(str, pos) .. "\n")
+   s:complain("Parse Error: ", message)
+   local errorNode =  setmetatable({}, Err)
+   errorNode.first =  pos
+   errorNode.last  =  pos
+   errorNode.msg   =  msg
+   errorNode.name  =  name
+   errorNode.str   =  str
+   errorNode.rest  =  string.sub(str, pos)
+   errorNode.patt  =  patt
+
    return errorNode
 end
 
-function elpatt.E( msg, patt)
-  return Cp() * Cc(msg) * Cc(patt) * Carg(1) / parse_error
+function elpatt.E(name, msg, patt)
+  return Cp() * Cc(name) * Cc(msg) * Cc(patt) * Carg(1) / parse_error
 end
 
-function elpatt.EOF( msg )
-  return -P( 1 ) + elpatt.E( msg )
+function elpatt.EOF(name, msg)
+  return -P(1) + elpatt.E(name, msg)
 end
 
 

@@ -19,7 +19,7 @@ elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg
 
 ```
-## Ppt : Codepoint pattern
+## Ppt : Codepoint pattern #Todo
 
 Captures one Unicode point
 
@@ -61,7 +61,7 @@ end
   We discourage the use of captures in the Node class.  The architecture
 requires that all array values of a Node table be themselves Nodes. This is
 frequently checked for, in that we use ``isNode`` to filter in iterators etc,
-but this is defensive. 
+but this is defensive and will be phased out.
 
 
 The use of SUPPRESS lets us drop rules that we don't want to see in the
@@ -82,7 +82,7 @@ check for this table, and drop it whenever encountered.
   - patt :  The pattern to match and drop
 
 
-  - #return : Special table DROP
+  - #return : descendant of special table DROP
 
 ```lua
 
@@ -109,29 +109,40 @@ Rather than throwing errors, we prefer to add them to the parse tree in some
 cases.
 
 
-optionally, we can include a pattern which, if the parse were to be correct,
+Optionally, we can include a pattern which, if the parse were to be correct,
 would succeed. So a ``( ])`` type error could be "fail to close (" and =P")".
 
 ```lua
 local Err = Node:inherit()
 Err.id = "ERROR"
 
-local function parse_error(pos, msg, patt, str )
-   local errorNode = setmetatable({}, Err)
-   errorNode.first = pos
-   errorNode.last  = pos
-   errorNode.msg   = msg
-   errorNode.str   = str
-   errorNode.patt  = patt
+function Err.toLua(err)
+  return "gabba gabba he"
+end
+
+
+local function parse_error(pos, name, msg, patt, str)
+   local message = msg or name or "Not Otherwise Specified"
+  io.write("remaining: " .. string.sub(str, pos) .. "\n")
+   s:complain("Parse Error: ", message)
+   local errorNode =  setmetatable({}, Err)
+   errorNode.first =  pos
+   errorNode.last  =  pos
+   errorNode.msg   =  msg
+   errorNode.name  =  name
+   errorNode.str   =  str
+   errorNode.rest  =  string.sub(str, pos)
+   errorNode.patt  =  patt
+
    return errorNode
 end
 
-function elpatt.E( msg, patt)
-  return Cp() * Cc(msg) * Cc(patt) * Carg(1) / parse_error
+function elpatt.E(name, msg, patt)
+  return Cp() * Cc(name) * Cc(msg) * Cc(patt) * Carg(1) / parse_error
 end
 
-function elpatt.EOF( msg )
-  return -P( 1 ) + elpatt.E( msg )
+function elpatt.EOF(name, msg)
+  return -P(1) + elpatt.E(name, msg)
 end
 ```
 ### S : Capture set

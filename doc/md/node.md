@@ -1,7 +1,9 @@
 # Node
 
 
-  Time to stabilize this class once and for all. 
+  The Node class implements an abstract syntax tree, in collaboration with
+the [[Grammar class][/grammar] and lpeg more generally.  
+
 
 ### includes
 
@@ -12,9 +14,8 @@ local dot = require "node/dot"
 ```
 ## Node metatable
 
-  The Node metatable is the root table for any Node.  I'm planning to make
-an intermediate class/table called Root that is in common for any instance
-Node.  All Root absolutely has to contain is ``str``. 
+  The Node metatable is the root table for any Node, all of which should
+subclass through [[Node:inherit()][httk://]].
 
 ```lua
 local Node = {}
@@ -28,25 +29,23 @@ Node.isNode = true
            or captures it.
 
 
-   - line_first :  Always -1. #deprecated
-   - line_last  :  Always -1. #deprecated
+           This is never set on Node itself, and Grammar will fail to
+           produce a Node which lacks this flag. 
 
-```lua
-Node.line_first = -1
-Node.line_last  = -1
-```
 
-It occurs to me we could lazily calculate these using the [line iterator](httk://).
+   - isNode :  A boolean, always ``true``.
 
 
 ## Methods
 
-### Scaffolding 
 
 #### toLua
 
 This is not a general method in any sense, it's here as a backstop
 while I build out Clu. 
+
+
+  - [ ] #todo remove
 
 ```lua
 function Node.toLua(node)
@@ -70,9 +69,10 @@ function Node.toString(node, depth)
    if node[1] then
       local extra = "    "
       if Node.len(node) > 56 then
+         --  Truncate in the middle
          local span = Node.span(node)
-         local pre, post = string.sub(span, 1, 28), string.sub(span, -28, -1)
-         extra = extra .. a.dim(pre) .. a.bright("…") .. a.dim(post)
+         local pre, post = string.sub(span, 1, 26), string.sub(span, -26, -1)
+         extra = extra .. a.dim(pre) .. a.bright("………") .. a.dim(post)
          extra = extra:gsub("\n", "◼︎")
       else
          extra = extra .. a.dim(Node.span(node):gsub("\n", "◼︎"))
@@ -344,30 +344,15 @@ end
 ```
 ## Node Instances
 
-  To be a Node, currently, indexed elements of the Array portion must also be 
+  To be a Node, indexed elements of the Array portion must also be 
 Nodes. 
 
 
-I'm mostly convinced that indexed elements can also be strings, and that 
-this is the form leaf nodes should take.  Currently, they have a 'val' field
-and no children, which we should replace with a child string at [1].
+If there are no children of the Node, it is considered to be a leaf node.
 
 
-This gives us a lighter way to handle the circumstance where we have, say,
-a list, ``(foo bar baz)``. We currently either need a "left-per" or "pal"
-Node class to hold the ``(``, or we would have to skip it entirely.
-
-
-Quipu can't lose any information from the string, so they have to include
-whitespace.  We're not limited in the same way and can reconstruct less 
-semantically crucial parts of a document using the span and the original 
-string, since we're not _currently_ editing our strings once they're
-entered in.
-
-
-Nodes are meant to be broadly compatible with everything we intend to
-do with abstract syntax trees.  The more I think about this the better
-it strikes me as an approach. 
+Most of the Node library will fail to halt, and probably blow stack, if
+cyclic Node graphs are made.  The Grammar class will not do this to you. 
 
 
 ### Fields
@@ -376,78 +361,12 @@ it strikes me as an approach.
  
   - first :  Index into ``str`` which begins the span.
   - last  :  Index into ``str`` which ends the span.
-
-
-In principle, we want the Node to be localized. We could include a 
-reference to the whole ``str`` and derive substrings lazily.
-
-
-If we included the full span as a substring on each Node, we'd end up
-with a lot of spans, and wouldn't use most of them. Even slicing a piece
-out is costly if we're not going to use it. 
-
-
-So our constructor for a Node class takes (Constructor, node, str) as 
-the standard interface.  If a module needs a non-standard constructor,
-as our Section and Block modules currently take an array of lines, that
-will need to be provided as the second return from the module. 
-
-
-This will allow for the kind of multi-pass recursive-descent that I'm
-aiming for. 
-
-
-#### line tracking (optional)
-
-It may be wise to always track lines, in which case we will include:
-
-
-  - line_first :  The line at which the match begins
-  - line_last  :  The line at which the match ends
-
-
-This is, at least, a frequent enough pattern that the metatable should return
-a negative number if these aren't assigned. 
-
-
-- [ ] #todo decide if line tracking is in fact optional
+  - str   :  The string of which the Node spans part or the whole.
 
 
 ### Other fields
 
-  The way the Grammar class will work: each ``V"patt"`` can have a metatable.
-These are passed in as the second parameter during construction, with the key
-the same name as the rule. 
-
-
-If a pattern doesn't have a metatable, it's given a Node class and consists of
-only the above fields, plus an array representing any subrules. 
-
-
-If it does, the metatable will have a ``__call`` method, which expects two
-parameters, itself, and the node, which will include the span. 
-
-
-This will require reattunement of basically every class in the ``/grym`` folder,
-but let's build the Prose parse first.  I do want the whole shebang in a single
-grammar eventually.
-
-
-The intention is to allow multiple grammars to coexist peacefully. Currently
-the parser is handrolled and we have special case values for everything.
-The idea is to stabilize this, so that multi-pass parsing works but in a
-standard way where the Node constructor is a consistent interface. 
-
-
-In the meantime we have things like
-
-
-- lines :  If this exists, there's a collection of lines which need to be
-           joined with ``\n`` to reconstruct the actual span.
-
-
-           We want to do this the other way, and use the span itself for the
-           inner parse. 
+  In principle, anything at all. 
 
 ```lua
 return Node

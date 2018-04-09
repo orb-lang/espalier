@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 157"]
+doc_0 [label="doc - 168"]
 
 
 doc_0 -> { section_1}
@@ -25,7 +25,7 @@ codeblock_5 [label="code block 10-20"]
 
 section_6 [label="section: 22-30"]
 
-section_7 [label="section: 58-132"]
+section_7 [label="section: 58-143"]
 
 
 header_2 -> leaf_8
@@ -79,7 +79,7 @@ local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg
 section_6 -> { header_20 prose_21 prose_22 prose_23 section_24}
 {rank=same; header_20 prose_21 prose_22 prose_23 section_24}
 
-header_20 [label="2 : Ppt : Codepoint pattern"]
+header_20 [label="2 : Ppt : Codepoint pattern #Todo"]
 
 prose_21 [label="prose"]
 
@@ -91,7 +91,7 @@ section_24 [label="section: 31-57"]
 
 
 header_20 -> leaf_25
-leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Ppt : Codepoint pattern"]
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Ppt : Codepoint pattern #Todo"]
 prose_21 -> { raw_26}
 {rank=same; raw_26}
 
@@ -220,9 +220,9 @@ prose_60 [label="prose"]
 
 codeblock_61 [label="code block 81-99"]
 
-section_62 [label="section: 102-132"]
+section_62 [label="section: 102-143"]
 
-section_63 [label="section: 133-157"]
+section_63 [label="section: 144-168"]
 
 
 header_54 -> leaf_64
@@ -251,7 +251,7 @@ literal_67 -> leaf_71
 leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="isNode"]
 raw_68 -> leaf_72
 leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to filter in iterators etc,
-but this is defensive. 
+but this is defensive and will be phased out.
 "]
 prose_56 -> { raw_73}
 {rank=same; raw_73}
@@ -338,7 +338,7 @@ raw_97 [label="raw"]
 
 raw_97 -> leaf_98
 leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-  - #return : Special table DROP
+  - #return : descendant of special table DROP
 "]
 codeblock_61 -> leaf_99
 leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
@@ -367,7 +367,7 @@ prose_101 [label="prose"]
 
 prose_102 [label="prose"]
 
-codeblock_103 [label="code block 110-131"]
+codeblock_103 [label="code block 110-142"]
 
 
 header_100 -> leaf_104
@@ -398,7 +398,7 @@ raw_110 [label="raw"]
 
 raw_107 -> leaf_111
 leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-optionally, we can include a pattern which, if the parse were to be correct,
+Optionally, we can include a pattern which, if the parse were to be correct,
 would succeed. So a"]
 prespace_108 -> leaf_112
 leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
@@ -411,22 +411,33 @@ codeblock_103 -> leaf_115
 leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Err = Node:inherit()
 Err.id = \"ERROR\"
 
-local function parse_error(pos, msg, patt, str )
-   local errorNode = setmetatable({}, Err)
-   errorNode.first = pos
-   errorNode.last  = pos
-   errorNode.msg   = msg
-   errorNode.str   = str
-   errorNode.patt  = patt
+function Err.toLua(err)
+  return \"gabba gabba he\"
+end
+
+
+local function parse_error(pos, name, msg, patt, str)
+   local message = msg or name or \"Not Otherwise Specified\"
+  io.write(\"remaining: \" .. string.sub(str, pos) .. \"\\n\")
+   s:complain(\"Parse Error: \", message)
+   local errorNode =  setmetatable({}, Err)
+   errorNode.first =  pos
+   errorNode.last  =  pos
+   errorNode.msg   =  msg
+   errorNode.name  =  name
+   errorNode.str   =  str
+   errorNode.rest  =  string.sub(str, pos)
+   errorNode.patt  =  patt
+
    return errorNode
 end
 
-function elpatt.E( msg, patt)
-  return Cp() * Cc(msg) * Cc(patt) * Carg(1) / parse_error
+function elpatt.E(name, msg, patt)
+  return Cp() * Cc(name) * Cc(msg) * Cc(patt) * Carg(1) / parse_error
 end
 
-function elpatt.EOF( msg )
-  return -P( 1 ) + elpatt.E( msg )
+function elpatt.EOF(name, msg)
+  return -P(1) + elpatt.E(name, msg)
 end"]
 section_63 -> { header_116 prose_117 prose_118 prose_119 codeblock_120 codeblock_121}
 {rank=same; header_116 prose_117 prose_118 prose_119 codeblock_120 codeblock_121}
@@ -439,9 +450,9 @@ prose_118 [label="prose"]
 
 prose_119 [label="prose"]
 
-codeblock_120 [label="code block 143-153"]
+codeblock_120 [label="code block 154-164"]
 
-codeblock_121 [label="code block 155-157"]
+codeblock_121 [label="code block 166-168"]
 
 
 header_116 -> leaf_122

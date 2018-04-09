@@ -6,6 +6,8 @@
 
 
 
+
+
 local s = require "status" ()
 local a = require "ansi"
 local dot = require "node/dot"
@@ -32,11 +34,6 @@ Node.isNode = true
 
 
 
-
-
-
-Node.line_first = -1
-Node.line_last  = -1
 
 
 
@@ -74,9 +71,10 @@ function Node.toString(node, depth)
    if node[1] then
       local extra = "    "
       if Node.len(node) > 56 then
+         --  Truncate in the middle
          local span = Node.span(node)
-         local pre, post = string.sub(span, 1, 28), string.sub(span, -28, -1)
-         extra = extra .. a.dim(pre) .. a.bright("…") .. a.dim(post)
+         local pre, post = string.sub(span, 1, 26), string.sub(span, -26, -1)
+         extra = extra .. a.dim(pre) .. a.bright("………") .. a.dim(post)
          extra = extra:gsub("\n", "◼︎")
       else
          extra = extra .. a.dim(Node.span(node):gsub("\n", "◼︎"))
@@ -355,70 +353,6 @@ function Node.export(_, mod, constructor)
   mod.__call = constructor
   return setmetatable({}, mod)
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

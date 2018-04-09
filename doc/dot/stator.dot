@@ -1,0 +1,67 @@
+digraph hierarchy {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 23"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-23"]
+
+
+section_1 -> { header_2 prose_3 prose_4 codeblock_5 codeblock_6 codeblock_7}
+{rank=same; header_2 prose_3 prose_4 codeblock_5 codeblock_6 codeblock_7}
+
+header_2 [label="1 : Stator"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+codeblock_5 [label="code block 11-13"]
+
+codeblock_6 [label="code block 15-19"]
+
+codeblock_7 [label="code block 21-23"]
+
+
+header_2 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Stator"]
+prose_3 -> { raw_9}
+{rank=same; raw_9}
+
+raw_9 [label="raw"]
+
+
+raw_9 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+  Having gotten about as far as I can with mere string concatenation, it's 
+time to put together a proper set of operations for transducing across a
+Node. 
+"]
+prose_4 -> { raw_11}
+{rank=same; raw_11}
+
+raw_11 [label="raw"]
+
+
+raw_11 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This isn't a great place to put theory, let's build the structure and 
+flesh out from there.
+"]
+codeblock_5 -> leaf_13
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Stator = setmetatable({}, {__index = Stator})"]
+codeblock_6 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function call(stator)
+  return setmetatable({}, {__index = stator, __call = call })
+end"]
+codeblock_7 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return setmetatable(Stator, {__call = call})"]
+
+}
