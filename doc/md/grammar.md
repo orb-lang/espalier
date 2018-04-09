@@ -359,6 +359,11 @@ local function refineMetas(metas)
   return metas
 end
 ```
+## new
+
+Given a grammar_template function and a set of metatables,
+yield a parsing function and the grammar as an ``lpeg`` pattern.
+
 ```lua
 local function new(grammar_template, metas)
   if type(grammar_template) == 'function' then
@@ -371,7 +376,7 @@ local function new(grammar_template, metas)
       return L.match(grammar, str, 1, str, metas, offset)
     end
 
-    return parse
+    return parse, grammar
   else
     s:halt("no way to build grammar out of " .. type(template))
   end

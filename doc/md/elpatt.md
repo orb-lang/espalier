@@ -123,7 +123,7 @@ end
 
 local function parse_error(pos, name, msg, patt, str)
    local message = msg or name or "Not Otherwise Specified"
-  io.write("remaining: " .. string.sub(str, pos) .. "\n")
+   io.write("remaining: " .. string.sub(str, pos) .. "\n")
    s:complain("Parse Error: ", message)
    local errorNode =  setmetatable({}, Err)
    errorNode.first =  pos

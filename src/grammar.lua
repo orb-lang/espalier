@@ -342,6 +342,11 @@ end
 
 
 
+
+
+
+
+
 local function new(grammar_template, metas)
   if type(grammar_template) == 'function' then
     local metas = metas or {}
@@ -353,7 +358,7 @@ local function new(grammar_template, metas)
       return L.match(grammar, str, 1, str, metas, offset)
     end
 
-    return parse
+    return parse, grammar
   else
     s:halt("no way to build grammar out of " .. type(template))
   end

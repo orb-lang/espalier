@@ -3,17 +3,17 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 365"]
+doc_0 [label="doc - 370"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-5"]
+section_1 [label="section: 1-343"]
 
 
-section_1 -> { header_2 prose_3 section_4}
-{rank=same; header_2 prose_3 section_4}
+section_1 -> { header_2 prose_3 section_4 section_5}
+{rank=same; header_2 prose_3 section_4 section_5}
 
 header_2 [label="1 : Grammar Module"]
 
@@ -21,94 +21,94 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-118"]
 
-
-header_2 -> leaf_5
-leaf_5  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Grammar Module"]
-prose_3 -> { raw_6}
-{rank=same; raw_6}
-
-raw_6 [label="raw"]
+section_5 [label="section: 344-370"]
 
 
-raw_6 -> leaf_7
-leaf_7  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_2 -> leaf_6
+leaf_6  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Grammar Module"]
+prose_3 -> { raw_7}
+{rank=same; raw_7}
+
+raw_7 [label="raw"]
+
+
+raw_7 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   The grammar module returns one function, which generates
 a grammar. 
 "]
-section_4 -> { header_8 prose_9 prose_10 prose_11 section_12 section_13 section_14 section_15}
-{rank=same; header_8 prose_9 prose_10 prose_11 section_12 section_13 section_14 section_15}
+section_4 -> { header_9 prose_10 prose_11 prose_12 section_13 section_14 section_15 section_16}
+{rank=same; header_9 prose_10 prose_11 prose_12 section_13 section_14 section_15 section_16}
 
-header_8 [label="2 : Parameters"]
-
-prose_9 [label="prose"]
+header_9 [label="2 : Parameters"]
 
 prose_10 [label="prose"]
 
 prose_11 [label="prose"]
 
-section_12 [label="section: 16-45"]
+prose_12 [label="prose"]
 
-section_13 [label="section: 46-69"]
+section_13 [label="section: 16-45"]
 
-section_14 [label="section: 70-118"]
+section_14 [label="section: 46-69"]
 
-section_15 [label="section: 119-159"]
+section_15 [label="section: 70-118"]
 
-
-header_8 -> leaf_16
-leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Parameters"]
-prose_9 -> { raw_17}
-{rank=same; raw_17}
-
-raw_17 [label="raw"]
+section_16 [label="section: 119-159"]
 
 
-raw_17 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_9 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Parameters"]
+prose_10 -> { raw_18}
+{rank=same; raw_18}
+
+raw_18 [label="raw"]
+
+
+raw_18 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This function takes two parameters, namely:
 "]
-prose_10 -> { raw_19 prespace_20 literal_21 raw_22}
-{rank=same; raw_19 prespace_20 literal_21 raw_22}
+prose_11 -> { raw_20 prespace_21 literal_22 raw_23}
+{rank=same; raw_20 prespace_21 literal_22 raw_23}
 
-raw_19 [label="raw"]
+raw_20 [label="raw"]
 
-prespace_20 [label="prespace"]
+prespace_21 [label="prespace"]
 
-literal_21 [label="literal"]
+literal_22 [label="literal"]
 
-raw_22 [label="raw"]
+raw_23 [label="raw"]
 
 
-raw_19 -> leaf_23
-leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_20 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   - grammar_template :  A function with one parameter, which must be"]
-prespace_20 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_21 -> leaf_25
-leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_ENV"]
-raw_22 -> leaf_26
-leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+prespace_21 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_22 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_ENV"]
+raw_23 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
   - metas :  A map with keys of string and values of Node subclass constructors.
 "]
-prose_11 -> { raw_27}
-{rank=same; raw_27}
+prose_12 -> { raw_28}
+{rank=same; raw_28}
 
-raw_27 [label="raw"]
+raw_28 [label="raw"]
 
 
-raw_27 -> leaf_28
-leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_28 -> leaf_29
+leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Both of these are reasonably complex.
 
 "]
-section_12 -> { header_29 prose_30 prose_31 prose_32 prose_33 prose_34 prose_35 prose_36}
-{rank=same; header_29 prose_30 prose_31 prose_32 prose_33 prose_34 prose_35 prose_36}
+section_13 -> { header_30 prose_31 prose_32 prose_33 prose_34 prose_35 prose_36 prose_37}
+{rank=same; header_30 prose_31 prose_32 prose_33 prose_34 prose_35 prose_36 prose_37}
 
-header_29 [label="3 : grammar_template"]
-
-prose_30 [label="prose"]
+header_30 [label="3 : grammar_template"]
 
 prose_31 [label="prose"]
 
@@ -122,147 +122,149 @@ prose_35 [label="prose"]
 
 prose_36 [label="prose"]
 
-
-header_29 -> leaf_37
-leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** grammar_template"]
-prose_30 -> { raw_38 prespace_39 literal_40 raw_41}
-{rank=same; raw_38 prespace_39 literal_40 raw_41}
-
-raw_38 [label="raw"]
-
-prespace_39 [label="prespace"]
-
-literal_40 [label="literal"]
-
-raw_41 [label="raw"]
+prose_37 [label="prose"]
 
 
-raw_38 -> leaf_42
-leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_30 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** grammar_template"]
+prose_31 -> { raw_39 prespace_40 literal_41 raw_42}
+{rank=same; raw_39 prespace_40 literal_41 raw_42}
+
+raw_39 [label="raw"]
+
+prespace_40 [label="prespace"]
+
+literal_41 [label="literal"]
+
+raw_42 [label="raw"]
+
+
+raw_39 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   The internal function @define creates a custom environment variable, neatly
 sidestepping lua's pedantic insistance on prepending"]
-prespace_39 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_40 -> leaf_44
-leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local"]
-raw_41 -> leaf_45
-leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to all values of 
+prespace_40 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_41 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local"]
+raw_42 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to all values of 
 significance. 
 "]
-prose_31 -> { raw_46}
-{rank=same; raw_46}
+prose_32 -> { raw_47}
+{rank=same; raw_47}
 
-raw_46 [label="raw"]
+raw_47 [label="raw"]
 
 
-raw_46 -> leaf_47
-leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_47 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 More relevantly, it constructs a full grammar, which will return a table of
 type Node. 
 "]
-prose_32 -> { raw_48 prespace_49 literal_50 raw_51}
-{rank=same; raw_48 prespace_49 literal_50 raw_51}
+prose_33 -> { raw_49 prespace_50 literal_51 raw_52}
+{rank=same; raw_49 prespace_50 literal_51 raw_52}
 
-raw_48 [label="raw"]
+raw_49 [label="raw"]
 
-prespace_49 [label="prespace"]
+prespace_50 [label="prespace"]
 
-literal_50 [label="literal"]
+literal_51 [label="literal"]
 
-raw_51 [label="raw"]
+raw_52 [label="raw"]
 
 
-raw_48 -> leaf_52
-leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_49 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 If you stick to"]
-prespace_49 -> leaf_53
-leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_50 -> leaf_54
-leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpeg"]
-raw_51 -> leaf_55
-leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" patterns, as you should, all array values will be of
+prespace_50 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_51 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpeg"]
+raw_52 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" patterns, as you should, all array values will be of
 Node, as is intended.  Captures will interpolate various other sorts of Lua
 values, which will induce halting in some places and silently corrupt
 execution in others. 
 "]
-prose_33 -> { raw_56 link_57 raw_58}
-{rank=same; raw_56 link_57 raw_58}
+prose_34 -> { raw_57 link_58 raw_59}
+{rank=same; raw_57 link_58 raw_59}
 
-raw_56 [label="raw"]
+raw_57 [label="raw"]
 
-link_57 [label="link"]
+link_58 [label="link"]
 
-raw_58 [label="raw"]
+raw_59 [label="raw"]
 
 
-raw_56 -> leaf_59
-leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_57 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Though as yet poorly thought through, the "]
-link_57 -> { anchortext_60 url_61}
-{rank=same; anchortext_60 url_61}
+link_58 -> { anchortext_61 url_62}
+{rank=same; anchortext_61 url_62}
 
-anchortext_60 [label="anchortext"]
+anchortext_61 [label="anchortext"]
 
-url_61 [label="url"]
+url_62 [label="url"]
 
 
-anchortext_60 -> leaf_62
-leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt module"]
-url_61 -> leaf_63
-leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="./elpatt"]
-raw_58 -> leaf_64
-leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is
+anchortext_61 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt module"]
+url_62 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="./elpatt"]
+raw_59 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is
 intended to provide only those patterns which are allowed in Grammars, while
 expanding the scope of some favorites to properly respect utf-8 and otherwise
 behave. 
 "]
-prose_34 -> { raw_65 link_66 raw_67}
-{rank=same; raw_65 link_66 raw_67}
+prose_35 -> { raw_66 link_67 raw_68}
+{rank=same; raw_66 link_67 raw_68}
 
-raw_65 [label="raw"]
+raw_66 [label="raw"]
 
-link_66 [label="link"]
+link_67 [label="link"]
 
-raw_67 [label="raw"]
+raw_68 [label="raw"]
 
 
-raw_65 -> leaf_68
-leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_66 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 There are examples of the format in the "]
-link_66 -> { anchortext_69 url_70}
-{rank=same; anchortext_69 url_70}
+link_67 -> { anchortext_70 url_71}
+{rank=same; anchortext_70 url_71}
 
-anchortext_69 [label="anchortext"]
+anchortext_70 [label="anchortext"]
 
-url_70 [label="url"]
+url_71 [label="url"]
 
 
-anchortext_69 -> leaf_71
-leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="spec module"]
-url_70 -> leaf_72
-leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="./spec"]
-raw_67 -> leaf_73
-leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+anchortext_70 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="spec module"]
+url_71 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="./spec"]
+raw_68 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
-prose_35 -> { raw_74}
-{rank=same; raw_74}
+prose_36 -> { raw_75}
+{rank=same; raw_75}
 
-raw_74 [label="raw"]
+raw_75 [label="raw"]
 
 
-raw_74 -> leaf_75
-leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_75 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Special fields include:
 "]
-prose_36 -> { raw_76}
-{rank=same; raw_76}
+prose_37 -> { raw_77}
+{rank=same; raw_77}
 
-raw_76 [label="raw"]
+raw_77 [label="raw"]
 
 
-raw_76 -> leaf_77
-leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_77 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   -  START :  a string which must be the same as the starting rule.
   -  SUPPRESS :  either a string or an array of strings. These rules will be
                  removed from the Node. 
@@ -270,12 +272,10 @@ leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
   -  V :  The lpeg V function.  Used for non-terminal rvalues in a grammar. 
 
 "]
-section_13 -> { header_78 prose_79 prose_80 prose_81 prose_82 prose_83}
-{rank=same; header_78 prose_79 prose_80 prose_81 prose_82 prose_83}
+section_14 -> { header_79 prose_80 prose_81 prose_82 prose_83 prose_84}
+{rank=same; header_79 prose_80 prose_81 prose_82 prose_83 prose_84}
 
-header_78 [label="3 : metas"]
-
-prose_79 [label="prose"]
+header_79 [label="3 : metas"]
 
 prose_80 [label="prose"]
 
@@ -285,275 +285,277 @@ prose_82 [label="prose"]
 
 prose_83 [label="prose"]
 
-
-header_78 -> leaf_84
-leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** metas"]
-prose_79 -> { raw_85}
-{rank=same; raw_85}
-
-raw_85 [label="raw"]
+prose_84 [label="prose"]
 
 
-raw_85 -> leaf_86
-leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_79 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** metas"]
+prose_80 -> { raw_86}
+{rank=same; raw_86}
+
+raw_86 [label="raw"]
+
+
+raw_86 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   By default a node will inherit from the Node class.  If you want custom behavior,
 you must pass in a table of metatable constructors.
 "]
-prose_80 -> { raw_87 prespace_88 literal_89 raw_90 prespace_91 literal_92 raw_93 prespace_94 literal_95 raw_96 prespace_97 literal_98 raw_99 prespace_100 literal_101 raw_102 prespace_103 literal_104 raw_105}
-{rank=same; raw_87 prespace_88 literal_89 raw_90 prespace_91 literal_92 raw_93 prespace_94 literal_95 raw_96 prespace_97 literal_98 raw_99 prespace_100 literal_101 raw_102 prespace_103 literal_104 raw_105}
+prose_81 -> { raw_88 prespace_89 literal_90 raw_91 prespace_92 literal_93 raw_94 prespace_95 literal_96 raw_97 prespace_98 literal_99 raw_100 prespace_101 literal_102 raw_103 prespace_104 literal_105 raw_106}
+{rank=same; raw_88 prespace_89 literal_90 raw_91 prespace_92 literal_93 raw_94 prespace_95 literal_96 raw_97 prespace_98 literal_99 raw_100 prespace_101 literal_102 raw_103 prespace_104 literal_105 raw_106}
 
-raw_87 [label="raw"]
+raw_88 [label="raw"]
 
-prespace_88 [label="prespace"]
+prespace_89 [label="prespace"]
 
-literal_89 [label="literal"]
+literal_90 [label="literal"]
 
-raw_90 [label="raw"]
+raw_91 [label="raw"]
 
-prespace_91 [label="prespace"]
+prespace_92 [label="prespace"]
 
-literal_92 [label="literal"]
+literal_93 [label="literal"]
 
-raw_93 [label="raw"]
+raw_94 [label="raw"]
 
-prespace_94 [label="prespace"]
+prespace_95 [label="prespace"]
 
-literal_95 [label="literal"]
+literal_96 [label="literal"]
 
-raw_96 [label="raw"]
+raw_97 [label="raw"]
 
-prespace_97 [label="prespace"]
+prespace_98 [label="prespace"]
 
-literal_98 [label="literal"]
+literal_99 [label="literal"]
 
-raw_99 [label="raw"]
+raw_100 [label="raw"]
 
-prespace_100 [label="prespace"]
+prespace_101 [label="prespace"]
 
-literal_101 [label="literal"]
+literal_102 [label="literal"]
 
-raw_102 [label="raw"]
+raw_103 [label="raw"]
 
-prespace_103 [label="prespace"]
+prespace_104 [label="prespace"]
 
-literal_104 [label="literal"]
+literal_105 [label="literal"]
 
-raw_105 [label="raw"]
+raw_106 [label="raw"]
 
 
-raw_87 -> leaf_106
-leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_88 -> leaf_107
+leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 That's a fairly specific beast.  Any rule defined above will have an"]
-prespace_88 -> leaf_107
-leaf_107  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_89 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
-raw_90 -> leaf_109
-leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+prespace_89 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_90 -> leaf_109
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
+raw_91 -> leaf_110
+leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 corresonding to the name of the rule.  Unless"]
-prespace_91 -> leaf_110
-leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_92 -> leaf_111
-leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="SUPPRESS"]
-raw_93 -> leaf_112
-leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ed, this will become
+prespace_92 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_93 -> leaf_112
+leaf_112  [color=Gray,shape=rectangle,fontname=Inconsolata,label="SUPPRESS"]
+raw_94 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ed, this will become
 a Node.  If the"]
-prespace_94 -> leaf_113
-leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_95 -> leaf_114
-leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label="metas"]
-raw_96 -> leaf_115
-leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter has a key corresponding to"]
-prespace_97 -> leaf_116
-leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_98 -> leaf_117
-leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
-raw_99 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", then it
+prespace_95 -> leaf_114
+leaf_114  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_96 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="metas"]
+raw_97 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter has a key corresponding to"]
+prespace_98 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_99 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
+raw_100 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", then it
 must return a function taking two parameters:
    
    - node :  The node under construction, which under normal circumstances will
              already have the"]
-prespace_100 -> leaf_119
-leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_101 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
-raw_102 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
-prespace_103 -> leaf_122
-leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_104 -> leaf_123
-leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label="last"]
-raw_105 -> leaf_124
-leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" fields.
+prespace_101 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_102 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
+raw_103 -> leaf_122
+leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+prespace_104 -> leaf_123
+leaf_123  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_105 -> leaf_124
+leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label="last"]
+raw_106 -> leaf_125
+leaf_125  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" fields.
    - str  :  The entire str the grammar is parsing.
 "]
-prose_81 -> { raw_125}
-{rank=same; raw_125}
+prose_82 -> { raw_126}
+{rank=same; raw_126}
 
-raw_125 [label="raw"]
+raw_126 [label="raw"]
 
 
-raw_125 -> leaf_126
-leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_126 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Which must return that same node, decorated in whatever fashion is appropriate.
 "]
-prose_82 -> { raw_127 prespace_128 literal_129 raw_130 prespace_131 literal_132 raw_133}
-{rank=same; raw_127 prespace_128 literal_129 raw_130 prespace_131 literal_132 raw_133}
+prose_83 -> { raw_128 prespace_129 literal_130 raw_131 prespace_132 literal_133 raw_134}
+{rank=same; raw_128 prespace_129 literal_130 raw_131 prespace_132 literal_133 raw_134}
 
-raw_127 [label="raw"]
+raw_128 [label="raw"]
 
-prespace_128 [label="prespace"]
+prespace_129 [label="prespace"]
 
-literal_129 [label="literal"]
+literal_130 [label="literal"]
 
-raw_130 [label="raw"]
+raw_131 [label="raw"]
 
-prespace_131 [label="prespace"]
+prespace_132 [label="prespace"]
 
-literal_132 [label="literal"]
+literal_133 [label="literal"]
 
-raw_133 [label="raw"]
+raw_134 [label="raw"]
 
 
-raw_127 -> leaf_134
-leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_128 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The node will not have a metatable at this point, and the function must attach a
 metatable with"]
-prespace_128 -> leaf_135
-leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_129 -> leaf_136
-leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__index"]
-raw_130 -> leaf_137
-leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" equal to some table which itself has the"]
-prespace_131 -> leaf_138
-leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_132 -> leaf_139
-leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__index"]
-raw_133 -> leaf_140
-leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+prespace_129 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_130 -> leaf_137
+leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__index"]
+raw_131 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" equal to some table which itself has the"]
+prespace_132 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_133 -> leaf_140
+leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__index"]
+raw_134 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Node as some recursive backstop.
 "]
-prose_83 -> { raw_141 prespace_142 italic_143 raw_144}
-{rank=same; raw_141 prespace_142 italic_143 raw_144}
+prose_84 -> { raw_142 prespace_143 italic_144 raw_145}
+{rank=same; raw_142 prespace_143 italic_144 raw_145}
 
-raw_141 [label="raw"]
+raw_142 [label="raw"]
 
-prespace_142 [label="prespace"]
+prespace_143 [label="prespace"]
 
-italic_143 [label="italic"]
+italic_144 [label="italic"]
 
-raw_144 [label="raw"]
+raw_145 [label="raw"]
 
 
-raw_141 -> leaf_145
-leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_142 -> leaf_146
+leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 You might say the return value must"]
-prespace_142 -> leaf_146
-leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-italic_143 -> leaf_147
-leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="inherit"]
-raw_144 -> leaf_148
-leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" from Node, if we were using
+prespace_143 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+italic_144 -> leaf_148
+leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label="inherit"]
+raw_145 -> leaf_149
+leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" from Node, if we were using
 a language that did that sort of thing. 
 
 "]
-section_14 -> { header_149 prose_150 prose_151 prose_152 codeblock_153 prose_154 prose_155 codeblock_156}
-{rank=same; header_149 prose_150 prose_151 prose_152 codeblock_153 prose_154 prose_155 codeblock_156}
+section_15 -> { header_150 prose_151 prose_152 prose_153 codeblock_154 prose_155 prose_156 codeblock_157}
+{rank=same; header_150 prose_151 prose_152 prose_153 codeblock_154 prose_155 prose_156 codeblock_157}
 
-header_149 [label="3 : includes"]
-
-prose_150 [label="prose"]
+header_150 [label="3 : includes"]
 
 prose_151 [label="prose"]
 
 prose_152 [label="prose"]
 
-codeblock_153 [label="code block 82-95"]
+prose_153 [label="prose"]
 
-prose_154 [label="prose"]
+codeblock_154 [label="code block 82-95"]
 
 prose_155 [label="prose"]
 
-codeblock_156 [label="code block 101-116"]
+prose_156 [label="prose"]
+
+codeblock_157 [label="code block 101-116"]
 
 
-header_149 -> leaf_157
-leaf_157  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** includes"]
-prose_150 -> { raw_158}
-{rank=same; raw_158}
+header_150 -> leaf_158
+leaf_158  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** includes"]
+prose_151 -> { raw_159}
+{rank=same; raw_159}
 
-raw_158 [label="raw"]
+raw_159 [label="raw"]
 
 
-raw_158 -> leaf_159
-leaf_159  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_159 -> leaf_160
+leaf_160  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
 - [ ] #todo  Note the require strings below, which prevent this from
              being a usable library. 
 "]
-prose_151 -> { raw_160 prespace_161 literal_162 raw_163 prespace_164 literal_165 raw_166}
-{rank=same; raw_160 prespace_161 literal_162 raw_163 prespace_164 literal_165 raw_166}
+prose_152 -> { raw_161 prespace_162 literal_163 raw_164 prespace_165 literal_166 raw_167}
+{rank=same; raw_161 prespace_162 literal_163 raw_164 prespace_165 literal_166 raw_167}
 
-raw_160 [label="raw"]
+raw_161 [label="raw"]
 
-prespace_161 [label="prespace"]
+prespace_162 [label="prespace"]
 
-literal_162 [label="literal"]
+literal_163 [label="literal"]
 
-raw_163 [label="raw"]
+raw_164 [label="raw"]
 
-prespace_164 [label="prespace"]
+prespace_165 [label="prespace"]
 
-literal_165 [label="literal"]
+literal_166 [label="literal"]
 
-raw_166 [label="raw"]
+raw_167 [label="raw"]
 
 
-raw_160 -> leaf_167
-leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_161 -> leaf_168
+leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
              The problem is almost a philosophical one, and it's what I'm
              setting out to solve with"]
-prespace_161 -> leaf_168
-leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_162 -> leaf_169
-leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bridge"]
-raw_163 -> leaf_170
-leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
-prespace_164 -> leaf_171
-leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_165 -> leaf_172
-leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label="manifest"]
-raw_166 -> leaf_173
-leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
+prespace_162 -> leaf_169
+leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_163 -> leaf_170
+leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="bridge"]
+raw_164 -> leaf_171
+leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+prespace_165 -> leaf_172
+leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_166 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="manifest"]
+raw_167 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
 "]
-prose_152 -> { raw_174 prespace_175 literal_176 raw_177}
-{rank=same; raw_174 prespace_175 literal_176 raw_177}
+prose_153 -> { raw_175 prespace_176 literal_177 raw_178}
+{rank=same; raw_175 prespace_176 literal_177 raw_178}
 
-raw_174 [label="raw"]
+raw_175 [label="raw"]
 
-prespace_175 [label="prespace"]
+prespace_176 [label="prespace"]
 
-literal_176 [label="literal"]
+literal_177 [label="literal"]
 
-raw_177 [label="raw"]
+raw_178 [label="raw"]
 
 
-raw_174 -> leaf_178
-leaf_178  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_175 -> leaf_179
+leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
              In the meantime,"]
-prespace_175 -> leaf_179
-leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_176 -> leaf_180
-leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpegnode"]
-raw_177 -> leaf_181
-leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" has one consumer. Let's keep it
+prespace_176 -> leaf_180
+leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_177 -> leaf_181
+leaf_181  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpegnode"]
+raw_178 -> leaf_182
+leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" has one consumer. Let's keep it
              happy. 
 "]
-codeblock_153 -> leaf_182
-leaf_182  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
+codeblock_154 -> leaf_183
+leaf_183  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
 
 local s = require \"status\" ()
 s.verbose = false
@@ -565,28 +567,28 @@ local Node = require \"node/node\"
 local elpatt = require \"node/elpatt\"
 
 local DROP = elpatt.DROP"]
-prose_154 -> { raw_183}
-{rank=same; raw_183}
+prose_155 -> { raw_184}
+{rank=same; raw_184}
 
-raw_183 [label="raw"]
+raw_184 [label="raw"]
 
 
-raw_183 -> leaf_184
-leaf_184  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_184 -> leaf_185
+leaf_185  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I like the dedication shown in this style of import.
 "]
-prose_155 -> { raw_185}
-{rank=same; raw_185}
+prose_156 -> { raw_186}
+{rank=same; raw_186}
 
-raw_185 [label="raw"]
+raw_186 [label="raw"]
 
 
-raw_185 -> leaf_186
-leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_186 -> leaf_187
+leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 It's the kind of thing I'd like to automate. 
 "]
-codeblock_156 -> leaf_187
-leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local assert = assert
+codeblock_157 -> leaf_188
+leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local assert = assert
 local string, io = assert( string ), assert( io )
 local V = string.sub( assert( _VERSION ), -4 )
 local _G = assert( _G )
@@ -600,131 +602,131 @@ if V == \" 5.1\" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
 end"]
-section_15 -> { header_188 prose_189 codeblock_190 section_191 section_192}
-{rank=same; header_188 prose_189 codeblock_190 section_191 section_192}
+section_16 -> { header_189 prose_190 codeblock_191 section_192 section_193}
+{rank=same; header_189 prose_190 codeblock_191 section_192 section_193}
 
-header_188 [label="3 : make_ast_node"]
+header_189 [label="3 : make_ast_node"]
 
-prose_189 [label="prose"]
+prose_190 [label="prose"]
 
-codeblock_190 [label="code block 124-126"]
+codeblock_191 [label="code block 124-126"]
 
-section_191 [label="section: 129-159"]
+section_192 [label="section: 129-159"]
 
-section_192 [label="section: 160-365"]
-
-
-header_188 -> leaf_193
-leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** make_ast_node"]
-prose_189 -> { raw_194}
-{rank=same; raw_194}
-
-raw_194 [label="raw"]
+section_193 [label="section: 160-343"]
 
 
-raw_194 -> leaf_195
-leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_189 -> leaf_194
+leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** make_ast_node"]
+prose_190 -> { raw_195}
+{rank=same; raw_195}
+
+raw_195 [label="raw"]
+
+
+raw_195 -> leaf_196
+leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   This takes a lot of parameters and does a lot of things. 
 
 "]
-codeblock_190 -> leaf_196
-leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function make_ast_node(id, first, t, last, str, metas, offset)"]
-section_191 -> { header_197 prose_198 prose_199 codeblock_200}
-{rank=same; header_197 prose_198 prose_199 codeblock_200}
+codeblock_191 -> leaf_197
+leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function make_ast_node(id, first, t, last, str, metas, offset)"]
+section_192 -> { header_198 prose_199 prose_200 codeblock_201}
+{rank=same; header_198 prose_199 prose_200 codeblock_201}
 
-header_197 [label="4 : setup values and metatables"]
-
-prose_198 [label="prose"]
+header_198 [label="4 : setup values and metatables"]
 
 prose_199 [label="prose"]
 
-codeblock_200 [label="code block 139-157"]
+prose_200 [label="prose"]
+
+codeblock_201 [label="code block 139-157"]
 
 
-header_197 -> leaf_201
-leaf_201  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** setup values and metatables"]
-prose_198 -> { raw_202 link_203 raw_204}
-{rank=same; raw_202 link_203 raw_204}
+header_198 -> leaf_202
+leaf_202  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** setup values and metatables"]
+prose_199 -> { raw_203 link_204 raw_205}
+{rank=same; raw_203 link_204 raw_205}
 
-raw_202 [label="raw"]
+raw_203 [label="raw"]
 
-link_203 [label="link"]
+link_204 [label="link"]
 
-raw_204 [label="raw"]
+raw_205 [label="raw"]
 
 
-raw_202 -> leaf_205
-leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_203 -> leaf_206
+leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   As "]
-link_203 -> { anchortext_206 url_207}
-{rank=same; anchortext_206 url_207}
+link_204 -> { anchortext_207 url_208}
+{rank=same; anchortext_207 url_208}
 
-anchortext_206 [label="anchortext"]
+anchortext_207 [label="anchortext"]
 
-url_207 [label="url"]
+url_208 [label="url"]
 
 
-anchortext_206 -> leaf_208
-leaf_208  [color=Gray,shape=rectangle,fontname=Inconsolata,label="covered elsewhere"]
-url_207 -> leaf_209
-leaf_209  [color=Gray,shape=rectangle,fontname=Inconsolata,label="httk://"]
-raw_204 -> leaf_210
-leaf_210  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we accept three varieties of
+anchortext_207 -> leaf_209
+leaf_209  [color=Gray,shape=rectangle,fontname=Inconsolata,label="covered elsewhere"]
+url_208 -> leaf_210
+leaf_210  [color=Gray,shape=rectangle,fontname=Inconsolata,label="httk://"]
+raw_205 -> leaf_211
+leaf_211  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we accept three varieties of
 metatable verb.  An ordinary table is assigned; a table with __call is 
 called, as is an ordinary function.
 "]
-prose_199 -> { raw_211 prespace_212 literal_213 raw_214 prespace_215 literal_216 raw_217 prespace_218 literal_219 raw_220}
-{rank=same; raw_211 prespace_212 literal_213 raw_214 prespace_215 literal_216 raw_217 prespace_218 literal_219 raw_220}
+prose_200 -> { raw_212 prespace_213 literal_214 raw_215 prespace_216 literal_217 raw_218 prespace_219 literal_220 raw_221}
+{rank=same; raw_212 prespace_213 literal_214 raw_215 prespace_216 literal_217 raw_218 prespace_219 literal_220 raw_221}
 
-raw_211 [label="raw"]
+raw_212 [label="raw"]
 
-prespace_212 [label="prespace"]
+prespace_213 [label="prespace"]
 
-literal_213 [label="literal"]
+literal_214 [label="literal"]
 
-raw_214 [label="raw"]
+raw_215 [label="raw"]
 
-prespace_215 [label="prespace"]
+prespace_216 [label="prespace"]
 
-literal_216 [label="literal"]
+literal_217 [label="literal"]
 
-raw_217 [label="raw"]
+raw_218 [label="raw"]
 
-prespace_218 [label="prespace"]
+prespace_219 [label="prespace"]
 
-literal_219 [label="literal"]
+literal_220 [label="literal"]
 
-raw_220 [label="raw"]
+raw_221 [label="raw"]
 
 
-raw_211 -> leaf_221
-leaf_221  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_212 -> leaf_222
+leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The latter two are expected to return the original table, now a descendent
 of"]
-prespace_212 -> leaf_222
-leaf_222  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_213 -> leaf_223
-leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Node"]
-raw_214 -> leaf_224
-leaf_224  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  This need not have an"]
-prespace_215 -> leaf_225
-leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_216 -> leaf_226
-leaf_226  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
-raw_217 -> leaf_227
-leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field which is the same as the"]
-prespace_218 -> leaf_228
-leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_219 -> leaf_229
-leaf_229  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
-raw_220 -> leaf_230
-leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+prespace_213 -> leaf_223
+leaf_223  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_214 -> leaf_224
+leaf_224  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Node"]
+raw_215 -> leaf_225
+leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  This need not have an"]
+prespace_216 -> leaf_226
+leaf_226  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_217 -> leaf_227
+leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
+raw_218 -> leaf_228
+leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field which is the same as the"]
+prespace_219 -> leaf_229
+leaf_229  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_220 -> leaf_230
+leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
+raw_221 -> leaf_231
+leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 parameter.
 "]
-codeblock_200 -> leaf_231
-leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   local offset = offset or 0
+codeblock_201 -> leaf_232
+leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   local offset = offset or 0
    t.first = first + offset
    t.last  = last + offset - 1
    t.str   = str
@@ -741,12 +743,10 @@ leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   local offse
        setmetatable(t, {__index = Node,
                      __tostring = Node.toString})
    end"]
-section_192 -> { header_232 prose_233 prose_234 prose_235 prose_236 prose_237 prose_238 prose_239 prose_240 prose_241 prose_242 prose_243 prose_244 codeblock_245 codeblock_246 codeblock_247 codeblock_248}
-{rank=same; header_232 prose_233 prose_234 prose_235 prose_236 prose_237 prose_238 prose_239 prose_240 prose_241 prose_242 prose_243 prose_244 codeblock_245 codeblock_246 codeblock_247 codeblock_248}
+section_193 -> { header_233 prose_234 prose_235 prose_236 prose_237 prose_238 prose_239 prose_240 prose_241 prose_242 prose_243 prose_244 prose_245 codeblock_246 codeblock_247}
+{rank=same; header_233 prose_234 prose_235 prose_236 prose_237 prose_238 prose_239 prose_240 prose_241 prose_242 prose_243 prose_244 prose_245 codeblock_246 codeblock_247}
 
-header_232 [label="4 : DROP"]
-
-prose_233 [label="prose"]
+header_233 [label="4 : DROP"]
 
 prose_234 [label="prose"]
 
@@ -770,267 +770,265 @@ prose_243 [label="prose"]
 
 prose_244 [label="prose"]
 
-codeblock_245 [label="code block 204-320"]
+prose_245 [label="prose"]
 
-codeblock_246 [label="code block 322-341"]
+codeblock_246 [label="code block 204-320"]
 
-codeblock_247 [label="code block 344-361"]
-
-codeblock_248 [label="code block 363-365"]
+codeblock_247 [label="code block 322-341"]
 
 
-header_232 -> leaf_249
-leaf_249  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" DROP
+header_233 -> leaf_248
+leaf_248  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" DROP
 
   T"]
-prose_233 -> { raw_250 prespace_251 literal_252 raw_253}
-{rank=same; raw_250 prespace_251 literal_252 raw_253}
+prose_234 -> { raw_249 prespace_250 literal_251 raw_252}
+{rank=same; raw_249 prespace_250 literal_251 raw_252}
 
-raw_250 [label="raw"]
+raw_249 [label="raw"]
 
-prespace_251 [label="prespace"]
+prespace_250 [label="prespace"]
 
-literal_252 [label="literal"]
+literal_251 [label="literal"]
 
-raw_253 [label="raw"]
+raw_252 [label="raw"]
 
 
-raw_250 -> leaf_254
-leaf_254  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_249 -> leaf_253
+leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   The rule"]
-prespace_251 -> leaf_255
-leaf_255  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_252 -> leaf_256
-leaf_256  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt.D"]
-raw_253 -> leaf_257
-leaf_257  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" causes the match to be dropped. In order for
+prespace_250 -> leaf_254
+leaf_254  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_251 -> leaf_255
+leaf_255  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt.D"]
+raw_252 -> leaf_256
+leaf_256  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" causes the match to be dropped. In order for
 this to give use the results we want, we must adjust the peer and
 parent nodes while removing the captured element from the table. 
 "]
-prose_234 -> { raw_258 prespace_259 literal_260 raw_261}
-{rank=same; raw_258 prespace_259 literal_260 raw_261}
+prose_235 -> { raw_257 prespace_258 literal_259 raw_260}
+{rank=same; raw_257 prespace_258 literal_259 raw_260}
 
-raw_258 [label="raw"]
+raw_257 [label="raw"]
 
-prespace_259 [label="prespace"]
+prespace_258 [label="prespace"]
 
-literal_260 [label="literal"]
+literal_259 [label="literal"]
 
-raw_261 [label="raw"]
+raw_260 [label="raw"]
 
 
-raw_258 -> leaf_262
-leaf_262  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_257 -> leaf_261
+leaf_261  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The use case is for eloquently expressed 'wrapper' patterns, which occur
 frequently in real languages. In a"]
-prespace_259 -> leaf_263
-leaf_263  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_260 -> leaf_264
-leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(typical lisp expression)"]
-raw_261 -> leaf_265
-leaf_265  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" we don't need
+prespace_258 -> leaf_262
+leaf_262  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_259 -> leaf_263
+leaf_263  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(typical lisp expression)"]
+raw_260 -> leaf_264
+leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" we don't need
 the parentheses and would like our span not to include them.
 "]
-prose_235 -> { raw_266 prespace_267 literal_268 raw_269 prespace_270 literal_271 raw_272 prespace_273 literal_274 raw_275}
-{rank=same; raw_266 prespace_267 literal_268 raw_269 prespace_270 literal_271 raw_272 prespace_273 literal_274 raw_275}
+prose_236 -> { raw_265 prespace_266 literal_267 raw_268 prespace_269 literal_270 raw_271 prespace_272 literal_273 raw_274}
+{rank=same; raw_265 prespace_266 literal_267 raw_268 prespace_269 literal_270 raw_271 prespace_272 literal_273 raw_274}
 
-raw_266 [label="raw"]
+raw_265 [label="raw"]
 
-prespace_267 [label="prespace"]
+prespace_266 [label="prespace"]
 
-literal_268 [label="literal"]
+literal_267 [label="literal"]
 
-raw_269 [label="raw"]
+raw_268 [label="raw"]
 
-prespace_270 [label="prespace"]
+prespace_269 [label="prespace"]
 
-literal_271 [label="literal"]
+literal_270 [label="literal"]
 
-raw_272 [label="raw"]
+raw_271 [label="raw"]
 
-prespace_273 [label="prespace"]
+prespace_272 [label="prespace"]
 
-literal_274 [label="literal"]
+literal_273 [label="literal"]
 
-raw_275 [label="raw"]
+raw_274 [label="raw"]
 
 
-raw_266 -> leaf_276
-leaf_276  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_265 -> leaf_275
+leaf_275  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 We could use a pattern like"]
-prespace_267 -> leaf_277
-leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_268 -> leaf_278
-leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="V\"formwrap\""]
-raw_269 -> leaf_279
-leaf_279  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and then SUPPRESS"]
-prespace_270 -> leaf_280
-leaf_280  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_271 -> leaf_281
-leaf_281  [color=Gray,shape=rectangle,fontname=Inconsolata,label="formwrap"]
-raw_272 -> leaf_282
-leaf_282  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", but
+prespace_266 -> leaf_276
+leaf_276  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_267 -> leaf_277
+leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="V\"formwrap\""]
+raw_268 -> leaf_278
+leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and then SUPPRESS"]
+prespace_269 -> leaf_279
+leaf_279  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_270 -> leaf_280
+leaf_280  [color=Gray,shape=rectangle,fontname=Inconsolata,label="formwrap"]
+raw_271 -> leaf_281
+leaf_281  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", but
 this is less eloquent than"]
-prespace_273 -> leaf_283
-leaf_283  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_274 -> leaf_284
-leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(P\"(\") * V\"form\" *  D(P\")\")"]
-raw_275 -> leaf_285
-leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
+prespace_272 -> leaf_282
+leaf_282  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_273 -> leaf_283
+leaf_283  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(P\"(\") * V\"form\" *  D(P\")\")"]
+raw_274 -> leaf_284
+leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
 "]
-prose_236 -> { raw_286 prespace_287 literal_288 raw_289}
-{rank=same; raw_286 prespace_287 literal_288 raw_289}
+prose_237 -> { raw_285 prespace_286 literal_287 raw_288}
+{rank=same; raw_285 prespace_286 literal_287 raw_288}
 
-raw_286 [label="raw"]
+raw_285 [label="raw"]
 
-prespace_287 [label="prespace"]
+prespace_286 [label="prespace"]
 
-literal_288 [label="literal"]
+literal_287 [label="literal"]
 
-raw_289 [label="raw"]
+raw_288 [label="raw"]
 
 
-raw_286 -> leaf_290
-leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_285 -> leaf_289
+leaf_289  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Which is admittedly hard to look at.  We prefer the form"]
-prespace_287 -> leaf_291
-leaf_291  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-literal_288 -> leaf_292
-leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(pal) * V\"form\" * D(par)"]
-raw_289 -> leaf_293
-leaf_293  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for this reason among others.
+prespace_286 -> leaf_290
+leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+literal_287 -> leaf_291
+leaf_291  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D(pal) * V\"form\" * D(par)"]
+raw_288 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" for this reason among others.
 "]
-prose_237 -> { raw_294 prespace_295 literal_296 raw_297}
-{rank=same; raw_294 prespace_295 literal_296 raw_297}
+prose_238 -> { raw_293 prespace_294 literal_295 raw_296}
+{rank=same; raw_293 prespace_294 literal_295 raw_296}
 
-raw_294 [label="raw"]
+raw_293 [label="raw"]
 
-prespace_295 [label="prespace"]
+prespace_294 [label="prespace"]
 
-literal_296 [label="literal"]
+literal_295 [label="literal"]
 
-raw_297 [label="raw"]
+raw_296 [label="raw"]
 
 
-raw_294 -> leaf_298
-leaf_298  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_293 -> leaf_297
+leaf_297  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 The algorithm moves from the right to the left, because"]
-prespace_295 -> leaf_299
-leaf_299  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_296 -> leaf_300
-leaf_300  [color=Gray,shape=rectangle,fontname=Inconsolata,label="table.remove(t)"]
-raw_297 -> leaf_301
-leaf_301  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+prespace_294 -> leaf_298
+leaf_298  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_295 -> leaf_299
+leaf_299  [color=Gray,shape=rectangle,fontname=Inconsolata,label="table.remove(t)"]
+raw_296 -> leaf_300
+leaf_300  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 is O(1) so we can strip any amount of rightward droppage first.  It is
 correspondingly more expensive to strip middle drops, and most expensive
 to strip leftmost drops.
 "]
-prose_238 -> { raw_302 prespace_303 literal_304 raw_305}
-{rank=same; raw_302 prespace_303 literal_304 raw_305}
+prose_239 -> { raw_301 prespace_302 literal_303 raw_304}
+{rank=same; raw_301 prespace_302 literal_303 raw_304}
 
-raw_302 [label="raw"]
+raw_301 [label="raw"]
 
-prespace_303 [label="prespace"]
+prespace_302 [label="prespace"]
 
-literal_304 [label="literal"]
+literal_303 [label="literal"]
 
-raw_305 [label="raw"]
+raw_304 [label="raw"]
 
 
-raw_302 -> leaf_306
-leaf_306  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_301 -> leaf_305
+leaf_305  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 More importantly, if we counted up, we'd be tracking"]
-prespace_303 -> leaf_307
-leaf_307  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_304 -> leaf_308
-leaf_308  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#t"]
-raw_305 -> leaf_309
-leaf_309  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", a moving target.
+prespace_302 -> leaf_306
+leaf_306  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_303 -> leaf_307
+leaf_307  [color=Gray,shape=rectangle,fontname=Inconsolata,label="#t"]
+raw_304 -> leaf_308
+leaf_308  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", a moving target.
 Counting to 1 neatly prevents this.
 "]
-prose_239 -> { raw_310}
-{rank=same; raw_310}
+prose_240 -> { raw_309}
+{rank=same; raw_309}
 
-raw_310 [label="raw"]
+raw_309 [label="raw"]
 
 
-raw_310 -> leaf_311
-leaf_311  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_309 -> leaf_310
+leaf_310  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
    -  [ ] #Todo :Faster:
 "]
-prose_240 -> { raw_312}
-{rank=same; raw_312}
+prose_241 -> { raw_311}
+{rank=same; raw_311}
 
-raw_312 [label="raw"]
+raw_311 [label="raw"]
 
 
-raw_312 -> leaf_313
-leaf_313  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_311 -> leaf_312
+leaf_312  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
      -  This algorithm, as we discussed, goes quadratic toward the left side.
         The correct way to go is if we see any drop, flip a dirty bit, and 
         compact upward.
 "]
-prose_241 -> { raw_314 prespace_315 literal_316 raw_317}
-{rank=same; raw_314 prespace_315 literal_316 raw_317}
+prose_242 -> { raw_313 prespace_314 literal_315 raw_316}
+{rank=same; raw_313 prespace_314 literal_315 raw_316}
 
-raw_314 [label="raw"]
+raw_313 [label="raw"]
 
-prespace_315 [label="prespace"]
+prespace_314 [label="prespace"]
 
-literal_316 [label="literal"]
+literal_315 [label="literal"]
 
-raw_317 [label="raw"]
+raw_316 [label="raw"]
 
 
-raw_314 -> leaf_318
-leaf_318  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_313 -> leaf_317
+leaf_317  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
      -  More to the point, the mere inclusion of this much"]
-prespace_315 -> leaf_319
-leaf_319  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_316 -> leaf_320
-leaf_320  [color=Gray,shape=rectangle,fontname=Inconsolata,label="s:"]
-raw_317 -> leaf_321
-leaf_321  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" slows the 
+prespace_314 -> leaf_318
+leaf_318  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_315 -> leaf_319
+leaf_319  [color=Gray,shape=rectangle,fontname=Inconsolata,label="s:"]
+raw_316 -> leaf_320
+leaf_320  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" slows the 
         algorithm to an utter crawl. The concatenations happen anyway, to
         pass the string into the status module.
 "]
-prose_242 -> { raw_322}
-{rank=same; raw_322}
+prose_243 -> { raw_321}
+{rank=same; raw_321}
 
-raw_322 [label="raw"]
+raw_321 [label="raw"]
 
 
-raw_322 -> leaf_323
-leaf_323  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_321 -> leaf_322
+leaf_322  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
         This is probably 10x the cost in real work.
 "]
-prose_243 -> { raw_324}
-{rank=same; raw_324}
+prose_244 -> { raw_323}
+{rank=same; raw_323}
 
-raw_324 [label="raw"]
+raw_323 [label="raw"]
 
 
-raw_324 -> leaf_325
-leaf_325  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_323 -> leaf_324
+leaf_324  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
         Why am I doing it in such a dumb way? This is a literate programming
         environment, and I'm building a language with templates and macros
         and other useful access to state at compile time.
 "]
-prose_244 -> { raw_326}
-{rank=same; raw_326}
+prose_245 -> { raw_325}
+{rank=same; raw_325}
 
-raw_326 [label="raw"]
+raw_325 [label="raw"]
 
 
-raw_326 -> leaf_327
-leaf_327  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_325 -> leaf_326
+leaf_326  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
         That's two ways to remove the verbosity and other printfs when they
         aren't wanted.  Better to simulate the correct behavior until I can
         provide it. 
 "]
-codeblock_245 -> leaf_328
-leaf_328  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t, 1, -1 do 
+codeblock_246 -> leaf_327
+leaf_327  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t, 1, -1 do 
       local cap = t[i] 
       if type(cap) ~= \"table\" then
          s:complain(\"CAPTURE ISSUE\", 
@@ -1145,8 +1143,8 @@ local function define(func, g, e)
   assert( g[ 1 ] and g[ g[ 1 ] ], \"no start rule defined\" )
   return g
 end"]
-codeblock_246 -> leaf_329
-leaf_329  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
+codeblock_247 -> leaf_328
+leaf_328  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function refineMetas(metas)
   s:verb(\"refining metatables\")
   for id, meta in pairs(metas) do
     s:verb(\"  id: \" .. id .. \" type: \" .. type(meta))
@@ -1164,8 +1162,46 @@ leaf_329  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
   end
   return metas
 end"]
-codeblock_247 -> leaf_330
-leaf_330  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
+section_5 -> { header_329 prose_330 codeblock_331 codeblock_332}
+{rank=same; header_329 prose_330 codeblock_331 codeblock_332}
+
+header_329 [label="2 : new"]
+
+prose_330 [label="prose"]
+
+codeblock_331 [label="code block 349-366"]
+
+codeblock_332 [label="code block 368-370"]
+
+
+header_329 -> leaf_333
+leaf_333  [color=Gray,shape=rectangle,fontname=Inconsolata,label="r_templ"]
+prose_330 -> { raw_334 prespace_335 literal_336 raw_337}
+{rank=same; raw_334 prespace_335 literal_336 raw_337}
+
+raw_334 [label="raw"]
+
+prespace_335 [label="prespace"]
+
+literal_336 [label="literal"]
+
+raw_337 [label="raw"]
+
+
+raw_334 -> leaf_338
+leaf_338  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Given a grammar_template function and a set of metatables,
+yield a parsing function and the grammar as an"]
+prespace_335 -> leaf_339
+leaf_339  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_336 -> leaf_340
+leaf_340  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpeg"]
+raw_337 -> leaf_341
+leaf_341  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" pattern.
+"]
+codeblock_331 -> leaf_342
+leaf_342  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
   if type(grammar_template) == 'function' then
     local metas = metas or {}
     metas = refineMetas(metas)
@@ -1176,12 +1212,12 @@ leaf_330  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
       return L.match(grammar, str, 1, str, metas, offset)
     end
 
-    return parse
+    return parse, grammar
   else
     s:halt(\"no way to build grammar out of \" .. type(template))
   end
 end"]
-codeblock_248 -> leaf_331
-leaf_331  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
+codeblock_332 -> leaf_343
+leaf_343  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return new"]
 
 }

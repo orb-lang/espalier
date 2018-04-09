@@ -1448,7 +1448,7 @@
 <text text-anchor="middle" x="8209.5" y="-503.0007" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 <text text-anchor="middle" x="8209.5" y="-455.6007" font-family="Inconsolata" font-size="14.00" fill="#000000">local function parse_error(pos, name, msg, patt, str)</text>
 <text text-anchor="middle" x="8209.5" y="-440.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local message = msg or name or &quot;Not Otherwise Specified&quot;</text>
-<text text-anchor="middle" x="8209.5" y="-424.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;io.write(&quot;remaining: &quot; .. string.sub(str, pos) .. &quot;\n&quot;)</text>
+<text text-anchor="middle" x="8209.5" y="-424.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;io.write(&quot;remaining: &quot; .. string.sub(str, pos) .. &quot;\n&quot;)</text>
 <text text-anchor="middle" x="8209.5" y="-409.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;s:complain(&quot;Parse Error: &quot;, message)</text>
 <text text-anchor="middle" x="8209.5" y="-394.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local errorNode = &#160;setmetatable({}, Err)</text>
 <text text-anchor="middle" x="8209.5" y="-378.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;errorNode.first = &#160;pos</text>
