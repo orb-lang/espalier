@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 456"]
+doc_0 [label="doc - 464"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-426"]
+section_1 [label="section: 1-434"]
 
 
 section_1 -> { header_2 prose_3 section_4 section_5 section_6 section_7 section_8}
@@ -25,9 +25,9 @@ section_5 [label="section: 17-28"]
 
 section_6 [label="section: 29-40"]
 
-section_7 [label="section: 41-404"]
+section_7 [label="section: 41-412"]
 
-section_8 [label="section: 427-446"]
+section_8 [label="section: 435-454"]
 
 
 header_2 -> leaf_9
@@ -171,11 +171,11 @@ section_45 [label="section: 44-57"]
 
 section_46 [label="section: 58-97"]
 
-section_47 [label="section: 98-369"]
+section_47 [label="section: 98-377"]
 
-section_48 [label="section: 387-404"]
+section_48 [label="section: 395-412"]
 
-section_49 [label="section: 405-407"]
+section_49 [label="section: 413-415"]
 
 
 header_43 -> leaf_50
@@ -320,9 +320,9 @@ section_81 [label="section: 277-295"]
 
 section_82 [label="section: 296-344"]
 
-section_83 [label="section: 345-369"]
+section_83 [label="section: 345-377"]
 
-section_84 [label="section: 370-386"]
+section_84 [label="section: 378-394"]
 
 
 header_73 -> leaf_85
@@ -978,7 +978,7 @@ header_266 [label="4 : Node.linePos(node, position)"]
 
 prose_267 [label="prose"]
 
-codeblock_268 [label="code block 349-367"]
+codeblock_268 [label="code block 349-375"]
 
 
 header_266 -> leaf_269
@@ -1001,13 +1001,21 @@ leaf_272  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
         -- nothing, this generates the line map
       end
    end
-   local offset = 1
+   local offset = 0
+   local position = position
    local linum = nil
    for i, v in ipairs(node.__lines) do
        linum = i
-       offset = offset + #v
+       local offset = offset + #v + 1 -- for nl
        if offset > position then
-          return linum, offset - position - #v
+          io.write(\"newoffset > position\\n\")
+          return linum, position
+       elseif offset == position then
+          io.write(\"offset == position\\n\")
+          return linum, (#v + 1)
+       else
+          io.write(\"offset < position, iterating\\n\")
+          position = position - #v - 1
        end
    end
    return nil -- this position is off the end of the string
@@ -1021,7 +1029,7 @@ prose_274 [label="prose"]
 
 prose_275 [label="prose"]
 
-codeblock_276 [label="code block 376-384"]
+codeblock_276 [label="code block 384-392"]
 
 
 header_273 -> leaf_277
@@ -1064,7 +1072,7 @@ prose_284 [label="prose"]
 
 prose_285 [label="prose"]
 
-codeblock_286 [label="code block 394-403"]
+codeblock_286 [label="code block 402-411"]
 
 
 header_283 -> leaf_287
@@ -1107,7 +1115,7 @@ header_293 [label="3 : Subclassing and construction"]
 
 prose_294 [label="prose"]
 
-section_295 [label="section: 408-426"]
+section_295 [label="section: 416-434"]
 
 
 header_293 -> leaf_296
@@ -1129,7 +1137,7 @@ header_299 [label="4 : N.inherit(node)"]
 
 prose_300 [label="prose"]
 
-codeblock_301 [label="code block 410-424"]
+codeblock_301 [label="code block 418-432"]
 
 
 header_299 -> leaf_302
@@ -1168,9 +1176,9 @@ prose_308 [label="prose"]
 
 prose_309 [label="prose"]
 
-section_310 [label="section: 438-446"]
+section_310 [label="section: 446-454"]
 
-section_311 [label="section: 447-456"]
+section_311 [label="section: 455-464"]
 
 
 header_306 -> leaf_312
@@ -1266,7 +1274,7 @@ header_336 [label="3 : Other fields"]
 
 prose_337 [label="prose"]
 
-codeblock_338 [label="code block 451-453"]
+codeblock_338 [label="code block 459-461"]
 
 
 header_336 -> leaf_339

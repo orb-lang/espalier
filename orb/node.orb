@@ -344,7 +344,10 @@ end
 
 **** Node.linePos(node, position)
 
-Returns the line and column given a position. 
+Returns the line and column given a position.
+
+This is implemented as a classic loop made slightly harder to get
+right by Lua's indexing and the missing newline.  
 
 #!lua
 function Node.linePos(node, position)
@@ -353,13 +356,18 @@ function Node.linePos(node, position)
         -- nothing, this generates the line map
       end
    end
-   local offset = 1
+   local offset = 0
+   local position = position
    local linum = nil
    for i, v in ipairs(node.__lines) do
        linum = i
-       offset = offset + #v
+       local offset = offset + #v + 1 -- for nl
        if offset > position then
-          return linum, offset - position - #v
+          return linum, position
+       elseif offset == position then
+          return linum, (#v + 1)
+       else
+          position = position - #v - 1
        end
    end
    return nil -- this position is off the end of the string

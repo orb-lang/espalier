@@ -353,13 +353,21 @@ function Node.linePos(node, position)
         -- nothing, this generates the line map
       end
    end
-   local offset = 1
+   local offset = 0
+   local position = position
    local linum = nil
    for i, v in ipairs(node.__lines) do
        linum = i
-       offset = offset + #v
+       local offset = offset + #v + 1 -- for nl
        if offset > position then
-          return linum, offset - position - #v
+          io.write("newoffset > position\n")
+          return linum, position
+       elseif offset == position then
+          io.write("offset == position\n")
+          return linum, (#v + 1)
+       else
+          io.write("offset < position, iterating\n")
+          position = position - #v - 1
        end
    end
    return nil -- this position is off the end of the string

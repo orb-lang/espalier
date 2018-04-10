@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1169" cy="-1590.5221" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1169" y="-1586.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 456</text>
+<text text-anchor="middle" x="1169" y="-1586.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 464</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="1169" cy="-1518.5221" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="1169" y="-1514.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;426</text>
+<text text-anchor="middle" x="1169" y="-1514.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;434</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -91,7 +91,7 @@
 <g id="node8" class="node">
 <title>section_7</title>
 <ellipse fill="none" stroke="#000000" cx="2942" cy="-1446.5221" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="2942" y="-1442.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 41&#45;404</text>
+<text text-anchor="middle" x="2942" y="-1442.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 41&#45;412</text>
 </g>
 <!-- section_1&#45;&gt;section_7 -->
 <g id="edge7" class="edge">
@@ -103,7 +103,7 @@
 <g id="node9" class="node">
 <title>section_8</title>
 <ellipse fill="none" stroke="#000000" cx="18464" cy="-1446.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="18464" y="-1442.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 427&#45;446</text>
+<text text-anchor="middle" x="18464" y="-1442.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 435&#45;454</text>
 </g>
 <!-- section_1&#45;&gt;section_8 -->
 <g id="edge8" class="edge">
@@ -307,7 +307,7 @@
 <g id="node48" class="node">
 <title>section_47</title>
 <ellipse fill="none" stroke="#000000" cx="10372" cy="-1374.5221" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="10372" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 98&#45;369</text>
+<text text-anchor="middle" x="10372" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 98&#45;377</text>
 </g>
 <!-- section_7&#45;&gt;section_47 -->
 <g id="edge47" class="edge">
@@ -319,7 +319,7 @@
 <g id="node49" class="node">
 <title>section_48</title>
 <ellipse fill="none" stroke="#000000" cx="16433" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="16433" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 387&#45;404</text>
+<text text-anchor="middle" x="16433" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 395&#45;412</text>
 </g>
 <!-- section_7&#45;&gt;section_48 -->
 <g id="edge48" class="edge">
@@ -331,7 +331,7 @@
 <g id="node50" class="node">
 <title>section_49</title>
 <ellipse fill="none" stroke="#000000" cx="17040" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="17040" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 405&#45;407</text>
+<text text-anchor="middle" x="17040" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 413&#45;415</text>
 </g>
 <!-- section_7&#45;&gt;section_49 -->
 <g id="edge49" class="edge">
@@ -391,7 +391,7 @@
 <g id="node311" class="node">
 <title>section_310</title>
 <ellipse fill="none" stroke="#000000" cx="19271" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="19271" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 438&#45;446</text>
+<text text-anchor="middle" x="19271" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 446&#45;454</text>
 </g>
 <!-- section_8&#45;&gt;section_310 -->
 <g id="edge310" class="edge">
@@ -403,7 +403,7 @@
 <g id="node312" class="node">
 <title>section_311</title>
 <ellipse fill="none" stroke="#000000" cx="20277" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="20277" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 447&#45;456</text>
+<text text-anchor="middle" x="20277" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 455&#45;464</text>
 </g>
 <!-- section_8&#45;&gt;section_311 -->
 <g id="edge311" class="edge">
@@ -927,7 +927,7 @@
 <g id="node84" class="node">
 <title>section_83</title>
 <ellipse fill="none" stroke="#000000" cx="15075" cy="-1269.1221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="15075" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 345&#45;369</text>
+<text text-anchor="middle" x="15075" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 345&#45;377</text>
 </g>
 <!-- section_47&#45;&gt;section_83 -->
 <g id="edge83" class="edge">
@@ -939,7 +939,7 @@
 <g id="node85" class="node">
 <title>section_84</title>
 <ellipse fill="none" stroke="#000000" cx="15881" cy="-1269.1221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="15881" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 370&#45;386</text>
+<text text-anchor="middle" x="15881" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 378&#45;394</text>
 </g>
 <!-- section_47&#45;&gt;section_84 -->
 <g id="edge84" class="edge">
@@ -986,14 +986,14 @@
 <!-- codeblock_286 -->
 <g id="node287" class="node">
 <title>codeblock_286</title>
-<ellipse fill="none" stroke="#000000" cx="16669" cy="-1269.1221" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="16669" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 394&#45;403</text>
+<ellipse fill="none" stroke="#000000" cx="16668" cy="-1269.1221" rx="86.7905" ry="18"/>
+<text text-anchor="middle" x="16668" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 402&#45;411</text>
 </g>
 <!-- section_48&#45;&gt;codeblock_286 -->
 <g id="edge286" class="edge">
 <title>section_48&#45;&gt;codeblock_286</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M16469.3844,-1358.6985C16493.8971,-1348.0011 16526.9367,-1333.5112 16556,-1320.5221 16578.4382,-1310.494 16603.3083,-1299.2009 16623.9914,-1289.7595"/>
-<polygon fill="#000000" stroke="#000000" points="16625.535,-1292.9024 16633.176,-1285.5631 16622.6259,-1286.5354 16625.535,-1292.9024"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M16469.3987,-1358.7305C16493.9175,-1348.0467 16526.9586,-1333.56 16556,-1320.5221 16578.257,-1310.5301 16602.9089,-1299.2409 16623.4058,-1289.7928"/>
+<polygon fill="#000000" stroke="#000000" points="16624.8941,-1292.9608 16632.5073,-1285.5926 16621.9609,-1286.6049 16624.8941,-1292.9608"/>
 </g>
 <!-- header_293 -->
 <g id="node294" class="node">
@@ -1023,7 +1023,7 @@
 <g id="node296" class="node">
 <title>section_295</title>
 <ellipse fill="none" stroke="#000000" cx="17326" cy="-1269.1221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="17326" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 408&#45;426</text>
+<text text-anchor="middle" x="17326" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 416&#45;434</text>
 </g>
 <!-- section_49&#45;&gt;section_295 -->
 <g id="edge295" class="edge">
@@ -1643,7 +1643,7 @@
 <g id="node269" class="node">
 <title>codeblock_268</title>
 <ellipse fill="none" stroke="#000000" cx="15363" cy="-944.0616" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="15363" y="-939.8616" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 349&#45;367</text>
+<text text-anchor="middle" x="15363" y="-939.8616" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 349&#45;375</text>
 </g>
 <!-- section_83&#45;&gt;codeblock_268 -->
 <g id="edge268" class="edge">
@@ -1691,7 +1691,7 @@
 <g id="node277" class="node">
 <title>codeblock_276</title>
 <ellipse fill="none" stroke="#000000" cx="16118" cy="-944.0616" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="16118" y="-939.8616" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 376&#45;384</text>
+<text text-anchor="middle" x="16118" y="-939.8616" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 384&#45;392</text>
 </g>
 <!-- section_84&#45;&gt;codeblock_276 -->
 <g id="edge276" class="edge">
@@ -3638,30 +3638,38 @@
 <!-- leaf_272 -->
 <g id="node273" class="node">
 <title>leaf_272</title>
-<polygon fill="none" stroke="#c0c0c0" points="15633.5,-523.1012 15204.5,-523.1012 15204.5,-253.5 15633.5,-253.5 15633.5,-523.1012"/>
-<text text-anchor="middle" x="15419" y="-508.0009" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.linePos(node, position)</text>
-<text text-anchor="middle" x="15419" y="-492.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not node.__lines then</text>
-<text text-anchor="middle" x="15419" y="-477.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for _ in node:lines() do</text>
-<text text-anchor="middle" x="15419" y="-461.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; nothing, this generates the line map</text>
-<text text-anchor="middle" x="15419" y="-446.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="15419" y="-431.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="15419" y="-415.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local offset = 1</text>
-<text text-anchor="middle" x="15419" y="-400.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local linum = nil</text>
-<text text-anchor="middle" x="15419" y="-384.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;for i, v in ipairs(node.__lines) do</text>
-<text text-anchor="middle" x="15419" y="-369.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;linum = i</text>
-<text text-anchor="middle" x="15419" y="-354.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;offset = offset + #v</text>
-<text text-anchor="middle" x="15419" y="-338.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;if offset &gt; position then</text>
-<text text-anchor="middle" x="15419" y="-323.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return linum, offset &#45; position &#45; #v</text>
-<text text-anchor="middle" x="15419" y="-307.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;end</text>
-<text text-anchor="middle" x="15419" y="-292.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
-<text text-anchor="middle" x="15419" y="-277.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return nil &#45;&#45; this position is off the end of the string</text>
-<text text-anchor="middle" x="15419" y="-261.6004" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="15633.5,-584.8014 15204.5,-584.8014 15204.5,-191.7998 15633.5,-191.7998 15633.5,-584.8014"/>
+<text text-anchor="middle" x="15419" y="-569.601" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.linePos(node, position)</text>
+<text text-anchor="middle" x="15419" y="-554.201" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if not node.__lines then</text>
+<text text-anchor="middle" x="15419" y="-538.8009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;for _ in node:lines() do</text>
+<text text-anchor="middle" x="15419" y="-523.4009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#45;&#45; nothing, this generates the line map</text>
+<text text-anchor="middle" x="15419" y="-508.0009" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="15419" y="-492.6008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="15419" y="-477.2008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local offset = 0</text>
+<text text-anchor="middle" x="15419" y="-461.8008" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local position = position</text>
+<text text-anchor="middle" x="15419" y="-446.4007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local linum = nil</text>
+<text text-anchor="middle" x="15419" y="-431.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;for i, v in ipairs(node.__lines) do</text>
+<text text-anchor="middle" x="15419" y="-415.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;linum = i</text>
+<text text-anchor="middle" x="15419" y="-400.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;local offset = offset + #v + 1 &#45;&#45; for nl</text>
+<text text-anchor="middle" x="15419" y="-384.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;if offset &gt; position then</text>
+<text text-anchor="middle" x="15419" y="-369.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;io.write(&quot;newoffset &gt; position\n&quot;)</text>
+<text text-anchor="middle" x="15419" y="-354.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return linum, position</text>
+<text text-anchor="middle" x="15419" y="-338.6005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;elseif offset == position then</text>
+<text text-anchor="middle" x="15419" y="-323.2005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;io.write(&quot;offset == position\n&quot;)</text>
+<text text-anchor="middle" x="15419" y="-307.8005" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return linum, (#v + 1)</text>
+<text text-anchor="middle" x="15419" y="-292.4004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;else</text>
+<text text-anchor="middle" x="15419" y="-277.0004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;io.write(&quot;offset &lt; position, iterating\n&quot;)</text>
+<text text-anchor="middle" x="15419" y="-261.6004" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;position = position &#45; #v &#45; 1</text>
+<text text-anchor="middle" x="15419" y="-246.2003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;end</text>
+<text text-anchor="middle" x="15419" y="-230.8003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;end</text>
+<text text-anchor="middle" x="15419" y="-215.4003" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return nil &#45;&#45; this position is off the end of the string</text>
+<text text-anchor="middle" x="15419" y="-200.0002" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_268&#45;&gt;leaf_272 -->
 <g id="edge272" class="edge">
 <title>codeblock_268&#45;&gt;leaf_272</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M15364.8314,-925.8864C15370.8587,-866.0699 15390.4841,-671.301 15404.3727,-533.4666"/>
-<polygon fill="#000000" stroke="#000000" points="15407.884,-533.5292 15405.4043,-523.2286 15400.9193,-532.8273 15407.884,-533.5292"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M15364.8314,-925.8864C15370.0029,-874.5623 15385.1856,-723.8848 15398.1657,-595.0667"/>
+<polygon fill="#000000" stroke="#000000" points="15401.6552,-595.346 15399.1755,-585.0454 15394.6904,-594.6441 15401.6552,-595.346"/>
 </g>
 <!-- leaf_271 -->
 <g id="node272" class="node">
@@ -3805,8 +3813,8 @@
 <!-- codeblock_286&#45;&gt;leaf_292 -->
 <g id="edge292" class="edge">
 <title>codeblock_286&#45;&gt;leaf_292</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M16669.8494,-1250.7141C16671.856,-1207.2297 16676.9835,-1096.1151 16680.4823,-1020.2932"/>
-<polygon fill="#000000" stroke="#000000" points="16683.9999,-1019.9901 16680.9647,-1009.8394 16677.0073,-1019.6674 16683.9999,-1019.9901"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M16668.9061,-1250.7141C16671.0508,-1207.1408 16676.5381,-1095.6604 16680.2706,-1019.8285"/>
+<polygon fill="#000000" stroke="#000000" points="16683.7664,-1019.9994 16680.7623,-1009.8394 16676.7748,-1019.6552 16683.7664,-1019.9994"/>
 </g>
 <!-- leaf_289 -->
 <g id="node290" class="node">
@@ -3885,7 +3893,7 @@
 <g id="node302" class="node">
 <title>codeblock_301</title>
 <ellipse fill="none" stroke="#000000" cx="17529" cy="-944.0616" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="17529" y="-939.8616" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 410&#45;424</text>
+<text text-anchor="middle" x="17529" y="-939.8616" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 418&#45;432</text>
 </g>
 <!-- section_295&#45;&gt;codeblock_301 -->
 <g id="edge301" class="edge">
@@ -4061,7 +4069,7 @@
 <g id="node339" class="node">
 <title>codeblock_338</title>
 <ellipse fill="none" stroke="#000000" cx="20474" cy="-1269.1221" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="20474" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 451&#45;453</text>
+<text text-anchor="middle" x="20474" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 459&#45;461</text>
 </g>
 <!-- section_311&#45;&gt;codeblock_338 -->
 <g id="edge338" class="edge">
