@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 429"]
+doc_0 [label="doc - 456"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-399"]
+section_1 [label="section: 1-426"]
 
 
 section_1 -> { header_2 prose_3 section_4 section_5 section_6 section_7 section_8}
@@ -25,9 +25,9 @@ section_5 [label="section: 17-28"]
 
 section_6 [label="section: 29-40"]
 
-section_7 [label="section: 41-377"]
+section_7 [label="section: 41-404"]
 
-section_8 [label="section: 400-419"]
+section_8 [label="section: 427-446"]
 
 
 header_2 -> leaf_9
@@ -171,11 +171,11 @@ section_45 [label="section: 44-57"]
 
 section_46 [label="section: 58-97"]
 
-section_47 [label="section: 98-342"]
+section_47 [label="section: 98-369"]
 
-section_48 [label="section: 360-377"]
+section_48 [label="section: 387-404"]
 
-section_49 [label="section: 378-380"]
+section_49 [label="section: 405-407"]
 
 
 header_43 -> leaf_50
@@ -297,8 +297,8 @@ leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.t
    end
    return phrase
 end"]
-section_47 -> { header_73 prose_74 section_75 section_76 section_77 section_78 section_79 section_80 section_81 section_82 section_83}
-{rank=same; header_73 prose_74 section_75 section_76 section_77 section_78 section_79 section_80 section_81 section_82 section_83}
+section_47 -> { header_73 prose_74 section_75 section_76 section_77 section_78 section_79 section_80 section_81 section_82 section_83 section_84}
+{rank=same; header_73 prose_74 section_75 section_76 section_77 section_78 section_79 section_80 section_81 section_82 section_83 section_84}
 
 header_73 [label="3 : Metrics"]
 
@@ -318,81 +318,81 @@ section_80 [label="section: 237-276"]
 
 section_81 [label="section: 277-295"]
 
-section_82 [label="section: 296-342"]
+section_82 [label="section: 296-344"]
 
-section_83 [label="section: 343-359"]
+section_83 [label="section: 345-369"]
 
-
-header_73 -> leaf_84
-leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Metrics"]
-prose_74 -> { raw_85}
-{rank=same; raw_85}
-
-raw_85 [label="raw"]
+section_84 [label="section: 370-386"]
 
 
-raw_85 -> leaf_86
-leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_73 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Metrics"]
+prose_74 -> { raw_86}
+{rank=same; raw_86}
+
+raw_86 [label="raw"]
+
+
+raw_86 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 "]
-section_75 -> { header_87 prose_88 codeblock_89}
-{rank=same; header_87 prose_88 codeblock_89}
+section_75 -> { header_88 prose_89 codeblock_90}
+{rank=same; header_88 prose_89 codeblock_90}
 
-header_87 [label="4 : span"]
+header_88 [label="4 : span"]
 
-prose_88 [label="prose"]
+prose_89 [label="prose"]
 
-codeblock_89 [label="code block 103-107"]
-
-
-header_87 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** span"]
-prose_88 -> { raw_91}
-{rank=same; raw_91}
-
-raw_91 [label="raw"]
+codeblock_90 [label="code block 103-107"]
 
 
-raw_91 -> leaf_92
-leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_88 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** span"]
+prose_89 -> { raw_92}
+{rank=same; raw_92}
+
+raw_92 [label="raw"]
+
+
+raw_92 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-codeblock_89 -> leaf_93
-leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.span(node)
+codeblock_90 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.span(node)
    return string.sub(node.str, node.first, node.last)
 end"]
-section_76 -> { header_94 prose_95 codeblock_96}
-{rank=same; header_94 prose_95 codeblock_96}
+section_76 -> { header_95 prose_96 codeblock_97}
+{rank=same; header_95 prose_96 codeblock_97}
 
-header_94 [label="4 : len"]
+header_95 [label="4 : len"]
 
-prose_95 [label="prose"]
+prose_96 [label="prose"]
 
-codeblock_96 [label="code block 114-118"]
-
-
-header_94 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** len"]
-prose_95 -> { raw_98}
-{rank=same; raw_98}
-
-raw_98 [label="raw"]
+codeblock_97 [label="code block 114-118"]
 
 
-raw_98 -> leaf_99
-leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_95 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** len"]
+prose_96 -> { raw_99}
+{rank=same; raw_99}
+
+raw_99 [label="raw"]
+
+
+raw_99 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 ahh, the pleasure of indexing by one. 
 "]
-codeblock_96 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.len(node)
+codeblock_97 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.len(node)
     return 1 + node.last - node.first
 end"]
-section_77 -> { header_101 prose_102 prose_103 prose_104 prose_105 prose_106 codeblock_107 codeblock_108}
-{rank=same; header_101 prose_102 prose_103 prose_104 prose_105 prose_106 codeblock_107 codeblock_108}
+section_77 -> { header_102 prose_103 prose_104 prose_105 prose_106 prose_107 codeblock_108 codeblock_109}
+{rank=same; header_102 prose_103 prose_104 prose_105 prose_106 prose_107 codeblock_108 codeblock_109}
 
-header_101 [label="4 : Node:gap(node)"]
-
-prose_102 [label="prose"]
+header_102 [label="4 : Node:gap(node)"]
 
 prose_103 [label="prose"]
 
@@ -402,226 +402,228 @@ prose_105 [label="prose"]
 
 prose_106 [label="prose"]
 
-codeblock_107 [label="code block 140-160"]
+prose_107 [label="prose"]
 
-codeblock_108 [label="code block 163-191"]
+codeblock_108 [label="code block 140-160"]
 
-
-header_101 -> leaf_109
-leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node:gap(node)"]
-prose_102 -> { raw_110 prespace_111 literal_112 raw_113 prespace_114 literal_115 raw_116 prespace_117 literal_118 raw_119 prespace_120 literal_121 raw_122 prespace_123 literal_124 raw_125 prespace_126 bold_127 raw_128}
-{rank=same; raw_110 prespace_111 literal_112 raw_113 prespace_114 literal_115 raw_116 prespace_117 literal_118 raw_119 prespace_120 literal_121 raw_122 prespace_123 literal_124 raw_125 prespace_126 bold_127 raw_128}
-
-raw_110 [label="raw"]
-
-prespace_111 [label="prespace"]
-
-literal_112 [label="literal"]
-
-raw_113 [label="raw"]
-
-prespace_114 [label="prespace"]
-
-literal_115 [label="literal"]
-
-raw_116 [label="raw"]
-
-prespace_117 [label="prespace"]
-
-literal_118 [label="literal"]
-
-raw_119 [label="raw"]
-
-prespace_120 [label="prespace"]
-
-literal_121 [label="literal"]
-
-raw_122 [label="raw"]
-
-prespace_123 [label="prespace"]
-
-literal_124 [label="literal"]
-
-raw_125 [label="raw"]
-
-prespace_126 [label="prespace"]
-
-bold_127 [label="bold"]
-
-raw_128 [label="raw"]
+codeblock_109 [label="code block 163-191"]
 
 
-raw_110 -> leaf_129
-leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-prespace_111 -> leaf_130
+header_102 -> leaf_110
+leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node:gap(node)"]
+prose_103 -> { raw_111 prespace_112 literal_113 raw_114 prespace_115 literal_116 raw_117 prespace_118 literal_119 raw_120 prespace_121 literal_122 raw_123 prespace_124 literal_125 raw_126 prespace_127 bold_128 raw_129}
+{rank=same; raw_111 prespace_112 literal_113 raw_114 prespace_115 literal_116 raw_117 prespace_118 literal_119 raw_120 prespace_121 literal_122 raw_123 prespace_124 literal_125 raw_126 prespace_127 bold_128 raw_129}
+
+raw_111 [label="raw"]
+
+prespace_112 [label="prespace"]
+
+literal_113 [label="literal"]
+
+raw_114 [label="raw"]
+
+prespace_115 [label="prespace"]
+
+literal_116 [label="literal"]
+
+raw_117 [label="raw"]
+
+prespace_118 [label="prespace"]
+
+literal_119 [label="literal"]
+
+raw_120 [label="raw"]
+
+prespace_121 [label="prespace"]
+
+literal_122 [label="literal"]
+
+raw_123 [label="raw"]
+
+prespace_124 [label="prespace"]
+
+literal_125 [label="literal"]
+
+raw_126 [label="raw"]
+
+prespace_127 [label="prespace"]
+
+bold_128 [label="bold"]
+
+raw_129 [label="raw"]
+
+
+raw_111 -> leaf_130
 leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-literal_112 -> leaf_131
-leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Node.gap(left, right)"]
-raw_113 -> leaf_132
-leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" compares the"]
-prespace_114 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_115 -> leaf_134
-leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label="last"]
-raw_116 -> leaf_135
-leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field of the"]
-prespace_117 -> leaf_136
-leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_118 -> leaf_137
-leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label="left"]
-raw_119 -> leaf_138
-leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter
+prespace_112 -> leaf_131
+leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+literal_113 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Node.gap(left, right)"]
+raw_114 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" compares the"]
+prespace_115 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_116 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="last"]
+raw_117 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field of the"]
+prespace_118 -> leaf_137
+leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_119 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="left"]
+raw_120 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter
 with the"]
-prespace_120 -> leaf_139
-leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_121 -> leaf_140
-leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
-raw_122 -> leaf_141
-leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field of the"]
-prespace_123 -> leaf_142
-leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_124 -> leaf_143
-leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label="right"]
-raw_125 -> leaf_144
-leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter,"]
-prespace_126 -> leaf_145
-leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-bold_127 -> leaf_146
-leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="if"]
-raw_128 -> leaf_147
-leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" this is greater than
+prespace_121 -> leaf_140
+leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_122 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
+raw_123 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field of the"]
+prespace_124 -> leaf_143
+leaf_143  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_125 -> leaf_144
+leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="right"]
+raw_126 -> leaf_145
+leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter,"]
+prespace_127 -> leaf_146
+leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+bold_128 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label="if"]
+raw_129 -> leaf_148
+leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" this is greater than
 0. 
 "]
-prose_103 -> { raw_148 prespace_149 literal_150 raw_151 prespace_152 literal_153 raw_154 prespace_155 literal_156 raw_157 prespace_158 literal_159 raw_160 prespace_161 literal_162 raw_163}
-{rank=same; raw_148 prespace_149 literal_150 raw_151 prespace_152 literal_153 raw_154 prespace_155 literal_156 raw_157 prespace_158 literal_159 raw_160 prespace_161 literal_162 raw_163}
+prose_104 -> { raw_149 prespace_150 literal_151 raw_152 prespace_153 literal_154 raw_155 prespace_156 literal_157 raw_158 prespace_159 literal_160 raw_161 prespace_162 literal_163 raw_164}
+{rank=same; raw_149 prespace_150 literal_151 raw_152 prespace_153 literal_154 raw_155 prespace_156 literal_157 raw_158 prespace_159 literal_160 raw_161 prespace_162 literal_163 raw_164}
 
-raw_148 [label="raw"]
+raw_149 [label="raw"]
 
-prespace_149 [label="prespace"]
+prespace_150 [label="prespace"]
 
-literal_150 [label="literal"]
+literal_151 [label="literal"]
 
-raw_151 [label="raw"]
+raw_152 [label="raw"]
 
-prespace_152 [label="prespace"]
+prespace_153 [label="prespace"]
 
-literal_153 [label="literal"]
+literal_154 [label="literal"]
 
-raw_154 [label="raw"]
+raw_155 [label="raw"]
 
-prespace_155 [label="prespace"]
+prespace_156 [label="prespace"]
 
-literal_156 [label="literal"]
+literal_157 [label="literal"]
 
-raw_157 [label="raw"]
+raw_158 [label="raw"]
 
-prespace_158 [label="prespace"]
+prespace_159 [label="prespace"]
 
-literal_159 [label="literal"]
+literal_160 [label="literal"]
 
-raw_160 [label="raw"]
+raw_161 [label="raw"]
 
-prespace_161 [label="prespace"]
+prespace_162 [label="prespace"]
 
-literal_162 [label="literal"]
+literal_163 [label="literal"]
 
-raw_163 [label="raw"]
+raw_164 [label="raw"]
 
 
-raw_148 -> leaf_164
-leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_149 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 If it is negative,"]
-prespace_149 -> leaf_165
-leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_150 -> leaf_166
-leaf_166  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Node.gap"]
-raw_151 -> leaf_167
-leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" attempts to measure the"]
-prespace_152 -> leaf_168
-leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_153 -> leaf_169
-leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
-raw_154 -> leaf_170
-leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field of the"]
-prespace_155 -> leaf_171
-leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-literal_156 -> leaf_172
-leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label="right"]
-raw_157 -> leaf_173
-leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter against the"]
-prespace_158 -> leaf_174
-leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_159 -> leaf_175
-leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label="last"]
-raw_160 -> leaf_176
-leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field of the"]
-prespace_161 -> leaf_177
-leaf_177  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_162 -> leaf_178
-leaf_178  [color=Gray,shape=rectangle,fontname=Inconsolata,label="left"]
-raw_163 -> leaf_179
-leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter.
+prespace_150 -> leaf_166
+leaf_166  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_151 -> leaf_167
+leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Node.gap"]
+raw_152 -> leaf_168
+leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" attempts to measure the"]
+prespace_153 -> leaf_169
+leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_154 -> leaf_170
+leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="first"]
+raw_155 -> leaf_171
+leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field of the"]
+prespace_156 -> leaf_172
+leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+literal_157 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="right"]
+raw_158 -> leaf_174
+leaf_174  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter against the"]
+prespace_159 -> leaf_175
+leaf_175  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_160 -> leaf_176
+leaf_176  [color=Gray,shape=rectangle,fontname=Inconsolata,label="last"]
+raw_161 -> leaf_177
+leaf_177  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field of the"]
+prespace_162 -> leaf_178
+leaf_178  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_163 -> leaf_179
+leaf_179  [color=Gray,shape=rectangle,fontname=Inconsolata,label="left"]
+raw_164 -> leaf_180
+leaf_180  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" parameter.
 "]
-prose_104 -> { raw_180 prespace_181 bold_182 raw_183}
-{rank=same; raw_180 prespace_181 bold_182 raw_183}
+prose_105 -> { raw_181 prespace_182 bold_183 raw_184}
+{rank=same; raw_181 prespace_182 bold_183 raw_184}
 
-raw_180 [label="raw"]
+raw_181 [label="raw"]
 
-prespace_181 [label="prespace"]
+prespace_182 [label="prespace"]
 
-bold_182 [label="bold"]
+bold_183 [label="bold"]
 
-raw_183 [label="raw"]
+raw_184 [label="raw"]
 
 
-raw_180 -> leaf_184
-leaf_184  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_181 -> leaf_185
+leaf_185  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 If this is a natural number we return the"]
-prespace_181 -> leaf_185
-leaf_185  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-bold_182 -> leaf_186
-leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label="negation"]
-raw_183 -> leaf_187
-leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of this value.  If both
+prespace_182 -> leaf_186
+leaf_186  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+bold_183 -> leaf_187
+leaf_187  [color=Gray,shape=rectangle,fontname=Inconsolata,label="negation"]
+raw_184 -> leaf_188
+leaf_188  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of this value.  If both
 should prove to be positive, we halt. 
 "]
-prose_105 -> { raw_188 prespace_189 literal_190 raw_191}
-{rank=same; raw_188 prespace_189 literal_190 raw_191}
+prose_106 -> { raw_189 prespace_190 literal_191 raw_192}
+{rank=same; raw_189 prespace_190 literal_191 raw_192}
 
-raw_188 [label="raw"]
+raw_189 [label="raw"]
 
-prespace_189 [label="prespace"]
+prespace_190 [label="prespace"]
 
-literal_190 [label="literal"]
+literal_191 [label="literal"]
 
-raw_191 [label="raw"]
+raw_192 [label="raw"]
 
 
-raw_188 -> leaf_192
-leaf_192  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_189 -> leaf_193
+leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 No effort is made to check that the"]
-prespace_189 -> leaf_193
-leaf_193  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_190 -> leaf_194
-leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-raw_191 -> leaf_195
-leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field matches between nodes unless
+prespace_190 -> leaf_194
+leaf_194  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_191 -> leaf_195
+leaf_195  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+raw_192 -> leaf_196
+leaf_196  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" field matches between nodes unless
 we have an error, in which case it could prove helpful for diagnosis.  
 "]
-prose_106 -> { raw_196}
-{rank=same; raw_196}
+prose_107 -> { raw_197}
+{rank=same; raw_197}
 
-raw_196 [label="raw"]
+raw_197 [label="raw"]
 
 
-raw_196 -> leaf_197
-leaf_197  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_197 -> leaf_198
+leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Indeed such a check would be a disaster in streams or other sort of
 piecewise parse.  Which will require implementation in and of itself, but
 in the meantime...
 "]
-codeblock_107 -> leaf_198
-leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.gap(left, right)
+codeblock_108 -> leaf_199
+leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.gap(left, right)
   assert(left.last, \"no left.last\")
   assert(right.first, \"no right.first\")
   assert(right.last, \"no right.last\")
@@ -640,8 +642,8 @@ leaf_198  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
 
   return nil 
 end"]
-codeblock_108 -> leaf_199
-leaf_199  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.dotLabel(node)
+codeblock_109 -> leaf_200
+leaf_200  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.dotLabel(node)
   return node.id
 end
 
@@ -668,31 +670,31 @@ function Node.toValue(node)
   end
 end
 "]
-section_78 -> { header_200 prose_201 codeblock_202}
-{rank=same; header_200 prose_201 codeblock_202}
+section_78 -> { header_201 prose_202 codeblock_203}
+{rank=same; header_201 prose_202 codeblock_203}
 
-header_200 [label="4 : Node.walkPost"]
+header_201 [label="4 : Node.walkPost"]
 
-prose_201 [label="prose"]
+prose_202 [label="prose"]
 
-codeblock_202 [label="code block 197-212"]
-
-
-header_200 -> leaf_203
-leaf_203  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.walkPost"]
-prose_201 -> { raw_204}
-{rank=same; raw_204}
-
-raw_204 [label="raw"]
+codeblock_203 [label="code block 197-212"]
 
 
-raw_204 -> leaf_205
-leaf_205  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_201 -> leaf_204
+leaf_204  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.walkPost"]
+prose_202 -> { raw_205}
+{rank=same; raw_205}
+
+raw_205 [label="raw"]
+
+
+raw_205 -> leaf_206
+leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Depth-first iterator, postfix 
 "]
-codeblock_202 -> leaf_206
-leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.walkPost(node)
+codeblock_203 -> leaf_207
+leaf_207  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.walkPost(node)
     local function traverse(ast)
         if not ast.isNode then return nil end
 
@@ -706,31 +708,31 @@ leaf_206  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
 
     return coroutine.wrap(function() traverse(node) end)
 end"]
-section_79 -> { header_207 prose_208 codeblock_209}
-{rank=same; header_207 prose_208 codeblock_209}
+section_79 -> { header_208 prose_209 codeblock_210}
+{rank=same; header_208 prose_209 codeblock_210}
 
-header_207 [label="4 : Node.walk"]
+header_208 [label="4 : Node.walk"]
 
-prose_208 [label="prose"]
+prose_209 [label="prose"]
 
-codeblock_209 [label="code block 218-234"]
-
-
-header_207 -> leaf_210
-leaf_210  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.walk"]
-prose_208 -> { raw_211}
-{rank=same; raw_211}
-
-raw_211 [label="raw"]
+codeblock_210 [label="code block 218-234"]
 
 
-raw_211 -> leaf_212
-leaf_212  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_208 -> leaf_211
+leaf_211  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.walk"]
+prose_209 -> { raw_212}
+{rank=same; raw_212}
+
+raw_212 [label="raw"]
+
+
+raw_212 -> leaf_213
+leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Presearch iterator.  This is the default. 
 "]
-codeblock_209 -> leaf_213
-leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.walk(node)
+codeblock_210 -> leaf_214
+leaf_214  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.walk(node)
   local function traverse(ast)
     if not ast.isNode then return nil end
 
@@ -745,56 +747,56 @@ leaf_213  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
   return coroutine.wrap(function() traverse(node) end)
 end
 "]
-section_80 -> { header_214 prose_215 codeblock_216}
-{rank=same; header_214 prose_215 codeblock_216}
+section_80 -> { header_215 prose_216 codeblock_217}
+{rank=same; header_215 prose_216 codeblock_217}
 
-header_214 [label="4 : Node.select(node, pred)"]
+header_215 [label="4 : Node.select(node, pred)"]
 
-prose_215 [label="prose"]
+prose_216 [label="prose"]
 
-codeblock_216 [label="code block 243-274"]
-
-
-header_214 -> leaf_217
-leaf_217  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.select(node, pred)"]
-prose_215 -> { raw_218 prespace_219 literal_220 raw_221 prespace_222 literal_223 raw_224}
-{rank=same; raw_218 prespace_219 literal_220 raw_221 prespace_222 literal_223 raw_224}
-
-raw_218 [label="raw"]
-
-prespace_219 [label="prespace"]
-
-literal_220 [label="literal"]
-
-raw_221 [label="raw"]
-
-prespace_222 [label="prespace"]
-
-literal_223 [label="literal"]
-
-raw_224 [label="raw"]
+codeblock_217 [label="code block 243-274"]
 
 
-raw_218 -> leaf_225
-leaf_225  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_215 -> leaf_218
+leaf_218  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.select(node, pred)"]
+prose_216 -> { raw_219 prespace_220 literal_221 raw_222 prespace_223 literal_224 raw_225}
+{rank=same; raw_219 prespace_220 literal_221 raw_222 prespace_223 literal_224 raw_225}
+
+raw_219 [label="raw"]
+
+prespace_220 [label="prespace"]
+
+literal_221 [label="literal"]
+
+raw_222 [label="raw"]
+
+prespace_223 [label="prespace"]
+
+literal_224 [label="literal"]
+
+raw_225 [label="raw"]
+
+
+raw_219 -> leaf_226
+leaf_226  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   Takes the Node and walks it, yielding the Nodes which match the predicate."]
-prespace_219 -> leaf_226
-leaf_226  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
-literal_220 -> leaf_227
-leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pred"]
-raw_221 -> leaf_228
-leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is either a string, which matches to"]
-prespace_222 -> leaf_229
-leaf_229  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_223 -> leaf_230
-leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
-raw_224 -> leaf_231
-leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", or a function, which takes
+prespace_220 -> leaf_227
+leaf_227  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+literal_221 -> leaf_228
+leaf_228  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pred"]
+raw_222 -> leaf_229
+leaf_229  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is either a string, which matches to"]
+prespace_223 -> leaf_230
+leaf_230  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_224 -> leaf_231
+leaf_231  [color=Gray,shape=rectangle,fontname=Inconsolata,label="id"]
+raw_225 -> leaf_232
+leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", or a function, which takes
 a Node and returns true or false on some premise. 
 "]
-codeblock_216 -> leaf_232
-leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.select(node, pred)
+codeblock_217 -> leaf_233
+leaf_233  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.select(node, pred)
    local function qualifies(node, pred)
       if type(pred) == 'string' then
          if type(node) == 'table' 
@@ -824,31 +826,31 @@ leaf_232  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
 
    return coroutine.wrap(function() traverse(node) end)
 end"]
-section_81 -> { header_233 prose_234 codeblock_235}
-{rank=same; header_233 prose_234 codeblock_235}
+section_81 -> { header_234 prose_235 codeblock_236}
+{rank=same; header_234 prose_235 codeblock_236}
 
-header_233 [label="4 : Node.tokens(node)"]
+header_234 [label="4 : Node.tokens(node)"]
 
-prose_234 [label="prose"]
+prose_235 [label="prose"]
 
-codeblock_235 [label="code block 281-293"]
-
-
-header_233 -> leaf_236
-leaf_236  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.tokens(node)"]
-prose_234 -> { raw_237}
-{rank=same; raw_237}
-
-raw_237 [label="raw"]
+codeblock_236 [label="code block 281-293"]
 
 
-raw_237 -> leaf_238
-leaf_238  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_234 -> leaf_237
+leaf_237  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.tokens(node)"]
+prose_235 -> { raw_238}
+{rank=same; raw_238}
+
+raw_238 [label="raw"]
+
+
+raw_238 -> leaf_239
+leaf_239  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   Iterator returning all captured values as strings.
 "]
-codeblock_235 -> leaf_239
-leaf_239  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.tokens(node)
+codeblock_236 -> leaf_240
+leaf_240  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.tokens(node)
   local function traverse(ast)
     for node in Node.walk(ast) do
       if not node[1] then
@@ -859,81 +861,81 @@ leaf_239  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
 
   return coroutine.wrap(function() traverse(node) end)
 end  "]
-section_82 -> { header_240 prose_241 prose_242 prose_243 codeblock_244}
-{rank=same; header_240 prose_241 prose_242 prose_243 codeblock_244}
+section_82 -> { header_241 prose_242 prose_243 prose_244 codeblock_245}
+{rank=same; header_241 prose_242 prose_243 prose_244 codeblock_245}
 
-header_240 [label="4 : Node.lines(node)"]
-
-prose_241 [label="prose"]
+header_241 [label="4 : Node.lines(node)"]
 
 prose_242 [label="prose"]
 
 prose_243 [label="prose"]
 
-codeblock_244 [label="code block 306-340"]
+prose_244 [label="prose"]
+
+codeblock_245 [label="code block 306-343"]
 
 
-header_240 -> leaf_245
-leaf_245  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.lines(node)"]
-prose_241 -> { raw_246 prespace_247 literal_248 raw_249}
-{rank=same; raw_246 prespace_247 literal_248 raw_249}
+header_241 -> leaf_246
+leaf_246  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.lines(node)"]
+prose_242 -> { raw_247 prespace_248 literal_249 raw_250}
+{rank=same; raw_247 prespace_248 literal_249 raw_250}
 
-raw_246 [label="raw"]
+raw_247 [label="raw"]
 
-prespace_247 [label="prespace"]
+prespace_248 [label="prespace"]
 
-literal_248 [label="literal"]
+literal_249 [label="literal"]
 
-raw_249 [label="raw"]
+raw_250 [label="raw"]
 
 
-raw_246 -> leaf_250
-leaf_250  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_247 -> leaf_251
+leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 A memoized iterator returning"]
-prespace_247 -> leaf_251
-leaf_251  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_248 -> leaf_252
-leaf_252  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-raw_249 -> leaf_253
-leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" one line at a time. 
+prespace_248 -> leaf_252
+leaf_252  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_249 -> leaf_253
+leaf_253  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+raw_250 -> leaf_254
+leaf_254  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" one line at a time. 
 "]
-prose_242 -> { raw_254}
-{rank=same; raw_254}
+prose_243 -> { raw_255}
+{rank=same; raw_255}
 
-raw_254 [label="raw"]
+raw_255 [label="raw"]
 
 
-raw_254 -> leaf_255
-leaf_255  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_255 -> leaf_256
+leaf_256  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Newlines are not included.
 "]
-prose_243 -> { raw_256 prespace_257 literal_258 raw_259}
-{rank=same; raw_256 prespace_257 literal_258 raw_259}
+prose_244 -> { raw_257 prespace_258 literal_259 raw_260}
+{rank=same; raw_257 prespace_258 literal_259 raw_260}
 
-raw_256 [label="raw"]
+raw_257 [label="raw"]
 
-prespace_257 [label="prespace"]
+prespace_258 [label="prespace"]
 
-literal_258 [label="literal"]
+literal_259 [label="literal"]
 
-raw_259 [label="raw"]
+raw_260 [label="raw"]
 
 
-raw_256 -> leaf_260
-leaf_260  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_257 -> leaf_261
+leaf_261  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 In addition, the first"]
-prespace_257 -> leaf_261
-leaf_261  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_258 -> leaf_262
-leaf_262  [color=Gray,shape=rectangle,fontname=Inconsolata,label="node:lines() traversal builds up
+prespace_258 -> leaf_262
+leaf_262  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_259 -> leaf_263
+leaf_263  [color=Gray,shape=rectangle,fontname=Inconsolata,label="node:lines() traversal builds up
 a sourcemap subsequently used by "]
-raw_259 -> leaf_263
-leaf_263  [color=Gray,shape=rectangle,fontname=Inconsolata,label="node:atLine(pos)= to
+raw_260 -> leaf_264
+leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="node:atLine(pos)= to
 return the line and column of a given position.
 "]
-codeblock_244 -> leaf_264
-leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.lines(node)
+codeblock_245 -> leaf_265
+leaf_265  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.lines(node)
   local function yieldLines(node, linum)
      for _, str in ipairs(node.__lines) do
         coroutine.yield(str)
@@ -942,8 +944,8 @@ leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
 
   if node.__lines then
      return coroutine.wrap(function ()
-                            yieldLines(node) 
-                          end)
+                              yieldLines(node) 
+                           end)
   else 
      node.__lines = {}
   end
@@ -957,30 +959,31 @@ leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
       if first == nil then 
         return nil
       else
-        local line = string.sub(str, 1, last - 1) -- no newline
+        local line = string.sub(str, 1, first - 1) -- no newline
         rest       = string.sub(str, last + 1)    -- skip newline
         node.__lines[#node.__lines + 1] = line
         coroutine.yield(line, rest)
       end
       buildLines(rest)
   end
-  return coroutine.wrap(function () buildLines(node.str) end)
+
+  return coroutine.wrap(function () 
+                           buildLines(node.str) 
+                        end)
 end"]
-section_83 -> { header_265 prose_266 prose_267 codeblock_268}
-{rank=same; header_265 prose_266 prose_267 codeblock_268}
+section_83 -> { header_266 prose_267 codeblock_268}
+{rank=same; header_266 prose_267 codeblock_268}
 
-header_265 [label="4 : Node.lastLeaf(node)"]
-
-prose_266 [label="prose"]
+header_266 [label="4 : Node.linePos(node, position)"]
 
 prose_267 [label="prose"]
 
-codeblock_268 [label="code block 349-357"]
+codeblock_268 [label="code block 349-367"]
 
 
-header_265 -> leaf_269
-leaf_269  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.lastLeaf(node)"]
-prose_266 -> { raw_270}
+header_266 -> leaf_269
+leaf_269  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.linePos(node, position)"]
+prose_267 -> { raw_270}
 {rank=same; raw_270}
 
 raw_270 [label="raw"]
@@ -989,41 +992,52 @@ raw_270 [label="raw"]
 raw_270 -> leaf_271
 leaf_271  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
+Returns the line and column given a position. 
+"]
+codeblock_268 -> leaf_272
+leaf_272  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.linePos(node, position)
+   if not node.__lines then
+      for _ in node:lines() do
+        -- nothing, this generates the line map
+      end
+   end
+   local offset = 1
+   local linum = nil
+   for i, v in ipairs(node.__lines) do
+       linum = i
+       offset = offset + #v
+       if offset > position then
+          return linum, offset - position - #v
+       end
+   end
+   return nil -- this position is off the end of the string
+end"]
+section_84 -> { header_273 prose_274 prose_275 codeblock_276}
+{rank=same; header_273 prose_274 prose_275 codeblock_276}
+
+header_273 [label="4 : Node.lastLeaf(node)"]
+
+prose_274 [label="prose"]
+
+prose_275 [label="prose"]
+
+codeblock_276 [label="code block 376-384"]
+
+
+header_273 -> leaf_277
+leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.lastLeaf(node)"]
+prose_274 -> { raw_278}
+{rank=same; raw_278}
+
+raw_278 [label="raw"]
+
+
+raw_278 -> leaf_279
+leaf_279  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
 Returns the last leaf of the node.
 "]
-prose_267 -> { raw_272}
-{rank=same; raw_272}
-
-raw_272 [label="raw"]
-
-
-raw_272 -> leaf_273
-leaf_273  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Useful to check for terminal errors, for stop-on-error parsing. 
-"]
-codeblock_268 -> leaf_274
-leaf_274  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.lastLeaf(node)
-  if #node == 0 then 
-    return node
-  else
-    return Node.lastLeaf(node[#node])
-  end
-end"]
-section_48 -> { header_275 prose_276 prose_277 codeblock_278}
-{rank=same; header_275 prose_276 prose_277 codeblock_278}
-
-header_275 [label="3 : Collectors"]
-
-prose_276 [label="prose"]
-
-prose_277 [label="prose"]
-
-codeblock_278 [label="code block 367-376"]
-
-
-header_275 -> leaf_279
-leaf_279  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Collectors"]
-prose_276 -> { raw_280}
+prose_275 -> { raw_280}
 {rank=same; raw_280}
 
 raw_280 [label="raw"]
@@ -1031,22 +1045,54 @@ raw_280 [label="raw"]
 
 raw_280 -> leaf_281
 leaf_281  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Useful to check for terminal errors, for stop-on-error parsing. 
+"]
+codeblock_276 -> leaf_282
+leaf_282  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.lastLeaf(node)
+  if #node == 0 then 
+    return node
+  else
+    return Node.lastLeaf(node[#node])
+  end
+end"]
+section_48 -> { header_283 prose_284 prose_285 codeblock_286}
+{rank=same; header_283 prose_284 prose_285 codeblock_286}
+
+header_283 [label="3 : Collectors"]
+
+prose_284 [label="prose"]
+
+prose_285 [label="prose"]
+
+codeblock_286 [label="code block 394-403"]
+
+
+header_283 -> leaf_287
+leaf_287  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Collectors"]
+prose_284 -> { raw_288}
+{rank=same; raw_288}
+
+raw_288 [label="raw"]
+
+
+raw_288 -> leaf_289
+leaf_289  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 These return an array of all results. 
 "]
-prose_277 -> { raw_282}
-{rank=same; raw_282}
+prose_285 -> { raw_290}
+{rank=same; raw_290}
 
-raw_282 [label="raw"]
+raw_290 [label="raw"]
 
 
-raw_282 -> leaf_283
-leaf_283  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_290 -> leaf_291
+leaf_291  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 - [ ] #todo  Add a Forest class to provide the iterator interface for
              the return arrays of this class.
 "]
-codeblock_278 -> leaf_284
-leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.gather(node, pred)
+codeblock_286 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.gather(node, pred)
   local gathered = {}
   for ast in node:select(pred) do
     gathered[#gathered + 1] = ast
@@ -1054,51 +1100,51 @@ leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
   
   return gathered
 end"]
-section_49 -> { header_285 prose_286 section_287}
-{rank=same; header_285 prose_286 section_287}
+section_49 -> { header_293 prose_294 section_295}
+{rank=same; header_293 prose_294 section_295}
 
-header_285 [label="3 : Subclassing and construction"]
+header_293 [label="3 : Subclassing and construction"]
 
-prose_286 [label="prose"]
+prose_294 [label="prose"]
 
-section_287 [label="section: 381-399"]
-
-
-header_285 -> leaf_288
-leaf_288  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Subclassing and construction"]
-prose_286 -> { raw_289}
-{rank=same; raw_289}
-
-raw_289 [label="raw"]
+section_295 [label="section: 408-426"]
 
 
-raw_289 -> leaf_290
-leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_293 -> leaf_296
+leaf_296  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Subclassing and construction"]
+prose_294 -> { raw_297}
+{rank=same; raw_297}
+
+raw_297 [label="raw"]
+
+
+raw_297 -> leaf_298
+leaf_298  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 "]
-section_287 -> { header_291 prose_292 codeblock_293}
-{rank=same; header_291 prose_292 codeblock_293}
+section_295 -> { header_299 prose_300 codeblock_301}
+{rank=same; header_299 prose_300 codeblock_301}
 
-header_291 [label="4 : N.inherit(node)"]
+header_299 [label="4 : N.inherit(node)"]
 
-prose_292 [label="prose"]
+prose_300 [label="prose"]
 
-codeblock_293 [label="code block 383-397"]
-
-
-header_291 -> leaf_294
-leaf_294  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.inherit(node)"]
-prose_292 -> { raw_295}
-{rank=same; raw_295}
-
-raw_295 [label="raw"]
+codeblock_301 [label="code block 410-424"]
 
 
-raw_295 -> leaf_296
-leaf_296  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_299 -> leaf_302
+leaf_302  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.inherit(node)"]
+prose_300 -> { raw_303}
+{rank=same; raw_303}
+
+raw_303 [label="raw"]
+
+
+raw_303 -> leaf_304
+leaf_304  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-codeblock_293 -> leaf_297
-leaf_297  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.inherit(node)
+codeblock_301 -> leaf_305
+leaf_305  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.inherit(node)
   local Meta = setmetatable({}, node)
   Meta.__index = Meta
   local meta = setmetatable({}, Meta)
@@ -1111,132 +1157,132 @@ function Node.export(_, mod, constructor)
   return setmetatable({}, mod)
 end
 "]
-section_8 -> { header_298 prose_299 prose_300 prose_301 section_302 section_303}
-{rank=same; header_298 prose_299 prose_300 prose_301 section_302 section_303}
+section_8 -> { header_306 prose_307 prose_308 prose_309 section_310 section_311}
+{rank=same; header_306 prose_307 prose_308 prose_309 section_310 section_311}
 
-header_298 [label="2 : Node Instances"]
+header_306 [label="2 : Node Instances"]
 
-prose_299 [label="prose"]
+prose_307 [label="prose"]
 
-prose_300 [label="prose"]
+prose_308 [label="prose"]
 
-prose_301 [label="prose"]
+prose_309 [label="prose"]
 
-section_302 [label="section: 411-419"]
+section_310 [label="section: 438-446"]
 
-section_303 [label="section: 420-429"]
-
-
-header_298 -> leaf_304
-leaf_304  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Node Instances"]
-prose_299 -> { raw_305}
-{rank=same; raw_305}
-
-raw_305 [label="raw"]
+section_311 [label="section: 447-456"]
 
 
-raw_305 -> leaf_306
-leaf_306  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_306 -> leaf_312
+leaf_312  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Node Instances"]
+prose_307 -> { raw_313}
+{rank=same; raw_313}
+
+raw_313 [label="raw"]
+
+
+raw_313 -> leaf_314
+leaf_314  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   To be a Node, indexed elements of the Array portion must also be 
 Nodes. 
 "]
-prose_300 -> { raw_307}
-{rank=same; raw_307}
+prose_308 -> { raw_315}
+{rank=same; raw_315}
 
-raw_307 [label="raw"]
+raw_315 [label="raw"]
 
 
-raw_307 -> leaf_308
-leaf_308  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_315 -> leaf_316
+leaf_316  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 If there are no children of the Node, it is considered to be a leaf node.
 "]
-prose_301 -> { raw_309}
-{rank=same; raw_309}
+prose_309 -> { raw_317}
+{rank=same; raw_317}
 
-raw_309 [label="raw"]
+raw_317 [label="raw"]
 
 
-raw_309 -> leaf_310
-leaf_310  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_317 -> leaf_318
+leaf_318  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Most of the Node library will fail to halt, and probably blow stack, if
 cyclic Node graphs are made.  The Grammar class will not do this to you. 
 
 "]
-section_302 -> { header_311 prose_312}
-{rank=same; header_311 prose_312}
+section_310 -> { header_319 prose_320}
+{rank=same; header_319 prose_320}
 
-header_311 [label="3 : Fields"]
+header_319 [label="3 : Fields"]
 
-prose_312 [label="prose"]
-
-
-header_311 -> leaf_313
-leaf_313  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Fields"]
-prose_312 -> { raw_314 prespace_315 literal_316 raw_317 prespace_318 literal_319 raw_320}
-{rank=same; raw_314 prespace_315 literal_316 raw_317 prespace_318 literal_319 raw_320}
-
-raw_314 [label="raw"]
-
-prespace_315 [label="prespace"]
-
-literal_316 [label="literal"]
-
-raw_317 [label="raw"]
-
-prespace_318 [label="prespace"]
-
-literal_319 [label="literal"]
-
-raw_320 [label="raw"]
+prose_320 [label="prose"]
 
 
-raw_314 -> leaf_321
-leaf_321  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_319 -> leaf_321
+leaf_321  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Fields"]
+prose_320 -> { raw_322 prespace_323 literal_324 raw_325 prespace_326 literal_327 raw_328}
+{rank=same; raw_322 prespace_323 literal_324 raw_325 prespace_326 literal_327 raw_328}
+
+raw_322 [label="raw"]
+
+prespace_323 [label="prespace"]
+
+literal_324 [label="literal"]
+
+raw_325 [label="raw"]
+
+prespace_326 [label="prespace"]
+
+literal_327 [label="literal"]
+
+raw_328 [label="raw"]
+
+
+raw_322 -> leaf_329
+leaf_329  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   There are invariant fields a Node is also expected to have, they are:
  
   - first :  Index into"]
-prespace_315 -> leaf_322
-leaf_322  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_316 -> leaf_323
-leaf_323  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-raw_317 -> leaf_324
-leaf_324  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which begins the span.
+prespace_323 -> leaf_330
+leaf_330  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_324 -> leaf_331
+leaf_331  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+raw_325 -> leaf_332
+leaf_332  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which begins the span.
   - last  :  Index into"]
-prespace_318 -> leaf_325
-leaf_325  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-literal_319 -> leaf_326
-leaf_326  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-raw_320 -> leaf_327
-leaf_327  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which ends the span.
+prespace_326 -> leaf_333
+leaf_333  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+literal_327 -> leaf_334
+leaf_334  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+raw_328 -> leaf_335
+leaf_335  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which ends the span.
   - str   :  The string of which the Node spans part or the whole.
 
 "]
-section_303 -> { header_328 prose_329 codeblock_330}
-{rank=same; header_328 prose_329 codeblock_330}
+section_311 -> { header_336 prose_337 codeblock_338}
+{rank=same; header_336 prose_337 codeblock_338}
 
-header_328 [label="3 : Other fields"]
+header_336 [label="3 : Other fields"]
 
-prose_329 [label="prose"]
+prose_337 [label="prose"]
 
-codeblock_330 [label="code block 424-426"]
-
-
-header_328 -> leaf_331
-leaf_331  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Other fields"]
-prose_329 -> { raw_332}
-{rank=same; raw_332}
-
-raw_332 [label="raw"]
+codeblock_338 [label="code block 451-453"]
 
 
-raw_332 -> leaf_333
-leaf_333  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_336 -> leaf_339
+leaf_339  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Other fields"]
+prose_337 -> { raw_340}
+{rank=same; raw_340}
+
+raw_340 [label="raw"]
+
+
+raw_340 -> leaf_341
+leaf_341  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   In principle, anything at all. 
 "]
-codeblock_330 -> leaf_334
-leaf_334  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Node"]
+codeblock_338 -> leaf_342
+leaf_342  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Node"]
 
 }
