@@ -17,7 +17,12 @@ local elpatt = {}
 elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
 local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg
+```
+### Errors 
 
+```lua
+local Err = require "node/error"
+elpatt.E, elpatt.EOF = Err.E, Err.EOF
 ```
 ## Ppt : Codepoint pattern #Todo
 
@@ -102,48 +107,6 @@ function elpatt.D(patt)
    return Ct(Cp() * Ct(patt) * Cp()) / make_drop
 end
 
-```
-### E : Capture an Error
-
-Rather than throwing errors, we prefer to add them to the parse tree in some
-cases.
-
-
-Optionally, we can include a pattern which, if the parse were to be correct,
-would succeed. So a ``( ])`` type error could be "fail to close (" and =P")".
-
-```lua
-local Err = Node:inherit()
-Err.id = "ERROR"
-
-function Err.toLua(err)
-  return "gabba gabba he"
-end
-
-
-local function parse_error(pos, name, msg, patt, str)
-   local message = msg or name or "Not Otherwise Specified"
-   io.write("remaining: " .. string.sub(str, pos) .. "\n")
-   s:complain("Parse Error: ", message)
-   local errorNode =  setmetatable({}, Err)
-   errorNode.first =  pos
-   errorNode.last  =  pos
-   errorNode.msg   =  msg
-   errorNode.name  =  name
-   errorNode.str   =  str
-   errorNode.rest  =  string.sub(str, pos)
-   errorNode.patt  =  patt
-
-   return errorNode
-end
-
-function elpatt.E(name, msg, patt)
-  return Cp() * Cc(name) * Cc(msg) * Cc(patt) * Carg(1) / parse_error
-end
-
-function elpatt.EOF(name, msg)
-  return -P(1) + elpatt.E(name, msg)
-end
 ```
 ### S : Capture set
 
