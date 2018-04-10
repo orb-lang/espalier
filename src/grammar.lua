@@ -348,14 +348,28 @@ end
 
 
 local function new(grammar_template, metas)
-  if type(grammar_template) == 'function' then
+  if type(grammar_template) == "function" then
     local metas = metas or {}
     metas = refineMetas(metas)
     local grammar = define(grammar_template, nil, metas)
 
     local function parse(str, offset)
       local offset = offset or 0
-      return L.match(grammar, str, 1, str, metas, offset)
+      local match = L.match(grammar, str, 1, str, metas, offset)
+      local maybeErr = match:lastLeaf()
+      if maybeErr.id then
+        if maybeErr.id == "ERROR" then
+          s:complain("Parsing Error", maybeErr.msg)
+          return match, match:lastLeaf()
+        else
+          return match
+        end
+      else
+          s:complain("No id on match, match of type" .. type(match))
+      end
+
+      -- This would be a bad match. 
+      return match
     end
 
     return parse, grammar

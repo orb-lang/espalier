@@ -300,19 +300,12 @@ end
 
 
 
-
-
-
-
-
-
-
-
-function Node.unroll(node)
-  local function traverse(ast)
+function Node.lastLeaf(node)
+  if #node == 0 then 
+    return node
+  else
+    return Node.lastLeaf(node[#node])
   end
-
-  return coroutine.wrap(function() traverse(node) end)
 end
 
 

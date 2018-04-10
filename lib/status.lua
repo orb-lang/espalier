@@ -46,14 +46,16 @@ end
 
 -- Complaints are recoverable problems that still shouldn't happeen.
 function status.complain(statusQuo, topic, message)
-    if not message then
-        message = topic
-    else
-        topic = a.red(topic)
-    end
     if statusQuo.grumpy then
-        io.write(topic .. ": " .. message .. "\n")
+        local phrase = a.red(topic)
+        if message then
+            phrase = phrase .. ": " .. message .. "\n"
+        else 
+            phrase = phrase .. "\n"
+        end
+        io.write(phrase)
     end
+
     if statusQuo.angry then
         os.exit(1)
     end

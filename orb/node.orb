@@ -293,26 +293,19 @@ end
 #/lua 
 
 
-**** Node.unroll(node) 
+**** Node.lastLeaf(node)
 
-  This iterator returns all Nodes, in prefix order, while interpolating
-strings.  Specifically: When a Node has a =first= that is less than the
-=first= if its first child, it makes a slice of the string corresponding to
-that gap, and so on between each child, and once more at the end.
+Returns the last leaf of the node.
 
-The effect is that any sections of the string which were dropped are now
-interpolated into the unrolled Node.
+Useful to check for terminal errors, for stop-on-error parsing. 
 
-The premise is that by calling =toValue()= or =span()= on leaf nodes, and
-grafting these to the interpolated strings in order, you will produce the
-original =node.str=. 
-
-#!lua #nk
-function Node.unroll(node)
-  local function traverse(ast)
+#!lua
+function Node.lastLeaf(node)
+  if #node == 0 then 
+    return node
+  else
+    return Node.lastLeaf(node[#node])
   end
-
-  return coroutine.wrap(function() traverse(node) end)
 end
 #/lua
 
