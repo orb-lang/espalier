@@ -300,6 +300,39 @@ end
 
 
 
+
+
+
+
+function Node.lines(node)
+  local function yieldLines(node)
+
+  end
+  if Node.__lines then
+    return coroutine.wrap(function () yieldLines(node) end)
+  end
+  local function buildLines(str)
+      if str == nil then return nil end
+      local first, last = string.find(str, "\n")
+      if first == nil then 
+        return nil
+      else 
+        coroutine.yield(string.sub(str, 1, last - 1)) -- no newline
+      end
+      buildLines(string.sub(str, last + 1)) -- skip the newline
+  end
+  return coroutine.wrap(function () buildLines(node.str) end)
+end
+
+
+
+
+
+
+
+
+
+
 function Node.lastLeaf(node)
   if #node == 0 then 
     return node
