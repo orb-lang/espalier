@@ -305,21 +305,35 @@ end
 
 
 function Node.lines(node)
-  local function yieldLines(node)
+  local function yieldLines(node, linum)
+     for _, str in ipairs(node.__lines) do
+        coroutine.yield(str)
+      end
+  end
 
+  if node.__lines then
+     return coroutine.wrap(function ()
+                            yieldLines(node) 
+                          end)
+  else 
+     node.__lines = {}
   end
-  if Node.__lines then
-    return coroutine.wrap(function () yieldLines(node) end)
-  end
+
   local function buildLines(str)
-      if str == nil then return nil end
+      if str == nil then
+        return nil
+      end
+      local rest = ""
       local first, last = string.find(str, "\n")
       if first == nil then 
         return nil
-      else 
-        coroutine.yield(string.sub(str, 1, last - 1)) -- no newline
+      else
+        local line = string.sub(str, 1, last - 1) -- no newline
+        rest       = string.sub(str, last + 1)    -- skip newline
+        node.__lines[#node.__lines + 1] = line
+        coroutine.yield(line, rest)
       end
-      buildLines(string.sub(str, last + 1)) -- skip the newline
+      buildLines(rest)
   end
   return coroutine.wrap(function () buildLines(node.str) end)
 end

@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 415"]
+doc_0 [label="doc - 429"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-385"]
+section_1 [label="section: 1-399"]
 
 
 section_1 -> { header_2 prose_3 section_4 section_5 section_6 section_7 section_8}
@@ -25,9 +25,9 @@ section_5 [label="section: 17-28"]
 
 section_6 [label="section: 29-40"]
 
-section_7 [label="section: 41-363"]
+section_7 [label="section: 41-377"]
 
-section_8 [label="section: 386-405"]
+section_8 [label="section: 400-419"]
 
 
 header_2 -> leaf_9
@@ -171,11 +171,11 @@ section_45 [label="section: 44-57"]
 
 section_46 [label="section: 58-97"]
 
-section_47 [label="section: 98-328"]
+section_47 [label="section: 98-342"]
 
-section_48 [label="section: 346-363"]
+section_48 [label="section: 360-377"]
 
-section_49 [label="section: 364-366"]
+section_49 [label="section: 378-380"]
 
 
 header_43 -> leaf_50
@@ -318,9 +318,9 @@ section_80 [label="section: 237-276"]
 
 section_81 [label="section: 277-295"]
 
-section_82 [label="section: 296-328"]
+section_82 [label="section: 296-342"]
 
-section_83 [label="section: 329-345"]
+section_83 [label="section: 343-359"]
 
 
 header_73 -> leaf_84
@@ -870,7 +870,7 @@ prose_242 [label="prose"]
 
 prose_243 [label="prose"]
 
-codeblock_244 [label="code block 306-326"]
+codeblock_244 [label="code block 306-340"]
 
 
 header_240 -> leaf_245
@@ -934,21 +934,35 @@ return the line and column of a given position.
 "]
 codeblock_244 -> leaf_264
 leaf_264  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.lines(node)
-  local function yieldLines(node)
+  local function yieldLines(node, linum)
+     for _, str in ipairs(node.__lines) do
+        coroutine.yield(str)
+      end
+  end
 
+  if node.__lines then
+     return coroutine.wrap(function ()
+                            yieldLines(node) 
+                          end)
+  else 
+     node.__lines = {}
   end
-  if Node.__lines then
-    return coroutine.wrap(function () yieldLines(node) end)
-  end
+
   local function buildLines(str)
-      if str == nil then return nil end
+      if str == nil then
+        return nil
+      end
+      local rest = \"\"
       local first, last = string.find(str, \"\\n\")
       if first == nil then 
         return nil
-      else 
-        coroutine.yield(string.sub(str, 1, last - 1)) -- no newline
+      else
+        local line = string.sub(str, 1, last - 1) -- no newline
+        rest       = string.sub(str, last + 1)    -- skip newline
+        node.__lines[#node.__lines + 1] = line
+        coroutine.yield(line, rest)
       end
-      buildLines(string.sub(str, last + 1)) -- skip the newline
+      buildLines(rest)
   end
   return coroutine.wrap(function () buildLines(node.str) end)
 end"]
@@ -961,7 +975,7 @@ prose_266 [label="prose"]
 
 prose_267 [label="prose"]
 
-codeblock_268 [label="code block 335-343"]
+codeblock_268 [label="code block 349-357"]
 
 
 header_265 -> leaf_269
@@ -1004,7 +1018,7 @@ prose_276 [label="prose"]
 
 prose_277 [label="prose"]
 
-codeblock_278 [label="code block 353-362"]
+codeblock_278 [label="code block 367-376"]
 
 
 header_275 -> leaf_279
@@ -1047,7 +1061,7 @@ header_285 [label="3 : Subclassing and construction"]
 
 prose_286 [label="prose"]
 
-section_287 [label="section: 367-385"]
+section_287 [label="section: 381-399"]
 
 
 header_285 -> leaf_288
@@ -1069,7 +1083,7 @@ header_291 [label="4 : N.inherit(node)"]
 
 prose_292 [label="prose"]
 
-codeblock_293 [label="code block 369-383"]
+codeblock_293 [label="code block 383-397"]
 
 
 header_291 -> leaf_294
@@ -1108,9 +1122,9 @@ prose_300 [label="prose"]
 
 prose_301 [label="prose"]
 
-section_302 [label="section: 397-405"]
+section_302 [label="section: 411-419"]
 
-section_303 [label="section: 406-415"]
+section_303 [label="section: 420-429"]
 
 
 header_298 -> leaf_304
@@ -1206,7 +1220,7 @@ header_328 [label="3 : Other fields"]
 
 prose_329 [label="prose"]
 
-codeblock_330 [label="code block 410-412"]
+codeblock_330 [label="code block 424-426"]
 
 
 header_328 -> leaf_331
