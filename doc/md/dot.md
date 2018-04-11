@@ -26,7 +26,7 @@ This is an early piece of code, in need of overhaul
 local t = {}
 
 local dot_header = [=[
-digraph hierarchy {
+digraph lpegNode {
 
 node [fontname=Helvetica]
 edge [style=dashed]
@@ -130,13 +130,6 @@ local function dot_ranks(ast, phrase, leaf_count, ast_label)
          phrase = phrase.."\n"
       end
 
-      -- Execute recursively for all nodes
-      for i,v in ipairs(ast) do
-         if v.isNode or v.isnode then
-            phrase, leaf_count = dot_ranks(v, phrase, leaf_count, child_labels[i])
-         end
-      end
-
       local leaf_val = nil
 
       if ast.val then
@@ -151,6 +144,16 @@ local function dot_ranks(ast, phrase, leaf_count, ast_label)
          name, val_label, leaf_count = value_to_label(leaf_val, leaf_count)
          phrase = phrase..label.." -> "..name.."\n"
          phrase = phrase..name.." "..val_label
+      end
+
+      local separator = "// END RANK " .. label .. "\n\n"
+      phrase = phrase .. separator
+
+      -- Execute recursively for all nodes
+      for i, v in ipairs(ast) do
+         if v.isNode  then
+            phrase, leaf_count = dot_ranks(v, phrase, leaf_count, child_labels[i])
+         end
       end
    end
 

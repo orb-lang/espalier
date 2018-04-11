@@ -397,6 +397,20 @@ function Node.gather(node, pred)
   return gathered
 end
 ```
+### Validation
+
+This checks that a Node, including all its children, meets the social
+contract of Node behavior.
+
+
+```lua
+
+function Node.isValid(node)
+  assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
+         .. node.id .. " " .. node)
+end
+
+```
 ### Subclassing and construction
 
 

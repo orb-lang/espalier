@@ -232,7 +232,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
             else
                leftmost = true -- provisionally since cap.DROP
                for j = i, 1, -1 do
-                 leftmost = leftmost and t[j].DROP 
+                 leftmost = leftmost and t[j].DROP
                                      and getmetatable(t[j]) == DROP
                  if not leftmost then break end
                end
@@ -368,7 +368,9 @@ local function new(grammar_template, metas)
           return match
         end
       else
-          s:complain("No id on match, match of type" .. type(match))
+          local maybeNode = maybeErr.isNode and " is " or " isn't "
+          s:complain("No id on match" .. "match of type, " .. type(match)
+                    .. maybeNode .. " a Node: " .. tostring(maybeErr))
       end
 
       -- This would be a bad match. 

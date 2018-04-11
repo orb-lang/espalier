@@ -15,7 +15,7 @@ local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 
 local _ = (P" " + P"\n" + P"\t" + P"\r")^0
 
-local IDstart =  (R("az", "AZ") + "_"
+local IDstart =  (R("az", "AZ") + "_" -- dot is actually latin-1 but
 local IDrest  =  IDstart + R"09"
 
 local num     =  P"-"^0 * (P"." + R"09"^1) 
@@ -54,6 +54,8 @@ local function dot_fn(_ENV)
   compass_point  =  S("n","ne","e","se","s","sw","w","nw","_")
 
   ID    =  (IDstart^1 * IDrest^0) + num + string_patt
+
+  -- Add C-style comments
 
 end
 

@@ -417,6 +417,22 @@ end
 
 
 
+
+
+
+function Node.isValid(node)
+  assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
+         .. node.id .. " " .. node)
+end
+
+
+
+
+
+
+
+
+
 function Node.inherit(node)
   local Meta = setmetatable({}, node)
   Meta.__index = Meta

@@ -1,4 +1,4 @@
-digraph hierarchy {
+digraph lpegNode {
 
 node [fontname=Helvetica]
 edge [style=dashed]
@@ -11,6 +11,8 @@ doc_0 -> { section_1}
 
 section_1 [label="section: 1-76"]
 
+
+// END RANK doc_0
 
 section_1 -> { header_2 prose_3 section_4 section_5 section_6 section_7}
 {rank=same; header_2 prose_3 section_4 section_5 section_6 section_7}
@@ -28,13 +30,19 @@ section_6 [label="section: 69-76"]
 section_7 [label="section: 77-100"]
 
 
+// END RANK section_1
+
 header_2 -> leaf_8
 leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Spec"]
+// END RANK header_2
+
 prose_3 -> { raw_9}
 {rank=same; raw_9}
 
 raw_9 [label="raw"]
 
+
+// END RANK prose_3
 
 raw_9 -> leaf_10
 leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
@@ -42,6 +50,8 @@ leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   A small test harness to exercise our fresh Node class.
 "]
+// END RANK raw_9
+
 section_4 -> { header_11 prose_12 codeblock_13 codeblock_14}
 {rank=same; header_11 prose_12 codeblock_13 codeblock_14}
 
@@ -54,17 +64,25 @@ codeblock_13 [label="code block 8-22"]
 codeblock_14 [label="code block 24-26"]
 
 
+// END RANK section_4
+
 header_11 -> leaf_15
 leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** includes"]
+// END RANK header_11
+
 prose_12 -> { raw_16}
 {rank=same; raw_16}
 
 raw_16 [label="raw"]
 
 
+// END RANK prose_12
+
 raw_16 -> leaf_17
 leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
+// END RANK raw_16
+
 codeblock_13 -> leaf_18
 leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local u = require \"util\"
 local m = require \"grym/morphemes\"
@@ -79,8 +97,12 @@ local V = L.V
 local C = L.C
 
 "]
+// END RANK codeblock_13
+
 codeblock_14 -> leaf_19
 leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Spec = {}"]
+// END RANK codeblock_14
+
 section_5 -> { header_20 prose_21 prose_22 codeblock_23}
 {rank=same; header_20 prose_21 prose_22 codeblock_23}
 
@@ -93,29 +115,41 @@ prose_22 [label="prose"]
 codeblock_23 [label="code block 34-67"]
 
 
+// END RANK section_5
+
 header_20 -> leaf_24
 leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Trivial Grammar"]
+// END RANK header_20
+
 prose_21 -> { raw_25}
 {rank=same; raw_25}
 
 raw_25 [label="raw"]
 
 
+// END RANK prose_21
+
 raw_25 -> leaf_26
 leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This should succeed under all circumstances.
 "]
+// END RANK raw_25
+
 prose_22 -> { raw_27}
 {rank=same; raw_27}
 
 raw_27 [label="raw"]
 
 
+// END RANK prose_22
+
 raw_27 -> leaf_28
 leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I'd have to guess what it will return currently. 
 "]
+// END RANK raw_27
+
 codeblock_23 -> leaf_29
 leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function epsilon(_ENV)
   START \"any\"
@@ -149,6 +183,8 @@ local function clu_gm(_ENV)
   atom = m.symbol
   number = m.number
 end"]
+// END RANK codeblock_23
+
 section_6 -> { header_30 prose_31 codeblock_32}
 {rank=same; header_30 prose_31 codeblock_32}
 
@@ -159,21 +195,31 @@ prose_31 [label="prose"]
 codeblock_32 [label="code block 71-75"]
 
 
+// END RANK section_6
+
 header_30 -> leaf_33
 leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="pec.trivial ="]
+// END RANK header_30
+
 prose_31 -> { raw_34}
 {rank=same; raw_34}
 
 raw_34 [label="raw"]
 
 
+// END RANK prose_31
+
 raw_34 -> leaf_35
 leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
+// END RANK raw_34
+
 codeblock_32 -> leaf_36
 leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Spec.trivial = Grammar(epsilon)
 Spec.a = Grammar(a)
 Spec.clu = Grammar(clu_gm)"]
+// END RANK codeblock_32
+
 section_7 -> { header_37 prose_38 codeblock_39 codeblock_40 codeblock_41}
 {rank=same; header_37 prose_38 codeblock_39 codeblock_40 codeblock_41}
 
@@ -188,18 +234,26 @@ codeblock_40 [label="code block 94-96"]
 codeblock_41 [label="code block 98-100"]
 
 
+// END RANK section_7
+
 header_37 -> leaf_42
 leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 local metas ="]
+// END RANK header_37
+
 prose_38 -> { raw_43}
 {rank=same; raw_43}
 
 raw_43 [label="raw"]
 
 
+// END RANK prose_38
+
 raw_43 -> leaf_44
 leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
+// END RANK raw_43
+
 codeblock_39 -> leaf_45
 leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 local metas = {}
@@ -213,9 +267,15 @@ local function Anew(A, t, str)
 end
 
 metas[\"A\"] = u.export(amt, Anew)"]
+// END RANK codeblock_39
+
 codeblock_40 -> leaf_46
 leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Spec.ab = Grammar(ab, metas)"]
+// END RANK codeblock_40
+
 codeblock_41 -> leaf_47
 leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Spec"]
+// END RANK codeblock_41
+
 
 }

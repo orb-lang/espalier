@@ -1,16 +1,18 @@
-digraph hierarchy {
+digraph lpegNode {
 
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 59"]
+doc_0 [label="doc - 61"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-59"]
+section_1 [label="section: 1-61"]
 
+
+// END RANK doc_0
 
 section_1 -> { header_2 prose_3 prose_4 codeblock_5}
 {rank=same; header_2 prose_3 prose_4 codeblock_5}
@@ -21,32 +23,44 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-codeblock_5 [label="code block 7-59"]
+codeblock_5 [label="code block 7-61"]
 
+
+// END RANK section_1
 
 header_2 -> leaf_6
 leaf_6  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Dot"]
+// END RANK header_2
+
 prose_3 -> { raw_7}
 {rank=same; raw_7}
 
 raw_7 [label="raw"]
 
 
+// END RANK prose_3
+
 raw_7 -> leaf_8
 leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Turns out there's a [[grammar][https://graphviz.gitlab.io/_pages/doc/info/lang.html]]
 "]
+// END RANK raw_7
+
 prose_4 -> { raw_9}
 {rank=same; raw_9}
 
 raw_9 [label="raw"]
 
 
+// END RANK prose_4
+
 raw_9 -> leaf_10
 leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 So
 "]
+// END RANK raw_9
+
 codeblock_5 -> leaf_11
 leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 local Node    =  require \"node\"
@@ -57,7 +71,7 @@ local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 
 local _ = (P\" \" + P\"\\n\" + P\"\\t\" + P\"\\r\")^0
 
-local IDstart =  (R(\"az\", \"AZ\") + \"_\"
+local IDstart =  (R(\"az\", \"AZ\") + \"_\" -- dot is actually latin-1 but
 local IDrest  =  IDstart + R\"09\"
 
 local num     =  P\"-\"^0 * (P\".\" + R\"09\"^1) 
@@ -97,7 +111,11 @@ local function dot_fn(_ENV)
 
   ID    =  (IDstart^1 * IDrest^0) + num + string_patt
 
+  -- Add C-style comments
+
 end
 "]
+// END RANK codeblock_5
+
 
 }
