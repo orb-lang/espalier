@@ -12,6 +12,19 @@ This function takes two parameters, namely:
 
 Both of these are reasonably complex.
 
+#!lua
+local
+#/lua
+
+#!c
+2 + 3
+#/c
+
+#!clu
+(defn )
+#/clu
+
+
 
 *** grammar_template
 
