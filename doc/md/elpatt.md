@@ -92,12 +92,11 @@ check for this table, and drop it whenever encountered.
 ```lua
 
 local DROP = {}
-
 elpatt.DROP = DROP
 
 local function make_drop(caps)
    local dropped = setmetatable({}, DROP)
-   dropped.DROP = true
+   dropped.DROP = DROP
    dropped.first = caps[1]
    dropped.last = caps[3]
    return dropped

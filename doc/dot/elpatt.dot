@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 134"]
+doc_0 [label="doc - 133"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ section_6 [label="section: 21-27"]
 
 section_7 [label="section: 28-36"]
 
-section_8 [label="section: 64-109"]
+section_8 [label="section: 64-108"]
 
 
 // END RANK section_1
@@ -317,9 +317,9 @@ prose_67 [label="prose"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 87-105"]
+codeblock_69 [label="code block 87-104"]
 
-section_70 [label="section: 110-134"]
+section_70 [label="section: 109-133"]
 
 
 // END RANK section_8
@@ -490,12 +490,11 @@ leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 codeblock_69 -> leaf_106
 leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 local DROP = {}
-
 elpatt.DROP = DROP
 
 local function make_drop(caps)
    local dropped = setmetatable({}, DROP)
-   dropped.DROP = true
+   dropped.DROP = DROP
    dropped.first = caps[1]
    dropped.last = caps[3]
    return dropped
@@ -518,9 +517,9 @@ prose_109 [label="prose"]
 
 prose_110 [label="prose"]
 
-codeblock_111 [label="code block 120-130"]
+codeblock_111 [label="code block 119-129"]
 
-codeblock_112 [label="code block 132-134"]
+codeblock_112 [label="code block 131-133"]
 
 
 // END RANK section_70

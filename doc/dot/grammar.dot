@@ -21,7 +21,7 @@ header_2 [label="1 : Grammar Module"]
 
 prose_3 [label="prose"]
 
-section_4 [label="section: 6-118"]
+section_4 [label="section: 6-119"]
 
 section_5 [label="section: 344-389"]
 
@@ -59,13 +59,13 @@ prose_11 [label="prose"]
 
 prose_12 [label="prose"]
 
-section_13 [label="section: 16-45"]
+section_13 [label="section: 17-46"]
 
-section_14 [label="section: 46-69"]
+section_14 [label="section: 47-70"]
 
-section_15 [label="section: 70-118"]
+section_15 [label="section: 71-119"]
 
-section_16 [label="section: 119-159"]
+section_16 [label="section: 120-160"]
 
 
 // END RANK section_4
@@ -133,6 +133,7 @@ raw_28 [label="raw"]
 raw_28 -> leaf_29
 leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Both of these are reasonably complex.
+
 
 "]
 // END RANK raw_28
@@ -642,13 +643,13 @@ prose_152 [label="prose"]
 
 prose_153 [label="prose"]
 
-codeblock_154 [label="code block 82-95"]
+codeblock_154 [label="code block 83-96"]
 
 prose_155 [label="prose"]
 
 prose_156 [label="prose"]
 
-codeblock_157 [label="code block 101-116"]
+codeblock_157 [label="code block 102-117"]
 
 
 // END RANK section_15
@@ -825,11 +826,11 @@ header_189 [label="3 : make_ast_node"]
 
 prose_190 [label="prose"]
 
-codeblock_191 [label="code block 124-126"]
+codeblock_191 [label="code block 125-127"]
 
-section_192 [label="section: 129-159"]
+section_192 [label="section: 130-160"]
 
-section_193 [label="section: 160-343"]
+section_193 [label="section: 161-343"]
 
 
 // END RANK section_16
@@ -867,7 +868,7 @@ prose_199 [label="prose"]
 
 prose_200 [label="prose"]
 
-codeblock_201 [label="code block 139-157"]
+codeblock_201 [label="code block 140-158"]
 
 
 // END RANK section_192
@@ -1038,7 +1039,7 @@ prose_244 [label="prose"]
 
 prose_245 [label="prose"]
 
-codeblock_246 [label="code block 204-320"]
+codeblock_246 [label="code block 205-320"]
 
 codeblock_247 [label="code block 322-341"]
 
@@ -1406,7 +1407,7 @@ leaf_327  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t,
          s:complain(\"CAPTURE ISSUE\", 
                     \"type of capture subgroup is \" .. type(v) .. \"\\n\")
       end
-      if cap.DROP and getmetatable(cap) == DROP then
+      if cap.DROP == DROP then
          s:verb(\"drops in \" .. a.bright(t.id))
          if i == #t then
             s:verb(a.red(\"rightmost\") .. \" remaining node\")
@@ -1431,7 +1432,6 @@ leaf_327  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t,
                leftmost = true -- provisionally since cap.DROP
                for j = i, 1, -1 do
                  leftmost = leftmost and t[j].DROP
-                                     and getmetatable(t[j]) == DROP
                  if not leftmost then break end
                end
                if leftmost then
