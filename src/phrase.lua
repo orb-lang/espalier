@@ -11,6 +11,7 @@
 
 
 local Phrase = setmetatable({}, {__index = phrase})
+Phrase.isPhrase = Phrase
 
 
 

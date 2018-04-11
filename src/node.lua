@@ -22,7 +22,7 @@ local dot = require "node/dot"
 
 local Node = {}
 Node.__index = Node
-Node.isNode = true
+Node.isNode = Node
 
 
 
@@ -419,10 +419,23 @@ end
 
 
 
-
 function Node.isValid(node)
-  assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
-         .. node.id .. " " .. node)
+  assert(node.isNode, "isNode flag must be Node metatable, id: "
+         .. node.id .. " " .. tostring(node))
+  assert(node.first, "node must have first")
+  assert(type(node.first) == "number", "node.first must be of type number")
+  assert(node.last, "node must have last")
+  assert(type(node.last) == "number", "node.last must be of type number")
+  assert(node.str, "node must have str")
+  assert(type(node.str) == "string" or node.str.isPhrase, "str must be string or phrase")
+  return true
+end
+
+function Node.validate(node)
+  for twig in node:walk() do
+    twig:isValid()
+  end
+  return true
 end
 
 

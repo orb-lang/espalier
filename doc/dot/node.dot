@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 481"]
+doc_0 [label="doc - 494"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-451"]
+section_1 [label="section: 1-464"]
 
 
 // END RANK doc_0
@@ -27,9 +27,9 @@ section_5 [label="section: 17-28"]
 
 section_6 [label="section: 29-40"]
 
-section_7 [label="section: 41-429"]
+section_7 [label="section: 41-442"]
 
-section_8 [label="section: 452-471"]
+section_8 [label="section: 465-484"]
 
 
 // END RANK section_1
@@ -126,7 +126,7 @@ subclass through [[Node:inherit()][httk://]].
 codeblock_21 -> leaf_25
 leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Node = {}
 Node.__index = Node
-Node.isNode = true"]
+Node.isNode = Node"]
 // END RANK codeblock_21
 
 section_6 -> { header_26 prose_27 prose_28 prose_29}
@@ -227,9 +227,9 @@ section_47 [label="section: 98-378"]
 
 section_48 [label="section: 396-414"]
 
-section_49 [label="section: 415-429"]
+section_49 [label="section: 415-442"]
 
-section_50 [label="section: 430-432"]
+section_50 [label="section: 443-445"]
 
 
 // END RANK section_7
@@ -1474,7 +1474,7 @@ header_297 [label="3 : Validation"]
 
 prose_298 [label="prose"]
 
-codeblock_299 [label="code block 421-428"]
+codeblock_299 [label="code block 420-441"]
 
 
 // END RANK section_49
@@ -1496,15 +1496,28 @@ leaf_302  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This checks that a Node, including all its children, meets the social
 contract of Node behavior.
-
 "]
 // END RANK raw_301
 
 codeblock_299 -> leaf_303
 leaf_303  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 function Node.isValid(node)
-  assert(node.isNode == Node, \"isNode flag must be Node metatable, id: \"
-         .. node.id .. \" \" .. node)
+  assert(node.isNode, \"isNode flag must be Node metatable, id: \"
+         .. node.id .. \" \" .. tostring(node))
+  assert(node.first, \"node must have first\")
+  assert(type(node.first) == \"number\", \"node.first must be of type number\")
+  assert(node.last, \"node must have last\")
+  assert(type(node.last) == \"number\", \"node.last must be of type number\")
+  assert(node.str, \"node must have str\")
+  assert(type(node.str) == \"string\" or node.str.isPhrase, \"str must be string or phrase\")
+  return true
+end
+
+function Node.validate(node)
+  for twig in node:walk() do
+    twig:isValid()
+  end
+  return true
 end
 "]
 // END RANK codeblock_299
@@ -1516,7 +1529,7 @@ header_304 [label="3 : Subclassing and construction"]
 
 prose_305 [label="prose"]
 
-section_306 [label="section: 433-451"]
+section_306 [label="section: 446-464"]
 
 
 // END RANK section_50
@@ -1546,7 +1559,7 @@ header_310 [label="4 : N.inherit(node)"]
 
 prose_311 [label="prose"]
 
-codeblock_312 [label="code block 435-449"]
+codeblock_312 [label="code block 448-462"]
 
 
 // END RANK section_306
@@ -1595,9 +1608,9 @@ prose_319 [label="prose"]
 
 prose_320 [label="prose"]
 
-section_321 [label="section: 463-471"]
+section_321 [label="section: 476-484"]
 
-section_322 [label="section: 472-481"]
+section_322 [label="section: 485-494"]
 
 
 // END RANK section_8
@@ -1729,7 +1742,7 @@ header_347 [label="3 : Other fields"]
 
 prose_348 [label="prose"]
 
-codeblock_349 [label="code block 476-478"]
+codeblock_349 [label="code block 489-491"]
 
 
 // END RANK section_322

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 82"]
+doc_0 [label="doc - 83"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-65"]
+section_1 [label="section: 1-66"]
 
 
 // END RANK doc_0
@@ -25,15 +25,15 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-codeblock_6 [label="code block 12-14"]
+codeblock_6 [label="code block 12-15"]
 
-section_7 [label="section: 17-34"]
+section_7 [label="section: 18-35"]
 
-section_8 [label="section: 35-50"]
+section_8 [label="section: 36-51"]
 
-section_9 [label="section: 51-65"]
+section_9 [label="section: 52-66"]
 
-section_10 [label="section: 66-82"]
+section_10 [label="section: 67-83"]
 
 
 // END RANK section_1
@@ -115,7 +115,8 @@ replacement.
 // END RANK raw_23
 
 codeblock_6 -> leaf_25
-leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Phrase = setmetatable({}, {__index = phrase})"]
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Phrase = setmetatable({}, {__index = phrase})
+Phrase.isPhrase = Phrase"]
 // END RANK codeblock_6
 
 section_7 -> { header_26 prose_27 codeblock_28}
@@ -125,7 +126,7 @@ header_26 [label="2 : .."]
 
 prose_27 [label="prose"]
 
-codeblock_28 [label="code block 23-32"]
+codeblock_28 [label="code block 24-33"]
 
 
 // END RANK section_7
@@ -169,7 +170,7 @@ header_33 [label="2 : __tostring"]
 
 prose_34 [label="prose"]
 
-codeblock_35 [label="code block 39-48"]
+codeblock_35 [label="code block 40-49"]
 
 
 // END RANK section_8
@@ -213,7 +214,7 @@ header_40 [label="2 : Constructor"]
 
 prose_41 [label="prose"]
 
-codeblock_42 [label="code block 53-63"]
+codeblock_42 [label="code block 54-64"]
 
 
 // END RANK section_9
@@ -257,9 +258,9 @@ header_47 [label="2 : inherit"]
 
 prose_48 [label="prose"]
 
-codeblock_49 [label="code block 68-78"]
+codeblock_49 [label="code block 69-79"]
 
-codeblock_50 [label="code block 80-82"]
+codeblock_50 [label="code block 81-83"]
 
 
 // END RANK section_10
