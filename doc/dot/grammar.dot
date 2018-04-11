@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 389"]
+doc_0 [label="doc - 390"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-343"]
+section_1 [label="section: 1-344"]
 
 
 // END RANK doc_0
@@ -23,7 +23,7 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-119"]
 
-section_5 [label="section: 344-389"]
+section_5 [label="section: 345-390"]
 
 
 // END RANK section_1
@@ -830,7 +830,7 @@ codeblock_191 [label="code block 125-127"]
 
 section_192 [label="section: 130-160"]
 
-section_193 [label="section: 161-343"]
+section_193 [label="section: 161-344"]
 
 
 // END RANK section_16
@@ -1039,9 +1039,9 @@ prose_244 [label="prose"]
 
 prose_245 [label="prose"]
 
-codeblock_246 [label="code block 205-320"]
+codeblock_246 [label="code block 205-321"]
 
-codeblock_247 [label="code block 322-341"]
+codeblock_247 [label="code block 323-342"]
 
 
 // END RANK section_193
@@ -1401,7 +1401,8 @@ leaf_326  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_325
 
 codeblock_246 -> leaf_327
-leaf_327  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t, 1, -1 do 
+leaf_327  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t, 1, -1 do
+      t[i].parent = t
       local cap = t[i] 
       if type(cap) ~= \"table\" then
          s:complain(\"CAPTURE ISSUE\", 
@@ -1545,9 +1546,9 @@ header_329 [label="2 : new"]
 
 prose_330 [label="prose"]
 
-codeblock_331 [label="code block 349-385"]
+codeblock_331 [label="code block 350-386"]
 
-codeblock_332 [label="code block 387-389"]
+codeblock_332 [label="code block 388-390"]
 
 
 // END RANK section_5

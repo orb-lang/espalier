@@ -203,7 +203,8 @@ Counting to 1 neatly prevents this.
         provide it. 
 
 #!lua
-   for i = #t, 1, -1 do 
+   for i = #t, 1, -1 do
+      t[i].parent = t
       local cap = t[i] 
       if type(cap) ~= "table" then
          s:complain("CAPTURE ISSUE", 
