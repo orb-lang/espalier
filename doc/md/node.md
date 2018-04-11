@@ -320,7 +320,7 @@ function Node.lines(node)
         local line = string.sub(str, 1, first - 1) -- no newline
         rest       = string.sub(str, last + 1)    -- skip newline
         node.__lines[#node.__lines + 1] = line
-        coroutine.yield(line, rest)
+        coroutine.yield(line)
       end
       buildLines(rest)
   end
@@ -332,7 +332,11 @@ end
 ```
 #### Node.linePos(node, position)
 
-Returns the line and column given a position. 
+Returns the line and column given a position.
+
+
+This is implemented as a classic loop made slightly harder to get
+right by Lua's indexing and the missing newline.  
 
 ```lua
 function Node.linePos(node, position)
@@ -346,15 +350,13 @@ function Node.linePos(node, position)
    local linum = nil
    for i, v in ipairs(node.__lines) do
        linum = i
-       local offset = offset + #v + 1 -- for nl
+       local len = #v + 1 -- for nl
+       local offset = offset + len
        if offset > position then
-          io.write("newoffset > position\n")
           return linum, position
        elseif offset == position then
-          io.write("offset == position\n")
-          return linum, (#v + 1)
+          return linum, len
        else
-          io.write("offset < position, iterating\n")
           position = position - #v - 1
        end
    end

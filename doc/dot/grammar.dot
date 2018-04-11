@@ -3,7 +3,7 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 384"]
+doc_0 [label="doc - 387"]
 
 
 doc_0 -> { section_1}
@@ -21,7 +21,7 @@ prose_3 [label="prose"]
 
 section_4 [label="section: 6-118"]
 
-section_5 [label="section: 344-384"]
+section_5 [label="section: 344-387"]
 
 
 header_2 -> leaf_6
@@ -1169,9 +1169,9 @@ header_329 [label="2 : new"]
 
 prose_330 [label="prose"]
 
-codeblock_331 [label="code block 349-380"]
+codeblock_331 [label="code block 349-383"]
 
-codeblock_332 [label="code block 382-384"]
+codeblock_332 [label="code block 385-387"]
 
 
 header_329 -> leaf_333
@@ -1213,7 +1213,10 @@ leaf_342  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
       local maybeErr = match:lastLeaf()
       if maybeErr.id then
         if maybeErr.id == \"ERROR\" then
-          s:complain(\"Parsing Error\", maybeErr.msg)
+          local line, col = match:linePos(maybeErr.first)
+          local msg = maybeErr.msg or \"\"
+          s:complain(\"Parsing Error\", \" line: \" .. tostring(line) .. \", \"
+                     .. \"col: \" .. tostring(col) .. \". \" .. msg)
           return match, match:lastLeaf()
         else
           return match

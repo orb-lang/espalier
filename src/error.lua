@@ -29,7 +29,8 @@ Err.id = "ERROR"
 
 
 function Err.toLua(err)
-  s:halt("ERROR at position " .. tostring(err.first))
+  local line, col = err:linePos(err.first)
+  s:halt("ERROR at line: " .. line .. " col: " .. col)
 end
 
 
@@ -45,7 +46,7 @@ local function parse_error(pos, name, msg, patt, str)
    local errorNode =  setmetatable({}, Err)
    errorNode.first =  pos
    errorNode.last  =  #str -- See above
-   errorNode.msg   =  msg
+   errorNode.msg   =  message
    errorNode.name  =  name
    errorNode.str   =  str
    errorNode.rest  =  string.sub(str, pos)

@@ -1,9 +1,26 @@
- 
-```lua
---- Transform Module
-```
- #TODO: 
-  - [ ] Make leaf_font and leaf_color configurable values of t
+# Dot
+
+This is an early piece of code, in need of overhaul
+
+
+- [ ] #Todo 
+
+
+  - [ ]  Make header and footer configurable values of t
+
+
+  - [ ]  Make leaf_font and leaf_color configurable values of t
+
+
+  - [ ]  Finish attaching str to all Nodes in Orb (I'm looking at you,
+         hashtag)
+
+
+  - [ ]  Add some kind of comment or other boundary marker between ranks,
+         to make it easier to use with d3:
+
+
+         [nifty d3 dot magic](https://github.com/magjac/d3-graphviz)
 
 ```lua
 local t = {}
@@ -74,7 +91,7 @@ local function dot_ranks(ast, phrase, leaf_count, ast_label)
    local leaf_count = leaf_count or 0
 
    -- Add the node we're working on
-   if ast.isNode or ast.isnode then
+   if ast.isNode then
       local label = ""
       local label_line = ""
       local child_labels = {}
@@ -91,7 +108,7 @@ local function dot_ranks(ast, phrase, leaf_count, ast_label)
       -- Document child nodes
       for i,v in ipairs(ast) do
          -- assemble labels and label lines for all child nodes
-         if v.isNode or v.isnode then
+         if v.isNode then
             child_labels[i], child_label_lines[i], leaf_count = 
                ast_to_label(v, leaf_count)
          end

@@ -3,13 +3,13 @@ digraph hierarchy {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 82"]
+doc_0 [label="doc - 83"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-59"]
+section_1 [label="section: 1-60"]
 
 
 section_1 -> { header_2 prose_3 prose_4 section_5 section_6}
@@ -23,7 +23,7 @@ prose_4 [label="prose"]
 
 section_5 [label="section: 11-25"]
 
-section_6 [label="section: 60-82"]
+section_6 [label="section: 61-83"]
 
 
 header_2 -> leaf_7
@@ -76,7 +76,7 @@ codeblock_20 [label="code block 13-17"]
 
 codeblock_21 [label="code block 19-23"]
 
-section_22 [label="section: 26-59"]
+section_22 [label="section: 26-60"]
 
 
 header_18 -> leaf_23
@@ -105,11 +105,11 @@ header_28 [label="4 : Err.toLua #remove"]
 
 prose_29 [label="prose"]
 
-codeblock_30 [label="code block 30-34"]
+codeblock_30 [label="code block 30-35"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 41-57"]
+codeblock_32 [label="code block 42-58"]
 
 
 header_28 -> leaf_33
@@ -127,7 +127,8 @@ This is while I work on having grammars catch terminal Errors.
 "]
 codeblock_30 -> leaf_36
 leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Err.toLua(err)
-  s:halt(\"ERROR at position \" .. tostring(err.first))
+  local line, col = err:linePos(err.first)
+  s:halt(\"ERROR at line: \" .. line .. \" col: \" .. col)
 end"]
 prose_31 -> { raw_37 prespace_38 literal_39 raw_40 prespace_41 literal_42 raw_43}
 {rank=same; raw_37 prespace_38 literal_39 raw_40 prespace_41 literal_42 raw_43}
@@ -171,7 +172,7 @@ leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
    local errorNode =  setmetatable({}, Err)
    errorNode.first =  pos
    errorNode.last  =  #str -- See above
-   errorNode.msg   =  msg
+   errorNode.msg   =  message
    errorNode.name  =  name
    errorNode.str   =  str
    errorNode.rest  =  string.sub(str, pos)
@@ -189,7 +190,7 @@ prose_53 [label="prose"]
 
 prose_54 [label="prose"]
 
-codeblock_55 [label="code block 70-82"]
+codeblock_55 [label="code block 71-83"]
 
 
 header_52 -> leaf_56

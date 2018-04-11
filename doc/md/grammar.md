@@ -377,7 +377,10 @@ local function new(grammar_template, metas)
       local maybeErr = match:lastLeaf()
       if maybeErr.id then
         if maybeErr.id == "ERROR" then
-          s:complain("Parsing Error", maybeErr.msg)
+          local line, col = match:linePos(maybeErr.first)
+          local msg = maybeErr.msg or ""
+          s:complain("Parsing Error", " line: " .. tostring(line) .. ", "
+                     .. "col: " .. tostring(col) .. ". " .. msg)
           return match, match:lastLeaf()
         else
           return match
