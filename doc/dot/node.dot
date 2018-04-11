@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 494"]
+doc_0 [label="doc - 497"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-464"]
+section_1 [label="section: 1-467"]
 
 
 // END RANK doc_0
@@ -27,9 +27,9 @@ section_5 [label="section: 17-28"]
 
 section_6 [label="section: 29-40"]
 
-section_7 [label="section: 41-442"]
+section_7 [label="section: 41-445"]
 
-section_8 [label="section: 465-484"]
+section_8 [label="section: 468-487"]
 
 
 // END RANK section_1
@@ -225,11 +225,11 @@ section_46 [label="section: 58-97"]
 
 section_47 [label="section: 98-378"]
 
-section_48 [label="section: 396-414"]
+section_48 [label="section: 396-415"]
 
-section_49 [label="section: 415-442"]
+section_49 [label="section: 416-445"]
 
-section_50 [label="section: 443-445"]
+section_50 [label="section: 446-448"]
 
 
 // END RANK section_7
@@ -1474,7 +1474,7 @@ header_297 [label="3 : Validation"]
 
 prose_298 [label="prose"]
 
-codeblock_299 [label="code block 420-441"]
+codeblock_299 [label="code block 421-444"]
 
 
 // END RANK section_49
@@ -1502,7 +1502,7 @@ contract of Node behavior.
 codeblock_299 -> leaf_303
 leaf_303  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 function Node.isValid(node)
-  assert(node.isNode, \"isNode flag must be Node metatable, id: \"
+  assert(node.isNode == Node, \"isNode flag must be Node metatable, id: \"
          .. node.id .. \" \" .. tostring(node))
   assert(node.first, \"node must have first\")
   assert(type(node.first) == \"number\", \"node.first must be of type number\")
@@ -1510,6 +1510,8 @@ function Node.isValid(node)
   assert(type(node.last) == \"number\", \"node.last must be of type number\")
   assert(node.str, \"node must have str\")
   assert(type(node.str) == \"string\" or node.str.isPhrase, \"str must be string or phrase\")
+  assert(node.parent, \"node must have parent\")
+  assert(type(node:span()) == \"string\", \"span() must yield string\")
   return true
 end
 
@@ -1529,7 +1531,7 @@ header_304 [label="3 : Subclassing and construction"]
 
 prose_305 [label="prose"]
 
-section_306 [label="section: 446-464"]
+section_306 [label="section: 449-467"]
 
 
 // END RANK section_50
@@ -1559,7 +1561,7 @@ header_310 [label="4 : N.inherit(node)"]
 
 prose_311 [label="prose"]
 
-codeblock_312 [label="code block 448-462"]
+codeblock_312 [label="code block 451-465"]
 
 
 // END RANK section_306
@@ -1608,9 +1610,9 @@ prose_319 [label="prose"]
 
 prose_320 [label="prose"]
 
-section_321 [label="section: 476-484"]
+section_321 [label="section: 479-487"]
 
-section_322 [label="section: 485-494"]
+section_322 [label="section: 488-497"]
 
 
 // END RANK section_8
@@ -1742,7 +1744,7 @@ header_347 [label="3 : Other fields"]
 
 prose_348 [label="prose"]
 
-codeblock_349 [label="code block 489-491"]
+codeblock_349 [label="code block 492-494"]
 
 
 // END RANK section_322

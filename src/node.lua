@@ -419,8 +419,9 @@ end
 
 
 
+
 function Node.isValid(node)
-  assert(node.isNode, "isNode flag must be Node metatable, id: "
+  assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
          .. node.id .. " " .. tostring(node))
   assert(node.first, "node must have first")
   assert(type(node.first) == "number", "node.first must be of type number")
@@ -428,6 +429,8 @@ function Node.isValid(node)
   assert(type(node.last) == "number", "node.last must be of type number")
   assert(node.str, "node must have str")
   assert(type(node.str) == "string" or node.str.isPhrase, "str must be string or phrase")
+  assert(node.parent, "node must have parent")
+  assert(type(node:span()) == "string", "span() must yield string")
   return true
 end
 

@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="1169" cy="-1590.5221" rx="46.9581" ry="18"/>
-<text text-anchor="middle" x="1169" y="-1586.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 494</text>
+<text text-anchor="middle" x="1169" y="-1586.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 497</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="1169" cy="-1518.5221" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="1169" y="-1514.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;464</text>
+<text text-anchor="middle" x="1169" y="-1514.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;467</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -91,7 +91,7 @@
 <g id="node8" class="node">
 <title>section_7</title>
 <ellipse fill="none" stroke="#000000" cx="3218" cy="-1446.5221" rx="70.655" ry="18"/>
-<text text-anchor="middle" x="3218" y="-1442.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 41&#45;442</text>
+<text text-anchor="middle" x="3218" y="-1442.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 41&#45;445</text>
 </g>
 <!-- section_1&#45;&gt;section_7 -->
 <g id="edge7" class="edge">
@@ -103,7 +103,7 @@
 <g id="node9" class="node">
 <title>section_8</title>
 <ellipse fill="none" stroke="#000000" cx="19203" cy="-1446.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="19203" y="-1442.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 465&#45;484</text>
+<text text-anchor="middle" x="19203" y="-1442.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 468&#45;487</text>
 </g>
 <!-- section_1&#45;&gt;section_8 -->
 <g id="edge8" class="edge">
@@ -319,7 +319,7 @@
 <g id="node49" class="node">
 <title>section_48</title>
 <ellipse fill="none" stroke="#000000" cx="16331" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="16331" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 396&#45;414</text>
+<text text-anchor="middle" x="16331" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 396&#45;415</text>
 </g>
 <!-- section_7&#45;&gt;section_48 -->
 <g id="edge48" class="edge">
@@ -331,7 +331,7 @@
 <g id="node50" class="node">
 <title>section_49</title>
 <ellipse fill="none" stroke="#000000" cx="16823" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="16823" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 415&#45;442</text>
+<text text-anchor="middle" x="16823" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 416&#45;445</text>
 </g>
 <!-- section_7&#45;&gt;section_49 -->
 <g id="edge49" class="edge">
@@ -343,7 +343,7 @@
 <g id="node51" class="node">
 <title>section_50</title>
 <ellipse fill="none" stroke="#000000" cx="17778" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="17778" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 443&#45;445</text>
+<text text-anchor="middle" x="17778" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 446&#45;448</text>
 </g>
 <!-- section_7&#45;&gt;section_50 -->
 <g id="edge50" class="edge">
@@ -403,7 +403,7 @@
 <g id="node322" class="node">
 <title>section_321</title>
 <ellipse fill="none" stroke="#000000" cx="19998" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="19998" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 476&#45;484</text>
+<text text-anchor="middle" x="19998" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 479&#45;487</text>
 </g>
 <!-- section_8&#45;&gt;section_321 -->
 <g id="edge321" class="edge">
@@ -415,7 +415,7 @@
 <g id="node323" class="node">
 <title>section_322</title>
 <ellipse fill="none" stroke="#000000" cx="21004" cy="-1374.5221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="21004" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 485&#45;494</text>
+<text text-anchor="middle" x="21004" y="-1370.3221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 488&#45;497</text>
 </g>
 <!-- section_8&#45;&gt;section_322 -->
 <g id="edge322" class="edge">
@@ -1035,7 +1035,7 @@
 <g id="node300" class="node">
 <title>codeblock_299</title>
 <ellipse fill="none" stroke="#000000" cx="17129" cy="-1269.1221" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="17129" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 420&#45;441</text>
+<text text-anchor="middle" x="17129" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 421&#45;444</text>
 </g>
 <!-- section_49&#45;&gt;codeblock_299 -->
 <g id="edge299" class="edge">
@@ -1071,7 +1071,7 @@
 <g id="node307" class="node">
 <title>section_306</title>
 <ellipse fill="none" stroke="#000000" cx="18058" cy="-1269.1221" rx="75.4916" ry="18"/>
-<text text-anchor="middle" x="18058" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 446&#45;464</text>
+<text text-anchor="middle" x="18058" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 449&#45;467</text>
 </g>
 <!-- section_50&#45;&gt;section_306 -->
 <g id="edge306" class="edge">
@@ -3951,30 +3951,32 @@
 <!-- leaf_303 -->
 <g id="node304" class="node">
 <title>leaf_303</title>
-<polygon fill="none" stroke="#c0c0c0" points="17557.5,-1094.8622 16918.5,-1094.8622 16918.5,-793.261 17557.5,-793.261 17557.5,-1094.8622"/>
-<text text-anchor="middle" x="17238" y="-1063.7619" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.isValid(node)</text>
-<text text-anchor="middle" x="17238" y="-1048.3618" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.isNode, &quot;isNode flag must be Node metatable, id: &quot;</text>
-<text text-anchor="middle" x="17238" y="-1032.9618" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;.. node.id .. &quot; &quot; .. tostring(node))</text>
-<text text-anchor="middle" x="17238" y="-1017.5618" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.first, &quot;node must have first&quot;)</text>
-<text text-anchor="middle" x="17238" y="-1002.1617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(type(node.first) == &quot;number&quot;, &quot;node.first must be of type number&quot;)</text>
-<text text-anchor="middle" x="17238" y="-986.7617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.last, &quot;node must have last&quot;)</text>
-<text text-anchor="middle" x="17238" y="-971.3617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(type(node.last) == &quot;number&quot;, &quot;node.last must be of type number&quot;)</text>
-<text text-anchor="middle" x="17238" y="-955.9616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.str, &quot;node must have str&quot;)</text>
-<text text-anchor="middle" x="17238" y="-940.5616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(type(node.str) == &quot;string&quot; or node.str.isPhrase, &quot;str must be string or phrase&quot;)</text>
-<text text-anchor="middle" x="17238" y="-925.1616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return true</text>
-<text text-anchor="middle" x="17238" y="-909.7616" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
-<text text-anchor="middle" x="17238" y="-878.3615" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.validate(node)</text>
-<text text-anchor="middle" x="17238" y="-862.9615" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;for twig in node:walk() do</text>
-<text text-anchor="middle" x="17238" y="-847.5615" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;twig:isValid()</text>
-<text text-anchor="middle" x="17238" y="-832.1614" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;end</text>
-<text text-anchor="middle" x="17238" y="-816.7614" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return true</text>
-<text text-anchor="middle" x="17238" y="-801.3614" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<polygon fill="none" stroke="#c0c0c0" points="17557.5,-1110.1624 16918.5,-1110.1624 16918.5,-777.9608 17557.5,-777.9608 17557.5,-1110.1624"/>
+<text text-anchor="middle" x="17238" y="-1079.1619" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.isValid(node)</text>
+<text text-anchor="middle" x="17238" y="-1063.7619" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.isNode == Node, &quot;isNode flag must be Node metatable, id: &quot;</text>
+<text text-anchor="middle" x="17238" y="-1048.3618" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;.. node.id .. &quot; &quot; .. tostring(node))</text>
+<text text-anchor="middle" x="17238" y="-1032.9618" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.first, &quot;node must have first&quot;)</text>
+<text text-anchor="middle" x="17238" y="-1017.5618" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(type(node.first) == &quot;number&quot;, &quot;node.first must be of type number&quot;)</text>
+<text text-anchor="middle" x="17238" y="-1002.1617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.last, &quot;node must have last&quot;)</text>
+<text text-anchor="middle" x="17238" y="-986.7617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(type(node.last) == &quot;number&quot;, &quot;node.last must be of type number&quot;)</text>
+<text text-anchor="middle" x="17238" y="-971.3617" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.str, &quot;node must have str&quot;)</text>
+<text text-anchor="middle" x="17238" y="-955.9616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(type(node.str) == &quot;string&quot; or node.str.isPhrase, &quot;str must be string or phrase&quot;)</text>
+<text text-anchor="middle" x="17238" y="-940.5616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(node.parent, &quot;node must have parent&quot;)</text>
+<text text-anchor="middle" x="17238" y="-925.1616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;assert(type(node:span()) == &quot;string&quot;, &quot;span() must yield string&quot;)</text>
+<text text-anchor="middle" x="17238" y="-909.7616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return true</text>
+<text text-anchor="middle" x="17238" y="-894.3615" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
+<text text-anchor="middle" x="17238" y="-862.9615" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.validate(node)</text>
+<text text-anchor="middle" x="17238" y="-847.5615" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;for twig in node:walk() do</text>
+<text text-anchor="middle" x="17238" y="-832.1614" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;twig:isValid()</text>
+<text text-anchor="middle" x="17238" y="-816.7614" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;end</text>
+<text text-anchor="middle" x="17238" y="-801.3614" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return true</text>
+<text text-anchor="middle" x="17238" y="-785.9613" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_299&#45;&gt;leaf_303 -->
 <g id="edge303" class="edge">
 <title>codeblock_299&#45;&gt;leaf_303</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M17135.1726,-1250.7141C17144.8566,-1221.8344 17164.5434,-1163.1244 17184.123,-1104.734"/>
-<polygon fill="#000000" stroke="#000000" points="17187.5293,-1105.5844 17187.3902,-1094.9904 17180.8925,-1103.3588 17187.5293,-1105.5844"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M17135.1726,-1250.7141C17144.0095,-1224.3608 17161.1756,-1173.1679 17178.9889,-1120.045"/>
+<polygon fill="#000000" stroke="#000000" points="17182.3419,-1121.0543 17182.2028,-1110.4603 17175.7051,-1118.8288 17182.3419,-1121.0543"/>
 </g>
 <!-- leaf_302 -->
 <g id="node303" class="node">
@@ -4041,7 +4043,7 @@
 <g id="node313" class="node">
 <title>codeblock_312</title>
 <ellipse fill="none" stroke="#000000" cx="18256" cy="-944.0616" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="18256" y="-939.8616" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 448&#45;462</text>
+<text text-anchor="middle" x="18256" y="-939.8616" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 451&#45;465</text>
 </g>
 <!-- section_306&#45;&gt;codeblock_312 -->
 <g id="edge312" class="edge">
@@ -4217,7 +4219,7 @@
 <g id="node350" class="node">
 <title>codeblock_349</title>
 <ellipse fill="none" stroke="#000000" cx="21201" cy="-1269.1221" rx="87.0948" ry="18"/>
-<text text-anchor="middle" x="21201" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 489&#45;491</text>
+<text text-anchor="middle" x="21201" y="-1264.9221" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 492&#45;494</text>
 </g>
 <!-- section_322&#45;&gt;codeblock_349 -->
 <g id="edge349" class="edge">

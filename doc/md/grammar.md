@@ -224,6 +224,9 @@ Counting to 1 neatly prevents this.
         provide it. 
 
 ```lua
+   if not t.parent then
+      t.parent = t
+   end
    for i = #t, 1, -1 do
       t[i].parent = t
       local cap = t[i] 

@@ -202,6 +202,16 @@ Counting to 1 neatly prevents this.
         aren't wanted.  Better to simulate the correct behavior until I can
         provide it. 
 
+anyway back to our program
+
+The parent of the first node is always itself:
+
+#!lua
+   if not t.parent then
+      t.parent = t
+   end
+#/lua
+
 #!lua
    for i = #t, 1, -1 do
       t[i].parent = t
