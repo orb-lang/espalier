@@ -138,6 +138,10 @@ end
 
 
 
+
+
+
+
 function Node.gap(left, right)
   assert(left.last, "no left.last")
   assert(right.first, "no right.first")
@@ -155,7 +159,7 @@ function Node.gap(left, right)
     s:halt("some kind of situation where gap is " .. tostring(gap))
   end
 
-  return nil 
+  return nil
 end
 
 
@@ -244,7 +248,7 @@ end
 function Node.select(node, pred)
    local function qualifies(node, pred)
       if type(pred) == 'string' then
-         if type(node) == 'table' 
+         if type(node) == 'table'
           and node.id and node.id == pred then
             return true
          else
@@ -289,7 +293,7 @@ function Node.tokens(node)
   end
 
   return coroutine.wrap(function() traverse(node) end)
-end  
+end
 
 
 
@@ -313,9 +317,9 @@ function Node.lines(node)
 
   if node.__lines then
      return coroutine.wrap(function ()
-                              yieldLines(node) 
+                              yieldLines(node)
                            end)
-  else 
+  else
      node.__lines = {}
   end
 
@@ -325,7 +329,7 @@ function Node.lines(node)
       end
       local rest = ""
       local first, last = string.find(str, "\n")
-      if first == nil then 
+      if first == nil then
         return nil
       else
         local line = string.sub(str, 1, first - 1) -- no newline
@@ -336,8 +340,8 @@ function Node.lines(node)
       buildLines(rest)
   end
 
-  return coroutine.wrap(function () 
-                           buildLines(node.str) 
+  return coroutine.wrap(function ()
+                           buildLines(node.str)
                         end)
 end
 
@@ -384,7 +388,7 @@ end
 
 
 function Node.lastLeaf(node)
-  if #node == 0 then 
+  if #node == 0 then
     return node
   else
     return Node.lastLeaf(node[#node])
@@ -406,7 +410,7 @@ function Node.gather(node, pred)
   for ast in node:select(pred) do
     gathered[#gathered + 1] = ast
   end
-  
+
   return gathered
 end
 

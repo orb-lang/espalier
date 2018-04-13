@@ -4,6 +4,9 @@
 
 
 
+local s = require "status" ()
+s.verbose = false
+s.angry   = false
 
 
 
@@ -82,11 +85,6 @@
 
 
 local L = require "lpeg"
-
-local s = require "status" ()
-s.verbose = false
-s.angry   = false
-
 local a = require "ansi"
 
 local Node = require "node/node"
@@ -102,7 +100,7 @@ local DROP = elpatt.DROP
 
 local assert = assert
 local string, io = assert( string ), assert( io )
-local V = string.sub( assert( _VERSION ), -4 )
+local VER = string.sub( assert( _VERSION ), -4 )
 local _G = assert( _G )
 local error = assert( error )
 local pairs = assert( pairs )
@@ -110,7 +108,7 @@ local next = assert( next )
 local type = assert( type )
 local tostring = assert( tostring )
 local setmetatable = assert( setmetatable )
-if V == " 5.1" then
+if VER == " 5.1" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
 end
@@ -203,14 +201,25 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
+
+
+
+
    if not t.parent then
       t.parent = t
    end
+
+
+
+
+
+
+
    for i = #t, 1, -1 do
       t[i].parent = t
-      local cap = t[i] 
+      local cap = t[i]
       if type(cap) ~= "table" then
-         s:complain("CAPTURE ISSUE", 
+         s:complain("CAPTURE ISSUE",
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
       if cap.DROP == DROP then
@@ -225,7 +234,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
          else
             -- Here we may be either in the middle or at the leftmost
             -- margin.  Leftmost means either we're at index 1, or that
-            -- all children to the left, down to 1, are all DROPs. 
+            -- all children to the left, down to 1, are all DROPs.
             local leftmost = (i == 1)
             if leftmost then
                s:verb(a.cyan("  leftmost") .. " remaining node")
@@ -247,7 +256,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                   t.first = cap.last
                   s:verb("    new t.^: " .. tostring(t.first))
                   for j = i, 1, -1 do
-                     -- this is quadradic but correct 
+                     -- this is quadradic but correct
                      -- and easy to understand.
                      table.remove(t, j)
                      break
@@ -258,7 +267,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                end
             end
          end
-      end 
+      end
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
@@ -266,7 +275,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 end
 
 
--- some useful/common lpeg patterns
+-- localize the patterns we use
 local Cp = L.Cp
 local Cc = L.Cc
 local Ct = L.Ct
@@ -280,7 +289,7 @@ local arg3_offset = L.Carg(3)
 local function define(func, g, e)
   g = g or {}
   if e == nil then
-    e = V == " 5.1" and getfenv(func) or _G
+    e = VER == " 5.1" and getfenv(func) or _G
   end
   local suppressed = {}
   local env = {}
@@ -303,8 +312,8 @@ local function define(func, g, e)
       if suppressed[ name ] then
         g[ name ] = val
       else
-        g[ name ] = (Cc(name) 
-              * Cp() 
+        g[ name ] = (Cc(name)
+              * Cp()
               * Ct(val)
               * Cp()
               * arg1_str
@@ -314,7 +323,7 @@ local function define(func, g, e)
     end
   })
   -- call passed function with custom environment (5.1- and 5.2-style)
-  if V == " 5.1" then
+  if VER == " 5.1" then
     setfenv( func, env )
   end
   func( env )
@@ -325,18 +334,13 @@ end
 
 
 local function refineMetas(metas)
-  s:verb("refining metatables")
   for id, meta in pairs(metas) do
-    s:verb("  id: " .. id .. " type: " .. type(meta))
     if type(meta) == "table" then
       if not meta["__tostring"] then
         meta["__tostring"] = Node.toString
       end
       if not meta.id then
-        s:verb("    inserting metatable id: " .. id)
         meta.id = id
-      else
-        s:verb("    id of " .. id .. " is " .. meta.id)
       end
     end
   end
@@ -377,7 +381,7 @@ local function new(grammar_template, metas)
                     .. maybeNode .. " a Node: " .. tostring(maybeErr))
       end
 
-      -- This would be a bad match. 
+      -- This would be a bad match.
       return match
     end
 

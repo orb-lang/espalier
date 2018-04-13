@@ -1,8 +1,13 @@
 # Grammar Module
 
   The grammar module returns one function, which generates
-a grammar. 
+a grammar.
 
+```lua
+local s = require "status" ()
+s.verbose = false
+s.angry   = false
+```
 ## Parameters
 
 This function takes two parameters, namely:
@@ -19,37 +24,33 @@ Both of these are reasonably complex.
 ### grammar_template
 
   The internal function @define creates a custom environment variable, neatly
-sidestepping lua's pedantic insistance on prepending ``local`` to all values of 
-significance. 
+sidestepping lua's pedantic insistance on prepending ``local`` to all values of
+significance.
 
 
 More relevantly, it constructs a full grammar, which will return a table of
-type Node. 
+type Node.
 
 
 If you stick to ``lpeg`` patterns, as you should, all array values will be of
-Node, as is intended.  Captures will interpolate various other sorts of Lua
-values, which will induce halting in some places and silently corrupt
-execution in others. 
+Node.  Captures will interpolate various other sorts of Lua values, which will
+induce halting in some places and silently corrupt execution in others.
 
 
-Though as yet poorly thought through, the [elpatt module](./elpatt) is
-intended to provide only those patterns which are allowed in Grammars, while
-expanding the scope of some favorites to properly respect utf-8 and otherwise
-behave. 
+The [elpatt module](./elpatt) is intended to provide those patterns which
+are allowed in Grammars, while expanding the scope of some favorites to
+properly respect utf-8 and otherwise behave.
 
 
 There are examples of the format in the [spec module](./spec).
 
 
-Special fields include:
+Also included are two functions:
 
 
   -  START :  a string which must be the same as the starting rule.
   -  SUPPRESS :  either a string or an array of strings. These rules will be
-                 removed from the Node. 
-  -  P :  The lpeg P function.  Recognizes a certain pattern.
-  -  V :  The lpeg V function.  Used for non-terminal rvalues in a grammar. 
+                 removed from the Node.
 
 
 ### metas
@@ -62,7 +63,8 @@ That's a fairly specific beast.  Any rule defined above will have an ``id``
 corresonding to the name of the rule.  Unless ``SUPPRESS``ed, this will become
 a Node.  If the ``metas`` parameter has a key corresponding to ``id``, then it
 must return a function taking two parameters:
-   
+
+
    - node :  The node under construction, which under normal circumstances will
              already have the ``first`` and ``last`` fields.
    - str  :  The entire str the grammar is parsing.
@@ -77,30 +79,26 @@ Node as some recursive backstop.
 
 
 You might say the return value must _inherit_ from Node, if we were using
-a language that did that sort of thing. 
+a language that did that sort of thing.
+
 
 
 ### includes
 
 
 - [ ] #todo  Note the require strings below, which prevent this from
-             being a usable library. 
+             being a usable library.
 
 
              The problem is almost a philosophical one, and it's what I'm
-             setting out to solve with ``bridge`` and ``manifest``. 
+             setting out to solve with ``bridge`` and ``manifest``.
 
 
              In the meantime, ``lpegnode`` has one consumer. Let's keep it
-             happy. 
+             happy.
 
 ```lua
 local L = require "lpeg"
-
-local s = require "status" ()
-s.verbose = false
-s.angry   = false
-
 local a = require "ansi"
 
 local Node = require "node/node"
@@ -112,12 +110,12 @@ local DROP = elpatt.DROP
 I like the dedication shown in this style of import.
 
 
-It's the kind of thing I'd like to automate. 
+It's the kind of thing I'd like to automate.
 
 ```lua
 local assert = assert
 local string, io = assert( string ), assert( io )
-local V = string.sub( assert( _VERSION ), -4 )
+local VER = string.sub( assert( _VERSION ), -4 )
 local _G = assert( _G )
 local error = assert( error )
 local pairs = assert( pairs )
@@ -125,14 +123,14 @@ local next = assert( next )
 local type = assert( type )
 local tostring = assert( tostring )
 local setmetatable = assert( setmetatable )
-if V == " 5.1" then
+if VER == " 5.1" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
 end
 ```
 ### make_ast_node
 
-  This takes a lot of parameters and does a lot of things. 
+  This takes a lot of parameters and does a lot of things.
 
 
 ```lua
@@ -141,7 +139,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 #### setup values and metatables
 
   As [covered elsewhere](httk://), we accept three varieties of
-metatable verb.  An ordinary table is assigned; a table with __call is 
+metatable verb.  An ordinary table is assigned; a table with __call is
 called, as is an ordinary function.
 
 
@@ -172,7 +170,7 @@ parameter.
 
   The rule ``elpatt.D`` causes the match to be dropped. In order for
 this to give use the results we want, we must adjust the peer and
-parent nodes while removing the captured element from the table. 
+parent nodes while removing the captured element from the table.
 
 
 The use case is for eloquently expressed 'wrapper' patterns, which occur
@@ -181,7 +179,7 @@ the parentheses and would like our span not to include them.
 
 
 We could use a pattern like ``V"formwrap"`` and then SUPPRESS ``formwrap``, but
-this is less eloquent than ``D(P"(") * V"form" *  D(P")")``. 
+this is less eloquent than ``D(P"(") * V"form" *  D(P")")``.
 
 
 Which is admittedly hard to look at.  We prefer the form
@@ -202,11 +200,11 @@ Counting to 1 neatly prevents this.
 
 
      -  This algorithm, as we discussed, goes quadratic toward the left side.
-        The correct way to go is if we see any drop, flip a dirty bit, and 
+        The correct way to go is if we see any drop, flip a dirty bit, and
         compact upward.
 
 
-     -  More to the point, the mere inclusion of this much ``s:`` slows the 
+     -  More to the point, the mere inclusion of this much ``s:`` slows the
         algorithm to an utter crawl. The concatenations happen anyway, to
         pass the string into the status module.
 
@@ -221,17 +219,31 @@ Counting to 1 neatly prevents this.
 
         That's two ways to remove the verbosity and other printfs when they
         aren't wanted.  Better to simulate the correct behavior until I can
-        provide it. 
+        provide it.
+
+
+anyway back to our program
+
+
+The parent of the first node is always itself:
 
 ```lua
    if not t.parent then
       t.parent = t
    end
+```
+
+This means the special case isn't a ``nil``, which I think is better.
+
+
+Now we iterate the children
+
+```lua
    for i = #t, 1, -1 do
       t[i].parent = t
-      local cap = t[i] 
+      local cap = t[i]
       if type(cap) ~= "table" then
-         s:complain("CAPTURE ISSUE", 
+         s:complain("CAPTURE ISSUE",
                     "type of capture subgroup is " .. type(v) .. "\n")
       end
       if cap.DROP == DROP then
@@ -246,7 +258,7 @@ Counting to 1 neatly prevents this.
          else
             -- Here we may be either in the middle or at the leftmost
             -- margin.  Leftmost means either we're at index 1, or that
-            -- all children to the left, down to 1, are all DROPs. 
+            -- all children to the left, down to 1, are all DROPs.
             local leftmost = (i == 1)
             if leftmost then
                s:verb(a.cyan("  leftmost") .. " remaining node")
@@ -268,7 +280,7 @@ Counting to 1 neatly prevents this.
                   t.first = cap.last
                   s:verb("    new t.^: " .. tostring(t.first))
                   for j = i, 1, -1 do
-                     -- this is quadradic but correct 
+                     -- this is quadradic but correct
                      -- and easy to understand.
                      table.remove(t, j)
                      break
@@ -279,7 +291,7 @@ Counting to 1 neatly prevents this.
                end
             end
          end
-      end 
+      end
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
@@ -287,7 +299,7 @@ Counting to 1 neatly prevents this.
 end
 
 
--- some useful/common lpeg patterns
+-- localize the patterns we use
 local Cp = L.Cp
 local Cc = L.Cc
 local Ct = L.Ct
@@ -301,7 +313,7 @@ local arg3_offset = L.Carg(3)
 local function define(func, g, e)
   g = g or {}
   if e == nil then
-    e = V == " 5.1" and getfenv(func) or _G
+    e = VER == " 5.1" and getfenv(func) or _G
   end
   local suppressed = {}
   local env = {}
@@ -324,8 +336,8 @@ local function define(func, g, e)
       if suppressed[ name ] then
         g[ name ] = val
       else
-        g[ name ] = (Cc(name) 
-              * Cp() 
+        g[ name ] = (Cc(name)
+              * Cp()
               * Ct(val)
               * Cp()
               * arg1_str
@@ -335,7 +347,7 @@ local function define(func, g, e)
     end
   })
   -- call passed function with custom environment (5.1- and 5.2-style)
-  if V == " 5.1" then
+  if VER == " 5.1" then
     setfenv( func, env )
   end
   func( env )
@@ -345,18 +357,13 @@ end
 ```
 ```lua
 local function refineMetas(metas)
-  s:verb("refining metatables")
   for id, meta in pairs(metas) do
-    s:verb("  id: " .. id .. " type: " .. type(meta))
     if type(meta) == "table" then
       if not meta["__tostring"] then
         meta["__tostring"] = Node.toString
       end
       if not meta.id then
-        s:verb("    inserting metatable id: " .. id)
         meta.id = id
-      else
-        s:verb("    id of " .. id .. " is " .. meta.id)
       end
     end
   end
@@ -395,7 +402,7 @@ local function new(grammar_template, metas)
                     .. maybeNode .. " a Node: " .. tostring(maybeErr))
       end
 
-      -- This would be a bad match. 
+      -- This would be a bad match.
       return match
     end
 

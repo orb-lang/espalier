@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 83"]
+doc_0 [label="doc - 104"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-66"]
+section_1 [label="section: 1-87"]
 
 
 // END RANK doc_0
@@ -27,13 +27,13 @@ prose_5 [label="prose"]
 
 codeblock_6 [label="code block 12-15"]
 
-section_7 [label="section: 18-35"]
+section_7 [label="section: 18-56"]
 
-section_8 [label="section: 36-51"]
+section_8 [label="section: 57-72"]
 
-section_9 [label="section: 52-66"]
+section_9 [label="section: 73-87"]
 
-section_10 [label="section: 67-83"]
+section_10 [label="section: 88-104"]
 
 
 // END RANK section_1
@@ -119,85 +119,132 @@ leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Phrase = 
 Phrase.isPhrase = Phrase"]
 // END RANK codeblock_6
 
-section_7 -> { header_26 prose_27 codeblock_28}
-{rank=same; header_26 prose_27 codeblock_28}
+section_7 -> { header_26 prose_27 prose_28 prose_29 codeblock_30}
+{rank=same; header_26 prose_27 prose_28 prose_29 codeblock_30}
 
 header_26 [label="2 : .."]
 
 prose_27 [label="prose"]
 
-codeblock_28 [label="code block 24-33"]
+prose_28 [label="prose"]
+
+prose_29 [label="prose"]
+
+codeblock_30 [label="code block 31-54"]
 
 
 // END RANK section_7
 
-header_26 -> leaf_29
-leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** .."]
+header_26 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** .."]
 // END RANK header_26
 
-prose_27 -> { raw_30}
-{rank=same; raw_30}
+prose_27 -> { raw_32}
+{rank=same; raw_32}
 
-raw_30 [label="raw"]
+raw_32 [label="raw"]
 
 
 // END RANK prose_27
 
-raw_30 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_32 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   Concatenation is the frequent operation in working with Nodes.  By default,
 all a Node is in a position to do is yield a string.  Phrase allows us to
 enhance that with various table-assisted superpowers. 
 "]
-// END RANK raw_30
+// END RANK raw_32
 
-codeblock_28 -> leaf_32
-leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function cat(phrase, tail)
+prose_28 -> { raw_34}
+{rank=same; raw_34}
+
+raw_34 [label="raw"]
+
+
+// END RANK prose_28
+
+raw_34 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- [ ] #todo #fixme
+"]
+// END RANK raw_34
+
+prose_29 -> { raw_36}
+{rank=same; raw_36}
+
+raw_36 [label="raw"]
+
+
+// END RANK prose_29
+
+raw_36 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+    -  The \"return only the tail\" thing works in Clu, and I can't explain
+       that.  I either need to document why it's correct or more likely write
+       something that works in all cases.  It smells like code that works
+       because it's broken twice. 
+"]
+// END RANK raw_36
+
+codeblock_30 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function cat(phrase, tail)
   if type(tail) == 'string' then
     return tail
   end
+  --[[
+  if type(tail) == 'string' then
+    if type(phrase) == 'string' then
+      return phrase .. tail
+    else
+      phrase[#phrase + 1] = tail
+    end
+  elseif type(phrase) == \"string\" then
+    if type(tail) == \"table\" then
+      return phrase .. tostring(tail)
+    end
+  else
+  --]]
   phrase[#phrase + 1] = tail
+
   return phrase
 end
 Phrase.__concat = cat"]
-// END RANK codeblock_28
+// END RANK codeblock_30
 
-section_8 -> { header_33 prose_34 codeblock_35}
-{rank=same; header_33 prose_34 codeblock_35}
+section_8 -> { header_39 prose_40 codeblock_41}
+{rank=same; header_39 prose_40 codeblock_41}
 
-header_33 [label="2 : __tostring"]
+header_39 [label="2 : __tostring"]
 
-prose_34 [label="prose"]
+prose_40 [label="prose"]
 
-codeblock_35 [label="code block 40-49"]
+codeblock_41 [label="code block 61-70"]
 
 
 // END RANK section_8
 
-header_33 -> leaf_36
-leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ostring
+header_39 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ve like a stri"]
+// END RANK header_39
 
-We wa"]
-// END RANK header_33
+prose_40 -> { raw_43}
+{rank=same; raw_43}
 
-prose_34 -> { raw_37}
-{rank=same; raw_37}
-
-raw_37 [label="raw"]
+raw_43 [label="raw"]
 
 
-// END RANK prose_34
+// END RANK prose_40
 
-raw_37 -> leaf_38
-leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_43 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 We want to behave like a string whenever 
 "]
-// END RANK raw_37
+// END RANK raw_43
 
-codeblock_35 -> leaf_39
-leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function toString(phrase)
+codeblock_41 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function toString(phrase)
   local str = \"\"
   for i,v in ipairs(phrase) do
     str = str .. tostring(v)
@@ -205,42 +252,40 @@ leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
 
   return str
 end"]
-// END RANK codeblock_35
+// END RANK codeblock_41
 
-section_9 -> { header_40 prose_41 codeblock_42}
-{rank=same; header_40 prose_41 codeblock_42}
+section_9 -> { header_46 prose_47 codeblock_48}
+{rank=same; header_46 prose_47 codeblock_48}
 
-header_40 [label="2 : Constructor"]
+header_46 [label="2 : Constructor"]
 
-prose_41 [label="prose"]
+prose_47 [label="prose"]
 
-codeblock_42 [label="code block 54-64"]
+codeblock_48 [label="code block 75-85"]
 
 
 // END RANK section_9
 
-header_40 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="or
+header_46 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" new(_, str)
+	l"]
+// END RANK header_46
 
-#!lua
-local"]
-// END RANK header_40
+prose_47 -> { raw_50}
+{rank=same; raw_50}
 
-prose_41 -> { raw_44}
-{rank=same; raw_44}
-
-raw_44 [label="raw"]
+raw_50 [label="raw"]
 
 
-// END RANK prose_41
+// END RANK prose_47
 
-raw_44 -> leaf_45
-leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_50 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_44
+// END RANK raw_50
 
-codeblock_42 -> leaf_46
-leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(_, str)
+codeblock_48 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(_, str)
   local phrase = setmetatable({}, Phrase)
   if str then
     phrase[1] = str
@@ -249,41 +294,42 @@ leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
 end
 
 Phrase.__call = new"]
-// END RANK codeblock_42
+// END RANK codeblock_48
 
-section_10 -> { header_47 prose_48 codeblock_49 codeblock_50}
-{rank=same; header_47 prose_48 codeblock_49 codeblock_50}
+section_10 -> { header_53 prose_54 codeblock_55 codeblock_56}
+{rank=same; header_53 prose_54 codeblock_55 codeblock_56}
 
-header_47 [label="2 : inherit"]
+header_53 [label="2 : inherit"]
 
-prose_48 [label="prose"]
+prose_54 [label="prose"]
 
-codeblock_49 [label="code block 69-79"]
+codeblock_55 [label="code block 90-100"]
 
-codeblock_50 [label="code block 81-83"]
+codeblock_56 [label="code block 102-104"]
 
 
 // END RANK section_10
 
-header_47 -> leaf_51
-leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Ph"]
-// END RANK header_47
+header_53 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="phrase)
+  l"]
+// END RANK header_53
 
-prose_48 -> { raw_52}
-{rank=same; raw_52}
+prose_54 -> { raw_58}
+{rank=same; raw_58}
 
-raw_52 [label="raw"]
+raw_58 [label="raw"]
 
 
-// END RANK prose_48
+// END RANK prose_54
 
-raw_52 -> leaf_53
-leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_58 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_52
+// END RANK raw_58
 
-codeblock_49 -> leaf_54
-leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Phrase.inherit(phrase)
+codeblock_55 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Phrase.inherit(phrase)
   local Meta = setmetatable({}, phrase)
   Meta.__index = Meta
   Meta.__call  = getmetatable(phrase).__call
@@ -292,11 +338,11 @@ leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Phrase
   meta.__index = meta
   return Meta, meta
 end"]
-// END RANK codeblock_49
+// END RANK codeblock_55
 
-codeblock_50 -> leaf_55
-leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return setmetatable({}, {__call = new})"]
-// END RANK codeblock_50
+codeblock_56 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return setmetatable({}, {__call = new})"]
+// END RANK codeblock_56
 
 
 }

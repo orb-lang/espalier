@@ -2,7 +2,7 @@
 
 
   The Node class implements an abstract syntax tree, in collaboration with
-the [[Grammar class][/grammar] and lpeg more generally.  
+the [[Grammar class][/grammar] and lpeg more generally.
 
 
 *** includes
@@ -28,12 +28,12 @@ Node.isNode = Node
 
 ** Fields
 
-   - id :  A string naming the Node. 
+   - id :  A string naming the Node.
            This is identical to the name of the pattern that recognizes
            or captures it.
 
            This is never set on Node itself, and Grammar will fail to
-           produce a Node which lacks this flag. 
+           produce a Node which lacks this flag.
 
    - isNode :  A boolean, always =true=.
 
@@ -44,7 +44,7 @@ Node.isNode = Node
 **** toLua
 
 This is not a general method in any sense, it's here as a backstop
-while I build out Clu. 
+while I build out Clu.
 
   - [ ] #todo remove
 
@@ -60,7 +60,7 @@ end
 This gives us a nice, tree-shaped printout of an entire Node.
 
 We're less disciplined than we should be about up-assigning this to
-inherited Node classes. 
+inherited Node classes.
 
 #!lua
 function Node.toString(node, depth)
@@ -109,7 +109,7 @@ end
 
 **** len
 
-ahh, the pleasure of indexing by one. 
+ahh, the pleasure of indexing by one.
 
 #!lua
 function Node.len(node)
@@ -120,18 +120,22 @@ end
 
 **** Node:gap(node)
 
+NOTE this is unused and hence untested
+
+- [ ] #todo either use this, validate it, or get rid of it
+
 =Node.gap(left, right)= compares the =last= field of the =left= parameter
 with the =first= field of the =right= parameter, *if* this is greater than
-0. 
+0.
 
 If it is negative, =Node.gap= attempts to measure the =first= field of the
 =right= parameter against the =last= field of the =left= parameter.
 
 If this is a natural number we return the *negation* of this value.  If both
-should prove to be positive, we halt. 
+should prove to be positive, we halt.
 
 No effort is made to check that the =str= field matches between nodes unless
-we have an error, in which case it could prove helpful for diagnosis.  
+we have an error, in which case it could prove helpful for diagnosis.
 
 Indeed such a check would be a disaster in streams or other sort of
 piecewise parse.  Which will require implementation in and of itself, but
@@ -155,7 +159,7 @@ function Node.gap(left, right)
     s:halt("some kind of situation where gap is " .. tostring(gap))
   end
 
-  return nil 
+  return nil
 end
 #/lua
 
@@ -192,7 +196,7 @@ end
 
 **** Node.walkPost
 
-Depth-first iterator, postfix 
+Depth-first iterator, postfix
 
 #!lua
 function Node.walkPost(node)
@@ -213,7 +217,7 @@ end
 
 **** Node.walk
 
-Presearch iterator.  This is the default. 
+Presearch iterator.  This is the default.
 
 #!lua
 function Node.walk(node)
@@ -238,13 +242,13 @@ end
 
   Takes the Node and walks it, yielding the Nodes which match the predicate.
 =pred= is either a string, which matches to =id=, or a function, which takes
-a Node and returns true or false on some premise. 
+a Node and returns true or false on some premise.
 
 #!lua
 function Node.select(node, pred)
    local function qualifies(node, pred)
       if type(pred) == 'string' then
-         if type(node) == 'table' 
+         if type(node) == 'table'
           and node.id and node.id == pred then
             return true
          else
@@ -289,13 +293,13 @@ function Node.tokens(node)
   end
 
   return coroutine.wrap(function() traverse(node) end)
-end  
-#/lua 
+end
+#/lua
 
 
 **** Node.lines(node)
 
-A memoized iterator returning =str= one line at a time. 
+A memoized iterator returning =str= one line at a time.
 
 Newlines are not included.
 
@@ -313,9 +317,9 @@ function Node.lines(node)
 
   if node.__lines then
      return coroutine.wrap(function ()
-                              yieldLines(node) 
+                              yieldLines(node)
                            end)
-  else 
+  else
      node.__lines = {}
   end
 
@@ -325,7 +329,7 @@ function Node.lines(node)
       end
       local rest = ""
       local first, last = string.find(str, "\n")
-      if first == nil then 
+      if first == nil then
         return nil
       else
         local line = string.sub(str, 1, first - 1) -- no newline
@@ -336,8 +340,8 @@ function Node.lines(node)
       buildLines(rest)
   end
 
-  return coroutine.wrap(function () 
-                           buildLines(node.str) 
+  return coroutine.wrap(function ()
+                           buildLines(node.str)
                         end)
 end
 #/lua
@@ -347,7 +351,7 @@ end
 Returns the line and column given a position.
 
 This is implemented as a classic loop made slightly harder to get
-right by Lua's indexing and the missing newline.  
+right by Lua's indexing and the missing newline.
 
 #!lua
 function Node.linePos(node, position)
@@ -380,11 +384,11 @@ end
 
 Returns the last leaf of the node.
 
-Useful to check for terminal errors, for stop-on-error parsing. 
+Useful to check for terminal errors, for stop-on-error parsing.
 
 #!lua
 function Node.lastLeaf(node)
-  if #node == 0 then 
+  if #node == 0 then
     return node
   else
     return Node.lastLeaf(node[#node])
@@ -395,7 +399,7 @@ end
 
 *** Collectors
 
-These return an array of all results. 
+These return an array of all results.
 
 - [ ] #todo  Add a Forest class to provide the iterator interface for
              the return arrays of this class.
@@ -406,7 +410,7 @@ function Node.gather(node, pred)
   for ast in node:select(pred) do
     gathered[#gathered + 1] = ast
   end
-  
+
   return gathered
 end
 #/lua
@@ -467,19 +471,19 @@ end
 
 ** Node Instances
 
-  To be a Node, indexed elements of the Array portion must also be 
-Nodes. 
+  To be a Node, indexed elements of the Array portion must also be
+Nodes.
 
 If there are no children of the Node, it is considered to be a leaf node.
 
 Most of the Node library will fail to halt, and probably blow stack, if
-cyclic Node graphs are made.  The Grammar class will not do this to you. 
+cyclic Node graphs are made.  The Grammar class will not do this to you.
 
 
 *** Fields
 
   There are invariant fields a Node is also expected to have, they are:
- 
+
   - first :  Index into =str= which begins the span.
   - last  :  Index into =str= which ends the span.
   - str   :  The string of which the Node spans part or the whole.
@@ -487,7 +491,7 @@ cyclic Node graphs are made.  The Grammar class will not do this to you.
 
 *** Other fields
 
-  In principle, anything at all. 
+  In principle, anything at all.
 
 #!lua
 return Node

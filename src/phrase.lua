@@ -22,11 +22,32 @@ Phrase.isPhrase = Phrase
 
 
 
+
+
+
+
+
+
+
 local function cat(phrase, tail)
   if type(tail) == 'string' then
     return tail
   end
+  --[[
+  if type(tail) == 'string' then
+    if type(phrase) == 'string' then
+      return phrase .. tail
+    else
+      phrase[#phrase + 1] = tail
+    end
+  elseif type(phrase) == "string" then
+    if type(tail) == "table" then
+      return phrase .. tostring(tail)
+    end
+  else
+  --]]
   phrase[#phrase + 1] = tail
+
   return phrase
 end
 Phrase.__concat = cat

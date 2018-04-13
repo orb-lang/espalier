@@ -21,12 +21,33 @@ Phrase.isPhrase = Phrase
 all a Node is in a position to do is yield a string.  Phrase allows us to
 enhance that with various table-assisted superpowers. 
 
+- [ ] #todo #fixme
+
+    -  The "return only the tail" thing works in Clu, and I can't explain
+       that.  I either need to document why it's correct or more likely write
+       something that works in all cases.  It smells like code that works
+       because it's broken twice. 
+
 #!lua
 local function cat(phrase, tail)
 	if type(tail) == 'string' then
 		return tail
 	end
+	--[[
+	if type(tail) == 'string' then
+		if type(phrase) == 'string' then
+			return phrase .. tail
+		else
+			phrase[#phrase + 1] = tail
+		end
+	elseif type(phrase) == "string" then
+		if type(tail) == "table" then
+			return phrase .. tostring(tail)
+		end
+	else
+	--]]
 	phrase[#phrase + 1] = tail
+
 	return phrase
 end
 Phrase.__concat = cat
