@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 147"]
+doc_0 [label="doc - 152"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-80"]
+section_1 [label="section: 1-84"]
 
 
 // END RANK doc_0
@@ -33,9 +33,9 @@ prose_8 [label="prose"]
 
 codeblock_9 [label="code block 25-31"]
 
-section_10 [label="section: 34-80"]
+section_10 [label="section: 34-84"]
 
-section_11 [label="section: 81-147"]
+section_11 [label="section: 85-152"]
 
 
 // END RANK section_1
@@ -220,7 +220,7 @@ persistent rather than immutable.  A distinction I will elucidate when I reach i
 // END RANK raw_48
 
 codeblock_9 -> leaf_50
-leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local init
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local init, new
 local s = require \"core/status\" ()
 s.angry = false
 local Phrase = setmetatable({}, {__index = Phrase})
@@ -240,7 +240,7 @@ prose_54 [label="prose"]
 
 prose_55 [label="prose"]
 
-codeblock_56 [label="code block 51-78"]
+codeblock_56 [label="code block 51-82"]
 
 
 // END RANK section_10
@@ -315,30 +315,34 @@ leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 codeblock_56 -> leaf_66
 leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function __concat(head_phrase, tail_phrase)
-
-      if type(head_phrase) == 'string' then
-         -- bump the tail phrase accordingly
-         local cursor = tail_phrase[1]
-         tail_phrase[1] = head_phrase
-         for i = 2, #tail_phrase + 1 do
-            tail_phrase[i] = cursor
-            cursor = tail_phrase[i + 1]
-         end
-         assert(cursor == nil)
-         return tail_phrase
+   if type(head_phrase) == 'string' then
+      -- bump the tail phrase accordingly
+      local cursor = tail_phrase[1]
+      tail_phrase[1] = head_phrase
+      for i = 2, #tail_phrase + 1 do
+         tail_phrase[i] = cursor
+         cursor = tail_phrase[i + 1]
       end
-      local typica = type(tail_phrase)
-      if typica == \"string\" then
-         head_phrase[#head_phrase + 1] = tail_phrase
-      else
-         -- check for phraseness here
-         local new_phrase = init()
-         new_phrase[1] = head_phrase
-         new_phrase[2] = tail_phrase
-         return new_phrase
-      end
+      assert(cursor == nil)
+      tail_phrase.len = tail_phrase.len + #head_phrase
+      return tail_phrase
+   end
 
+   local typica = type(tail_phrase)
+   if typica == \"string\" then
+      head_phrase[#head_phrase + 1] = tail_phrase
+      head_phrase.len = head_phrase.len + #tail_phrase
       return head_phrase
+   elseif typica == \"table\" and tail_phrase.idEst == new then
+      -- check for phraseness here
+      local new_phrase = init()
+      new_phrase[1] = head_phrase
+      new_phrase[2] = tail_phrase
+      new_phrase.len = head_phrase.len + tail_phrase.len
+      return new_phrase
+   end
+
+   return nil, \"tail phrase was unsuitable for concatenation\"
 end"]
 // END RANK codeblock_56
 
@@ -349,13 +353,13 @@ header_67 [label="2 : __tostring"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 85-94"]
+codeblock_69 [label="code block 89-98"]
 
-codeblock_70 [label="code block 96-100"]
+codeblock_70 [label="code block 100-104"]
 
-codeblock_71 [label="code block 102-119"]
+codeblock_71 [label="code block 106-124"]
 
-codeblock_72 [label="code block 122-125"]
+codeblock_72 [label="code block 127-130"]
 
 
 // END RANK section_11
@@ -408,6 +412,7 @@ new = function(phrase_seed)
    local typica = type(phrase_seed)
    if typica == \"string\" then
       phrase[1] = phrase_seed
+      phrase.len = #phrase_seed
    else
       s:complain(\"NYI\", \"cannot accept phrase seed of type\" .. typica)
    end
