@@ -4,62 +4,79 @@
 This is a string builder class.
 
 It is [[heritable][httk://]], may be concatenated with either a string or itself,
-and will eventually implement the full string library as method calls. 
+and will eventually implement the full string library as method calls.
 
 I use a definite string building paradigm for which the Phrase class is a drop-in
-replacement. 
+replacement.
+
+The base Phrase class is mutable.  Concatenating will add to the array portion of
+the Phrase.  This means in normal use, once a Phrase is added to another Phrase,
+it will stay put.
+
+The right /sort/ of mutability is copy-on-write.  We're not providing a mutation
+interface yet, all we need is for it to behave like a string under =__tostring=
+and =__concat=.
+
+
+I intend to extend the class once we get to an editing environment, by making it
+persistent rather than immutable.  A distinction I will elucidate when I reach it.
+
 
 #!lua
-local Phrase = setmetatable({}, {__index = phrase})
-Phrase.isPhrase = Phrase
+local init
+local s = require "core/status" ()
+s.angry = false
+local Phrase = setmetatable({}, {__index = Phrase})
+Phrase.it = require "core/check"
 #/lua
 
 
-** ..
+** __concat
 
   Concatenation is the frequent operation in working with Nodes.  By default,
 all a Node is in a position to do is yield a string.  Phrase allows us to
-enhance that with various table-assisted superpowers. 
+enhance that with various table-assisted superpowers.
 
-- [ ] #todo #fixme
+Also, Lua strings are very cheap once created. Concatenating them together in
+a recursively larger pattern is really expensive by comparison, and that's
+the entire paradigm of all these tools right now.
 
-    -  The "return only the tail" thing works in Clu, and I can't explain
-       that.  I either need to document why it's correct or more likely write
-       something that works in all cases.  It smells like code that works
-       because it's broken twice. 
+This and retaining the Docs in-memory will get the spring back in our step.
+
+- parameters
+  -  head_phrase:  This may be either a primitive string or a Phrase.
+  -  tail_phrase:  This may be either primitive or a Phrase.  If head_phrase
+                   is a string, tail_phrase is not, or we'd be in the VM.
 
 #!lua
-local function cat(phrase, tail)
-	if type(tail) == 'string' then
-		return tail
-	end
-	--[[
-	if type(tail) == 'string' then
-		if type(phrase) == 'string' then
-			return phrase .. tail
-		else
-			phrase[#phrase + 1] = tail
-		end
-	elseif type(phrase) == "string" then
-		if type(tail) == "table" then
-			return phrase .. tostring(tail)
-		end
-	else
-	--]]
-	phrase[#phrase + 1] = tail
+local function __concat(head_phrase, tail_phrase)
 
-	return phrase
+      if type(head_phrase) == 'string' then
+         s:complain("NYI", "`string .. Phrase` is not yet possible")
+         return "~~~NYI~~~"
+      end
+      local typica = type(tail_phrase)
+      if typica == "string" then
+         head_phrase[#head_phrase + 1] = tail_phrase
+      else
+         -- check for phraseness here
+         local new_phrase = init()
+         new_phrase[1] = head_phrase
+         new_phrase[2] = tail_phrase
+         return new_phrase
+      end
+
+      return head_phrase
 end
-Phrase.__concat = cat
 #/lua
 
 
 ** __tostring
 
-We want to behave like a string whenever 
+Treating Phrase as a string at any point should render it into one.
 
 #!lua
-local function toString(phrase)
+local function __tostring(phrase)
 	local str = ""
 	for i,v in ipairs(phrase) do
 		str = str .. tostring(v)
@@ -69,36 +86,53 @@ local function toString(phrase)
 end
 #/lua
 
-
-** Constructor
-
 #!lua
-local function new(_, str)
-	local phrase = setmetatable({}, Phrase)
-	if str then
-		phrase[1] = str
-	end
-	return phrase
-end
-
-Phrase.__call = new
+local PhraseMeta = {__index = Phrase,
+                  __concat = __concat,
+                  __tostring = __tostring}
 #/lua
 
-
-** inherit
-
 #!lua
-function Phrase.inherit(phrase)
-  local Meta = setmetatable({}, phrase)
-  Meta.__index = Meta
-  Meta.__call  = getmetatable(phrase).__call
-  Meta.__concat = getmetatable(phrase).__concat
-  local meta = setmetatable({}, Meta)
-  meta.__index = meta
-  return Meta, meta
+
+init = function()
+   return setmetatable ({}, PhraseMeta)
+end
+
+new = function(phrase_seed)
+   local phrase = init()
+   local typica = type(phrase_seed)
+   if typica == "string" then
+      phrase[1] = phrase_seed
+   else
+      s:complain("NYI", "cannot accept phrase seed of type" .. typica)
+   end
+   return phrase
 end
 #/lua
 
+
 #!lua
-return setmetatable({}, {__call = new})
+Phrase.idEst = new
+return new
 #/lua
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

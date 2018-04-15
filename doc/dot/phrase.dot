@@ -3,19 +3,19 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 104"]
+doc_0 [label="doc - 139"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-87"]
+section_1 [label="section: 1-73"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 prose_5 codeblock_6 section_7 section_8 section_9 section_10}
-{rank=same; header_2 prose_3 prose_4 prose_5 codeblock_6 section_7 section_8 section_9 section_10}
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 codeblock_9 section_10 section_11}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 codeblock_9 section_10 section_11}
 
 header_2 [label="1 : Phrase"]
 
@@ -25,226 +25,355 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-codeblock_6 [label="code block 12-15"]
+prose_6 [label="prose"]
 
-section_7 [label="section: 18-56"]
+prose_7 [label="prose"]
 
-section_8 [label="section: 57-72"]
+prose_8 [label="prose"]
 
-section_9 [label="section: 73-87"]
+codeblock_9 [label="code block 25-31"]
 
-section_10 [label="section: 88-104"]
+section_10 [label="section: 34-73"]
+
+section_11 [label="section: 74-139"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_11
-leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Phrase"]
+header_2 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Phrase"]
 // END RANK header_2
 
-prose_3 -> { raw_12}
-{rank=same; raw_12}
+prose_3 -> { raw_13}
+{rank=same; raw_13}
 
-raw_12 [label="raw"]
+raw_13 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_12 -> leaf_13
-leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_13 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
 This is a string builder class.
 "]
-// END RANK raw_12
+// END RANK raw_13
 
-prose_4 -> { raw_14 link_15 raw_16}
-{rank=same; raw_14 link_15 raw_16}
+prose_4 -> { raw_15 link_16 raw_17}
+{rank=same; raw_15 link_16 raw_17}
 
-raw_14 [label="raw"]
+raw_15 [label="raw"]
 
-link_15 [label="link"]
+link_16 [label="link"]
 
-raw_16 [label="raw"]
+raw_17 [label="raw"]
 
 
 // END RANK prose_4
 
-raw_14 -> leaf_17
-leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_15 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 It is "]
-// END RANK raw_14
+// END RANK raw_15
 
-link_15 -> { anchortext_18 url_19}
-{rank=same; anchortext_18 url_19}
+link_16 -> { anchortext_19 url_20}
+{rank=same; anchortext_19 url_20}
 
-anchortext_18 [label="anchortext"]
+anchortext_19 [label="anchortext"]
 
-url_19 [label="url"]
+url_20 [label="url"]
 
 
-// END RANK link_15
+// END RANK link_16
 
-anchortext_18 -> leaf_20
-leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="heritable"]
-// END RANK anchortext_18
+anchortext_19 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="heritable"]
+// END RANK anchortext_19
 
-url_19 -> leaf_21
-leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="httk://"]
-// END RANK url_19
+url_20 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="httk://"]
+// END RANK url_20
 
-raw_16 -> leaf_22
-leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", may be concatenated with either a string or itself,
-and will eventually implement the full string library as method calls. 
+raw_17 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", may be concatenated with either a string or itself,
+and will eventually implement the full string library as method calls.
 "]
-// END RANK raw_16
+// END RANK raw_17
 
-prose_5 -> { raw_23}
-{rank=same; raw_23}
+prose_5 -> { raw_24}
+{rank=same; raw_24}
 
-raw_23 [label="raw"]
+raw_24 [label="raw"]
 
 
 // END RANK prose_5
 
-raw_23 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_24 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 I use a definite string building paradigm for which the Phrase class is a drop-in
-replacement. 
+replacement.
 "]
-// END RANK raw_23
+// END RANK raw_24
 
-codeblock_6 -> leaf_25
-leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Phrase = setmetatable({}, {__index = phrase})
-Phrase.isPhrase = Phrase"]
-// END RANK codeblock_6
+prose_6 -> { raw_26}
+{rank=same; raw_26}
 
-section_7 -> { header_26 prose_27 prose_28 prose_29 codeblock_30}
-{rank=same; header_26 prose_27 prose_28 prose_29 codeblock_30}
-
-header_26 [label="2 : .."]
-
-prose_27 [label="prose"]
-
-prose_28 [label="prose"]
-
-prose_29 [label="prose"]
-
-codeblock_30 [label="code block 31-54"]
+raw_26 [label="raw"]
 
 
-// END RANK section_7
+// END RANK prose_6
 
-header_26 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** .."]
-// END RANK header_26
-
-prose_27 -> { raw_32}
-{rank=same; raw_32}
-
-raw_32 [label="raw"]
-
-
-// END RANK prose_27
-
-raw_32 -> leaf_33
-leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-  Concatenation is the frequent operation in working with Nodes.  By default,
-all a Node is in a position to do is yield a string.  Phrase allows us to
-enhance that with various table-assisted superpowers. 
+raw_26 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The base Phrase class is mutable.  Concatenating will add to the array portion of
+the Phrase.  This means in normal use, once a Phrase is added to another Phrase,
+it will stay put.
 "]
-// END RANK raw_32
+// END RANK raw_26
 
-prose_28 -> { raw_34}
-{rank=same; raw_34}
+prose_7 -> { raw_28 prespace_29 italic_30 raw_31 prespace_32 literal_33 raw_34 prespace_35 literal_36 raw_37}
+{rank=same; raw_28 prespace_29 italic_30 raw_31 prespace_32 literal_33 raw_34 prespace_35 literal_36 raw_37}
+
+raw_28 [label="raw"]
+
+prespace_29 [label="prespace"]
+
+italic_30 [label="italic"]
+
+raw_31 [label="raw"]
+
+prespace_32 [label="prespace"]
+
+literal_33 [label="literal"]
 
 raw_34 [label="raw"]
 
+prespace_35 [label="prespace"]
 
-// END RANK prose_28
+literal_36 [label="literal"]
 
-raw_34 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-- [ ] #todo #fixme
-"]
+raw_37 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_28 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The right"]
+// END RANK raw_28
+
+prespace_29 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_29
+
+italic_30 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="sort"]
+// END RANK italic_30
+
+raw_31 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" of mutability is copy-on-write.  We're not providing a mutation
+interface yet, all we need is for it to behave like a string under"]
+// END RANK raw_31
+
+prespace_32 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_32
+
+literal_33 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__tostring"]
+// END RANK literal_33
+
+raw_34 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+and"]
 // END RANK raw_34
 
-prose_29 -> { raw_36}
-{rank=same; raw_36}
+prespace_35 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_35
 
-raw_36 [label="raw"]
+literal_36 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="__concat"]
+// END RANK literal_36
 
+raw_37 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 
-// END RANK prose_29
-
-raw_36 -> leaf_37
-leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-    -  The \"return only the tail\" thing works in Clu, and I can't explain
-       that.  I either need to document why it's correct or more likely write
-       something that works in all cases.  It smells like code that works
-       because it's broken twice. 
 "]
-// END RANK raw_36
+// END RANK raw_37
 
-codeblock_30 -> leaf_38
-leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function cat(phrase, tail)
-  if type(tail) == 'string' then
-    return tail
-  end
-  --[[
-  if type(tail) == 'string' then
-    if type(phrase) == 'string' then
-      return phrase .. tail
-    else
-      phrase[#phrase + 1] = tail
-    end
-  elseif type(phrase) == \"string\" then
-    if type(tail) == \"table\" then
-      return phrase .. tostring(tail)
-    end
-  else
-  --]]
-  phrase[#phrase + 1] = tail
+prose_8 -> { raw_48}
+{rank=same; raw_48}
 
-  return phrase
-end
-Phrase.__concat = cat"]
-// END RANK codeblock_30
-
-section_8 -> { header_39 prose_40 codeblock_41}
-{rank=same; header_39 prose_40 codeblock_41}
-
-header_39 [label="2 : __tostring"]
-
-prose_40 [label="prose"]
-
-codeblock_41 [label="code block 61-70"]
+raw_48 [label="raw"]
 
 
-// END RANK section_8
+// END RANK prose_8
 
-header_39 -> leaf_42
-leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="ve like a stri"]
-// END RANK header_39
+raw_48 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I intend to extend the class once we get to an editing environment, by making it
+persistent rather than immutable.  A distinction I will elucidate when I reach it.
 
-prose_40 -> { raw_43}
-{rank=same; raw_43}
-
-raw_43 [label="raw"]
-
-
-// END RANK prose_40
-
-raw_43 -> leaf_44
-leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-We want to behave like a string whenever 
 "]
-// END RANK raw_43
+// END RANK raw_48
 
-codeblock_41 -> leaf_45
-leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function toString(phrase)
+codeblock_9 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local new, init
+local s = require \"core/status\" ()
+s.angry = false
+local Phrase = setmetatable({}, {__index = Phrase})
+Phrase.it = require \"core/check\""]
+// END RANK codeblock_9
+
+section_10 -> { header_51 prose_52 prose_53 prose_54 prose_55 codeblock_56}
+{rank=same; header_51 prose_52 prose_53 prose_54 prose_55 codeblock_56}
+
+header_51 [label="2 : __concat"]
+
+prose_52 [label="prose"]
+
+prose_53 [label="prose"]
+
+prose_54 [label="prose"]
+
+prose_55 [label="prose"]
+
+codeblock_56 [label="code block 51-71"]
+
+
+// END RANK section_10
+
+header_51 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** __concat"]
+// END RANK header_51
+
+prose_52 -> { raw_58}
+{rank=same; raw_58}
+
+raw_58 [label="raw"]
+
+
+// END RANK prose_52
+
+raw_58 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  Concatenation is the frequent operation in working with Nodes.  By default,
+all a Node is in a position to do is yield a string.  Phrase allows us to
+enhance that with various table-assisted superpowers.
+"]
+// END RANK raw_58
+
+prose_53 -> { raw_60}
+{rank=same; raw_60}
+
+raw_60 [label="raw"]
+
+
+// END RANK prose_53
+
+raw_60 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Also, Lua strings are very cheap once created. Concatenating them together in
+a recursively larger pattern is really expensive by comparison, and that's
+the entire paradigm of all these tools right now.
+"]
+// END RANK raw_60
+
+prose_54 -> { raw_62}
+{rank=same; raw_62}
+
+raw_62 [label="raw"]
+
+
+// END RANK prose_54
+
+raw_62 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This and retaining the Docs in-memory will get the spring back in our step.
+"]
+// END RANK raw_62
+
+prose_55 -> { raw_64}
+{rank=same; raw_64}
+
+raw_64 [label="raw"]
+
+
+// END RANK prose_55
+
+raw_64 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- parameters
+  -  head_phrase:  This may be either a primitive string or a Phrase.
+  -  tail_phrase:  This may be either primitive or a Phrase.  If head_phrase
+                   is a string, tail_phrase is not, or we'd be in the VM.
+"]
+// END RANK raw_64
+
+codeblock_56 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function __concat(head_phrase, tail_phrase)
+
+      if type(head_phrase) == 'string' then
+         s:complain(\"NYI\", \"`string .. Phrase` is not yet possible\")
+         return \"~~~NYI~~~\"
+      end
+      local typica = type(tail_phrase)
+      if typica == \"string\" then
+         head_phrase[#head_phrase + 1] = tail_phrase
+      else
+         -- check for phraseness here
+         local new_phrase = init()
+         new_phrase[1] = head_phrase
+         new_phrase[2] = tail_phrase
+         return new_phrase
+      end
+
+      return head_phrase
+end"]
+// END RANK codeblock_56
+
+section_11 -> { header_67 prose_68 codeblock_69 codeblock_70 codeblock_71 codeblock_72}
+{rank=same; header_67 prose_68 codeblock_69 codeblock_70 codeblock_71 codeblock_72}
+
+header_67 [label="2 : __tostring"]
+
+prose_68 [label="prose"]
+
+codeblock_69 [label="code block 78-87"]
+
+codeblock_70 [label="code block 89-93"]
+
+codeblock_71 [label="code block 95-111"]
+
+codeblock_72 [label="code block 114-117"]
+
+
+// END RANK section_11
+
+header_67 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** __tostring"]
+// END RANK header_67
+
+prose_68 -> { raw_74}
+{rank=same; raw_74}
+
+raw_74 [label="raw"]
+
+
+// END RANK prose_68
+
+raw_74 -> leaf_75
+leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Treating Phrase as a string at any point should render it into one.
+"]
+// END RANK raw_74
+
+codeblock_69 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function __tostring(phrase)
   local str = \"\"
   for i,v in ipairs(phrase) do
     str = str .. tostring(v)
@@ -252,97 +381,36 @@ leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
 
   return str
 end"]
-// END RANK codeblock_41
+// END RANK codeblock_69
 
-section_9 -> { header_46 prose_47 codeblock_48}
-{rank=same; header_46 prose_47 codeblock_48}
+codeblock_70 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local PhraseMeta = {__index = Phrase,
+                  __concat = __concat,
+                  __tostring = __tostring}"]
+// END RANK codeblock_70
 
-header_46 [label="2 : Constructor"]
-
-prose_47 [label="prose"]
-
-codeblock_48 [label="code block 75-85"]
-
-
-// END RANK section_9
-
-header_46 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" new(_, str)
-	l"]
-// END RANK header_46
-
-prose_47 -> { raw_50}
-{rank=same; raw_50}
-
-raw_50 [label="raw"]
-
-
-// END RANK prose_47
-
-raw_50 -> leaf_51
-leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
-// END RANK raw_50
-
-codeblock_48 -> leaf_52
-leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(_, str)
-  local phrase = setmetatable({}, Phrase)
-  if str then
-    phrase[1] = str
-  end
-  return phrase
+codeblock_71 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+init = function()
+   return setmetatable ({}, PhraseMeta)
 end
 
-Phrase.__call = new"]
-// END RANK codeblock_48
-
-section_10 -> { header_53 prose_54 codeblock_55 codeblock_56}
-{rank=same; header_53 prose_54 codeblock_55 codeblock_56}
-
-header_53 [label="2 : inherit"]
-
-prose_54 [label="prose"]
-
-codeblock_55 [label="code block 90-100"]
-
-codeblock_56 [label="code block 102-104"]
-
-
-// END RANK section_10
-
-header_53 -> leaf_57
-leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="phrase)
-  l"]
-// END RANK header_53
-
-prose_54 -> { raw_58}
-{rank=same; raw_58}
-
-raw_58 [label="raw"]
-
-
-// END RANK prose_54
-
-raw_58 -> leaf_59
-leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-"]
-// END RANK raw_58
-
-codeblock_55 -> leaf_60
-leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Phrase.inherit(phrase)
-  local Meta = setmetatable({}, phrase)
-  Meta.__index = Meta
-  Meta.__call  = getmetatable(phrase).__call
-  Meta.__concat = getmetatable(phrase).__concat
-  local meta = setmetatable({}, Meta)
-  meta.__index = meta
-  return Meta, meta
+new = function(phrase_seed)
+   local phrase = init()
+   local typica = type(phrase_seed)
+   if typica == \"string\" then
+      phrase[1] = phrase_seed
+   else
+      s:complain(\"NYI\", \"cannot accept phrase seed of type\" .. typica)
+   end
+   return phrase
 end"]
-// END RANK codeblock_55
+// END RANK codeblock_71
 
-codeblock_56 -> leaf_61
-leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return setmetatable({}, {__call = new})"]
-// END RANK codeblock_56
+codeblock_72 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Phrase.idEst = new
+return new"]
+// END RANK codeblock_72
 
 
 }

@@ -10,8 +10,24 @@
 
 
 
-local Phrase = setmetatable({}, {__index = phrase})
-Phrase.isPhrase = Phrase
+
+
+
+
+
+
+
+
+
+
+
+
+
+local new, init
+local s = require "core/status" ()
+s.angry = false
+local Phrase = setmetatable({}, {__index = Phrase})
+Phrase.it = require "core/check"
 
 
 
@@ -29,28 +45,29 @@ Phrase.isPhrase = Phrase
 
 
 
-local function cat(phrase, tail)
-  if type(tail) == 'string' then
-    return tail
-  end
-  --[[
-  if type(tail) == 'string' then
-    if type(phrase) == 'string' then
-      return phrase .. tail
-    else
-      phrase[#phrase + 1] = tail
-    end
-  elseif type(phrase) == "string" then
-    if type(tail) == "table" then
-      return phrase .. tostring(tail)
-    end
-  else
-  --]]
-  phrase[#phrase + 1] = tail
 
-  return phrase
+
+
+
+local function __concat(head_phrase, tail_phrase)
+
+      if type(head_phrase) == 'string' then
+         s:complain("NYI", "`string .. Phrase` is not yet possible")
+         return "~~~NYI~~~"
+      end
+      local typica = type(tail_phrase)
+      if typica == "string" then
+         head_phrase[#head_phrase + 1] = tail_phrase
+      else
+         -- check for phraseness here
+         local new_phrase = init()
+         new_phrase[1] = head_phrase
+         new_phrase[2] = tail_phrase
+         return new_phrase
+      end
+
+      return head_phrase
 end
-Phrase.__concat = cat
 
 
 
@@ -59,7 +76,7 @@ Phrase.__concat = cat
 
 
 
-local function toString(phrase)
+local function __tostring(phrase)
   local str = ""
   for i,v in ipairs(phrase) do
     str = str .. tostring(v)
@@ -70,34 +87,30 @@ end
 
 
 
+local PhraseMeta = {__index = Phrase,
+                  __concat = __concat,
+                  __tostring = __tostring}
 
 
 
-local function new(_, str)
-  local phrase = setmetatable({}, Phrase)
-  if str then
-    phrase[1] = str
-  end
-  return phrase
+
+init = function()
+   return setmetatable ({}, PhraseMeta)
 end
 
-Phrase.__call = new
-
-
-
-
-
-
-function Phrase.inherit(phrase)
-  local Meta = setmetatable({}, phrase)
-  Meta.__index = Meta
-  Meta.__call  = getmetatable(phrase).__call
-  Meta.__concat = getmetatable(phrase).__concat
-  local meta = setmetatable({}, Meta)
-  meta.__index = meta
-  return Meta, meta
+new = function(phrase_seed)
+   local phrase = init()
+   local typica = type(phrase_seed)
+   if typica == "string" then
+      phrase[1] = phrase_seed
+   else
+      s:complain("NYI", "cannot accept phrase seed of type" .. typica)
+   end
+   return phrase
 end
 
 
 
-return setmetatable({}, {__call = new})
+
+Phrase.idEst = new
+return new
