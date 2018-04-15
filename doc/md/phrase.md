@@ -28,7 +28,7 @@ persistent rather than immutable.  A distinction I will elucidate when I reach i
 
 
 ```lua
-local new, init
+local init
 local s = require "core/status" ()
 s.angry = false
 local Phrase = setmetatable({}, {__index = Phrase})
@@ -58,8 +58,15 @@ This and retaining the Docs in-memory will get the spring back in our step.
 local function __concat(head_phrase, tail_phrase)
 
       if type(head_phrase) == 'string' then
-         s:complain("NYI", "`string .. Phrase` is not yet possible")
-         return "~~~NYI~~~"
+         -- bump the tail phrase accordingly
+         local cursor = tail_phrase[1]
+         tail_phrase[1] = head_phrase
+         for i = 2, #tail_phrase + 1 do
+            tail_phrase[i] = cursor
+            cursor = tail_phrase[i + 1]
+         end
+         assert(cursor == nil)
+         return tail_phrase
       end
       local typica = type(tail_phrase)
       if typica == "string" then
@@ -101,6 +108,7 @@ init = function()
 end
 
 new = function(phrase_seed)
+   phrase_seed = phrase_seed or ""
    local phrase = init()
    local typica = type(phrase_seed)
    if typica == "string" then
