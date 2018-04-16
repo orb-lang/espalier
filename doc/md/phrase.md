@@ -12,9 +12,11 @@ I use a definite string building paradigm for which the Phrase class is a drop-i
 replacement.
 
 
-The base Phrase class is mutable.  Concatenating will add to the array portion of
-the Phrase.  This means in normal use, once a Phrase is added to another Phrase,
-it will stay put.
+The base Phrase class is mutable.  Concatenating strings will add to the array
+portion of the Phrase, while catting another Phrase will combine the two
+into a new Phrase.  This means in normal use, once a Phrase is added to another
+Phrase, it will stay put.
+
 
 
 The right _sort_ of mutability is copy-on-write.  We're not providing a mutation
@@ -26,6 +28,71 @@ and ``__concat``.
 I intend to extend the class once we get to an editing environment, by making it
 persistent rather than immutable.  A distinction I will elucidate when I reach it.
 
+
+### Phrase is string-like
+
+It may be concatenated with strings at any point, and the result will be a Phrase.
+
+
+It will render the same string you would expect any time ``tostring`` is triggered.
+
+
+### Phrase is not entirely string-like
+
+We have a field ``phrase.len`` that tells you what ``#tostring(phrase)`` would be.
+``#phrase`` is the number of fragments in the array portion of the phrase.
+
+
+We use ``#Phrase`` all the time for iteration, so we don't want to block it.
+
+
+## Phrase is contagious
+
+Phrases, by design, subsume strings any time they are concatenated. This
+will tend to cause failure when handed to things like the string library.
+
+
+Better to write a Phrase-native substitute unless it's an endpoint like
+``write``.  The combination of interned immutable strings and pervasing tabling
+over concatenation is powerful and fast in Lua.
+
+
+It's ok to just call ``tostring`` and be done.
+
+
+### Roadmap
+
+I would like to add ``Phrase:ffind(str)``, for fast find.  This only works if
+the ``str`` is a literal fragment somewhere in the phrase.
+
+
+More enhancements of that nature should be in an extended class. Think gsub
+with the full power of lpeg instead of the quirky pattern syntax I can never
+remember.
+
+
+Also, one premise of Phrase is that it's encoding-unaware. I'd like to add
+to it by calculating the codepoints and adding a "ulen" field, but don't
+want to pay the cost for the base class, since Node in particular counts on
+grammars to be correct about the bytes they want to consume.
+
+
+The language interface of lpeg emphasises text, as it should, but Lua strings
+are eight-bit clean and commonly enough used to intern userdata and query it.
+
+
+Phrase can actually be used as-is to build up rope-like binary data, if that
+ever comes in handy.  I'd want a different ``idEst`` to not puke all over
+my terminal by accident.
+
+
+Speaking of rope-like, Phrase will have better performance in environments
+where it is more 'bushy'.  No effort to balance the tree is implemented
+currently.
+
+
+It would be tractable to add this, however I suspect it will perform well under
+real workloads, so I may not bother.
 
 ```lua
 local init, new
@@ -55,28 +122,43 @@ This and retaining the Docs in-memory will get the spring back in our step.
                    is a string, tail_phrase is not, or we'd be in the VM.
 
 ```lua
+local function spill(phrase)
+   local new_phrase = init()
+   for k, v in pairs(phrase) do
+      new_phrase[k] = v
+   end
+   new_phrase.intern = nil
+
+   return new_phrase
+end
+
+
 local function __concat(head_phrase, tail_phrase)
    if type(head_phrase) == 'string' then
       -- bump the tail phrase accordingly
-      local cursor = tail_phrase[1]
-      tail_phrase[1] = head_phrase
-      for i = 2, #tail_phrase + 1 do
-         tail_phrase[i] = cursor
-         cursor = tail_phrase[i + 1]
+      if tail_phrase.intern then
+         tail_phrase = spill(tail_phrase)
       end
-      assert(cursor == nil)
+
+      table.insert(tail_phrase, 1, head_phrase)
       tail_phrase.len = tail_phrase.len + #head_phrase
       return tail_phrase
    end
-
    local typica = type(tail_phrase)
    if typica == "string" then
+      if head_phrase.intern then
+         head_phrase = spill(head_phrase)
+      end
       head_phrase[#head_phrase + 1] = tail_phrase
       head_phrase.len = head_phrase.len + #tail_phrase
       return head_phrase
    elseif typica == "table" and tail_phrase.idEst == new then
-      -- check for phraseness here
+      -- This is where we can balance the Phrase if we want
+      -- For now I'd rather preserve the build structure, I think
+      -- that's more generally useful.
       local new_phrase = init()
+      head_phrase.intern = true -- head_phrase is now in the middle of a string
+      tail_phrase.intern = true -- tail_phrase shouldn't be bump-catted
       new_phrase[1] = head_phrase
       new_phrase[2] = tail_phrase
       new_phrase.len = head_phrase.len + tail_phrase.len
@@ -119,12 +201,36 @@ new = function(phrase_seed)
       phrase[1] = phrase_seed
       phrase.len = #phrase_seed
    else
-      s:complain("NYI", "cannot accept phrase seed of type" .. typica)
+      s:complain("Error in Phrase", "cannot accept phrase seed of type" .. typica,
+                 phrase_seed)
    end
    return phrase
 end
+
+Phrase.idEst = new
+```
+### spec
+
+Stick this somewhere better
+
+```lua
+local function spec()
+   a = new "Sphinx of " .. "black quartz "
+   a: it "phrase-a"
+      : passedTo(tostring)
+      : gives "Sphinx of black quartz "
+      : fin()
+
+   b = a .. "judge my " .. "vow."
+   b: it "phrase-b"
+      : passedTo(tostring)
+      : gives "Sphinx of black quartz judge my vow."
+      : fin()
+
+end
+
+spec()
 ```
 ```lua
-Phrase.idEst = new
 return new
 ```

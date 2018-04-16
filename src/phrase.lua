@@ -23,6 +23,63 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local init, new
 local s = require "core/status" ()
 s.angry = false
@@ -49,28 +106,43 @@ Phrase.it = require "core/check"
 
 
 
+local function spill(phrase)
+   local new_phrase = init()
+   for k, v in pairs(phrase) do
+      new_phrase[k] = v
+   end
+   new_phrase.intern = nil
+
+   return new_phrase
+end
+
+
 local function __concat(head_phrase, tail_phrase)
    if type(head_phrase) == 'string' then
       -- bump the tail phrase accordingly
-      local cursor = tail_phrase[1]
-      tail_phrase[1] = head_phrase
-      for i = 2, #tail_phrase + 1 do
-         tail_phrase[i] = cursor
-         cursor = tail_phrase[i + 1]
+      if tail_phrase.intern then
+         tail_phrase = spill(tail_phrase)
       end
-      assert(cursor == nil)
+
+      table.insert(tail_phrase, 1, head_phrase)
       tail_phrase.len = tail_phrase.len + #head_phrase
       return tail_phrase
    end
-
    local typica = type(tail_phrase)
    if typica == "string" then
+      if head_phrase.intern then
+         head_phrase = spill(head_phrase)
+      end
       head_phrase[#head_phrase + 1] = tail_phrase
       head_phrase.len = head_phrase.len + #tail_phrase
       return head_phrase
    elseif typica == "table" and tail_phrase.idEst == new then
-      -- check for phraseness here
+      -- This is where we can balance the Phrase if we want
+      -- For now I'd rather preserve the build structure, I think
+      -- that's more generally useful.
       local new_phrase = init()
+      head_phrase.intern = true -- head_phrase is now in the middle of a string
+      tail_phrase.intern = true -- tail_phrase shouldn't be bump-catted
       new_phrase[1] = head_phrase
       new_phrase[2] = tail_phrase
       new_phrase.len = head_phrase.len + tail_phrase.len
@@ -117,13 +189,39 @@ new = function(phrase_seed)
       phrase[1] = phrase_seed
       phrase.len = #phrase_seed
    else
-      s:complain("NYI", "cannot accept phrase seed of type" .. typica)
+      s:complain("Error in Phrase", "cannot accept phrase seed of type" .. typica,
+                 phrase_seed)
    end
    return phrase
 end
 
-
-
-
 Phrase.idEst = new
+
+
+
+
+
+
+
+
+local function spec()
+   a = new "Sphinx of " .. "black quartz "
+   a: it "phrase-a"
+      : passedTo(tostring)
+      : gives "Sphinx of black quartz "
+      : fin()
+
+   b = a .. "judge my " .. "vow."
+   b: it "phrase-b"
+      : passedTo(tostring)
+      : gives "Sphinx of black quartz judge my vow."
+      : fin()
+
+end
+
+spec()
+
+
+
+
 return new
