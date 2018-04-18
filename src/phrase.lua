@@ -80,10 +80,20 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 local init, new
 local s = require "core/status" ()
 s.angry = false
-local Phrase = setmetatable({}, {__index = Phrase})
+local Phrase = {}
 Phrase.it = require "core/check"
 
 
@@ -136,10 +146,7 @@ local function __concat(head_phrase, tail_phrase)
       head_phrase[#head_phrase + 1] = tail_phrase
       head_phrase.len = head_phrase.len + #tail_phrase
       return head_phrase
-   elseif typica == "table" and tail_phrase.idEst == new then
-      -- This is where we can balance the Phrase if we want
-      -- For now I'd rather preserve the build structure, I think
-      -- that's more generally useful.
+      elseif typica == "table" and tail_phrase.idEst == new then
       local new_phrase = init()
       head_phrase.intern = true -- head_phrase is now in the middle of a string
       tail_phrase.intern = true -- tail_phrase shouldn't be bump-catted
@@ -205,13 +212,13 @@ Phrase.idEst = new
 
 
 local function spec()
-   a = new "Sphinx of " .. "black quartz "
+   local a = new "Sphinx of " .. "black quartz "
    a: it "phrase-a"
       : passedTo(tostring)
       : gives "Sphinx of black quartz "
       : fin()
 
-   b = a .. "judge my " .. "vow."
+   local b = a .. "judge my " .. "vow."
    b: it "phrase-b"
       : passedTo(tostring)
       : gives "Sphinx of black quartz judge my vow."

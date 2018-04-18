@@ -22,7 +22,7 @@ local Stator = setmetatable({}, {__index = Stator})
 
 
 
-function call(stator)
+local function call(stator)
   return setmetatable({}, {__index = stator, __call = call })
 end
 
@@ -34,7 +34,7 @@ end
 
 
 
-function new(Stator)
+local function new(Stator)
   local stator = call(Stator)
   stator.g, stator.G, stator._G = stator, stator, stator
   return stator

@@ -341,8 +341,19 @@ end
 Returns the line and column given a position.
 
 
-This is implemented as a classic loop made slightly harder to get
-right by Lua's indexing and the missing newline.
+This currently builds up the line array.
+
+
+- [ ]  #todo  Optimal Node.linePos().
+
+
+       This needs to be more optimal; it should use ``string.find`` to
+       build up a memoized collection of start and end points and
+       never break up the string directly.
+
+
+       At least we're only paying the price once, but Node is supposed
+       to be lazy about slicing strings, and this is eager.
 
 ```lua
 function Node.linePos(node, position)

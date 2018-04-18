@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 501"]
+doc_0 [label="doc - 510"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-471"]
+section_1 [label="section: 1-480"]
 
 
 // END RANK doc_0
@@ -27,9 +27,9 @@ section_5 [label="section: 17-28"]
 
 section_6 [label="section: 29-40"]
 
-section_7 [label="section: 41-449"]
+section_7 [label="section: 41-458"]
 
-section_8 [label="section: 472-491"]
+section_8 [label="section: 481-500"]
 
 
 // END RANK section_1
@@ -223,13 +223,13 @@ section_45 [label="section: 44-57"]
 
 section_46 [label="section: 58-97"]
 
-section_47 [label="section: 98-382"]
+section_47 [label="section: 98-391"]
 
-section_48 [label="section: 400-419"]
+section_48 [label="section: 409-428"]
 
-section_49 [label="section: 420-449"]
+section_49 [label="section: 429-458"]
 
-section_50 [label="section: 450-452"]
+section_50 [label="section: 459-461"]
 
 
 // END RANK section_7
@@ -408,11 +408,11 @@ section_81 [label="section: 241-280"]
 
 section_82 [label="section: 281-299"]
 
-section_83 [label="section: 300-348"]
+section_83 [label="section: 300-349"]
 
-section_84 [label="section: 349-382"]
+section_84 [label="section: 350-391"]
 
-section_85 [label="section: 383-399"]
+section_85 [label="section: 392-408"]
 
 
 // END RANK section_47
@@ -1304,8 +1304,8 @@ leaf_270  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
 end"]
 // END RANK codeblock_250
 
-section_84 -> { header_271 prose_272 prose_273 codeblock_274}
-{rank=same; header_271 prose_272 prose_273 codeblock_274}
+section_84 -> { header_271 prose_272 prose_273 prose_274 prose_275 prose_276 codeblock_277}
+{rank=same; header_271 prose_272 prose_273 prose_274 prose_275 prose_276 codeblock_277}
 
 header_271 [label="4 : Node.linePos(node, position)"]
 
@@ -1313,47 +1313,115 @@ prose_272 [label="prose"]
 
 prose_273 [label="prose"]
 
-codeblock_274 [label="code block 356-380"]
+prose_274 [label="prose"]
+
+prose_275 [label="prose"]
+
+prose_276 [label="prose"]
+
+codeblock_277 [label="code block 365-389"]
 
 
 // END RANK section_84
 
-header_271 -> leaf_275
-leaf_275  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.linePos(node, position)"]
+header_271 -> leaf_278
+leaf_278  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.linePos(node, position)"]
 // END RANK header_271
 
-prose_272 -> { raw_276}
-{rank=same; raw_276}
+prose_272 -> { raw_279}
+{rank=same; raw_279}
 
-raw_276 [label="raw"]
+raw_279 [label="raw"]
 
 
 // END RANK prose_272
 
-raw_276 -> leaf_277
-leaf_277  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_279 -> leaf_280
+leaf_280  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Returns the line and column given a position.
 "]
-// END RANK raw_276
+// END RANK raw_279
 
-prose_273 -> { raw_278}
-{rank=same; raw_278}
+prose_273 -> { raw_281}
+{rank=same; raw_281}
 
-raw_278 [label="raw"]
+raw_281 [label="raw"]
 
 
 // END RANK prose_273
 
-raw_278 -> leaf_279
-leaf_279  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This is implemented as a classic loop made slightly harder to get
-right by Lua's indexing and the missing newline.
+raw_281 -> leaf_282
+leaf_282  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This currently builds up the line array.
 "]
-// END RANK raw_278
+// END RANK raw_281
 
-codeblock_274 -> leaf_280
-leaf_280  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.linePos(node, position)
+prose_274 -> { raw_283}
+{rank=same; raw_283}
+
+raw_283 [label="raw"]
+
+
+// END RANK prose_274
+
+raw_283 -> leaf_284
+leaf_284  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- [ ]  #todo  Optimal Node.linePos().
+"]
+// END RANK raw_283
+
+prose_275 -> { raw_285 prespace_286 literal_287 raw_288}
+{rank=same; raw_285 prespace_286 literal_287 raw_288}
+
+raw_285 [label="raw"]
+
+prespace_286 [label="prespace"]
+
+literal_287 [label="literal"]
+
+raw_288 [label="raw"]
+
+
+// END RANK prose_275
+
+raw_285 -> leaf_289
+leaf_289  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+       This needs to be more optimal; it should use"]
+// END RANK raw_285
+
+prespace_286 -> leaf_290
+leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_286
+
+literal_287 -> leaf_291
+leaf_291  [color=Gray,shape=rectangle,fontname=Inconsolata,label="string.find"]
+// END RANK literal_287
+
+raw_288 -> leaf_292
+leaf_292  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to
+       build up a memoized collection of start and end points and
+       never break up the string directly.
+"]
+// END RANK raw_288
+
+prose_276 -> { raw_293}
+{rank=same; raw_293}
+
+raw_293 [label="raw"]
+
+
+// END RANK prose_276
+
+raw_293 -> leaf_294
+leaf_294  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+       At least we're only paying the price once, but Node is supposed
+       to be lazy about slicing strings, and this is eager.
+"]
+// END RANK raw_293
+
+codeblock_277 -> leaf_295
+leaf_295  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.linePos(node, position)
    if not node.__lines then
       for _ in node:lines() do
         -- nothing, this generates the line map
@@ -1376,115 +1444,115 @@ leaf_280  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
    end
    return nil -- this position is off the end of the string
 end"]
-// END RANK codeblock_274
+// END RANK codeblock_277
 
-section_85 -> { header_281 prose_282 prose_283 codeblock_284}
-{rank=same; header_281 prose_282 prose_283 codeblock_284}
+section_85 -> { header_296 prose_297 prose_298 codeblock_299}
+{rank=same; header_296 prose_297 prose_298 codeblock_299}
 
-header_281 [label="4 : Node.lastLeaf(node)"]
+header_296 [label="4 : Node.lastLeaf(node)"]
 
-prose_282 [label="prose"]
+prose_297 [label="prose"]
 
-prose_283 [label="prose"]
+prose_298 [label="prose"]
 
-codeblock_284 [label="code block 389-397"]
+codeblock_299 [label="code block 398-406"]
 
 
 // END RANK section_85
 
-header_281 -> leaf_285
-leaf_285  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.lastLeaf(node)"]
-// END RANK header_281
+header_296 -> leaf_300
+leaf_300  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** Node.lastLeaf(node)"]
+// END RANK header_296
 
-prose_282 -> { raw_286}
-{rank=same; raw_286}
+prose_297 -> { raw_301}
+{rank=same; raw_301}
 
-raw_286 [label="raw"]
+raw_301 [label="raw"]
 
 
-// END RANK prose_282
+// END RANK prose_297
 
-raw_286 -> leaf_287
-leaf_287  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_301 -> leaf_302
+leaf_302  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Returns the last leaf of the node.
 "]
-// END RANK raw_286
+// END RANK raw_301
 
-prose_283 -> { raw_288}
-{rank=same; raw_288}
+prose_298 -> { raw_303}
+{rank=same; raw_303}
 
-raw_288 [label="raw"]
+raw_303 [label="raw"]
 
 
-// END RANK prose_283
+// END RANK prose_298
 
-raw_288 -> leaf_289
-leaf_289  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_303 -> leaf_304
+leaf_304  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Useful to check for terminal errors, for stop-on-error parsing.
 "]
-// END RANK raw_288
+// END RANK raw_303
 
-codeblock_284 -> leaf_290
-leaf_290  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.lastLeaf(node)
+codeblock_299 -> leaf_305
+leaf_305  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.lastLeaf(node)
   if #node == 0 then
     return node
   else
     return Node.lastLeaf(node[#node])
   end
 end"]
-// END RANK codeblock_284
+// END RANK codeblock_299
 
-section_48 -> { header_291 prose_292 prose_293 codeblock_294}
-{rank=same; header_291 prose_292 prose_293 codeblock_294}
+section_48 -> { header_306 prose_307 prose_308 codeblock_309}
+{rank=same; header_306 prose_307 prose_308 codeblock_309}
 
-header_291 [label="3 : Collectors"]
+header_306 [label="3 : Collectors"]
 
-prose_292 [label="prose"]
+prose_307 [label="prose"]
 
-prose_293 [label="prose"]
+prose_308 [label="prose"]
 
-codeblock_294 [label="code block 407-416"]
+codeblock_309 [label="code block 416-425"]
 
 
 // END RANK section_48
 
-header_291 -> leaf_295
-leaf_295  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Collectors"]
-// END RANK header_291
+header_306 -> leaf_310
+leaf_310  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Collectors"]
+// END RANK header_306
 
-prose_292 -> { raw_296}
-{rank=same; raw_296}
+prose_307 -> { raw_311}
+{rank=same; raw_311}
 
-raw_296 [label="raw"]
+raw_311 [label="raw"]
 
 
-// END RANK prose_292
+// END RANK prose_307
 
-raw_296 -> leaf_297
-leaf_297  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_311 -> leaf_312
+leaf_312  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 These return an array of all results.
 "]
-// END RANK raw_296
+// END RANK raw_311
 
-prose_293 -> { raw_298}
-{rank=same; raw_298}
+prose_308 -> { raw_313}
+{rank=same; raw_313}
 
-raw_298 [label="raw"]
+raw_313 [label="raw"]
 
 
-// END RANK prose_293
+// END RANK prose_308
 
-raw_298 -> leaf_299
-leaf_299  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_313 -> leaf_314
+leaf_314  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 - [ ] #todo  Add a Forest class to provide the iterator interface for
              the return arrays of this class.
 "]
-// END RANK raw_298
+// END RANK raw_313
 
-codeblock_294 -> leaf_300
-leaf_300  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.gather(node, pred)
+codeblock_309 -> leaf_315
+leaf_315  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.gather(node, pred)
   local gathered = {}
   for ast in node:select(pred) do
     gathered[#gathered + 1] = ast
@@ -1492,42 +1560,42 @@ leaf_300  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.
 
   return gathered
 end"]
-// END RANK codeblock_294
+// END RANK codeblock_309
 
-section_49 -> { header_301 prose_302 codeblock_303}
-{rank=same; header_301 prose_302 codeblock_303}
+section_49 -> { header_316 prose_317 codeblock_318}
+{rank=same; header_316 prose_317 codeblock_318}
 
-header_301 [label="3 : Validation"]
+header_316 [label="3 : Validation"]
 
-prose_302 [label="prose"]
+prose_317 [label="prose"]
 
-codeblock_303 [label="code block 425-448"]
+codeblock_318 [label="code block 434-457"]
 
 
 // END RANK section_49
 
-header_301 -> leaf_304
-leaf_304  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Validation"]
-// END RANK header_301
+header_316 -> leaf_319
+leaf_319  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Validation"]
+// END RANK header_316
 
-prose_302 -> { raw_305}
-{rank=same; raw_305}
+prose_317 -> { raw_320}
+{rank=same; raw_320}
 
-raw_305 [label="raw"]
+raw_320 [label="raw"]
 
 
-// END RANK prose_302
+// END RANK prose_317
 
-raw_305 -> leaf_306
-leaf_306  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_320 -> leaf_321
+leaf_321  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This checks that a Node, including all its children, meets the social
 contract of Node behavior.
 "]
-// END RANK raw_305
+// END RANK raw_320
 
-codeblock_303 -> leaf_307
-leaf_307  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+codeblock_318 -> leaf_322
+leaf_322  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 function Node.isValid(node)
   assert(node.isNode == Node, \"isNode flag must be Node metatable, id: \"
          .. node.id .. \" \" .. tostring(node))
@@ -1549,69 +1617,69 @@ function Node.validate(node)
   return true
 end
 "]
-// END RANK codeblock_303
+// END RANK codeblock_318
 
-section_50 -> { header_308 prose_309 section_310}
-{rank=same; header_308 prose_309 section_310}
+section_50 -> { header_323 prose_324 section_325}
+{rank=same; header_323 prose_324 section_325}
 
-header_308 [label="3 : Subclassing and construction"]
+header_323 [label="3 : Subclassing and construction"]
 
-prose_309 [label="prose"]
+prose_324 [label="prose"]
 
-section_310 [label="section: 453-471"]
+section_325 [label="section: 462-480"]
 
 
 // END RANK section_50
 
-header_308 -> leaf_311
-leaf_311  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Subclassing and construction"]
-// END RANK header_308
+header_323 -> leaf_326
+leaf_326  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Subclassing and construction"]
+// END RANK header_323
 
-prose_309 -> { raw_312}
-{rank=same; raw_312}
+prose_324 -> { raw_327}
+{rank=same; raw_327}
 
-raw_312 [label="raw"]
+raw_327 [label="raw"]
 
 
-// END RANK prose_309
+// END RANK prose_324
 
-raw_312 -> leaf_313
-leaf_313  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_327 -> leaf_328
+leaf_328  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 "]
-// END RANK raw_312
+// END RANK raw_327
 
-section_310 -> { header_314 prose_315 codeblock_316}
-{rank=same; header_314 prose_315 codeblock_316}
+section_325 -> { header_329 prose_330 codeblock_331}
+{rank=same; header_329 prose_330 codeblock_331}
 
-header_314 [label="4 : N.inherit(node)"]
+header_329 [label="4 : N.inherit(node)"]
 
-prose_315 [label="prose"]
+prose_330 [label="prose"]
 
-codeblock_316 [label="code block 455-469"]
-
-
-// END RANK section_310
-
-header_314 -> leaf_317
-leaf_317  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.inherit(node)"]
-// END RANK header_314
-
-prose_315 -> { raw_318}
-{rank=same; raw_318}
-
-raw_318 [label="raw"]
+codeblock_331 [label="code block 464-478"]
 
 
-// END RANK prose_315
+// END RANK section_325
 
-raw_318 -> leaf_319
-leaf_319  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_329 -> leaf_332
+leaf_332  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** N.inherit(node)"]
+// END RANK header_329
+
+prose_330 -> { raw_333}
+{rank=same; raw_333}
+
+raw_333 [label="raw"]
+
+
+// END RANK prose_330
+
+raw_333 -> leaf_334
+leaf_334  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_318
+// END RANK raw_333
 
-codeblock_316 -> leaf_320
-leaf_320  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.inherit(node)
+codeblock_331 -> leaf_335
+leaf_335  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.inherit(node)
   local Meta = setmetatable({}, node)
   Meta.__index = Meta
   local meta = setmetatable({}, Meta)
@@ -1624,194 +1692,194 @@ function Node.export(_, mod, constructor)
   return setmetatable({}, mod)
 end
 "]
-// END RANK codeblock_316
+// END RANK codeblock_331
 
-section_8 -> { header_321 prose_322 prose_323 prose_324 section_325 section_326}
-{rank=same; header_321 prose_322 prose_323 prose_324 section_325 section_326}
+section_8 -> { header_336 prose_337 prose_338 prose_339 section_340 section_341}
+{rank=same; header_336 prose_337 prose_338 prose_339 section_340 section_341}
 
-header_321 [label="2 : Node Instances"]
+header_336 [label="2 : Node Instances"]
 
-prose_322 [label="prose"]
+prose_337 [label="prose"]
 
-prose_323 [label="prose"]
+prose_338 [label="prose"]
 
-prose_324 [label="prose"]
+prose_339 [label="prose"]
 
-section_325 [label="section: 483-491"]
+section_340 [label="section: 492-500"]
 
-section_326 [label="section: 492-501"]
+section_341 [label="section: 501-510"]
 
 
 // END RANK section_8
 
-header_321 -> leaf_327
-leaf_327  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Node Instances"]
-// END RANK header_321
+header_336 -> leaf_342
+leaf_342  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Node Instances"]
+// END RANK header_336
 
-prose_322 -> { raw_328}
-{rank=same; raw_328}
+prose_337 -> { raw_343}
+{rank=same; raw_343}
 
-raw_328 [label="raw"]
+raw_343 [label="raw"]
 
 
-// END RANK prose_322
+// END RANK prose_337
 
-raw_328 -> leaf_329
-leaf_329  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_343 -> leaf_344
+leaf_344  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   To be a Node, indexed elements of the Array portion must also be
 Nodes.
 "]
-// END RANK raw_328
+// END RANK raw_343
 
-prose_323 -> { raw_330}
-{rank=same; raw_330}
+prose_338 -> { raw_345}
+{rank=same; raw_345}
 
-raw_330 [label="raw"]
+raw_345 [label="raw"]
 
 
-// END RANK prose_323
+// END RANK prose_338
 
-raw_330 -> leaf_331
-leaf_331  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_345 -> leaf_346
+leaf_346  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 If there are no children of the Node, it is considered to be a leaf node.
 "]
-// END RANK raw_330
+// END RANK raw_345
 
-prose_324 -> { raw_332}
-{rank=same; raw_332}
+prose_339 -> { raw_347}
+{rank=same; raw_347}
 
-raw_332 [label="raw"]
+raw_347 [label="raw"]
 
 
-// END RANK prose_324
+// END RANK prose_339
 
-raw_332 -> leaf_333
-leaf_333  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_347 -> leaf_348
+leaf_348  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Most of the Node library will fail to halt, and probably blow stack, if
 cyclic Node graphs are made.  The Grammar class will not do this to you.
 
 "]
-// END RANK raw_332
+// END RANK raw_347
 
-section_325 -> { header_334 prose_335 prose_336}
-{rank=same; header_334 prose_335 prose_336}
+section_340 -> { header_349 prose_350 prose_351}
+{rank=same; header_349 prose_350 prose_351}
 
-header_334 [label="3 : Fields"]
+header_349 [label="3 : Fields"]
 
-prose_335 [label="prose"]
+prose_350 [label="prose"]
 
-prose_336 [label="prose"]
-
-
-// END RANK section_325
-
-header_334 -> leaf_337
-leaf_337  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Fields"]
-// END RANK header_334
-
-prose_335 -> { raw_338}
-{rank=same; raw_338}
-
-raw_338 [label="raw"]
+prose_351 [label="prose"]
 
 
-// END RANK prose_335
+// END RANK section_340
 
-raw_338 -> leaf_339
-leaf_339  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+header_349 -> leaf_352
+leaf_352  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Fields"]
+// END RANK header_349
+
+prose_350 -> { raw_353}
+{rank=same; raw_353}
+
+raw_353 [label="raw"]
+
+
+// END RANK prose_350
+
+raw_353 -> leaf_354
+leaf_354  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   There are invariant fields a Node is also expected to have, they are:
 "]
-// END RANK raw_338
+// END RANK raw_353
 
-prose_336 -> { raw_340 prespace_341 literal_342 raw_343 prespace_344 literal_345 raw_346}
-{rank=same; raw_340 prespace_341 literal_342 raw_343 prespace_344 literal_345 raw_346}
+prose_351 -> { raw_355 prespace_356 literal_357 raw_358 prespace_359 literal_360 raw_361}
+{rank=same; raw_355 prespace_356 literal_357 raw_358 prespace_359 literal_360 raw_361}
 
-raw_340 [label="raw"]
+raw_355 [label="raw"]
 
-prespace_341 [label="prespace"]
+prespace_356 [label="prespace"]
 
-literal_342 [label="literal"]
-
-raw_343 [label="raw"]
-
-prespace_344 [label="prespace"]
-
-literal_345 [label="literal"]
-
-raw_346 [label="raw"]
-
-
-// END RANK prose_336
-
-raw_340 -> leaf_347
-leaf_347  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-  - first :  Index into"]
-// END RANK raw_340
-
-prespace_341 -> leaf_348
-leaf_348  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_341
-
-literal_342 -> leaf_349
-leaf_349  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-// END RANK literal_342
-
-raw_343 -> leaf_350
-leaf_350  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which begins the span.
-  - last  :  Index into"]
-// END RANK raw_343
-
-prespace_344 -> leaf_351
-leaf_351  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_344
-
-literal_345 -> leaf_352
-leaf_352  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
-// END RANK literal_345
-
-raw_346 -> leaf_353
-leaf_353  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which ends the span.
-  - str   :  The string of which the Node spans part or the whole.
-
-"]
-// END RANK raw_346
-
-section_326 -> { header_354 prose_355 codeblock_356}
-{rank=same; header_354 prose_355 codeblock_356}
-
-header_354 [label="3 : Other fields"]
-
-prose_355 [label="prose"]
-
-codeblock_356 [label="code block 496-498"]
-
-
-// END RANK section_326
-
-header_354 -> leaf_357
-leaf_357  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Other fields"]
-// END RANK header_354
-
-prose_355 -> { raw_358}
-{rank=same; raw_358}
+literal_357 [label="literal"]
 
 raw_358 [label="raw"]
 
+prespace_359 [label="prespace"]
 
-// END RANK prose_355
+literal_360 [label="literal"]
 
-raw_358 -> leaf_359
-leaf_359  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_361 [label="raw"]
+
+
+// END RANK prose_351
+
+raw_355 -> leaf_362
+leaf_362  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - first :  Index into"]
+// END RANK raw_355
+
+prespace_356 -> leaf_363
+leaf_363  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_356
+
+literal_357 -> leaf_364
+leaf_364  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+// END RANK literal_357
+
+raw_358 -> leaf_365
+leaf_365  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which begins the span.
+  - last  :  Index into"]
+// END RANK raw_358
+
+prespace_359 -> leaf_366
+leaf_366  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_359
+
+literal_360 -> leaf_367
+leaf_367  [color=Gray,shape=rectangle,fontname=Inconsolata,label="str"]
+// END RANK literal_360
+
+raw_361 -> leaf_368
+leaf_368  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" which ends the span.
+  - str   :  The string of which the Node spans part or the whole.
+
+"]
+// END RANK raw_361
+
+section_341 -> { header_369 prose_370 codeblock_371}
+{rank=same; header_369 prose_370 codeblock_371}
+
+header_369 [label="3 : Other fields"]
+
+prose_370 [label="prose"]
+
+codeblock_371 [label="code block 505-507"]
+
+
+// END RANK section_341
+
+header_369 -> leaf_372
+leaf_372  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Other fields"]
+// END RANK header_369
+
+prose_370 -> { raw_373}
+{rank=same; raw_373}
+
+raw_373 [label="raw"]
+
+
+// END RANK prose_370
+
+raw_373 -> leaf_374
+leaf_374  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   In principle, anything at all.
 "]
-// END RANK raw_358
+// END RANK raw_373
 
-codeblock_356 -> leaf_360
-leaf_360  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Node"]
-// END RANK codeblock_356
+codeblock_371 -> leaf_375
+leaf_375  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Node"]
+// END RANK codeblock_371
 
 
 }

@@ -354,6 +354,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Node.linePos(node, position)
    if not node.__lines then
       for _ in node:lines() do

@@ -18,15 +18,12 @@ into a new Phrase.  This means in normal use, once a Phrase is added to another
 Phrase, it will stay put.
 
 
-
-The right _sort_ of mutability is copy-on-write.  We're not providing a mutation
-interface yet, all we need is for it to behave like a string under ``__tostring``
-and ``__concat``.
-
+Specifically, Phrases are mutable until they are concatenated to another Phrase.
+At that point they are interned, any attempt to concatenate will spill the
+contents into a new Phrase.
 
 
-I intend to extend the class once we get to an editing environment, by making it
-persistent rather than immutable.  A distinction I will elucidate when I reach it.
+I thought, let's call it 'spill', rather than abbreviate Copy on Concat.
 
 
 ### Phrase is string-like
@@ -60,6 +57,26 @@ over concatenation is powerful and fast in Lua.
 It's ok to just call ``tostring`` and be done.
 
 
+## Phrase is (relatively) primitive
+
+It provides concatenation, ``tostring``, and a length field ``len`` separate
+from ``#``.  It has ``it`` and ``idEst``, the latter particularly useful to
+avoid repetitive importing of the class.
+
+
+In particular, and on purpose, Phrase makes no effort to balance its binary
+structure.  This way, sensible, ordinary use of Phrase will preserve the
+tree structure of the DAG being transduced.
+
+
+The typical grammar is of the form `` a : b* EOF / Err, b: c c*``, which will
+naturally take a head-weighted form.
+
+
+It is a trivial log-log operation to bring a Phrase into balance if that
+is desireable.
+
+
 ### Roadmap
 
 I would like to add ``Phrase:ffind(str)``, for fast find.  This only works if
@@ -87,18 +104,13 @@ my terminal by accident.
 
 
 Speaking of rope-like, Phrase will have better performance in environments
-where it is more 'bushy'.  No effort to balance the tree is implemented
-currently.
-
-
-It would be tractable to add this, however I suspect it will perform well under
-real workloads, so I may not bother.
+where it is more 'bushy'.
 
 ```lua
 local init, new
 local s = require "core/status" ()
 s.angry = false
-local Phrase = setmetatable({}, {__index = Phrase})
+local Phrase = {}
 Phrase.it = require "core/check"
 ```
 ## __concat
@@ -152,10 +164,7 @@ local function __concat(head_phrase, tail_phrase)
       head_phrase[#head_phrase + 1] = tail_phrase
       head_phrase.len = head_phrase.len + #tail_phrase
       return head_phrase
-   elseif typica == "table" and tail_phrase.idEst == new then
-      -- This is where we can balance the Phrase if we want
-      -- For now I'd rather preserve the build structure, I think
-      -- that's more generally useful.
+      elseif typica == "table" and tail_phrase.idEst == new then
       local new_phrase = init()
       head_phrase.intern = true -- head_phrase is now in the middle of a string
       tail_phrase.intern = true -- tail_phrase shouldn't be bump-catted
@@ -215,13 +224,13 @@ Stick this somewhere better
 
 ```lua
 local function spec()
-   a = new "Sphinx of " .. "black quartz "
+   local a = new "Sphinx of " .. "black quartz "
    a: it "phrase-a"
       : passedTo(tostring)
       : gives "Sphinx of black quartz "
       : fin()
 
-   b = a .. "judge my " .. "vow."
+   local b = a .. "judge my " .. "vow."
    b: it "phrase-b"
       : passedTo(tostring)
       : gives "Sphinx of black quartz judge my vow."

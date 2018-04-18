@@ -48,9 +48,9 @@ raw_9 -> leaf_10
 leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
-  Having gotten about as far as I can with mere string concatenation, it's 
+  Having gotten about as far as I can with mere string concatenation, it's
 time to put together a proper set of operations for transducing across a
-Node. 
+Node.
 "]
 // END RANK raw_9
 
@@ -64,7 +64,7 @@ raw_11 [label="raw"]
 
 raw_11 -> leaf_12
 leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This isn't a great place to put theory, let's build the structure and 
+This isn't a great place to put theory, let's build the structure and
 flesh out from there.
 "]
 // END RANK raw_11
@@ -117,13 +117,13 @@ raw_21 [label="raw"]
 
 raw_21 -> leaf_22
 leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I recommend either lifting this method or providing an override if 
-subclassing Stator. 
+I recommend either lifting this method or providing an override if
+subclassing Stator.
 "]
 // END RANK raw_21
 
 codeblock_17 -> leaf_23
-leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function call(stator)
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function call(stator)
   return setmetatable({}, {__index = stator, __call = call })
 end"]
 // END RANK codeblock_17
@@ -213,12 +213,12 @@ leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
 // END RANK literal_37
 
 raw_38 -> leaf_48
-leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", to suit various styles. 
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", to suit various styles.
 "]
 // END RANK raw_38
 
 codeblock_26 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function new(Stator)
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(Stator)
   local stator = call(Stator)
   stator.g, stator.G, stator._G = stator, stator, stator
   return stator
