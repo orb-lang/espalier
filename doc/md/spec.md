@@ -22,13 +22,15 @@ local C = L.C
 ```
 ```lua
 local Spec = {}
+Spec.dot = require "node/grammars/dot"
+Spec.peg = require "node/grammars/peg"
 ```
 ## Trivial Grammar
 
 This should succeed under all circumstances.
 
 
-I'd have to guess what it will return currently. 
+I'd have to guess what it will return currently.
 
 ```lua
 local function epsilon(_ENV)
@@ -36,7 +38,7 @@ local function epsilon(_ENV)
   any = V"anything" + V"other"
   anything = P(1)
   other = P(1)^1
-end 
+end
 
 local function a(_ENV)
   START "A"
@@ -45,7 +47,7 @@ end
 
 local function ab(_ENV)
   START "AB"
-  AB = V"B" + V"A"  
+  AB = V"B" + V"A"
   A = P"a" + P"A"
   B = V"bmatch" + (V"A" * V"bmatch")
   bmatch = P"b" + P"B"
@@ -57,7 +59,7 @@ local function clu_gm(_ENV)
   SUPPRESS "form"
   clu = V"form"^1
   form = D((V"number" * WS))
-       + (V"atom" * WS) 
+       + (V"atom" * WS)
        + (V"expr" * WS)
   expr = D(m.pal) * WS * V"form"^0 * WS * D(m.par)
   atom = m.symbol
@@ -81,7 +83,7 @@ local AMt, amt = u.inherit(Node)
 
 local function Anew(A, t, str)
   local a = setmetatable(t, AMt)
-  a.id = "A"  
+  a.id = "A"
   return a
 end
 

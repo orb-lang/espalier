@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 100"]
+doc_0 [label="doc - 102"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-76"]
+section_1 [label="section: 1-78"]
 
 
 // END RANK doc_0
@@ -21,13 +21,13 @@ header_2 [label="1 : Spec"]
 
 prose_3 [label="prose"]
 
-section_4 [label="section: 6-27"]
+section_4 [label="section: 6-29"]
 
-section_5 [label="section: 28-68"]
+section_5 [label="section: 30-70"]
 
-section_6 [label="section: 69-76"]
+section_6 [label="section: 71-78"]
 
-section_7 [label="section: 77-100"]
+section_7 [label="section: 79-102"]
 
 
 // END RANK section_1
@@ -61,7 +61,7 @@ prose_12 [label="prose"]
 
 codeblock_13 [label="code block 8-22"]
 
-codeblock_14 [label="code block 24-26"]
+codeblock_14 [label="code block 24-28"]
 
 
 // END RANK section_4
@@ -100,7 +100,9 @@ local C = L.C
 // END RANK codeblock_13
 
 codeblock_14 -> leaf_19
-leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Spec = {}"]
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Spec = {}
+Spec.dot = require \"node/grammars/dot\"
+Spec.peg = require \"node/grammars/peg\""]
 // END RANK codeblock_14
 
 section_5 -> { header_20 prose_21 prose_22 codeblock_23}
@@ -112,7 +114,7 @@ prose_21 [label="prose"]
 
 prose_22 [label="prose"]
 
-codeblock_23 [label="code block 34-67"]
+codeblock_23 [label="code block 36-69"]
 
 
 // END RANK section_5
@@ -146,7 +148,7 @@ raw_27 [label="raw"]
 
 raw_27 -> leaf_28
 leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I'd have to guess what it will return currently. 
+I'd have to guess what it will return currently.
 "]
 // END RANK raw_27
 
@@ -156,7 +158,7 @@ leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
   any = V\"anything\" + V\"other\"
   anything = P(1)
   other = P(1)^1
-end 
+end
 
 local function a(_ENV)
   START \"A\"
@@ -165,7 +167,7 @@ end
 
 local function ab(_ENV)
   START \"AB\"
-  AB = V\"B\" + V\"A\"  
+  AB = V\"B\" + V\"A\"
   A = P\"a\" + P\"A\"
   B = V\"bmatch\" + (V\"A\" * V\"bmatch\")
   bmatch = P\"b\" + P\"B\"
@@ -177,7 +179,7 @@ local function clu_gm(_ENV)
   SUPPRESS \"form\"
   clu = V\"form\"^1
   form = D((V\"number\" * WS))
-       + (V\"atom\" * WS) 
+       + (V\"atom\" * WS)
        + (V\"expr\" * WS)
   expr = D(m.pal) * WS * V\"form\"^0 * WS * D(m.par)
   atom = m.symbol
@@ -192,7 +194,7 @@ header_30 [label="2 : Easy mode"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 71-75"]
+codeblock_32 [label="code block 73-77"]
 
 
 // END RANK section_6
@@ -227,11 +229,11 @@ header_37 [label="2 : With metas"]
 
 prose_38 [label="prose"]
 
-codeblock_39 [label="code block 79-92"]
+codeblock_39 [label="code block 81-94"]
 
-codeblock_40 [label="code block 94-96"]
+codeblock_40 [label="code block 96-98"]
 
-codeblock_41 [label="code block 98-100"]
+codeblock_41 [label="code block 100-102"]
 
 
 // END RANK section_7
@@ -262,7 +264,7 @@ local AMt, amt = u.inherit(Node)
 
 local function Anew(A, t, str)
   local a = setmetatable(t, AMt)
-  a.id = \"A\"  
+  a.id = \"A\"
   return a
 end
 

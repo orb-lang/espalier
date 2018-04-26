@@ -7,18 +7,18 @@
 
 
 local Node    =  require "node"
-local Grammar =  require "grammar"
-local L       =  require "elpatt"
+local Grammar =  require "node/grammar"
+local L       =  require "node/elpatt"
 
 local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 
 local _ = (P" " + P"\n" + P"\t" + P"\r")^0
 
-local IDstart =  (R("az", "AZ") + "_" -- dot is actually latin-1 but
+local IDstart =  R("az", "AZ") + "_" -- dot is actually latin-1 but
 local IDrest  =  IDstart + R"09"
 
-local num     =  P"-"^0 * (P"." + R"09"^1) 
-              +  R"09"^1 * P"."^0 * R"09"^0 
+local num     =  P"-"^0 * (P"." + R"09"^1)
+              +  R"09"^1 * P"."^0 * R"09"^0
 
 local string_patt = P"\"" * (P(1) - (P"\"" * - P"\\\""))^0 * P"\""
 
@@ -38,7 +38,8 @@ local function dot_fn(_ENV)
 
   attr_statement =  (P"graph" + "node" + "edge") * attr_list
   attr_list      =  P"[" * _ * V"a_list"^0 * _ * P"]" * _ * V"attr_list"^0
-  a_list         =  V"ID" * _ * "=" * _ V"ID" * (P";" + P",")^0 * _ * V"a_list"^0
+  a_list         =  V"ID" * _ * "=" * _ * V"ID"
+                 * (P";" + P",")^0 * _ * V"a_list"^0
 
   edge_statement =  (V"node_id" + V"subgraph") * _ * V"edgeRHS" * V"attr_list"^0
   edgeRHS        =  V"edgeop" * _ * (V"node_id" + V"subgraph") * _ * V"edgeRHS"^0
@@ -47,7 +48,7 @@ local function dot_fn(_ENV)
   node_id        =  V"ID" * _ * V"port"^0
   port           =  P":" * _ * V"ID" * _ * (P":" * _ * V"compass_point")^0
 
-  subgraph       =  (P"subgraph" * _ * V"ID"^0)^0 * _ 
+  subgraph       =  (P"subgraph" * _ * V"ID"^0)^0 * _
                  *  "{" * _ * V"statement_list" * _ * "}"
 
   compass_point  =  S("n","ne","e","se","s","sw","w","nw","_")

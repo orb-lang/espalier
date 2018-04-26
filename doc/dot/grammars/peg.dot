@@ -1,0 +1,213 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 137"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-137"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 codeblock_6 codeblock_7}
+{rank=same; header_2 prose_3 prose_4 prose_5 codeblock_6 codeblock_7}
+
+header_2 [label="1 : Parsing Expression Grammar"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+codeblock_6 [label="code block 12-16"]
+
+codeblock_7 [label="code block 18-137"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Parsing Expression Grammar"]
+// END RANK header_2
+
+prose_3 -> { raw_9}
+{rank=same; raw_9}
+
+raw_9 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_9 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+Now, at last, we are ready to swallow the tail.
+"]
+// END RANK raw_9
+
+prose_4 -> { raw_11}
+{rank=same; raw_11}
+
+raw_11 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_11 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Parsing Expression Grammars can be expressed in a format which is itself
+grammatical.  We could use this to build Lua code against our Node class,
+generating a parser from the description.
+"]
+// END RANK raw_11
+
+prose_5 -> { raw_13}
+{rank=same; raw_13}
+
+raw_13 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_13 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+So let's do that.
+"]
+// END RANK raw_13
+
+codeblock_6 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"node/elpatt\"
+local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
+local Grammar = require \"node/grammar\""]
+// END RANK codeblock_6
+
+codeblock_7 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function pegylator(_ENV)
+   START \"rules\"
+   ---[[
+   SUPPRESS (\"WS\",  \"enclosed\", \"form\",
+            \"element\" ,\"elements\",
+            \"allowed_prefixed\", \"allowed_suffixed\",
+            \"simple\", \"compound\", \"prefixed\", \"suffixed\"  )
+   --]]
+   local comment_m  = -P\"\\n\" * P(1)
+   local comment_c =  comment_m^0 * #P\"\\n\"
+   local letter = R\"AZ\" + R\"az\"
+   local valid_sym = letter + P\"-\"
+   local digit = R\"09\"
+   local sym = valid_sym + digit
+   local WS = (P' ' + P'\\n' + P',' + P'\\09')^0
+   local symbol = letter * ( -(P\"-\" * WS) * sym )^0
+   local h_string    = (-P\"`\" * core.escape)^0
+   local d_string = (-P'\"' * core.escape)^0
+   local s_string = (-P\"'\" * core.escape)^0
+   local range_match =  -P\"-\" * -P\"\\\\\" * -P\"]\" * P(1)
+   local range_capture = (range_match + P\"\\\\-\" + P\"\\\\]\" + P\"\\\\\")
+   local range_c  = range_capture^1 * P\"-\" * range_capture^1
+   local set_match = -P\"}\" * -P\"\\\\\" * P(1)
+   local set_c    = (set_match + P\"\\\\}\" + P\"\\\\\")^1
+   local some_num_c =   digit^1 * P\"..\" * digit^1
+                +   (P\"+\" + P\"-\")^0 * digit^1
+
+
+   rules   =  V\"comment\"^0 * V\"rule\"^1
+   rule    =  V\"lhs\" * V\"rhs\"
+   lhs     =  WS * V\"pattern\" * WS * ( P\":\" + P\"=\" + \":=\")
+   rhs     =  V\"form\"
+
+   form   =  V\"element\" * V\"elements\"
+   pattern =  symbol
+         +  V\"hidden_pattern\"
+   hidden_pattern =  P\"`\" * symbol * P\"`\"
+
+   element  =   -V\"lhs\" * WS
+            *  ( V\"simple\"
+            +    V\"compound\"
+            +    V\"comment\" )
+   elements  =  V\"choice\"
+             +  V\"cat\"
+             +  P\"\"
+
+   choice =  WS * P\"/\" * V\"form\"
+   cat =  WS * V\"form\"
+   compound =  V\"group\"
+          +  V\"enclosed\"
+          +  V\"hidden_match\"
+
+   group   =  WS * V\"pel\"
+           *  WS * V\"form\" * WS
+           *  V\"per\"
+   pel     = D \"(\"
+   per     = D \")\"
+
+   enclosed =  V\"literal\"
+            +  V\"hidden_literal\"
+            +  V\"set\"
+            +  V\"range\"
+
+   hidden_match =  WS * P\"``\"
+                *  WS * V\"form\" * WS
+                *  P\"``\"
+
+   simple   =  V\"suffixed\"
+            +  V\"prefixed\"
+            +  V\"atom\"
+
+   comment  =  D\";\" * comment_c
+
+   prefixed =  V\"if_not_this\"
+            +  V\"not_this\"
+            +  V\"if_and_this\"
+            +  V\"capture\"
+
+   suffixed =  V\"optional\"
+            +  V\"more_than_one\"
+            +  V\"maybe\"
+            +  V\"with_suffix\"
+            +  V\"some_number\"
+
+   if_not_this = P\"!\" * WS * V\"allowed_prefixed\"
+   not_this    = P\"-\" * WS * V\"allowed_prefixed\"
+   if_and_this = P\"&\" * WS * V\"allowed_prefixed\"
+   capture     = P\"~\" * WS * V\"allowed_prefixed\"
+
+   literal =  D'\"' * d_string * D'\"'
+           +  D\"'\" * s_string * D\"'\")
+
+   hidden_literal = -P\"``\" * D\"`\" * hidden_string * -P\"``\" * D\"`\"
+
+   set     =  P\"{\" * set_c^1 * P\"}\"
+
+-- Change range to not use '-' separator instead require even # of bytes.
+-- Ru catches edge cases involving multi-byte chars.
+
+   range   =  P\"[\" * range_c * P\"]\"
+
+   optional      =  V\"allowed_suffixed\" * WS * P\"*\"
+   more_than_one =  V\"allowed_suffixed\" * WS * P\"+\"
+   maybe         =  V\"allowed_suffixed\" * WS * P\"?\"
+
+   with_suffix   =  V\"some_number\" * V\"which_suffix\"
+   which_suffix  =  ( P\"*\" + P\"+\" + P\"?\")
+   some_number   =  V\"allowed_suffixed\" * WS * V\"some_suffix\"
+   some_suffix   = P\"$\" * V\"repeats\"
+
+   repeats       =  Csp(some_num_c)
+   allowed_prefixed =  V\"compound\" + V\"suffixed\" + V\"atom\"
+   allowed_suffixed =  V\"compound\" + V\"prefixed\" + V\"atom\"
+
+   atom =  V\"ws\" + symbol
+
+   ws = Csp(P\"_\")
+end"]
+// END RANK codeblock_7
+
+
+}
