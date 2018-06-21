@@ -9,8 +9,8 @@ the [[Grammar class][/grammar] and lpeg more generally.
 
 #!lua
 local s = require "status" ()
-local a = require "ansi"
-local dot = require "node/dot"
+local a = require "anterm"
+local dot = require "espalier/dot"
 #/lua
 
 

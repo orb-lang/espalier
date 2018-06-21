@@ -11,7 +11,7 @@
 local L = require "lpeg"
 local s = require "status" ()
 s.verbose = false
-local Node = require "node"
+local Node = require "espalier/node"
 local elpatt = {}
 elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
@@ -21,7 +21,7 @@ local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg
 
 
 
-local Err = require "node/error"
+local Err = require "espalier/error"
 elpatt.E, elpatt.EOF = Err.E, Err.EOF
 
 
@@ -97,7 +97,7 @@ local function make_drop(caps)
    return dropped
 end
 
-function elpatt.D(patt)  
+function elpatt.D(patt)
    return Ct(Cp() * Ct(patt) * Cp()) / make_drop
 end
 

@@ -12,9 +12,9 @@ generating a parser from the description.
 So let's do that.
 
 ```lua
-local L = require "node/elpatt"
+local L = require "espalier/elpatt"
 local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
-local Grammar = require "node/grammar"
+local Grammar = require "espalier/grammar"
 ```
 ```lua
 local function pegylator(_ENV)
@@ -107,7 +107,7 @@ local function pegylator(_ENV)
    capture     = P"~" * WS * V"allowed_prefixed"
 
    literal =  D'"' * d_string * D'"'
-           +  D"'" * s_string * D"'")
+           +  D"'" * s_string * D"'"
 
    hidden_literal = -P"``" * D"`" * hidden_string * -P"``" * D"`"
 

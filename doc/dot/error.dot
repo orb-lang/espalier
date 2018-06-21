@@ -125,7 +125,7 @@ local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P"]
 // END RANK codeblock_20
 
 codeblock_21 -> leaf_27
-leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Err = require \"node\" : inherit()
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Err = require \"espalier/node\" : inherit()
 Err.id = \"ERROR\"
 "]
 // END RANK codeblock_21
@@ -306,9 +306,9 @@ leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label="B"]
 // END RANK literal_62
 
 raw_63 -> leaf_70
-leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" at 
-the beginning of a rule, and a match-time at the end, to provide a 
-sensible, bookended approach to error diagnosis and possible recovery. 
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" at
+the beginning of a rule, and a match-time at the end, to provide a
+sensible, bookended approach to error diagnosis and possible recovery.
 "]
 // END RANK raw_63
 
@@ -333,9 +333,9 @@ leaf_75  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Err"]
 // END RANK literal_72
 
 raw_73 -> leaf_76
-leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is the catchbucket, that simply succeeds and poisons the AST if 
-non-terminal. It will at least prominently yell \"ERROR\" at you given 
-the least opportunity. 
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is the catchbucket, that simply succeeds and poisons the AST if
+non-terminal. It will at least prominently yell \"ERROR\" at you given
+the least opportunity.
 "]
 // END RANK raw_73
 

@@ -1,19 +1,19 @@
 -- * Status
 --
---   This is going to migrate toward the =bridge= process containing a 
+--   This is going to migrate toward the =bridge= process containing a
 -- running bettertools instance.
 --
 -- In the meantime, here's our collection of state-dependent exception
 -- handlers.
 
-local a = require "ansi"
+local a = require "anterm"
 
 local status = {}
 
 status.DjikstraWasRight = true -- I swear I'm going to use this for something. Watch.
 
 status.chatty = true
-status.verbose = false 
+status.verbose = false
 status.grumpy = true
 status.angry = false
 
@@ -50,7 +50,7 @@ function status.complain(statusQuo, topic, message)
         local phrase = a.red(topic)
         if message then
             phrase = phrase .. ": " .. message .. "\n"
-        else 
+        else
             phrase = phrase .. "\n"
         end
         io.write(phrase)

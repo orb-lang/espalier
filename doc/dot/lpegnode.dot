@@ -46,16 +46,16 @@ Master module for library.
 // END RANK raw_6
 
 codeblock_4 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local dot    =  require \"lpegnode/dot\"
-local elpatt =  require \"lpegnode/elpatt\"
-local node   =  require \"lpegnode/node\"
-local spec   =  require \"lpegnode/spec\"
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local dot    =  require \"lpegespalier/dot\"
+local elpatt =  require \"lpegespalier/elpatt\"
+local Node   =  require \"lpegespalier/node\"
+local Spec   =  require \"lpegespalier/spec\"
 
 
 return { dot    =  dot,
-     elpatt =  elpatt,
-     node   =  node,
-     spec   =  spec }"]
+       elpatt =  elpatt,
+       node   =  Node,
+       spec   =  Spec }"]
 // END RANK codeblock_4
 
 

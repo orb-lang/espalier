@@ -20,7 +20,6 @@ This function takes two parameters, namely:
 Both of these are reasonably complex.
 
 
-
 ### grammar_template
 
   The internal function @define creates a custom environment variable, neatly
@@ -55,8 +54,8 @@ Also included are two functions:
 
 ### metas
 
-  By default a node will inherit from the Node class.  If you want custom behavior,
-you must pass in a table of metatable constructors.
+  By default a node will inherit from the Node class.  If you want custom
+behavior, you must pass in a table of metatable constructors.
 
 
 That's a fairly specific beast.  Any rule defined above will have an ``id``
@@ -87,7 +86,7 @@ a language that did that sort of thing.
 
 
 - [ ] #todo  Note the require strings below, which prevent this from
-             being a usable library.
+             being a usable library, because ``node`` not ``lpegnode``.
 
 
              The problem is almost a philosophical one, and it's what I'm
@@ -97,12 +96,15 @@ a language that did that sort of thing.
              In the meantime, ``lpegnode`` has one consumer. Let's keep it
              happy.
 
+
+             I'm renaming it ``espalier`` anyway.
+
 ```lua
 local L = require "lpeg"
-local a = require "ansi"
+local a = require "anterm"
 
-local Node = require "node/node"
-local elpatt = require "node/elpatt"
+local Node = require "espalier/node"
+local elpatt = require "espalier/elpatt"
 
 local DROP = elpatt.DROP
 ```

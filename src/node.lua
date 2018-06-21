@@ -9,8 +9,8 @@
 
 
 local s = require "status" ()
-local a = require "ansi"
-local dot = require "node/dot"
+local a = require "anterm"
+local dot = require "espalier/dot"
 
 
 

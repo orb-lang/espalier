@@ -83,9 +83,9 @@ So let's do that.
 // END RANK raw_13
 
 codeblock_6 -> leaf_15
-leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"node/elpatt\"
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"espalier/elpatt\"
 local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
-local Grammar = require \"node/grammar\""]
+local Grammar = require \"espalier/grammar\""]
 // END RANK codeblock_6
 
 codeblock_7 -> leaf_16
@@ -179,7 +179,7 @@ leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
    capture     = P\"~\" * WS * V\"allowed_prefixed\"
 
    literal =  D'\"' * d_string * D'\"'
-           +  D\"'\" * s_string * D\"'\")
+           +  D\"'\" * s_string * D\"'\"
 
    hidden_literal = -P\"``\" * D\"`\" * hidden_string * -P\"``\" * D\"`\"
 

@@ -17,7 +17,7 @@ local s   = require "status" ()
 local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P
 ```
 ```lua
-local Err = require "node" : inherit()
+local Err = require "espalier/node" : inherit()
 Err.id = "ERROR"
 
 ```
@@ -55,14 +55,14 @@ end
 ```
 ### Err.Err, Err.E : Capture an Error
 
-For now these are synonyms. ``E`` will eventually use a back capture ``B`` at 
-the beginning of a rule, and a match-time at the end, to provide a 
-sensible, bookended approach to error diagnosis and possible recovery. 
+For now these are synonyms. ``E`` will eventually use a back capture ``B`` at
+the beginning of a rule, and a match-time at the end, to provide a
+sensible, bookended approach to error diagnosis and possible recovery.
 
 
-``Err`` is the catchbucket, that simply succeeds and poisons the AST if 
-non-terminal. It will at least prominently yell "ERROR" at you given 
-the least opportunity. 
+``Err`` is the catchbucket, that simply succeeds and poisons the AST if
+non-terminal. It will at least prominently yell "ERROR" at you given
+the least opportunity.
 
 ```lua
 function Err.Err(name, msg, patt)

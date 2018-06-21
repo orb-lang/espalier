@@ -3,14 +3,14 @@
 Master module for library.
 
 ```lua
-local dot    =  require "lpegnode/dot"
-local elpatt =  require "lpegnode/elpatt"
-local node   =  require "lpegnode/node"
-local spec   =  require "lpegnode/spec"
+local dot    =  require "lpegespalier/dot"
+local elpatt =  require "lpegespalier/elpatt"
+local Node   =  require "lpegespalier/node"
+local Spec   =  require "lpegespalier/spec"
 
 
 return { dot    =  dot,
-     elpatt =  elpatt,
-     node   =  node,
-     spec   =  spec }
+       elpatt =  elpatt,
+       node   =  Node,
+       spec   =  Spec }
 ```

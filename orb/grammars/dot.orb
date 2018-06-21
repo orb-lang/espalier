@@ -6,9 +6,9 @@ So
 
 #!lua
 
-local Node    =  require "node"
-local Grammar =  require "node/grammar"
-local L       =  require "node/elpatt"
+local Node    =  require "espalier/node"
+local Grammar =  require "espalier/grammar"
+local L       =  require "espalier/elpatt"
 
 local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 

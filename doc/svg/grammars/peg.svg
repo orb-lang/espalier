@@ -151,9 +151,9 @@
 <g id="node16" class="node">
 <title>leaf_15</title>
 <polygon fill="none" stroke="#c0c0c0" points="1156.5,-1054.102 748.5,-1054.102 748.5,-999.701 1156.5,-999.701 1156.5,-1054.102"/>
-<text text-anchor="middle" x="952.5" y="-1038.8016" font-family="Inconsolata" font-size="14.00" fill="#000000">local L = require &quot;node/elpatt&quot;</text>
+<text text-anchor="middle" x="952.5" y="-1038.8016" font-family="Inconsolata" font-size="14.00" fill="#000000">local L = require &quot;espalier/elpatt&quot;</text>
 <text text-anchor="middle" x="952.5" y="-1023.4015" font-family="Inconsolata" font-size="14.00" fill="#000000">local D, E, P, R, S, V &#160;&#160;= &#160;L.D, L.E, L.P, L.R, L.S, L.V</text>
-<text text-anchor="middle" x="952.5" y="-1008.0015" font-family="Inconsolata" font-size="14.00" fill="#000000">local Grammar = require &quot;node/grammar&quot;</text>
+<text text-anchor="middle" x="952.5" y="-1008.0015" font-family="Inconsolata" font-size="14.00" fill="#000000">local Grammar = require &quot;espalier/grammar&quot;</text>
 </g>
 <!-- codeblock_6&#45;&gt;leaf_15 -->
 <g id="edge15" class="edge">
@@ -241,7 +241,7 @@
 <text text-anchor="middle" x="1438.5" y="-599.0007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;if_and_this = P&quot;&amp;&quot; * WS * V&quot;allowed_prefixed&quot;</text>
 <text text-anchor="middle" x="1438.5" y="-583.6007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;capture &#160;&#160;&#160;&#160;= P&quot;~&quot; * WS * V&quot;allowed_prefixed&quot;</text>
 <text text-anchor="middle" x="1438.5" y="-552.2007" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;literal = &#160;D&#39;&quot;&#39; * d_string * D&#39;&quot;&#39;</text>
-<text text-anchor="middle" x="1438.5" y="-536.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;+ &#160;D&quot;&#39;&quot; * s_string * D&quot;&#39;&quot;)</text>
+<text text-anchor="middle" x="1438.5" y="-536.8006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;+ &#160;D&quot;&#39;&quot; * s_string * D&quot;&#39;&quot;</text>
 <text text-anchor="middle" x="1438.5" y="-505.4006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;hidden_literal = &#45;P&quot;``&quot; * D&quot;`&quot; * hidden_string * &#45;P&quot;``&quot; * D&quot;`&quot;</text>
 <text text-anchor="middle" x="1438.5" y="-474.0006" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;set &#160;&#160;&#160;&#160;= &#160;P&quot;{&quot; * set_c^1 * P&quot;}&quot;</text>
 <text text-anchor="middle" x="1438.5" y="-442.6005" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45; Change range to not use &#39;&#45;&#39; separator instead require even # of bytes.</text>

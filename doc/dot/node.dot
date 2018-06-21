@@ -87,8 +87,8 @@ leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 codeblock_14 -> leaf_18
 leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local s = require \"status\" ()
-local a = require \"ansi\"
-local dot = require \"node/dot\""]
+local a = require \"anterm\"
+local dot = require \"espalier/dot\""]
 // END RANK codeblock_14
 
 section_5 -> { header_19 prose_20 codeblock_21}

@@ -68,7 +68,7 @@ leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="epeg"]
 // END RANK literal_12
 
 raw_13 -> leaf_17
-leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" 
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 module.
 "]
 // END RANK raw_13
@@ -92,7 +92,7 @@ codeblock_5 -> leaf_20
 leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
 local s = require \"status\" ()
 s.verbose = false
-local Node = require \"node\"
+local Node = require \"espalier/node\"
 local elpatt = {}
 elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
@@ -102,7 +102,7 @@ local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg"]
 section_6 -> { header_21 prose_22 codeblock_23}
 {rank=same; header_21 prose_22 codeblock_23}
 
-header_21 [label="3 : Errors "]
+header_21 [label="3 : Errors"]
 
 prose_22 [label="prose"]
 
@@ -112,7 +112,7 @@ codeblock_23 [label="code block 23-26"]
 // END RANK section_6
 
 header_21 -> leaf_24
-leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Errors "]
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Errors"]
 // END RANK header_21
 
 prose_22 -> { raw_25}
@@ -129,7 +129,7 @@ leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_25
 
 codeblock_23 -> leaf_27
-leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Err = require \"node/error\"
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Err = require \"espalier/error\"
 elpatt.E, elpatt.EOF = Err.E, Err.EOF"]
 // END RANK codeblock_23
 
@@ -278,7 +278,7 @@ leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nil"]
 
 raw_56 -> leaf_60
 leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  A zero byte is correctly allowed by the
-standard and will match here. 
+standard and will match here.
 "]
 // END RANK raw_56
 
@@ -409,7 +409,7 @@ leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt.D"]
 // END RANK literal_84
 
 raw_85 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label=". 
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
 "]
 // END RANK raw_85
 
@@ -500,7 +500,7 @@ local function make_drop(caps)
    return dropped
 end
 
-function elpatt.D(patt)  
+function elpatt.D(patt)
    return Ct(Cp() * Ct(patt) * Cp()) / make_drop
 end
 "]
@@ -540,7 +540,7 @@ raw_114 -> leaf_115
 leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
   Uses ordered choice to create a pattern which will match any provided
-pattern. 
+pattern.
 "]
 // END RANK raw_114
 
@@ -569,7 +569,7 @@ raw_118 [label="raw"]
 raw_118 -> leaf_119
 leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 Despite being called \"Set\", it makes no attempt at uniqueness and will
-match against patterns in the order provided. 
+match against patterns in the order provided.
 "]
 // END RANK raw_118
 

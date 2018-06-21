@@ -9,9 +9,9 @@
 local u = require "util"
 local m = require "Orbit/morphemes"
 
-local Grammar = require "node/grammar"
-local Node = require "node/node"
-local elpatt = require "node/elpatt"
+local Grammar = require "espalier/grammar"
+local Node = require "espalier/node"
+local elpatt = require "espalier/elpatt"
 local D = elpatt.D
 local L = require "lpeg"
 local P = L.P
@@ -23,8 +23,8 @@ local C = L.C
 
 
 local Spec = {}
-Spec.dot = require "node/grammars/dot"
-Spec.peg = require "node/grammars/peg"
+Spec.dot = require "espalier/grammars/dot"
+Spec.peg = require "espalier/grammars/peg"
 
 
 
@@ -38,7 +38,7 @@ local function epsilon(_ENV)
   START "any"
   any = V"anything" + V"other"
   anything = P(1)
-  other = P(1)^1
+  other = P(1)^0
 end
 
 local function a(_ENV)

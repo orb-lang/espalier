@@ -84,11 +84,12 @@ s.angry   = false
 
 
 
-local L = require "lpeg"
-local a = require "ansi"
 
-local Node = require "node/node"
-local elpatt = require "node/elpatt"
+local L = require "lpeg"
+local a = require "anterm"
+
+local Node = require "espalier/node"
+local elpatt = require "espalier/elpatt"
 
 local DROP = elpatt.DROP
 

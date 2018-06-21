@@ -1,7 +1,7 @@
 # Extended Lpeg module
 
 
-  This is where we add extended captures a la the old ``epeg`` 
+  This is where we add extended captures a la the old ``epeg``
 module.
 
 
@@ -12,16 +12,16 @@ and can therefore use elpeg as L everywhere we currently use lpeg.
 local L = require "lpeg"
 local s = require "status" ()
 s.verbose = false
-local Node = require "node"
+local Node = require "espalier/node"
 local elpatt = {}
 elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
 
 local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg
 ```
-### Errors 
+### Errors
 
 ```lua
-local Err = require "node/error"
+local Err = require "espalier/error"
 elpatt.E, elpatt.EOF = Err.E, Err.EOF
 ```
 ## Ppt : Codepoint pattern #Todo
@@ -42,7 +42,7 @@ Captures the number of bytes in the next codepoint of a string.
 
 The string must be well-formed utf-8, more precisely, a malformed
 string will return ``nil``.  A zero byte is correctly allowed by the
-standard and will match here. 
+standard and will match here.
 
 ```lua
 local function num_bytes(str)
@@ -75,7 +75,7 @@ inelegant compared to treating any Node without children as a leaf.
 
 
 What about regions of text that don't interest us?  Canonically this
-includes whitespace.  For those occasions, we have ``elpatt.D``. 
+includes whitespace.  For those occasions, we have ``elpatt.D``.
 
 
 ``D`` needs to take a pattern, and if it succeeds in matching it, return a
@@ -102,7 +102,7 @@ local function make_drop(caps)
    return dropped
 end
 
-function elpatt.D(patt)  
+function elpatt.D(patt)
    return Ct(Cp() * Ct(patt) * Cp()) / make_drop
 end
 
@@ -110,14 +110,14 @@ end
 ### S : Capture set
 
   Uses ordered choice to create a pattern which will match any provided
-pattern. 
+pattern.
 
 
 This will patternize anything you feed it, which is convenient for strings.
 
 
 Despite being called "Set", it makes no attempt at uniqueness and will
-match against patterns in the order provided. 
+match against patterns in the order provided.
 
 ```lua
 function elpatt.S(a, ...)

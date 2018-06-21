@@ -19,7 +19,6 @@ This function takes two parameters, namely:
 Both of these are reasonably complex.
 
 
-
 *** grammar_template
 
   The internal function @define creates a custom environment variable, neatly
@@ -48,8 +47,8 @@ Also included are two functions:
 
 *** metas
 
-  By default a node will inherit from the Node class.  If you want custom behavior,
-you must pass in a table of metatable constructors.
+  By default a node will inherit from the Node class.  If you want custom
+behavior, you must pass in a table of metatable constructors.
 
 That's a fairly specific beast.  Any rule defined above will have an =id=
 corresonding to the name of the rule.  Unless =SUPPRESS=ed, this will become
@@ -75,7 +74,7 @@ a language that did that sort of thing.
 
 
 - [ ] #todo  Note the require strings below, which prevent this from
-             being a usable library.
+             being a usable library, because =node= not =lpegnode=.
 
              The problem is almost a philosophical one, and it's what I'm
              setting out to solve with =bridge= and =manifest=.
@@ -83,12 +82,14 @@ a language that did that sort of thing.
              In the meantime, =lpegnode= has one consumer. Let's keep it
              happy.
 
+             I'm renaming it =espalier= anyway.
+
 #!lua
 local L = require "lpeg"
-local a = require "ansi"
+local a = require "anterm"
 
-local Node = require "node/node"
-local elpatt = require "node/elpatt"
+local Node = require "espalier/node"
+local elpatt = require "espalier/elpatt"
 
 local DROP = elpatt.DROP
 #/lua
@@ -149,9 +150,9 @@ parameter.
       end
       assert(t.id, "no id on Node")
    else
-	    t.id = id
-	     setmetatable(t, {__index = Node,
-	  	               __tostring = Node.toString})
+      t.id = id
+       setmetatable(t, {__index = Node,
+                     __tostring = Node.toString})
    end
 #/lua
 
@@ -313,12 +314,12 @@ local function define(func, g, e)
         g[ name ] = val
       else
         g[ name ] = (Cc(name)
-        			* Cp()
-        			* Ct(val)
-        			* Cp()
-        			* arg1_str
-        			* arg2_metas)
-        			* arg3_offset / make_ast_node
+              * Cp()
+              * Ct(val)
+              * Cp()
+              * arg1_str
+              * arg2_metas)
+              * arg3_offset / make_ast_node
       end
     end
   })
@@ -356,14 +357,14 @@ yield a parsing function and the grammar as an =lpeg= pattern.
 
 #!lua
 local function new(grammar_template, metas)
-	if type(grammar_template) == "function" then
-		local metas = metas or {}
+  if type(grammar_template) == "function" then
+    local metas = metas or {}
     metas = refineMetas(metas)
-		local grammar = define(grammar_template, nil, metas)
+    local grammar = define(grammar_template, nil, metas)
 
-		local function parse(str, offset)
-			local offset = offset or 0
-			local match = L.match(grammar, str, 1, str, metas, offset)
+    local function parse(str, offset)
+      local offset = offset or 0
+      local match = L.match(grammar, str, 1, str, metas, offset)
       local maybeErr = match:lastLeaf()
       if maybeErr.id then
         if maybeErr.id == "ERROR" then
@@ -383,12 +384,12 @@ local function new(grammar_template, metas)
 
       -- This would be a bad match.
       return match
-		end
+    end
 
-		return parse, grammar
-	else
-		s:halt("no way to build grammar out of " .. type(template))
-	end
+    return parse, grammar
+  else
+    s:halt("no way to build grammar out of " .. type(template))
+  end
 end
 #/lua
 

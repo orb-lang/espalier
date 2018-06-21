@@ -17,7 +17,7 @@ local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P
 
 
 
-local Err = require "node" : inherit()
+local Err = require "espalier/node" : inherit()
 Err.id = "ERROR"
 
 
