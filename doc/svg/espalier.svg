@@ -214,14 +214,14 @@
 <text text-anchor="middle" x="1030" y="-315.8005" font-family="Inconsolata" font-size="14.00" fill="#000000">local dot &#160;&#160;&#160;&#160;= require &quot;espalier/dot&quot;</text>
 <text text-anchor="middle" x="1030" y="-300.4004" font-family="Inconsolata" font-size="14.00" fill="#000000">local elpatt &#160;= require &quot;espalier/elpatt&quot;</text>
 <text text-anchor="middle" x="1030" y="-285.0004" font-family="Inconsolata" font-size="14.00" fill="#000000">local Node &#160;&#160;&#160;= require &quot;espalier/node&quot;</text>
-<text text-anchor="middle" x="1030" y="-269.6004" font-family="Inconsolata" font-size="14.00" fill="#000000">local Spec &#160;&#160;&#160;= require &quot;espalier/spec&quot;</text>
+<text text-anchor="middle" x="1030" y="-269.6004" font-family="Inconsolata" font-size="14.00" fill="#000000">&#45;&#45;local Spec &#160;&#160;&#160;= require &quot;espalier/spec&quot;</text>
 <text text-anchor="middle" x="1030" y="-254.2003" font-family="Inconsolata" font-size="14.00" fill="#000000">local Phrase &#160;= require &quot;espalier/phrase&quot;</text>
 <text text-anchor="middle" x="1030" y="-238.8003" font-family="Inconsolata" font-size="14.00" fill="#000000">local Grammar = require &quot;espalier/grammar&quot;</text>
 <text text-anchor="middle" x="1030" y="-223.4003" font-family="Inconsolata" font-size="14.00" fill="#000000">local Stator &#160;= require &quot;espalier/stator&quot;</text>
 <text text-anchor="middle" x="1030" y="-192.0002" font-family="Inconsolata" font-size="14.00" fill="#000000">return { dot &#160;&#160;&#160;&#160;= dot,</text>
 <text text-anchor="middle" x="1030" y="-176.6002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;elpatt &#160;= elpatt,</text>
 <text text-anchor="middle" x="1030" y="-161.2002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;node &#160;&#160;&#160;= Node,</text>
-<text text-anchor="middle" x="1030" y="-145.8002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;spec &#160;&#160;&#160;= Spec,</text>
+<text text-anchor="middle" x="1030" y="-145.8002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#45;&#45; &#160;&#160;&#160;&#160;&#160;&#160;&#160;spec &#160;&#160;&#160;= Spec,</text>
 <text text-anchor="middle" x="1030" y="-130.4001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;phrase &#160;= Phrase,</text>
 <text text-anchor="middle" x="1030" y="-115.0001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;grammar = Grammar,</text>
 <text text-anchor="middle" x="1030" y="-99.6001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;stator &#160;= Stator }</text>

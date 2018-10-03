@@ -10,7 +10,7 @@ This isn't a great place to put theory, let's build the structure and
 flesh out from there.
 
 ```lua
-local Stator = setmetatable({}, {__index = Stator})
+local Stator = meta {}
 ```
 ## Constructor
 

@@ -70,7 +70,7 @@ flesh out from there.
 // END RANK raw_11
 
 codeblock_5 -> leaf_13
-leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Stator = setmetatable({}, {__index = Stator})"]
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Stator = meta {}"]
 // END RANK codeblock_5
 
 section_6 -> { header_14 prose_15 prose_16 codeblock_17}
