@@ -6,7 +6,7 @@
 ### includes
 
 ```lua
-local u = require "util"
+--local u = require "util"
 local m = require "Orbit/morphemes"
 
 local Grammar = require "espalier/grammar"
@@ -79,7 +79,9 @@ Spec.clu = Grammar(clu_gm)
 
 local metas = {}
 
-local AMt, amt = u.inherit(Node)
+local meta = meta or u.inherit
+
+local AMt, amt = meta(Node)
 
 local function Anew(A, t, str)
   local a = setmetatable(t, AMt)

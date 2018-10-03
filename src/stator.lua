@@ -9,7 +9,7 @@
 
 
 
-local Stator = setmetatable({}, {__index = Stator})
+local Stator = meta {}
 
 
 

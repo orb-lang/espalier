@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 102"]
+doc_0 [label="doc - 104"]
 
 
 doc_0 -> { section_1}
@@ -27,7 +27,7 @@ section_5 [label="section: 30-70"]
 
 section_6 [label="section: 71-78"]
 
-section_7 [label="section: 79-102"]
+section_7 [label="section: 79-104"]
 
 
 // END RANK section_1
@@ -84,7 +84,7 @@ leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_16
 
 codeblock_13 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local u = require \"util\"
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="--local u = require \"util\"
 local m = require \"Orbit/morphemes\"
 
 local Grammar = require \"espalier/grammar\"
@@ -229,11 +229,11 @@ header_37 [label="2 : With metas"]
 
 prose_38 [label="prose"]
 
-codeblock_39 [label="code block 81-94"]
+codeblock_39 [label="code block 81-96"]
 
-codeblock_40 [label="code block 96-98"]
+codeblock_40 [label="code block 98-100"]
 
-codeblock_41 [label="code block 100-102"]
+codeblock_41 [label="code block 102-104"]
 
 
 // END RANK section_7
@@ -260,7 +260,9 @@ codeblock_39 -> leaf_45
 leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 local metas = {}
 
-local AMt, amt = u.inherit(Node)
+local meta = meta or u.inherit
+
+local AMt, amt = meta(Node)
 
 local function Anew(A, t, str)
   local a = setmetatable(t, AMt)

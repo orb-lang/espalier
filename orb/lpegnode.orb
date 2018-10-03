@@ -3,11 +3,13 @@
 Master module for library.
 
 #!lua
-local dot    =  require "lpegespalier/dot"
-local elpatt =  require "lpegespalier/elpatt"
-local Node   =  require "lpegespalier/node"
-local Spec   =  require "lpegespalier/spec"
-
+local dot    =  require "espalier/dot"
+local elpatt =  require "espalier/elpatt"
+local Node   =  require "espalier/node"
+local Spec   =  require "espalier/spec"
+local Phrase =  require "espalier/phrase"
+local Grammar = require "espalier/grammar"
+local Stator =  require "espalier/stator"
 
 return { dot    =  dot,
 		   elpatt =  elpatt,
