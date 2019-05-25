@@ -272,6 +272,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
+   assert(t.parent, "no parent on " .. t.id)
    return t
 end
 

@@ -272,6 +272,7 @@ Now we iterate the children
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
+   assert(t.parent, "no parent on " .. t.id)
    return t
 end
 
