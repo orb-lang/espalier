@@ -265,8 +265,6 @@ end
 
 
 
-
-
    if not t.parent then
       t.parent = t
    end
@@ -277,7 +275,7 @@ end
 
 
 
-   for i = #t, 1, -1 do
+   for i = #t, 1 --[[0]], -1 do
       t[i].parent = t
       local cap = t[i]
       if type(cap) ~= "table" then
@@ -377,11 +375,9 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
-
-
    local offset = offset or 0
    t.first = first + offset
-   t.last  = last + offset - 1
+   t.last  = last + offset - 1 -- [sic]
    t.str   = str
    if metas[id] then
       local meta = metas[id]
@@ -393,9 +389,10 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       assert(t.id, "no id on Node")
    else
       t.id = id
-       setmeta(t, { __index = Node,
-                    __tostring = Node.toString })
+      setmeta(t, { __index = Node,
+                   __tostring = Node.toString })
    end
+
 
 
 
@@ -605,6 +602,11 @@ local function define(func, g, e)
    assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
    return g
 end
+
+
+
+
+
 
 
 
