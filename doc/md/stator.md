@@ -5,25 +5,40 @@
 time to put together a proper set of operations for transducing across a
 Node.
 
+#todo add theory#### asserts
 
-This isn't a great place to put theory, let's build the structure and
-flesh out from there.
-
+```lua
+local setmeta = assert(setmetatable)
+```
 ```lua
 local Stator = meta {}
 ```
+## Weak Table
+
+I imagine we'll want weak references to every state keyed by Node, so
+
+```lua
+-- local _weakstate = setmeta({}, {__mode = 'v'})
+```
+
+One of these will be closed over a Stator.
+
 ## Constructor
 
 We set up a new stator on each Node we're transducing, so we want it to
 be quick and cheap.
 
+#todo  adding =_weakstate= changes the calling convention.  To make this work
+       table, which will shall populate by and by.
 
-I recommend either lifting this method or providing an override if
-subclassing Stator.
+
 
 ```lua
-local function call(stator)
-  return setmetatable({}, {__index = stator, __call = call })
+local function call(stator, _weakstate)
+   local _weakstate = _weakstate or setmeta({}, {__mode = 'v'})
+   local _M = setmeta({}, {__index = stator, __call = call })
+   _M._weakstate =  _weakstate
+  return _M
 end
 ```
 ## New

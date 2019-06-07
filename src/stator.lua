@@ -11,6 +11,13 @@
 
 
 
+
+
+
+local setmeta = assert(setmetatable)
+
+
+
 local Stator = meta {}
 
 
@@ -20,14 +27,31 @@ local Stator = meta {}
 
 
 
+-- local _weakstate = setmeta({}, {__mode = 'v'})
 
 
 
 
-local function call(stator)
-  return setmetatable({}, {__index = stator, __call = call })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function call(stator, _weakstate)
+   local _weakstate = _weakstate or setmeta({}, {__mode = 'v'})
+   local _M = setmeta({}, {__index = stator, __call = call })
+   _M._weakstate =  _weakstate
+  return _M
 end
-
 
 
 

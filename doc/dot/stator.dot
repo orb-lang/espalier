@@ -3,231 +3,350 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 49"]
+doc_0 [label="doc - 73"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-32"]
+section_1 [label="section: 1-56"]
 
 
 // END RANK doc_0
 
-section_1 -> { header_2 prose_3 prose_4 codeblock_5 section_6 section_7}
-{rank=same; header_2 prose_3 prose_4 codeblock_5 section_6 section_7}
+section_1 -> { header_2 prose_3 structure_4 section_5 section_6 section_7 section_8}
+{rank=same; header_2 prose_3 structure_4 section_5 section_6 section_7 section_8}
 
 header_2 [label="1 : Stator"]
 
 prose_3 [label="prose"]
 
-prose_4 [label="prose"]
+structure_4 [label="structure"]
 
-codeblock_5 [label="code block 13-15"]
+section_5 [label="section: 14-24"]
 
-section_6 [label="section: 18-32"]
+section_6 [label="section: 25-34"]
 
-section_7 [label="section: 33-49"]
+section_7 [label="section: 35-56"]
+
+section_8 [label="section: 57-73"]
 
 
 // END RANK section_1
 
-header_2 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Stator"]
+header_2 -> leaf_9
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Stator"]
 // END RANK header_2
 
-prose_3 -> { raw_9}
-{rank=same; raw_9}
+prose_3 -> { raw_10}
+{rank=same; raw_10}
 
-raw_9 [label="raw"]
+raw_10 [label="raw"]
 
 
 // END RANK prose_3
 
-raw_9 -> leaf_10
-leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_10 -> leaf_11
+leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 
   Having gotten about as far as I can with mere string concatenation, it's
 time to put together a proper set of operations for transducing across a
 Node.
 "]
-// END RANK raw_9
+// END RANK raw_10
 
-prose_4 -> { raw_11}
-{rank=same; raw_11}
+structure_4 -> { hashline_12}
+{rank=same; hashline_12}
 
-raw_11 [label="raw"]
+hashline_12 [label="hashline"]
 
 
-// END RANK prose_4
+// END RANK structure_4
 
-raw_11 -> leaf_12
-leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-This isn't a great place to put theory, let's build the structure and
-flesh out from there.
-"]
-// END RANK raw_11
+hashline_12 -> { hashtag_13}
+{rank=same; hashtag_13}
 
-codeblock_5 -> leaf_13
-leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Stator = meta {}"]
-// END RANK codeblock_5
+hashtag_13 [label="hashtag"]
 
-section_6 -> { header_14 prose_15 prose_16 codeblock_17}
-{rank=same; header_14 prose_15 prose_16 codeblock_17}
 
-header_14 [label="2 : Constructor"]
+// END RANK hashline_12
 
-prose_15 [label="prose"]
+hashtag_13 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
+// END RANK hashtag_13
+
+section_5 -> { header_15 prose_16 codeblock_17 codeblock_18}
+{rank=same; header_15 prose_16 codeblock_17 codeblock_18}
+
+header_15 [label="4 : asserts"]
 
 prose_16 [label="prose"]
 
-codeblock_17 [label="code block 26-30"]
+codeblock_17 [label="code block 16-18"]
+
+codeblock_18 [label="code block 20-22"]
 
 
-// END RANK section_6
+// END RANK section_5
 
-header_14 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Constructor"]
-// END RANK header_14
+header_15 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** asserts"]
+// END RANK header_15
 
-prose_15 -> { raw_19}
-{rank=same; raw_19}
+prose_16 -> { raw_20}
+{rank=same; raw_20}
 
-raw_19 [label="raw"]
-
-
-// END RANK prose_15
-
-raw_19 -> leaf_20
-leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-We set up a new stator on each Node we're transducing, so we want it to
-be quick and cheap.
-"]
-// END RANK raw_19
-
-prose_16 -> { raw_21}
-{rank=same; raw_21}
-
-raw_21 [label="raw"]
+raw_20 [label="raw"]
 
 
 // END RANK prose_16
 
-raw_21 -> leaf_22
-leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I recommend either lifting this method or providing an override if
-subclassing Stator.
+raw_20 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
-// END RANK raw_21
+// END RANK raw_20
 
-codeblock_17 -> leaf_23
-leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function call(stator)
-  return setmetatable({}, {__index = stator, __call = call })
-end"]
+codeblock_17 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local setmeta = assert(setmetatable)"]
 // END RANK codeblock_17
 
-section_7 -> { header_24 prose_25 codeblock_26 codeblock_27}
-{rank=same; header_24 prose_25 codeblock_26 codeblock_27}
+codeblock_18 -> leaf_23
+leaf_23  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Stator = meta {}"]
+// END RANK codeblock_18
 
-header_24 [label="2 : New"]
+section_6 -> { header_24 prose_25 codeblock_26 prose_27}
+{rank=same; header_24 prose_25 codeblock_26 prose_27}
+
+header_24 [label="2 : Weak Table"]
 
 prose_25 [label="prose"]
 
-codeblock_26 [label="code block 38-44"]
+codeblock_26 [label="code block 29-31"]
 
-codeblock_27 [label="code block 47-49"]
+prose_27 [label="prose"]
 
 
-// END RANK section_7
+// END RANK section_6
 
 header_24 -> leaf_28
-leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* New
-"]
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Weak Table"]
 // END RANK header_24
 
-prose_25 -> { raw_29 prespace_30 literal_31 raw_32 prespace_33 literal_34 raw_35 prespace_36 literal_37 raw_38}
-{rank=same; raw_29 prespace_30 literal_31 raw_32 prespace_33 literal_34 raw_35 prespace_36 literal_37 raw_38}
+prose_25 -> { raw_29}
+{rank=same; raw_29}
 
 raw_29 [label="raw"]
-
-prespace_30 [label="prespace"]
-
-literal_31 [label="literal"]
-
-raw_32 [label="raw"]
-
-prespace_33 [label="prespace"]
-
-literal_34 [label="literal"]
-
-raw_35 [label="raw"]
-
-prespace_36 [label="prespace"]
-
-literal_37 [label="literal"]
-
-raw_38 [label="raw"]
 
 
 // END RANK prose_25
 
-raw_29 -> leaf_39
-leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_29 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+I imagine we'll want weak references to every state keyed by Node, so
+"]
+// END RANK raw_29
+
+codeblock_26 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="-- local _weakstate = setmeta({}, {__mode = 'v'})"]
+// END RANK codeblock_26
+
+prose_27 -> { raw_32}
+{rank=same; raw_32}
+
+raw_32 [label="raw"]
+
+
+// END RANK prose_27
+
+raw_32 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+One of these will be closed over a Stator.
+"]
+// END RANK raw_32
+
+section_7 -> { header_34 prose_35 structure_36 prose_37 codeblock_38}
+{rank=same; header_34 prose_35 structure_36 prose_37 codeblock_38}
+
+header_34 [label="2 : Constructor"]
+
+prose_35 [label="prose"]
+
+structure_36 [label="structure"]
+
+prose_37 [label="prose"]
+
+codeblock_38 [label="code block 48-55"]
+
+
+// END RANK section_7
+
+header_34 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Constructor"]
+// END RANK header_34
+
+prose_35 -> { raw_40}
+{rank=same; raw_40}
+
+raw_40 [label="raw"]
+
+
+// END RANK prose_35
+
+raw_40 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+We set up a new stator on each Node we're transducing, so we want it to
+be quick and cheap.
+"]
+// END RANK raw_40
+
+structure_36 -> { hashline_42}
+{rank=same; hashline_42}
+
+hashline_42 [label="hashline"]
+
+
+// END RANK structure_36
+
+hashline_42 -> { hashtag_43}
+{rank=same; hashtag_43}
+
+hashtag_43 [label="hashtag"]
+
+
+// END RANK hashline_42
+
+hashtag_43 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="todo"]
+// END RANK hashtag_43
+
+prose_37 -> { raw_45}
+{rank=same; raw_45}
+
+raw_45 [label="raw"]
+
+
+// END RANK prose_37
+
+raw_45 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+       table, which will shall populate by and by.
+
+
+"]
+// END RANK raw_45
+
+codeblock_38 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function call(stator, _weakstate)
+   local _weakstate = _weakstate or setmeta({}, {__mode = 'v'})
+   local _M = setmeta({}, {__index = stator, __call = call })
+   _M._weakstate =  _weakstate
+  return _M
+end"]
+// END RANK codeblock_38
+
+section_8 -> { header_48 prose_49 codeblock_50 codeblock_51}
+{rank=same; header_48 prose_49 codeblock_50 codeblock_51}
+
+header_48 [label="2 : New"]
+
+prose_49 [label="prose"]
+
+codeblock_50 [label="code block 62-68"]
+
+codeblock_51 [label="code block 71-73"]
+
+
+// END RANK section_8
+
+header_48 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* New
+"]
+// END RANK header_48
+
+prose_49 -> { raw_53 prespace_54 literal_55 raw_56 prespace_57 literal_58 raw_59 prespace_60 literal_61 raw_62}
+{rank=same; raw_53 prespace_54 literal_55 raw_56 prespace_57 literal_58 raw_59 prespace_60 literal_61 raw_62}
+
+raw_53 [label="raw"]
+
+prespace_54 [label="prespace"]
+
+literal_55 [label="literal"]
+
+raw_56 [label="raw"]
+
+prespace_57 [label="prespace"]
+
+literal_58 [label="literal"]
+
+raw_59 [label="raw"]
+
+prespace_60 [label="prespace"]
+
+literal_61 [label="literal"]
+
+raw_62 [label="raw"]
+
+
+// END RANK prose_49
+
+raw_53 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 The root Stator has a global context, which is itself.  This is given
 the synonyms"]
-// END RANK raw_29
+// END RANK raw_53
 
-prespace_30 -> leaf_40
-leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_30
+prespace_54 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_54
 
-literal_31 -> leaf_41
-leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="G"]
-// END RANK literal_31
+literal_55 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="G"]
+// END RANK literal_55
 
-raw_32 -> leaf_42
-leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label=","]
-// END RANK raw_32
+raw_56 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label=","]
+// END RANK raw_56
 
-prespace_33 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_33
+prespace_57 -> leaf_67
+leaf_67  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_57
 
-literal_34 -> leaf_44
-leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="g"]
-// END RANK literal_34
+literal_58 -> leaf_68
+leaf_68  [color=Gray,shape=rectangle,fontname=Inconsolata,label="g"]
+// END RANK literal_58
 
-raw_35 -> leaf_45
-leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
-// END RANK raw_35
+raw_59 -> leaf_69
+leaf_69  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" and"]
+// END RANK raw_59
 
-prespace_36 -> leaf_46
-leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_36
+prespace_60 -> leaf_70
+leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_60
 
-literal_37 -> leaf_47
-leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
-// END RANK literal_37
+literal_61 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_G"]
+// END RANK literal_61
 
-raw_38 -> leaf_48
-leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", to suit various styles.
+raw_62 -> leaf_72
+leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", to suit various styles.
 "]
-// END RANK raw_38
+// END RANK raw_62
 
-codeblock_26 -> leaf_49
-leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(Stator)
+codeblock_50 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(Stator)
   local stator = call(Stator)
   stator.g, stator.G, stator._G = stator, stator, stator
   return stator
 end"]
-// END RANK codeblock_26
+// END RANK codeblock_50
 
-codeblock_27 -> leaf_50
-leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return setmetatable(Stator, {__call = new})"]
-// END RANK codeblock_27
+codeblock_51 -> leaf_74
+leaf_74  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return setmetatable(Stator, {__call = new})"]
+// END RANK codeblock_51
 
 
 }
