@@ -8,6 +8,8 @@ Node.
 This isn't a great place to put theory, let's build the structure and
 flesh out from there.
 
+#todo add theory
+
 #!lua
 local Stator = meta {}
 #/lua

@@ -14,7 +14,8 @@ This function takes two parameters, namely:
 
 
   - grammar_template :  A function with one parameter, which must be ``_ENV``.
-  - metas :  A map with keys of string and values of Node subclass constructors.
+  - metas :  A map with keys of string and values of Node subclass
+             constructors.
 
 
 Both of these are reasonably complex.
@@ -64,22 +65,22 @@ a Node.  If the ``metas`` parameter has a key corresponding to ``id``, then it
 must return a function taking two parameters:
 
 
-   - node :  The node under construction, which under normal circumstances will
-             already have the ``first`` and ``last`` fields.
+   - node :  The node under construction, which under normal circumstances
+             will already have the ``first`` and ``last`` fields.
    - str  :  The entire str the grammar is parsing.
 
 
-Which must return that same node, decorated in whatever fashion is appropriate.
+Which must return that same node, decorated in whatever fashion is
+appropriate.
 
 
-The node will not have a metatable at this point, and the function must attach a
-metatable with ``__index`` equal to some table which itself has the ``__index``
+The node will not have a metatable at this point, and the function must attach
+a metatable with ``__index`` equal to some table which itself has the ``__index``
 Node as some recursive backstop.
 
 
 You might say the return value must _inherit_ from Node, if we were using
 a language that did that sort of thing.
-
 
 
 ### includes
@@ -297,6 +298,7 @@ Now we iterate the children
    end
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
+   assert(t.parent, "no parent on " .. t.id)
    return t
 end
 

@@ -6,7 +6,6 @@ Turns out there's a [grammar](https://graphviz.gitlab.io/_pages/doc/info/lang.ht
 So
 
 ```lua
-
 local Node    =  require "espalier/node"
 local Grammar =  require "espalier/grammar"
 local L       =  require "espalier/elpatt"

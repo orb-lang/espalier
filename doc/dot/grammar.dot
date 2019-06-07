@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 398"]
+doc_0 [label="doc - 401"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-352"]
+section_1 [label="section: 1-355"]
 
 
 // END RANK doc_0
@@ -23,9 +23,9 @@ prose_3 [label="prose"]
 
 codeblock_4 [label="code block 6-10"]
 
-section_5 [label="section: 12-118"]
+section_5 [label="section: 13-120"]
 
-section_6 [label="section: 353-398"]
+section_6 [label="section: 356-401"]
 
 
 // END RANK section_1
@@ -67,13 +67,13 @@ prose_13 [label="prose"]
 
 prose_14 [label="prose"]
 
-section_15 [label="section: 22-47"]
+section_15 [label="section: 24-49"]
 
-section_16 [label="section: 48-72"]
+section_16 [label="section: 50-74"]
 
-section_17 [label="section: 73-118"]
+section_17 [label="section: 75-120"]
 
-section_18 [label="section: 119-159"]
+section_18 [label="section: 121-161"]
 
 
 // END RANK section_5
@@ -126,7 +126,8 @@ leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="_ENV"]
 
 raw_25 -> leaf_29
 leaf_29  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
-  - metas :  A map with keys of string and values of Node subclass constructors.
+  - metas :  A map with keys of string and values of Node subclass
+             constructors.
 "]
 // END RANK raw_25
 
@@ -519,8 +520,8 @@ raw_123 [label="raw"]
 
 raw_117 -> leaf_124
 leaf_124  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-   - node :  The node under construction, which under normal circumstances will
-             already have the"]
+   - node :  The node under construction, which under normal circumstances
+             will already have the"]
 // END RANK raw_117
 
 prespace_118 -> leaf_125
@@ -559,7 +560,8 @@ raw_131 [label="raw"]
 
 raw_131 -> leaf_132
 leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Which must return that same node, decorated in whatever fashion is appropriate.
+Which must return that same node, decorated in whatever fashion is
+appropriate.
 "]
 // END RANK raw_131
 
@@ -585,8 +587,8 @@ raw_139 [label="raw"]
 
 raw_133 -> leaf_140
 leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-The node will not have a metatable at this point, and the function must attach a
-metatable with"]
+The node will not have a metatable at this point, and the function must attach
+a metatable with"]
 // END RANK raw_133
 
 prespace_134 -> leaf_141
@@ -646,7 +648,6 @@ raw_150 -> leaf_154
 leaf_154  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" from Node, if we were using
 a language that did that sort of thing.
 
-
 "]
 // END RANK raw_150
 
@@ -663,13 +664,13 @@ prose_158 [label="prose"]
 
 prose_159 [label="prose"]
 
-codeblock_160 [label="code block 87-95"]
+codeblock_160 [label="code block 89-97"]
 
 prose_161 [label="prose"]
 
 prose_162 [label="prose"]
 
-codeblock_163 [label="code block 101-116"]
+codeblock_163 [label="code block 103-118"]
 
 
 // END RANK section_17
@@ -909,11 +910,11 @@ header_215 [label="3 : make_ast_node"]
 
 prose_216 [label="prose"]
 
-codeblock_217 [label="code block 124-126"]
+codeblock_217 [label="code block 126-128"]
 
-section_218 [label="section: 129-159"]
+section_218 [label="section: 131-161"]
 
-section_219 [label="section: 160-352"]
+section_219 [label="section: 162-355"]
 
 
 // END RANK section_18
@@ -951,7 +952,7 @@ prose_225 [label="prose"]
 
 prose_226 [label="prose"]
 
-codeblock_227 [label="code block 139-157"]
+codeblock_227 [label="code block 141-159"]
 
 
 // END RANK section_218
@@ -1126,15 +1127,15 @@ prose_272 [label="prose"]
 
 prose_273 [label="prose"]
 
-codeblock_274 [label="code block 208-212"]
+codeblock_274 [label="code block 210-214"]
 
 prose_275 [label="prose"]
 
 prose_276 [label="prose"]
 
-codeblock_277 [label="code block 218-334"]
+codeblock_277 [label="code block 220-337"]
 
-codeblock_278 [label="code block 336-350"]
+codeblock_278 [label="code block 339-353"]
 
 
 // END RANK section_219
@@ -1628,6 +1629,7 @@ leaf_373  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   for i = #t,
    end
    assert(t.isNode, \"failed isNode: \" .. id)
    assert(t.str)
+   assert(t.parent, \"no parent on \" .. t.id)
    return t
 end
 
@@ -1712,9 +1714,9 @@ header_375 [label="2 : new"]
 
 prose_376 [label="prose"]
 
-codeblock_377 [label="code block 358-394"]
+codeblock_377 [label="code block 361-397"]
 
-codeblock_378 [label="code block 396-398"]
+codeblock_378 [label="code block 399-401"]
 
 
 // END RANK section_6

@@ -2,26 +2,50 @@
 
 
   The Node class implements an abstract syntax tree, in collaboration with
-the [[Grammar class][/grammar] and lpeg more generally.
+the [Grammar class](hts://~/grammar.orb) and lpeg more generally.
 
 
-### includes
+#### asserts
+
+```lua
+local yield = assert(coroutine.yield, "uses coroutines")
+local wrap = assert(coroutine.wrap)
+local sub, find = assert(string.sub, "uses string"), assert(string.find)
+local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
+```
+#### requires
 
 ```lua
 local s = require "status" ()
 local a = require "anterm"
 local dot = require "espalier/dot"
 ```
+```lua
+   -- ergo
+   --[[
+   local html = require "espalier/html"
+   local css  = require "espalier/css"
+   local portal = require "espalier/portal"
+   --]]
+```
 ## Node metatable
 
   The Node metatable is the root table for any Node, all of which should
-subclass through [[Node:inherit()][httk://]].
+subclass through [[Node:inherit()][hts://~/node#node:inherit()]].
 
 ```lua
 local Node = {}
 Node.__index = Node
 Node.isNode = Node
 ```
+
+we would now say ``local Node = meta {}``.
+
+
+The ``isNode`` is a quirk of the ``Node`` arcy, being distinct from ``idEst`` for
+orthogonality.
+
+
 ## Fields
 
    - id :  A string naming the Node.
@@ -33,7 +57,7 @@ Node.isNode = Node
            produce a Node which lacks this flag.
 
 
-   - isNode :  A boolean, always ``true``.
+   - isNode :  A boolean, always ``true``/truthy.
 
 
 ## Methods
@@ -45,7 +69,8 @@ This is not a general method in any sense, it's here as a backstop
 while I build out Clu.
 
 
-  - [ ] #todo remove
+I'm going to call it an important root method: it says, in plain English,
+that a bare Node cannot be simply converted to Lua.
 
 ```lua
 function Node.toLua(node)
@@ -71,7 +96,7 @@ function Node.toString(node, depth)
       if Node.len(node) > 56 then
          --  Truncate in the middle
          local span = Node.span(node)
-         local pre, post = string.sub(span, 1, 26), string.sub(span, -26, -1)
+         local pre, post = sub(span, 1, 26), sub(span, -26, -1)
          extra = extra .. a.dim(pre) .. a.bright("………") .. a.dim(post)
          extra = extra:gsub("\n", "◼︎")
       else
@@ -94,31 +119,53 @@ end
 ```
 ### Metrics
 
+These retrieve various general properties of the Node.
 
-#### span
+
+The focus has been on correctness over speed.
+
+
+#### node:span()
+
+``node:span()`` returns a substring across the span of the Node.
 
 ```lua
 function Node.span(node)
-   return string.sub(node.str, node.first, node.last)
+   return sub(node.str, node.first, node.last)
 end
 ```
-#### len
+#### node:len()
 
 ahh, the pleasure of indexing by one.
+
+
+``node:len()`` gives the ``#node`` and I think we can just add that as a synonym.
+
+
+hmm.
 
 ```lua
 function Node.len(node)
     return 1 + node.last - node.first
 end
 ```
+
+Hence
+
+```lun
+fn Node.len(node)
+   -> @last - @first
+end
+```
+
+yes, we can:
+
+```lua
+Node.__len = Node.len
+```
 #### Node:gap(node)
 
-NOTE this is unused and hence untested
-
-
-- [ ] #todo either use this, validate it, or get rid of it
-
-
+#NB this is unused and hence untested
 ``Node.gap(left, right)`` compares the ``last`` field of the ``left`` parameter
 with the ``first`` field of the ``right`` parameter, **if** this is greater than
 0.
@@ -161,23 +208,74 @@ function Node.gap(left, right)
   return nil
 end
 ```
+#### node:dotLabel()
+
+This provides a label for dot files.
+
+
+Perhaps over-specialized.  We might prefer a ``node:label()`` for generality
+and call it when constructing labile trees.
+
 ```lua
 function Node.dotLabel(node)
   return node.id
 end
+```
+#### node:label()
 
+A synonym, then. But a heritable one, you see.
+
+
+``id`` being generic, and genre being all we have at the root:
+
+```lua
+function Node.label(node)
+   return node.id
+end
+```
+
+Worth writing twice.
+
+
+### Backstops
+
+The backstops prevent malformed parsing of some key format transitions.
+
+
+They also provide a paradigm for writing more of same for language-specific
+cases.
+
+
+#### node:toMarkdown()
+
+This provides a literal string if called on a leaf node and otherwise halts.
+
+```lua
 function Node.toMarkdown(node)
   if not node[1] then
-    return string.sub(node.str, node.first, node.last)
+    return sub(node.str, node.first, node.last)
   else
     s:halt("no toMarkdown for " .. node.id)
   end
 end
+```
+### node:dot(node)
 
+Generates a entire ``dot`` node.
+
+```lua
 function Node.dot(node)
   return dot.dot(node)
 end
+```
+### node:toValue()
 
+Sometimes you want the value of a Node.
+
+
+So you call this:
+
+```lua
 function Node.toValue(node)
   if node.__VALUE then
     return node.__VALUE
@@ -188,8 +286,12 @@ function Node.toValue(node)
     s:halt("no str on node " .. node.id)
   end
 end
-
 ```
+### Iterators
+
+Traversal may be done several ways.
+
+
 #### Node.walkPost
 
 Depth-first iterator, postfix
@@ -204,10 +306,10 @@ function Node.walkPost(node)
               traverse(v)
             end
         end
-        coroutine.yield(ast)
+        yield(ast)
     end
 
-    return coroutine.wrap(function() traverse(node) end)
+    return wrap(function() traverse(node) end)
 end
 ```
 #### Node.walk
@@ -218,8 +320,7 @@ Presearch iterator.  This is the default.
 function Node.walk(node)
   local function traverse(ast)
     if not ast.isNode then return nil end
-
-    coroutine.yield(ast)
+    yield(ast)
     for _, v in ipairs(ast) do
       if type(v) == 'table' and v.isNode then
         traverse(v)
@@ -227,10 +328,15 @@ function Node.walk(node)
     end
   end
 
-  return coroutine.wrap(function() traverse(node) end)
+  return wrap(function() traverse(node) end)
 end
 
 ```
+### Selection
+
+We are frequently in search of a subset of Nodes:
+
+
 #### Node.select(node, pred)
 
   Takes the Node and walks it, yielding the Nodes which match the predicate.
@@ -257,7 +363,7 @@ function Node.select(node, pred)
    local function traverse(ast)
       -- breadth first
       if qualifies(ast, pred) then
-         coroutine.yield(ast)
+         yield(ast)
       end
       if ast.isNode then
          for _, v in ipairs(ast) do
@@ -266,7 +372,7 @@ function Node.select(node, pred)
       end
    end
 
-   return coroutine.wrap(function() traverse(node) end)
+   return wrap(function() traverse(node) end)
 end
 ```
 #### Node.tokens(node)
@@ -278,12 +384,12 @@ function Node.tokens(node)
   local function traverse(ast)
     for node in Node.walk(ast) do
       if not node[1] then
-        coroutine.yield(node:toValue())
+        yield(node:toValue())
       end
     end
   end
 
-  return coroutine.wrap(function() traverse(node) end)
+  return wrap(function() traverse(node) end)
 end
 ```
 #### Node.lines(node)
@@ -294,22 +400,22 @@ A memoized iterator returning ``str`` one line at a time.
 Newlines are not included.
 
 
-In addition, the first ``node:lines() traversal builds up
-a sourcemap subsequently used by ``node:atLine(pos)= to
+In addition, the first ``node:lines()`` traversal builds up
+a source map subsequently used by ``node:atLine(pos)`` to
 return the line and column of a given position.
 
 ```lua
 function Node.lines(node)
   local function yieldLines(node, linum)
      for _, str in ipairs(node.__lines) do
-        coroutine.yield(str)
+        yield(str)
       end
   end
 
   if node.__lines then
-     return coroutine.wrap(function ()
-                              yieldLines(node)
-                           end)
+     return wrap(function ()
+                    yieldLines(node)
+                 end)
   else
      node.__lines = {}
   end
@@ -319,21 +425,21 @@ function Node.lines(node)
         return nil
       end
       local rest = ""
-      local first, last = string.find(str, "\n")
+      local first, last = find(str, "\n")
       if first == nil then
         return nil
       else
-        local line = string.sub(str, 1, first - 1) -- no newline
-        rest       = string.sub(str, last + 1)    -- skip newline
+        local line = sub(str, 1, first - 1) -- no newline
+        rest       = sub(str, last + 1)    -- skip newline
         node.__lines[#node.__lines + 1] = line
-        coroutine.yield(line)
+        yield(line)
       end
       buildLines(rest)
   end
 
-  return coroutine.wrap(function ()
-                           buildLines(node.str)
-                        end)
+  return wrap(function ()
+            buildLines(node.str)
+         end)
 end
 ```
 #### Node.linePos(node, position)
@@ -377,7 +483,8 @@ function Node.linePos(node, position)
           position = position - #v - 1
        end
    end
-   return nil -- this position is off the end of the string
+   -- this position is off the end of the string
+   return nil, "exceeds #str", - offset  -- I think that's the best 3rd value?
 end
 ```
 #### Node.lastLeaf(node)
@@ -429,8 +536,9 @@ function Node.isValid(node)
   assert(node.last, "node must have last")
   assert(type(node.last) == "number", "node.last must be of type number")
   assert(node.str, "node must have str")
-  assert(type(node.str) == "string" or node.str.isPhrase, "str must be string or phrase")
-  assert(node.parent, "node must have parent")
+  assert(type(node.str) == "string"
+         or node.str.isPhrase, "str must be string or phrase")
+  assert(node.parent and node.parent.isNode == Node, "node must have parent")
   assert(type(node:span()) == "string", "span() must yield string")
   return true
 end
@@ -445,23 +553,40 @@ end
 ```
 ### Subclassing and construction
 
+These methods are used to construct specific Nodes, whether at ``femto`` or
+within a given Grammar.
 
-#### N.inherit(node)
+
+#### Node:inherit()
+
+This does the familiar single-inheritance with inlined ``__index``ing, returning
+both ``Meta`` and ``meta``.
+
+
+It's easier to read than to describe:
 
 ```lua
 function Node.inherit(node)
-  local Meta = setmetatable({}, node)
+  local Meta = setmeta({}, node)
   Meta.__index = Meta
-  local meta = setmetatable({}, Meta)
+  local meta = setmeta({}, Meta)
   meta.__index = meta
   return Meta, meta
 end
+```
 
+And best understood on the [consumer side](hts://~/grammar.orb#tk).
+
+
+#### Node:export(mod, constructor)
+
+This prepares a Node for incorporation into a Grammar.
+
+```lua
 function Node.export(_, mod, constructor)
   mod.__call = constructor
-  return setmetatable({}, mod)
+  return setmeta({}, mod)
 end
-
 ```
 ## Node Instances
 
@@ -481,9 +606,13 @@ cyclic Node graphs are made.  The Grammar class will not do this to you.
   There are invariant fields a Node is also expected to have, they are:
 
 
-  - first :  Index into ``str`` which begins the span.
-  - last  :  Index into ``str`` which ends the span.
-  - str   :  The string of which the Node spans part or the whole.
+  - first    :  Index into ``str`` which begins the span.
+  - last     :  Index into ``str`` which ends the span.
+  - str      :  The string of which the Node spans part or the whole, or
+                a Phrase of same.
+  - isPhrase :  Equals ``Phrase`` iff str is a Phrase.
+  - parent   :  A Node, which may be a self-reference for a root node.
+  - isNode   :  This equals to ``Node``.
 
 
 ### Other fields

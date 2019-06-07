@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 62"]
+doc_0 [label="doc - 61"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-62"]
+section_1 [label="section: 1-61"]
 
 
 // END RANK doc_0
@@ -23,7 +23,7 @@ prose_3 [label="prose"]
 
 prose_4 [label="prose"]
 
-codeblock_5 [label="code block 7-62"]
+codeblock_5 [label="code block 7-61"]
 
 
 // END RANK section_1
@@ -88,8 +88,7 @@ So
 // END RANK raw_16
 
 codeblock_5 -> leaf_18
-leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-local Node    =  require \"espalier/node\"
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Node    =  require \"espalier/node\"
 local Grammar =  require \"espalier/grammar\"
 local L       =  require \"espalier/elpatt\"
 

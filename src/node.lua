@@ -8,9 +8,30 @@
 
 
 
+local yield = assert(coroutine.yield, "uses coroutines")
+local wrap = assert(coroutine.wrap)
+local sub, find = assert(string.sub, "uses string"), assert(string.find)
+local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
+
+
+
+
+
+
 local s = require "status" ()
 local a = require "anterm"
 local dot = require "espalier/dot"
+
+
+
+
+
+   -- ergo
+   --[[
+   local html = require "espalier/html"
+   local css  = require "espalier/css"
+   local portal = require "espalier/portal"
+   --]]
 
 
 
@@ -23,6 +44,12 @@ local dot = require "espalier/dot"
 local Node = {}
 Node.__index = Node
 Node.isNode = Node
+
+
+
+
+
+
 
 
 
@@ -63,6 +90,8 @@ end
 
 
 
+
+
 function Node.toString(node, depth)
    local depth = depth or 0
    local phrase = ""
@@ -73,7 +102,7 @@ function Node.toString(node, depth)
       if Node.len(node) > 56 then
          --  Truncate in the middle
          local span = Node.span(node)
-         local pre, post = string.sub(span, 1, 26), string.sub(span, -26, -1)
+         local pre, post = sub(span, 1, 26), sub(span, -26, -1)
          extra = extra .. a.dim(pre) .. a.bright("………") .. a.dim(post)
          extra = extra:gsub("\n", "◼︎")
       else
@@ -101,9 +130,20 @@ end
 
 
 
+
+
+
+
+
+
+
 function Node.span(node)
-   return string.sub(node.str, node.first, node.last)
+   return sub(node.str, node.first, node.last)
 end
+
+
+
+
 
 
 
@@ -115,6 +155,22 @@ end
 function Node.len(node)
     return 1 + node.last - node.first
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+Node.__len = Node.len
+
+
 
 
 
@@ -165,21 +221,75 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Node.dotLabel(node)
   return node.id
 end
 
+
+
+
+
+
+
+
+
+
+function Node.label(node)
+   return node.id
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Node.toMarkdown(node)
   if not node[1] then
-    return string.sub(node.str, node.first, node.last)
+    return sub(node.str, node.first, node.last)
   else
     s:halt("no toMarkdown for " .. node.id)
   end
 end
 
+
+
+
+
+
+
 function Node.dot(node)
   return dot.dot(node)
 end
+
+
+
+
+
+
+
+
+
 
 function Node.toValue(node)
   if node.__VALUE then
@@ -199,6 +309,11 @@ end
 
 
 
+
+
+
+
+
 function Node.walkPost(node)
     local function traverse(ast)
         if not ast.isNode then return nil end
@@ -208,11 +323,12 @@ function Node.walkPost(node)
               traverse(v)
             end
         end
-        coroutine.yield(ast)
+        yield(ast)
     end
 
-    return coroutine.wrap(function() traverse(node) end)
+    return wrap(function() traverse(node) end)
 end
+
 
 
 
@@ -223,8 +339,7 @@ end
 function Node.walk(node)
   local function traverse(ast)
     if not ast.isNode then return nil end
-
-    coroutine.yield(ast)
+    yield(ast)
     for _, v in ipairs(ast) do
       if type(v) == 'table' and v.isNode then
         traverse(v)
@@ -232,8 +347,13 @@ function Node.walk(node)
     end
   end
 
-  return coroutine.wrap(function() traverse(node) end)
+  return wrap(function() traverse(node) end)
 end
+
+
+
+
+
 
 
 
@@ -264,7 +384,7 @@ function Node.select(node, pred)
    local function traverse(ast)
       -- breadth first
       if qualifies(ast, pred) then
-         coroutine.yield(ast)
+         yield(ast)
       end
       if ast.isNode then
          for _, v in ipairs(ast) do
@@ -273,7 +393,7 @@ function Node.select(node, pred)
       end
    end
 
-   return coroutine.wrap(function() traverse(node) end)
+   return wrap(function() traverse(node) end)
 end
 
 
@@ -287,12 +407,12 @@ function Node.tokens(node)
   local function traverse(ast)
     for node in Node.walk(ast) do
       if not node[1] then
-        coroutine.yield(node:toValue())
+        yield(node:toValue())
       end
     end
   end
 
-  return coroutine.wrap(function() traverse(node) end)
+  return wrap(function() traverse(node) end)
 end
 
 
@@ -311,14 +431,14 @@ end
 function Node.lines(node)
   local function yieldLines(node, linum)
      for _, str in ipairs(node.__lines) do
-        coroutine.yield(str)
+        yield(str)
       end
   end
 
   if node.__lines then
-     return coroutine.wrap(function ()
-                              yieldLines(node)
-                           end)
+     return wrap(function ()
+                    yieldLines(node)
+                 end)
   else
      node.__lines = {}
   end
@@ -328,21 +448,21 @@ function Node.lines(node)
         return nil
       end
       local rest = ""
-      local first, last = string.find(str, "\n")
+      local first, last = find(str, "\n")
       if first == nil then
         return nil
       else
-        local line = string.sub(str, 1, first - 1) -- no newline
-        rest       = string.sub(str, last + 1)    -- skip newline
+        local line = sub(str, 1, first - 1) -- no newline
+        rest       = sub(str, last + 1)    -- skip newline
         node.__lines[#node.__lines + 1] = line
-        coroutine.yield(line)
+        yield(line)
       end
       buildLines(rest)
   end
 
-  return coroutine.wrap(function ()
-                           buildLines(node.str)
-                        end)
+  return wrap(function ()
+            buildLines(node.str)
+         end)
 end
 
 
@@ -384,7 +504,8 @@ function Node.linePos(node, position)
           position = position - #v - 1
        end
    end
-   return nil -- this position is off the end of the string
+   -- this position is off the end of the string
+   return nil, "exceeds #str", - offset  -- I think that's the best 3rd value?
 end
 
 
@@ -432,7 +553,6 @@ end
 
 
 
-
 function Node.isValid(node)
   assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
          .. node.id .. " " .. tostring(node))
@@ -441,8 +561,9 @@ function Node.isValid(node)
   assert(node.last, "node must have last")
   assert(type(node.last) == "number", "node.last must be of type number")
   assert(node.str, "node must have str")
-  assert(type(node.str) == "string" or node.str.isPhrase, "str must be string or phrase")
-  assert(node.parent, "node must have parent")
+  assert(type(node.str) == "string"
+         or node.str.isPhrase, "str must be string or phrase")
+  assert(node.parent and node.parent.isNode == Node, "node must have parent")
   assert(type(node:span()) == "string", "span() must yield string")
   return true
 end
@@ -462,18 +583,39 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 function Node.inherit(node)
-  local Meta = setmetatable({}, node)
+  local Meta = setmeta({}, node)
   Meta.__index = Meta
-  local meta = setmetatable({}, Meta)
+  local meta = setmeta({}, Meta)
   meta.__index = meta
   return Meta, meta
 end
 
+
+
+
+
+
+
+
+
+
 function Node.export(_, mod, constructor)
   mod.__call = constructor
-  return setmetatable({}, mod)
+  return setmeta({}, mod)
 end
+
+
+
 
 
 
