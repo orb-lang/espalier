@@ -43,8 +43,6 @@ be quick and cheap.
        Then subsequent Stator creation passes in the single =_weakstate=
        table, which will shall populate by and by.
 
-
-
 #!lua
 local function call(stator, _weakstate)
    local _weakstate = _weakstate or setmeta({}, {__mode = 'v'})

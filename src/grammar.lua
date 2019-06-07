@@ -4,83 +4,122 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local s = require "status" ()
 s.verbose = false
 s.angry   = false
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -101,8 +140,12 @@ local DROP = elpatt.DROP
 
 
 
+
+
+
 local assert = assert
 local string, io = assert( string ), assert( io )
+local remove = assert(table.remove)
 local VER = string.sub( assert( _VERSION ), -4 )
 local _G = assert( _G )
 local error = assert( error )
@@ -110,7 +153,7 @@ local pairs = assert( pairs )
 local next = assert( next )
 local type = assert( type )
 local tostring = assert( tostring )
-local setmetatable = assert( setmetatable )
+local setmeta = assert( setmetatable )
 if VER == " 5.1" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
@@ -124,7 +167,6 @@ end
 
 
 
-local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
@@ -139,23 +181,40 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
-   local offset = offset or 0
-   t.first = first + offset
-   t.last  = last + offset - 1
-   t.str   = str
-   if metas[id] then
-      local meta = metas[id]
-      if type(meta) == "function" or meta.__call then
-        t = metas[id](t, str)
-      else
-        t = setmetatable(t, meta)
-      end
-      assert(t.id, "no id on Node")
-   else
-      t.id = id
-       setmetatable(t, {__index = Node,
-                     __tostring = Node.toString})
-   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -224,6 +283,8 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       if type(cap) ~= "table" then
          s:complain("CAPTURE ISSUE",
                     "type of capture subgroup is " .. type(v) .. "\n")
+                 -- better:
+                 -- phrase {"type of capture subgroup is", type(v), "\n"}
       end
       if cap.DROP == DROP then
          s:verb("drops in " .. a.bright(t.id))
@@ -231,8 +292,10 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
             s:verb(a.red("rightmost") .. " remaining node")
             s:verb("  t.$: " .. tostring(t.last) .. " Δ: "
                    .. tostring(cap.last - cap.first))
+            -- <action>
             t.last = t.last - (cap.last - cap.first)
-            table.remove(t)
+            remove(t)
+            -- </action>
             s:verb("  new t.$: " .. tostring(t.last))
          else
             -- Here we may be either in the middle or at the leftmost
@@ -243,9 +306,13 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                s:verb(a.cyan("  leftmost") .. " remaining node")
                s:verb("    t.^: " .. tostring(t.first)
                       .. " D.$: " .. tostring(cap.last))
+               -- <action>
                t.first = cap.last
+               --    <comment>
                s:verb("    new t.^: " .. tostring(t.first))
-               table.remove(t, 1)
+               --    </comment>
+               remove(t, 1)
+               -- </action>
             else
                leftmost = true -- provisionally since cap.DROP
                for j = i, 1, -1 do
@@ -258,28 +325,231 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
                          .. " D.$: " .. tostring(cap.last))
                   t.first = cap.last
                   s:verb("    new t.^: " .. tostring(t.first))
+                  -- <action>
                   for j = i, 1, -1 do
                      -- this is quadradic but correct
                      -- and easy to understand.
-                     table.remove(t, j)
+                        remove(t, j)
                      break
                   end
+                  -- </action>
                else
                   s:verb(a.green("  middle") .. " node dropped")
-                  table.remove(t, i)
+                  remove(t, i)
                end
             end
          end
       end
    end
+   -- post conditions
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
    assert(t.parent, "no parent on " .. t.id)
    return t
 end
+local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
--- localize the patterns we use
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   local offset = offset or 0
+   t.first = first + offset
+   t.last  = last + offset - 1
+   t.str   = str
+   if metas[id] then
+      local meta = metas[id]
+      if type(meta) == "function" or meta.__call then
+        t = metas[id](t, str)
+      else
+        t = setmeta(t, meta)
+      end
+      assert(t.id, "no id on Node")
+   else
+      t.id = id
+       setmeta(t, { __index = Node,
+                    __tostring = Node.toString })
+   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Cp = L.Cp
 local Cc = L.Cc
 local Ct = L.Ct
@@ -288,51 +558,52 @@ local arg2_metas = L.Carg(2)
 local arg3_offset = L.Carg(3)
 
 
--- setup an environment where you can easily define lpeg grammars
--- with lots of syntax sugar
-local function define(func, g, e)
-  g = g or {}
-  if e == nil then
-    e = VER == " 5.1" and getfenv(func) or _G
-  end
-  local suppressed = {}
-  local env = {}
-  local env_index = {
-    START = function(name) g[1] = name end,
-    SUPPRESS = function(...)
-      suppressed = {}
-      for i = 1, select('#', ...) do
-        suppressed[select(i, ... )] = true
-      end
-    end,
-    V = L.V,
-    P = L.P,
-  }
 
-  setmetatable(env_index, { __index = e })
-  setmetatable(env, {
-    __index = env_index,
-    __newindex = function( _, name, val )
-      if suppressed[ name ] then
-        g[ name ] = val
-      else
-        g[ name ] = (Cc(name)
-              * Cp()
-              * Ct(val)
-              * Cp()
-              * arg1_str
-              * arg2_metas)
-              * arg3_offset / make_ast_node
-      end
-    end
-  })
-  -- call passed function with custom environment (5.1- and 5.2-style)
-  if VER == " 5.1" then
-    setfenv( func, env )
-  end
-  func( env )
-  assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
-  return g
+
+
+
+local function define(func, g, e)
+   g = g or {}
+   if e == nil then
+      e = VER == " 5.1" and getfenv(func) or _G
+   end
+   local suppressed = {}
+   local env = {}
+   local env_index = {
+      START = function(name) g[1] = name end,
+      SUPPRESS = function(...)
+         suppressed = {}
+         for i = 1, select('#', ...) do
+            suppressed[select(i, ... )] = true
+         end
+      end,
+      V = L.V,
+      P = L.P }
+
+    setmeta(env_index, { __index = e })
+    setmeta(env, {
+       __index = env_index,
+       __newindex = function( _, name, val )
+          if suppressed[ name ] then
+             g[ name ] = val
+          else
+             g[ name ] = (Cc(name)
+                * Cp()
+                * Ct(val)
+                * Cp()
+                * arg1_str
+                * arg2_metas)
+                * arg3_offset / make_ast_node
+          end
+       end })
+
+   -- call passed function with custom environment (5.1- and 5.2-style)
+   if VER == " 5.1" then
+      setfenv(func, env )
+   end
+   func( env )
+   assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
+   return g
 end
 
 

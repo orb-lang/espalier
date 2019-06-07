@@ -44,8 +44,6 @@ local Stator = meta {}
 
 
 
-
-
 local function call(stator, _weakstate)
    local _weakstate = _weakstate or setmeta({}, {__mode = 'v'})
    local _M = setmeta({}, {__index = stator, __call = call })
