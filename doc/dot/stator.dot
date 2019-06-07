@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 73"]
+doc_0 [label="doc - 71"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-56"]
+section_1 [label="section: 1-54"]
 
 
 // END RANK doc_0
@@ -27,9 +27,9 @@ section_5 [label="section: 14-24"]
 
 section_6 [label="section: 25-34"]
 
-section_7 [label="section: 35-56"]
+section_7 [label="section: 35-54"]
 
-section_8 [label="section: 57-73"]
+section_8 [label="section: 55-71"]
 
 
 // END RANK section_1
@@ -177,7 +177,7 @@ structure_36 [label="structure"]
 
 prose_37 [label="prose"]
 
-codeblock_38 [label="code block 48-55"]
+codeblock_38 [label="code block 46-53"]
 
 
 // END RANK section_7
@@ -233,8 +233,6 @@ raw_45 [label="raw"]
 raw_45 -> leaf_46
 leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
        table, which will shall populate by and by.
-
-
 "]
 // END RANK raw_45
 
@@ -254,9 +252,9 @@ header_48 [label="2 : New"]
 
 prose_49 [label="prose"]
 
-codeblock_50 [label="code block 62-68"]
+codeblock_50 [label="code block 60-66"]
 
-codeblock_51 [label="code block 71-73"]
+codeblock_51 [label="code block 69-71"]
 
 
 // END RANK section_8

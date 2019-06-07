@@ -1,14 +1,48 @@
 # Grammar Module
 
-  The grammar module returns one function, which generates
-a grammar.
 
-```lua
-local s = require "status" ()
-s.verbose = false
-s.angry   = false
-```
-## Parameters
+The grammar module returns one function, which generates a grammar.
+
+
+This document is a good candidate for a more strictly literate approach.
+
+
+## Introduction
+
+This module is in a very real sense a **duet**.
+
+
+It is an adaptation, refinement, extension, of Phillipe Janda's work,
+``luaepnf``:
+
+
+**[[luaepnf][http://siffiejoe.github.io/lua-luaepnf/]]**
+
+
+While ``femto`` is based on a repl by Tim Caswell, that is a case of taking a
+sketch and painting a picture.
+
+
+Many difficult aspects of this algorithm are found directly in the source
+material upon which this is based.
+
+
+Don Phillipe has my thanks, and my fervent hope that he enjoys what follows.
+
+
+#### Aside to the Knuthian camp
+
+I have written a semi-literate boostrap.
+
+
+I make no apology for this.  Cleaning what follows into a literate order is
+a tractable problem.
+
+
+In the meantime, let us build a Grammar from parts.
+
+
+## Return Parameters of the Grammar Function
 
 This function takes two parameters, namely:
 
@@ -23,8 +57,8 @@ Both of these are reasonably complex.
 
 ### grammar_template
 
-  The internal function @define creates a custom environment variable, neatly
-sidestepping lua's pedantic insistance on prepending ``local`` to all values of
+  The internal function ``define`` creates a custom environment variable, neatly
+sidestepping Lua's pedantic insistance on prepending ``local`` to all values of
 significance.
 
 
@@ -37,12 +71,12 @@ Node.  Captures will interpolate various other sorts of Lua values, which will
 induce halting in some places and silently corrupt execution in others.
 
 
-The [elpatt module](./elpatt) is intended to provide those patterns which
-are allowed in Grammars, while expanding the scope of some favorites to
-properly respect utf-8 and otherwise behave.
+The [elpatt module](hts://~/elpatt.orb) is intended to provide those
+patterns which are allowed in Grammars, while expanding the scope of some
+favorites to properly respect utf-8 and otherwise behave.
 
 
-There are examples of the format in the [spec module](./spec).
+There are examples of the format in the [spec module](hts://~/spec.orb).
 
 
 Also included are two functions:
@@ -51,6 +85,10 @@ Also included are two functions:
   -  START :  a string which must be the same as the starting rule.
   -  SUPPRESS :  either a string or an array of strings. These rules will be
                  removed from the Node.
+
+
+The use of ALL-CAPS was Phillipe Janda's convention, I agree that it reads
+well in this singular instance.
 
 
 ### metas
@@ -83,10 +121,10 @@ You might say the return value must _inherit_ from Node, if we were using
 a language that did that sort of thing.
 
 
-### includes
+### requires
 
 
-- [ ] #todo  Note the require strings below, which prevent this from
+- [X] #todo  Note the require strings below, which prevent this from
              being a usable library, because ``node`` not ``lpegnode``.
 
 
@@ -100,6 +138,16 @@ a language that did that sort of thing.
 
              I'm renaming it ``espalier`` anyway.
 
+
+##### status
+
+```lua
+local s = require "status" ()
+s.verbose = false
+s.angry   = false
+```
+#### requires, contd.
+
 ```lua
 local L = require "lpeg"
 local a = require "anterm"
@@ -110,14 +158,15 @@ local elpatt = require "espalier/elpatt"
 local DROP = elpatt.DROP
 ```
 
-I like the dedication shown in this style of import.
-
-
 It's the kind of thing I'd like to automate.
+
+
+#### asserts
 
 ```lua
 local assert = assert
 local string, io = assert( string ), assert( io )
+local remove = assert(table.remove)
 local VER = string.sub( assert( _VERSION ), -4 )
 local _G = assert( _G )
 local error = assert( error )
@@ -125,49 +174,11 @@ local pairs = assert( pairs )
 local next = assert( next )
 local type = assert( type )
 local tostring = assert( tostring )
-local setmetatable = assert( setmetatable )
+local setmeta = assert( setmetatable )
 if VER == " 5.1" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
 end
-```
-### make_ast_node
-
-  This takes a lot of parameters and does a lot of things.
-
-
-```lua
-local function make_ast_node(id, first, t, last, str, metas, offset)
-```
-#### setup values and metatables
-
-  As [covered elsewhere](httk://), we accept three varieties of
-metatable verb.  An ordinary table is assigned; a table with __call is
-called, as is an ordinary function.
-
-
-The latter two are expected to return the original table, now a descendent
-of ``Node``.  This need not have an ``id`` field which is the same as the ``id``
-parameter.
-
-```lua
-   local offset = offset or 0
-   t.first = first + offset
-   t.last  = last + offset - 1
-   t.str   = str
-   if metas[id] then
-      local meta = metas[id]
-      if type(meta) == "function" or meta.__call then
-        t = metas[id](t, str)
-      else
-        t = setmetatable(t, meta)
-      end
-      assert(t.id, "no id on Node")
-   else
-      t.id = id
-       setmetatable(t, {__index = Node,
-                     __tostring = Node.toString})
-   end
 ```
 #### DROP
 
@@ -190,7 +201,7 @@ Which is admittedly hard to look at.  We prefer the form
 
 
 The algorithm moves from the right to the left, because ``table.remove(t)``
-is O(1) so we can strip any amount of rightward droppage first.  It is
+is **O(1)** so we can strip any amount of rightward droppage first.  It is
 correspondingly more expensive to strip middle drops, and most expensive
 to strip leftmost drops.
 
@@ -242,12 +253,14 @@ This means the special case isn't a ``nil``, which I think is better.
 Now we iterate the children
 
 ```lua
-   for i = #t, 1, -1 do
+   for i = #t, 1 --[[0]], -1 do
       t[i].parent = t
       local cap = t[i]
       if type(cap) ~= "table" then
          s:complain("CAPTURE ISSUE",
                     "type of capture subgroup is " .. type(v) .. "\n")
+                 -- better:
+                 -- phrase {"type of capture subgroup is", type(v), "\n"}
       end
       if cap.DROP == DROP then
          s:verb("drops in " .. a.bright(t.id))
@@ -255,8 +268,10 @@ Now we iterate the children
             s:verb(a.red("rightmost") .. " remaining node")
             s:verb("  t.$: " .. tostring(t.last) .. " Δ: "
                    .. tostring(cap.last - cap.first))
+            -- <action>
             t.last = t.last - (cap.last - cap.first)
-            table.remove(t)
+            remove(t)
+            -- </action>
             s:verb("  new t.$: " .. tostring(t.last))
          else
             -- Here we may be either in the middle or at the leftmost
@@ -267,9 +282,13 @@ Now we iterate the children
                s:verb(a.cyan("  leftmost") .. " remaining node")
                s:verb("    t.^: " .. tostring(t.first)
                       .. " D.$: " .. tostring(cap.last))
+               -- <action>
                t.first = cap.last
+               --    <comment>
                s:verb("    new t.^: " .. tostring(t.first))
-               table.remove(t, 1)
+               --    </comment>
+               remove(t, 1)
+               -- </action>
             else
                leftmost = true -- provisionally since cap.DROP
                for j = i, 1, -1 do
@@ -282,83 +301,169 @@ Now we iterate the children
                          .. " D.$: " .. tostring(cap.last))
                   t.first = cap.last
                   s:verb("    new t.^: " .. tostring(t.first))
+                  -- <action>
                   for j = i, 1, -1 do
                      -- this is quadradic but correct
                      -- and easy to understand.
-                     table.remove(t, j)
+                        remove(t, j)
                      break
                   end
+                  -- </action>
                else
                   s:verb(a.green("  middle") .. " node dropped")
-                  table.remove(t, i)
+                  remove(t, i)
                end
             end
          end
       end
    end
+   -- post conditions
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
    assert(t.parent, "no parent on " .. t.id)
    return t
 end
+```
+## make_ast_node
+
+This takes a lot of parameters and does a lot of things.
+
+```lua
+local function make_ast_node(id, first, t, last, str, metas, offset)
+```
+
+- Parameters:
+  - id      :  'string' naming the Node
+  - first   :  'number' of the first byte of ``str``
+  - t       :  'table' capture of grammatical information
+  - last    :  'number' of the last byte of ``str``
+  - str     :  'string' being parsed
+  - metas   :  'table' of Node-inherited metatables (complex)
+  - offset  :  'number' of optional offset.  This would be provided if
+               e.g. byte 1 of ``str`` is actually byte 255 of a larger
+               ``str``.  Normally ``nil``.
 
 
--- localize the patterns we use
+``first``, ``last`` and ``offset`` follow Wirth indexing conventions.
+
+
+Because of course they do.
+
+
+#### setup values and metatables
+
+  As [covered elsewhere](httk://), we accept three varieties of
+metatable verb.  An ordinary table is assigned; a table with ``__call`` is
+called, as is an ordinary function.
+
+
+The latter two are expected to return the original table, now a descendent
+of ``Node``.  This need not have an ``id`` field which is the same as the ``id``
+parameter.
+
+```lua
+   local offset = offset or 0
+   t.first = first + offset
+   t.last  = last + offset - 1 -- [sic]
+   t.str   = str
+   if metas[id] then
+      local meta = metas[id]
+      if type(meta) == "function" or meta.__call then
+        t = metas[id](t, str)
+      else
+        t = setmeta(t, meta)
+      end
+      assert(t.id, "no id on Node")
+   else
+      t.id = id
+      setmeta(t, { __index = Node,
+                   __tostring = Node.toString })
+   end
+```
+## define(func, g, e)
+
+This is [Phillipe Janda](http://siffiejoe.github.io/lua-luaepnf/)'s
+algorithm, with my adaptations.
+
+
+``e``, either is or becomes ``_ENV``.
+
+
+This is not needed in LuaJIT, while for Lua 5.2 and above, it is.
+
+
+``func`` is the grammar definition function, pieces of which we've provided.
+We'll see how the rest is put together presently.
+
+
+``g`` is or becomes a ``Grammar``.
+
+
+#### localizations
+
+We localize the patterns we use.
+
+```lua
 local Cp = L.Cp
 local Cc = L.Cc
 local Ct = L.Ct
 local arg1_str = L.Carg(1)
 local arg2_metas = L.Carg(2)
 local arg3_offset = L.Carg(3)
+```
 
+Setup an environment where you can easily define lpeg grammars
+with lots of syntax sugar, compatible with the 5 series of Luas:
 
--- setup an environment where you can easily define lpeg grammars
--- with lots of syntax sugar
+```lua
 local function define(func, g, e)
-  g = g or {}
-  if e == nil then
-    e = VER == " 5.1" and getfenv(func) or _G
-  end
-  local suppressed = {}
-  local env = {}
-  local env_index = {
-    START = function(name) g[1] = name end,
-    SUPPRESS = function(...)
-      suppressed = {}
-      for i = 1, select('#', ...) do
-        suppressed[select(i, ... )] = true
-      end
-    end,
-    V = L.V,
-    P = L.P,
-  }
+   g = g or {}
+   if e == nil then
+      e = VER == " 5.1" and getfenv(func) or _G
+   end
+   local suppressed = {}
+   local env = {}
+   local env_index = {
+      START = function(name) g[1] = name end,
+      SUPPRESS = function(...)
+         suppressed = {}
+         for i = 1, select('#', ...) do
+            suppressed[select(i, ... )] = true
+         end
+      end,
+      V = L.V,
+      P = L.P }
 
-  setmetatable(env_index, { __index = e })
-  setmetatable(env, {
-    __index = env_index,
-    __newindex = function( _, name, val )
-      if suppressed[ name ] then
-        g[ name ] = val
-      else
-        g[ name ] = (Cc(name)
-              * Cp()
-              * Ct(val)
-              * Cp()
-              * arg1_str
-              * arg2_metas)
-              * arg3_offset / make_ast_node
-      end
-    end
-  })
-  -- call passed function with custom environment (5.1- and 5.2-style)
-  if VER == " 5.1" then
-    setfenv( func, env )
-  end
-  func( env )
-  assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
-  return g
+    setmeta(env_index, { __index = e })
+    setmeta(env, {
+       __index = env_index,
+       __newindex = function( _, name, val )
+          if suppressed[ name ] then
+             g[ name ] = val
+          else
+             g[ name ] = (Cc(name)
+                * Cp()
+                * Ct(val)
+                * Cp()
+                * arg1_str
+                * arg2_metas)
+                * arg3_offset / make_ast_node
+          end
+       end })
+
+   -- call passed function with custom environment (5.1- and 5.2-style)
+   if VER == " 5.1" then
+      setfenv(func, env )
+   end
+   func( env )
+   assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
+   return g
 end
 ```
+### refineMetas(metas)
+
+Takes metatables, distributing defaults and denormalizations.
+
 ```lua
 local function refineMetas(metas)
   for id, meta in pairs(metas) do

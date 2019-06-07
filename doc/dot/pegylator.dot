@@ -1,0 +1,545 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 311"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-77"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 section_6 section_7}
+{rank=same; header_2 prose_3 prose_4 prose_5 section_6 section_7}
+
+header_2 [label="1 : Pegylator"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+section_6 [label="section: 12-77"]
+
+section_7 [label="section: 78-84"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_8
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Pegylator"]
+// END RANK header_2
+
+prose_3 -> { raw_9}
+{rank=same; raw_9}
+
+raw_9 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_9 -> leaf_10
+leaf_10  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+This module takes a declarative grammar specification, and optional affiliated
+Orb code, and emits a working Grammar for that specification and code.
+"]
+// END RANK raw_9
+
+prose_4 -> { raw_11}
+{rank=same; raw_11}
+
+raw_11 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_11 -> leaf_12
+leaf_12  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I've written large parts of it.  There may be bugs.
+"]
+// END RANK raw_11
+
+prose_5 -> { raw_13}
+{rank=same; raw_13}
+
+raw_13 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_13 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Let's dive in and start patching this together.
+
+"]
+// END RANK raw_13
+
+section_6 -> { header_15 prose_16 codeblock_17 prose_18}
+{rank=same; header_15 prose_16 codeblock_17 prose_18}
+
+header_15 [label="2 : peg.peg"]
+
+prose_16 [label="prose"]
+
+codeblock_17 [label="code block 16-72"]
+
+prose_18 [label="prose"]
+
+
+// END RANK section_6
+
+header_15 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** peg.peg"]
+// END RANK header_15
+
+prose_16 -> { raw_20 prespace_21 literal_22 raw_23}
+{rank=same; raw_20 prespace_21 literal_22 raw_23}
+
+raw_20 [label="raw"]
+
+prespace_21 [label="prespace"]
+
+literal_22 [label="literal"]
+
+raw_23 [label="raw"]
+
+
+// END RANK prose_16
+
+raw_20 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is"]
+// END RANK raw_20
+
+prespace_21 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_21
+
+literal_22 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="peg"]
+// END RANK literal_22
+
+raw_23 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", a grammar language defined in its own syntax.
+"]
+// END RANK raw_23
+
+codeblock_17 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="               rules :  comment* rule+
+                rule :  lhs rhs
+                 lhs :  _pattern_ (\":\" / \"=\" / \":=\")
+                 rhs :  element elements*
+           `pattern` :  symbol / hidden-pattern
+      hidden-pattern :  \"`\" symbol \"`\"
+           `element` :  !lhs _( compound
+                              / simple
+                              / comment ) ; with a comment
+          `elements` :  choice / cat
+          `compound` :  group
+                      / enclosed
+                      / hidden-match
+            `simple` :  prefixed
+                      / suffixed
+                      / atom
+              choice :  _\"/\" element elements *
+                 cat :  _ element elements *
+               group :  _\"(\"_ rhs_ \")\"
+          `enclosed` :  literal
+                      / set
+                      / range
+        hidden-match :  _\"``\"_ rhs_ \"``\"
+             comment : `;` comment-c ; make real
+            prefixed :  if-not-this / if-and-this
+         if-not-this :  `!` _allowed-prefixed
+         if-and-this :  `&` _allowed-prefixed
+            suffixed :  optional
+                      / more-than-one
+                      / maybe
+                      / with-suffix
+                      / some-number
+            optional :  allowed-suffixed_ `*`
+       more-than-one :  allowed-suffixed_ `+`
+               maybe :  allowed-suffixed_ `?`
+         some-number :  allowed-suffixed_ \"$\" some-num-c
+         with-suffix :  some-number (`*`/`+`/`?`)
+    allowed-prefixed :  compound
+                      / suffixed
+                      / atom
+    allowed-suffixed :  compound
+                      / prefixed
+                      / atom
+                atom :  symbol / ws
+                  ws : \"_\"
+    literal :  `\"` ~(string*) `\"`
+    set     :  `{` set-c+ `}`
+    range   :  `[` range-c `]`
+    comment-m : -\"\\n\" ANY
+    comment-c : `;` ~(comment-m*) `\\n`
+    `string` : (string-match / '\\\\\"' / \"\\\\\")+
+    `string-match` : !`\"` !`\\\\` ANY
+    letter : [A-Z] / [a-z]
+    valid-sym = letter + \"-\"
+    digit = [0-9]"]
+// END RANK codeblock_17
+
+prose_18 -> { raw_29}
+{rank=same; raw_29}
+
+raw_29 [label="raw"]
+
+
+// END RANK prose_18
+
+raw_29 -> leaf_30
+leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Next up:
+
+"]
+// END RANK raw_29
+
+section_7 -> { header_31 prose_32 prose_33 section_34}
+{rank=same; header_31 prose_32 prose_33 section_34}
+
+header_31 [label="2 : Implementation"]
+
+prose_32 [label="prose"]
+
+prose_33 [label="prose"]
+
+section_34 [label="section: 85-311"]
+
+
+// END RANK section_7
+
+header_31 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Implementation"]
+// END RANK header_31
+
+prose_32 -> { raw_36}
+{rank=same; raw_36}
+
+raw_36 [label="raw"]
+
+
+// END RANK prose_32
+
+raw_36 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+How far have we gotten?
+"]
+// END RANK raw_36
+
+prose_33 -> { raw_38}
+{rank=same; raw_38}
+
+raw_38 [label="raw"]
+
+
+// END RANK prose_33
+
+raw_38 -> leaf_39
+leaf_39  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+There's this:
+
+"]
+// END RANK raw_38
+
+section_34 -> { header_40 prose_41 prose_42 codeblock_43 prose_44 codeblock_45 codeblock_46}
+{rank=same; header_40 prose_41 prose_42 codeblock_43 prose_44 codeblock_45 codeblock_46}
+
+header_40 [label="3 : t:transform()"]
+
+prose_41 [label="prose"]
+
+prose_42 [label="prose"]
+
+codeblock_43 [label="code block 92-108"]
+
+prose_44 [label="prose"]
+
+codeblock_45 [label="code block 113-307"]
+
+codeblock_46 [label="code block 309-311"]
+
+
+// END RANK section_34
+
+header_40 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** t:transform()"]
+// END RANK header_40
+
+prose_41 -> { raw_48}
+{rank=same; raw_48}
+
+raw_48 [label="raw"]
+
+
+// END RANK prose_41
+
+raw_48 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Transforms rules into LPEG form.
+"]
+// END RANK raw_48
+
+prose_42 -> { raw_50}
+{rank=same; raw_50}
+
+raw_50 [label="raw"]
+
+
+// END RANK prose_42
+
+raw_50 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- #param ast :  root Node of a PEGylated grammar
+- #return  a :  collection containing the transformed strings
+"]
+// END RANK raw_50
+
+codeblock_43 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function t.transform(ast)
+   t.whitespace(ast) -- currently required to fix ast :(
+   sort.sort(ast)
+   t.cursives(ast)
+   t.comment(ast)
+   t.prefix(ast)
+   t.suffix(ast)
+   t.enclosed(ast)
+   t.capture_group(ast)
+   t.cat(ast)
+   t.choice(ast)
+   t.lhs(ast)
+   t.rhs(ast)
+   return ast
+end"]
+// END RANK codeblock_43
+
+prose_44 -> { raw_53}
+{rank=same; raw_53}
+
+raw_53 [label="raw"]
+
+
+// END RANK prose_44
+
+raw_53 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+So that's several passes, I'm sure it could be tuned up meantime, here's
+the implementations in file order:
+"]
+// END RANK raw_53
+
+codeblock_45 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local sort = require \"peg/rule-sort\"
+local roshambo = require \"roshambo\"
+
+local t = {}
+
+function t.whitespace(ast)
+   local whites = ast:select\"atom\":with\"ws\"
+   for i = 1, #whites do
+      whites[i].val = \"WS\"
+      whites[i][1] = nil
+   end
+end
+
+function t.isrecursive(node)
+   if node.isrecursive then
+      return true
+   else
+      return false
+   end
+end
+
+function t.notrecursive(node)
+   if node.id == \"rule\" and not node.isrecursive then
+      return true
+   else
+      return false
+   end
+end
+
+function t.cursives(ast)
+-- local cursors = ast:root().cursors
+-- print (cursors)
+   local atoms = ast:select\"atom\"
+   --if cursors then
+      for i = 1, #atoms do
+      -- if cursors[atoms[i].val] then
+--          print (\"Transforming: \", atoms[i].val)
+            atoms[i].val = 'V\"'..atoms[i].val..'\"'
+      -- end
+      end
+   --end
+end
+
+function t.optional(ast)
+   local optionals = ast:select\"optional\":select\"atom\"
+   for i = 1, #optionals do
+      --print(optionals[i].val)
+      optionals[i].val = optionals[i].val..\"^0\"
+   end
+end
+
+function t.more_than_one(ast)
+   local mto = ast:select\"more_than_one\":select\"atom\"
+   for i = 1, #mto do
+      mto[i].val = mto[i].val..\"^1\"
+   end
+end
+
+function t.maybe(ast)
+   local maybe = ast:select\"maybe\":select\"atom\"
+   for i = 1, #maybe do
+      maybe[i].val = maybe[i].val..\"^-1\"
+   end
+end
+
+function t.some_number(ast)
+   -- moderately complex, write later
+end
+
+function t.suffix(ast)
+   t.optional(ast)
+   t.more_than_one(ast)
+   t.maybe(ast)
+   t.some_number(ast)
+   --t.with_suffix(ast)
+end
+
+function t.if_not_this(ast)
+   local atoms = ast:select\"if_not_this\":select\"atom\"
+   for i = 1, #atoms do
+      atoms[i].val = \"-\"..atoms[i].val
+   end
+end
+
+function t.if_and_this(ast)
+      local atoms = ast:select\"if_and_this\":select\"atom\"
+   for i = 1, #atoms do
+      atoms[i].val = \"#\"..atoms[i].val
+   end
+end
+
+function t.prefix(ast)
+   t.if_not_this(ast)
+   t.if_and_this(ast)
+end
+
+function t.literal(ast)
+   local lits = ast:select\"literal\"
+   for i = 1, #lits do
+      lits[i].val = 'Csp'..lits[i].val
+   end
+end
+
+function t.hidden_literal(ast)
+   local lits = ast:select\"hidden_literal\"
+   for i = 1, #lits do
+      lits[i].val = 'P\"'..lits[i].val:gsub('\"','\\\\\"'):gsub(\"\\\\`\",\"`\")..'\"'
+   end
+end
+
+function t.range(ast)
+   local ranges = ast:select\"range\"
+   for i = 1, #ranges do
+      ranges[i].val = 'R\"'..ranges[i].val:gsub(\"-\",\"\")..'\"'
+   end
+end
+
+function t.set(ast)
+   local sets = ast:select\"set\"
+   for i = 1, #sets do
+      sets[i].val = 'S\"'..sets[i].val..'\"'
+   end
+end
+
+function t.enclosed(ast)
+   t.literal(ast)
+   t.hidden_literal(ast)
+   t.range(ast)
+   t.set(ast)
+end
+
+function t.cat(ast)
+   local gatos = ast:select\"cat\"
+   for i = 1, #gatos do
+      gatos[i].val = \" * \"
+   end
+end
+
+function t.choice(ast)
+   local choices = ast:select\"choice\"
+   for i= 1, #choices do
+      choices[i].val = \" + \"
+   end
+end
+
+local function lhs_pred(node)
+   if node.id == \"pattern\" and node.val then
+      return true
+   elseif node.id == \"hidden_pattern\" then
+      return true
+   else
+      return false
+   end
+end
+
+
+function t.lhs(ast)
+   local lhs = ast:select(lhs_pred)
+   local imports = \"\"
+   lhs[1]:root().start_rule = \"  START \"..'\"'..lhs[1].val..'\"\\n'
+   local nocurse = ast:select(t.notrecursive):select(lhs_pred)
+   for i = 1, #lhs do
+      lhs[i].val = lhs[i].val..\" =  \"
+   end
+   lhs[1]:root().imports = imports..\"\\n\"
+end
+
+function t.rhs(ast)
+   local rhs = ast:select\"rhs\"
+   for i = 1, #rhs do
+      rhs[i]:tokens()
+      rhs[i].tok[#rhs[i].tok+1] = \"\\n\"
+   end
+end
+
+function t.comment(ast)
+   local commentary = ast:select\"comment\"
+   for i = 1, #commentary do
+      -- remove superfluous cat
+      commentary[i].parent().id = \"comment\"
+      commentary[i].parent().val = \"  -- \"..commentary[i].val
+      commentary[i].parent()[1] = nil
+   end
+end
+
+function t.capture_group(ast)
+   local pels = ast:select\"capture_group\":select\"PEL\"
+   for i = 1, #pels do
+      pels[i].val = \"C(\"
+   end
+end
+
+<<@>>"]
+// END RANK codeblock_45
+
+codeblock_46 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return t"]
+// END RANK codeblock_46
+
+
+}

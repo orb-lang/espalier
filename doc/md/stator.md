@@ -31,8 +31,6 @@ be quick and cheap.
 #todo  adding =_weakstate= changes the calling convention.  To make this work
        table, which will shall populate by and by.
 
-
-
 ```lua
 local function call(stator, _weakstate)
    local _weakstate = _weakstate or setmeta({}, {__mode = 'v'})
