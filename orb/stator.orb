@@ -52,6 +52,7 @@ local function call(stator, _weakstate)
 end
 #/lua
 
+
 ** New
 
 The root Stator has a global context, which is itself.  This is given

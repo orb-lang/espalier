@@ -13,13 +13,13 @@
 <g id="node1" class="node">
 <title>doc_0</title>
 <ellipse fill="none" stroke="#000000" cx="914" cy="-551.0002" rx="42.1216" ry="18"/>
-<text text-anchor="middle" x="914" y="-546.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 71</text>
+<text text-anchor="middle" x="914" y="-546.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">doc &#45; 72</text>
 </g>
 <!-- section_1 -->
 <g id="node2" class="node">
 <title>section_1</title>
 <ellipse fill="none" stroke="#000000" cx="914" cy="-479.0002" rx="60.9826" ry="18"/>
-<text text-anchor="middle" x="914" y="-474.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;54</text>
+<text text-anchor="middle" x="914" y="-474.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 1&#45;55</text>
 </g>
 <!-- doc_0&#45;&gt;section_1 -->
 <g id="edge1" class="edge">
@@ -91,7 +91,7 @@
 <g id="node8" class="node">
 <title>section_7</title>
 <ellipse fill="none" stroke="#000000" cx="2295" cy="-407.0002" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="2295" y="-402.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 35&#45;54</text>
+<text text-anchor="middle" x="2295" y="-402.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 35&#45;55</text>
 </g>
 <!-- section_1&#45;&gt;section_7 -->
 <g id="edge7" class="edge">
@@ -103,7 +103,7 @@
 <g id="node9" class="node">
 <title>section_8</title>
 <ellipse fill="none" stroke="#000000" cx="3725" cy="-407.0002" rx="65.8187" ry="18"/>
-<text text-anchor="middle" x="3725" y="-402.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 55&#45;71</text>
+<text text-anchor="middle" x="3725" y="-402.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">section: 56&#45;72</text>
 </g>
 <!-- section_1&#45;&gt;section_8 -->
 <g id="edge8" class="edge">
@@ -331,7 +331,7 @@
 <g id="node51" class="node">
 <title>codeblock_50</title>
 <ellipse fill="none" stroke="#000000" cx="4131" cy="-335.0002" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="4131" y="-330.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 60&#45;66</text>
+<text text-anchor="middle" x="4131" y="-330.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 61&#45;67</text>
 </g>
 <!-- section_8&#45;&gt;codeblock_50 -->
 <g id="edge50" class="edge">
@@ -343,7 +343,7 @@
 <g id="node52" class="node">
 <title>codeblock_51</title>
 <ellipse fill="none" stroke="#000000" cx="4547" cy="-335.0002" rx="77.4211" ry="18"/>
-<text text-anchor="middle" x="4547" y="-330.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 69&#45;71</text>
+<text text-anchor="middle" x="4547" y="-330.8002" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#000000">code block 70&#45;72</text>
 </g>
 <!-- section_8&#45;&gt;codeblock_51 -->
 <g id="edge51" class="edge">
@@ -770,8 +770,8 @@
 <g id="node74" class="node">
 <title>leaf_73</title>
 <polygon fill="none" stroke="#c0c0c0" points="4565,-272.4003 4157,-272.4003 4157,-187.4 4565,-187.4 4565,-272.4003"/>
-<text text-anchor="middle" x="4361" y="-257.2002" font-family="Inconsolata" font-size="14.00" fill="#000000">local function new(Stator)</text>
-<text text-anchor="middle" x="4361" y="-241.8002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local stator = call(Stator)</text>
+<text text-anchor="middle" x="4361" y="-257.2002" font-family="Inconsolata" font-size="14.00" fill="#000000">local function new(Stator, _weakstate)</text>
+<text text-anchor="middle" x="4361" y="-241.8002" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;local stator = call(Stator, _weakstate)</text>
 <text text-anchor="middle" x="4361" y="-226.4001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;stator.g, stator.G, stator._G = stator, stator, stator</text>
 <text text-anchor="middle" x="4361" y="-211.0001" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;return stator</text>
 <text text-anchor="middle" x="4361" y="-195.6001" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>

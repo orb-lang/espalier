@@ -89,8 +89,8 @@ There's this:
 Transforms rules into LPEG form.
 
 
-- #param ast :  root Node of a PEGylated grammar
-- #return  a :  collection containing the transformed strings
+- @param ast :  root Node of a PEGylated grammar
+- @return  a :  collection containing the transformed strings
 
 ```lua
 function t.transform(ast)
@@ -305,9 +305,8 @@ function t.capture_group(ast)
       pels[i].val = "C("
    end
 end
-
-<<@>>
 ```
 ```lua
+<<@>>
 return t
 ```

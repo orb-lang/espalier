@@ -58,6 +58,7 @@ end
 
 
 
+
 local function new(Stator, _weakstate)
   local stator = call(Stator, _weakstate)
   stator.g, stator.G, stator._G = stator, stator, stator

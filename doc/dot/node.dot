@@ -152,7 +152,7 @@ leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_32
 
 codeblock_29 -> leaf_34
-leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local s = require \"status\" ()
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local s = require \"singletons:status\" ()
 local a = require \"anterm\"
 local dot = require \"espalier/dot\""]
 // END RANK codeblock_29

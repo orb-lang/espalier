@@ -120,7 +120,7 @@ leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 codeblock_20 -> leaf_26
 leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L   = require \"lpeg\"
-local s   = require \"status\" ()
+local s   = require \"singletons:status\" ()
 local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P"]
 // END RANK codeblock_20
 

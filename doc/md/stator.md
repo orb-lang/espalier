@@ -45,8 +45,8 @@ The root Stator has a global context, which is itself.  This is given
 the synonyms ``G``, ``g`` and ``_G``, to suit various styles.
 
 ```lua
-local function new(Stator)
-  local stator = call(Stator)
+local function new(Stator, _weakstate)
+  local stator = call(Stator, _weakstate)
   stator.g, stator.G, stator._G = stator, stator, stator
   return stator
 end

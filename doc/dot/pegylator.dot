@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 311"]
+doc_0 [label="doc - 310"]
 
 
 doc_0 -> { section_1}
@@ -215,7 +215,7 @@ prose_32 [label="prose"]
 
 prose_33 [label="prose"]
 
-section_34 [label="section: 85-311"]
+section_34 [label="section: 85-310"]
 
 
 // END RANK section_7
@@ -267,9 +267,9 @@ codeblock_43 [label="code block 92-108"]
 
 prose_44 [label="prose"]
 
-codeblock_45 [label="code block 113-307"]
+codeblock_45 [label="code block 113-305"]
 
-codeblock_46 [label="code block 309-311"]
+codeblock_46 [label="code block 307-310"]
 
 
 // END RANK section_34
@@ -303,8 +303,8 @@ raw_50 [label="raw"]
 
 raw_50 -> leaf_51
 leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-- #param ast :  root Node of a PEGylated grammar
-- #return  a :  collection containing the transformed strings
+- @param ast :  root Node of a PEGylated grammar
+- @return  a :  collection containing the transformed strings
 "]
 // END RANK raw_50
 
@@ -532,13 +532,12 @@ function t.capture_group(ast)
    for i = 1, #pels do
       pels[i].val = \"C(\"
    end
-end
-
-<<@>>"]
+end"]
 // END RANK codeblock_45
 
 codeblock_46 -> leaf_56
-leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return t"]
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="<<@>>
+return t"]
 // END RANK codeblock_46
 
 

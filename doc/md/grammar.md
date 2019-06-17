@@ -142,7 +142,7 @@ a language that did that sort of thing.
 ##### status
 
 ```lua
-local s = require "status" ()
+local s = require "singletons:status" ()
 s.verbose = false
 s.angry   = false
 ```
