@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 151"]
+doc_0 [label="doc - 150"]
 
 
 doc_0 -> { section_1}
@@ -150,7 +150,7 @@ prose_17 [label="prose"]
 
 section_18 [label="section: 77-87"]
 
-section_19 [label="section: 88-151"]
+section_19 [label="section: 88-150"]
 
 
 // END RANK section_7
@@ -212,84 +212,105 @@ local L       =  require \"espalier/elpatt\"
 local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S"]
 // END RANK codeblock_25
 
-section_19 -> { header_30 prose_31 structure_32 structure_33 codeblock_34}
-{rank=same; header_30 prose_31 structure_32 structure_33 codeblock_34}
+section_19 -> { header_30 prose_31 prose_32 prose_33 prose_34 codeblock_35}
+{rank=same; header_30 prose_31 prose_32 prose_33 prose_34 codeblock_35}
 
 header_30 [label="3 : lua_fn"]
 
 prose_31 [label="prose"]
 
-structure_32 [label="structure"]
+prose_32 [label="prose"]
 
-structure_33 [label="structure"]
+prose_33 [label="prose"]
 
-codeblock_34 [label="code block 98-133"]
+prose_34 [label="prose"]
+
+codeblock_35 [label="code block 98-132"]
 
 
 // END RANK section_19
 
-header_30 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** lua_fn"]
+header_30 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** lua_fn"]
 // END RANK header_30
 
-prose_31 -> { raw_36}
-{rank=same; raw_36}
+prose_31 -> { raw_37}
+{rank=same; raw_37}
 
-raw_36 [label="raw"]
+raw_37 [label="raw"]
 
 
 // END RANK prose_31
 
-raw_36 -> leaf_37
-leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_37 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This is provided to the Grammar engine to create a Lua parser.
 "]
-// END RANK raw_36
+// END RANK raw_37
 
-structure_32 -> { hashline_38}
-{rank=same; hashline_38}
+prose_32 -> { raw_39}
+{rank=same; raw_39}
 
-hashline_38 [label="hashline"]
-
-
-// END RANK structure_32
-
-hashline_38 -> { hashtag_39}
-{rank=same; hashtag_39}
-
-hashtag_39 [label="hashtag"]
+raw_39 [label="raw"]
 
 
-// END RANK hashline_38
+// END RANK prose_32
 
-hashtag_39 -> leaf_40
-leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Todo"]
-// END RANK hashtag_39
+raw_39 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- #Todo this being a 5.1 grammar, need to add goto statements.
+"]
+// END RANK raw_39
 
-structure_33 -> { hashline_41}
-{rank=same; hashline_41}
+prose_33 -> { raw_41}
+{rank=same; raw_41}
 
-hashline_41 [label="hashline"]
-
-
-// END RANK structure_33
-
-hashline_41 -> { hashtag_42}
-{rank=same; hashtag_42}
-
-hashtag_42 [label="hashtag"]
+raw_41 [label="raw"]
 
 
-// END RANK hashline_41
+// END RANK prose_33
 
-hashtag_42 -> leaf_43
-leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Todo"]
-// END RANK hashtag_42
+raw_41 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- #Todo add the whitespace
+"]
+// END RANK raw_41
 
-codeblock_34 -> leaf_44
-leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-local _do, _end, _then = P\"do\", P\"end\", P\"then\"
+prose_34 -> { raw_43 prespace_44 literal_45 raw_46}
+{rank=same; raw_43 prespace_44 literal_45 raw_46}
+
+raw_43 [label="raw"]
+
+prespace_44 [label="prespace"]
+
+literal_45 [label="literal"]
+
+raw_46 [label="raw"]
+
+
+// END RANK prose_34
+
+raw_43 -> leaf_47
+leaf_47  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- #Todo add precedence parsing of"]
+// END RANK raw_43
+
+prespace_44 -> leaf_48
+leaf_48  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_44
+
+literal_45 -> leaf_49
+leaf_49  [color=Gray,shape=rectangle,fontname=Inconsolata,label="exp"]
+// END RANK literal_45
+
+raw_46 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_46
+
+codeblock_35 -> leaf_51
+leaf_51  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local _do, _end, _then = P\"do\", P\"end\", P\"then\"
 
 local function lua_fn(ENV)
    START \"lua\"
@@ -322,7 +343,7 @@ local function lua_fn(ENV)
    var      = V\"Name\" + V\"prefixexp\" * P\"[\" * V\"exp\" * P\"]\" +
                  V\"prefixexp\" * \".\" * V\"Name\"
 end"]
-// END RANK codeblock_34
+// END RANK codeblock_35
 
 
 }
