@@ -17,7 +17,7 @@ section_1 [label="section: 1-71"]
 section_1 -> { header_2 prose_3 prose_4 prose_5 codeblock_6 section_7}
 {rank=same; header_2 prose_3 prose_4 prose_5 codeblock_6 section_7}
 
-header_2 [label="1 : A Grammer For Lua"]
+header_2 [label="1 : A Grammar For Lua"]
 
 prose_3 [label="prose"]
 
@@ -33,7 +33,7 @@ section_7 [label="section: 72-87"]
 // END RANK section_1
 
 header_2 -> leaf_8
-leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* A Grammer For Lua"]
+leaf_8  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* A Grammar For Lua"]
 // END RANK header_2
 
 prose_3 -> { raw_9}
@@ -240,7 +240,7 @@ raw_34 -> leaf_35
 leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This is provided to the Grammar engine to create a Lua parser.
-"]
+yes"]
 // END RANK raw_34
 
 codeblock_32 -> leaf_36

@@ -1,4 +1,4 @@
-* A Grammer For Lua
+* A Grammar For Lua
 
 While the most important grammar for pegylator is pegylator itself, it's
 time to make a Lua language parser.
@@ -88,7 +88,7 @@ local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 *** lua_fn
 
 This is provided to the Grammar engine to create a Lua parser.
-
+yes
 #!lua
 local function lua_fn(ENV)
    START "lua"
