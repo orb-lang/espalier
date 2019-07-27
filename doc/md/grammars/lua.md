@@ -86,7 +86,7 @@ local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 ### lua_fn
 
 This is provided to the Grammar engine to create a Lua parser.
-yes
+
 ```lua
 
 local _do, _end, _then = P"do", P"end", P"then"

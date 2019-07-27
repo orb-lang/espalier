@@ -240,7 +240,7 @@ raw_34 -> leaf_35
 leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This is provided to the Grammar engine to create a Lua parser.
-yes"]
+"]
 // END RANK raw_34
 
 codeblock_32 -> leaf_36
