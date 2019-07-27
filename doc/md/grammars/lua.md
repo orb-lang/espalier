@@ -69,3 +69,27 @@ chunk ::= {stat [`;´]} [laststat [`;´]]
 
    unop ::= `-´ | not | `#´
 ```
+## Implementation
+
+Let's try it.
+
+
+### Imports
+
+```lua
+local Node    =  require "espalier/node"
+local Grammar =  require "espalier/grammar"
+local L       =  require "espalier/elpatt"
+
+local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
+```
+### lua_fn
+
+This is provided to the Grammar engine to create a Lua parser.
+
+```lua
+local function lua_fn(ENV)
+   START "lua"
+   lua = V"chunk"^1
+end
+```
