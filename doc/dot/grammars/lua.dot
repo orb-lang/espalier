@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 115"]
+doc_0 [label="doc - 136"]
 
 
 doc_0 -> { section_1}
@@ -150,7 +150,7 @@ prose_17 [label="prose"]
 
 section_18 [label="section: 77-87"]
 
-section_19 [label="section: 88-115"]
+section_19 [label="section: 88-136"]
 
 
 // END RANK section_7
@@ -219,7 +219,7 @@ header_30 [label="3 : lua_fn"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 92-97"]
+codeblock_32 [label="code block 92-118"]
 
 
 // END RANK section_19
@@ -244,9 +244,30 @@ yes"]
 // END RANK raw_34
 
 codeblock_32 -> leaf_36
-leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function lua_fn(ENV)
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+local _do, _end, _then = P\"do\", P\"end\", P\"then\"
+
+local function lua_fn(ENV)
    START \"lua\"
-   lua = V\"chunk\"^1
+   lua   = V\"chunk\"^1
+   chunk = (V\"stat\" * P\";\"^0) * (V\"laststat\"^0 * P\";\"^0)
+   block = V\"chunk\"
+
+   stat  = V\"varlist\" * P\"=\" * V\"explist\" +
+           V\"functioncall\" +
+           _do * V\"block\" * _end +
+           P\"while\" * V\"exp\" * _do * V\"block\" * _end +
+           P\"repeat\" * V\"block\" * P\"until\" * _end +
+           P\"if\" * V\"exp\" * _then * V\"block\" *
+              ( P\"elseif\" V\"exp\" * _then * V\"block\" )^0 *
+              ( P\"else\" * V\"block\" )^-1 * _end +
+           P\"for\" * V\"Name\" * P\"=\" * V\"exp\" * P\",\" * V\"exp\" *
+              ( P\",\" * V\"exp\" )^-1 * _do * V\"block\" * _end +
+           P\"for\" * V\"namelist\" * P\"in\" * V\"explist\" * _do *
+              V\"block\" * _end +
+           P\"function\" * V\"funcname\" * V\"funcbody\" +
+           P\"local\" * P\"function\" * V\"Name\" * V\"funcbody\" +
+           P\"local\" * V\"namelist\" * ( P\"=\" * V\"explist\")^-1
 end"]
 // END RANK codeblock_32
 
