@@ -87,7 +87,7 @@ local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 
 This is provided to the Grammar engine to create a Lua parser.
 
-```lua
+#Todo this being a 5.1 grammar, need to add goto statements.#Todo add the whitespace```lua
 
 local _do, _end, _then = P"do", P"end", P"then"
 
@@ -116,5 +116,10 @@ local function lua_fn(ENV)
    laststat = P"return" * V"explist"^-1 + P"break"
 
    funcname = V"Name" * ( P"." * V"Name" )^0 * ( P":" V"Name" )
+
+   varlist  = V"var" * ( P"," V"var")^0
+
+   var      = V"Name" + V"prefixexp" * P"[" * V"exp" * P"]" +
+                 V"prefixexp" * "." * V"Name"
 end
 ```

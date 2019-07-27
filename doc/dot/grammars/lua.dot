@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 142"]
+doc_0 [label="doc - 151"]
 
 
 doc_0 -> { section_1}
@@ -150,7 +150,7 @@ prose_17 [label="prose"]
 
 section_18 [label="section: 77-87"]
 
-section_19 [label="section: 88-142"]
+section_19 [label="section: 88-151"]
 
 
 // END RANK section_7
@@ -212,39 +212,83 @@ local L       =  require \"espalier/elpatt\"
 local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S"]
 // END RANK codeblock_25
 
-section_19 -> { header_30 prose_31 codeblock_32}
-{rank=same; header_30 prose_31 codeblock_32}
+section_19 -> { header_30 prose_31 structure_32 structure_33 codeblock_34}
+{rank=same; header_30 prose_31 structure_32 structure_33 codeblock_34}
 
 header_30 [label="3 : lua_fn"]
 
 prose_31 [label="prose"]
 
-codeblock_32 [label="code block 94-124"]
+structure_32 [label="structure"]
+
+structure_33 [label="structure"]
+
+codeblock_34 [label="code block 98-133"]
 
 
 // END RANK section_19
 
-header_30 -> leaf_33
-leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** lua_fn"]
+header_30 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** lua_fn"]
 // END RANK header_30
 
-prose_31 -> { raw_34}
-{rank=same; raw_34}
+prose_31 -> { raw_36}
+{rank=same; raw_36}
 
-raw_34 [label="raw"]
+raw_36 [label="raw"]
 
 
 // END RANK prose_31
 
-raw_34 -> leaf_35
-leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_36 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 This is provided to the Grammar engine to create a Lua parser.
 "]
-// END RANK raw_34
+// END RANK raw_36
 
-codeblock_32 -> leaf_36
-leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+structure_32 -> { hashline_38}
+{rank=same; hashline_38}
+
+hashline_38 [label="hashline"]
+
+
+// END RANK structure_32
+
+hashline_38 -> { hashtag_39}
+{rank=same; hashtag_39}
+
+hashtag_39 [label="hashtag"]
+
+
+// END RANK hashline_38
+
+hashtag_39 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Todo"]
+// END RANK hashtag_39
+
+structure_33 -> { hashline_41}
+{rank=same; hashline_41}
+
+hashline_41 [label="hashline"]
+
+
+// END RANK structure_33
+
+hashline_41 -> { hashtag_42}
+{rank=same; hashtag_42}
+
+hashtag_42 [label="hashtag"]
+
+
+// END RANK hashline_41
+
+hashtag_42 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Todo"]
+// END RANK hashtag_42
+
+codeblock_34 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 local _do, _end, _then = P\"do\", P\"end\", P\"then\"
 
 local function lua_fn(ENV)
@@ -272,8 +316,13 @@ local function lua_fn(ENV)
    laststat = P\"return\" * V\"explist\"^-1 + P\"break\"
 
    funcname = V\"Name\" * ( P\".\" * V\"Name\" )^0 * ( P\":\" V\"Name\" )
+
+   varlist  = V\"var\" * ( P\",\" V\"var\")^0
+
+   var      = V\"Name\" + V\"prefixexp\" * P\"[\" * V\"exp\" * P\"]\" +
+                 V\"prefixexp\" * \".\" * V\"Name\"
 end"]
-// END RANK codeblock_32
+// END RANK codeblock_34
 
 
 }
