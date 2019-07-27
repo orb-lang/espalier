@@ -96,6 +96,12 @@ local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 
 
 
+
+
+
+
+
+
 local _do, _end, _then = P"do", P"end", P"then"
 
 local function lua_fn(ENV)
@@ -103,6 +109,17 @@ local function lua_fn(ENV)
    lua   = V"chunk"^1
    chunk = (V"stat" * P";"^0) * (V"laststat"^0 * P";"^0)^-1
    block = V"chunk"
+
+
+
+
+
+
+
+
+
+
+
 
    stat  = V"varlist" * P"=" * V"explist" +
            V"functioncall" +
@@ -132,4 +149,20 @@ local function lua_fn(ENV)
    namelist = V"Name" * ( V"exp" * ",")^0 * V"exp"
 
    explist  = (V"exp" *)^0 * V"exp"
+
+
+
+
+
+
+
+
+
+
+
+   exp     = P"nil" + P"false" + P"true"
+             + V"Number" + V"String" + P"..." + V"function"
+             + V"prefixexp" + V"tableconstructor"
+             + V"exp" * V"binop" * V"exp"
+             + V"unop" * V"exp"
 end

@@ -95,6 +95,12 @@ This is provided to the Grammar engine to create a Lua parser.
 
 - #Todo add precedence parsing of =exp=
 
+
+** The Grammar of the Lua Language
+
+A Lua program consists of one or more =chunks=, which are
+anonymous functions.
+
 #!lua
 local _do, _end, _then = P"do", P"end", P"then"
 
@@ -103,7 +109,18 @@ local function lua_fn(ENV)
    lua   = V"chunk"^1
    chunk = (V"stat" * P";"^0) * (V"laststat"^0 * P";"^0)^-1
    block = V"chunk"
+#/lua
 
+
+*** Statement
+
+Lua is a statement-oriented language in which expressions are
+a special case.
+
+Thus =2 + 3= is not a valid Lua program, whereas =return 2 + 3=
+is, and is equivalent to =(function() return 2 + 3 end)()=
+
+#!lua
    stat  = V"varlist" * P"=" * V"explist" +
            V"functioncall" +
            _do * V"block" * _end +
@@ -132,6 +149,22 @@ local function lua_fn(ENV)
    namelist = V"Name" * ( V"exp" * ",")^0 * V"exp"
 
    explist  = (V"exp" *)^0 * V"exp"
+#/lua
+
+
+*** Expressions
+
+Expressions are necessarily somewhat complex because of
+operator precedence; Lua has fewer operators than languages
+such as C, but this translation from the grammar will require
+further elaboration to correctly resolve order of operations.
+
+#!lua
+   exp     = P"nil" + P"false" + P"true"
+             + V"Number" + V"String" + P"..." + V"function"
+             + V"prefixexp" + V"tableconstructor"
+             + V"exp" * V"binop" * V"exp"
+             + V"unop" * V"exp"
 end
 #/lua
 
