@@ -128,4 +128,8 @@ local function lua_fn(ENV)
 
    var      = V"Name" + V"prefixexp" * P"[" * V"exp" * P"]" +
                  V"prefixexp" * "." * V"Name"
+
+   namelist = V"Name" * ( V"exp" * ",")^0 * V"exp"
+
+   explist  = (V"exp" *)^0 * V"exp"
 end

@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 150"]
+doc_0 [label="doc - 154"]
 
 
 doc_0 -> { section_1}
@@ -150,7 +150,7 @@ prose_17 [label="prose"]
 
 section_18 [label="section: 77-87"]
 
-section_19 [label="section: 88-150"]
+section_19 [label="section: 88-154"]
 
 
 // END RANK section_7
@@ -225,7 +225,7 @@ prose_33 [label="prose"]
 
 prose_34 [label="prose"]
 
-codeblock_35 [label="code block 98-132"]
+codeblock_35 [label="code block 98-136"]
 
 
 // END RANK section_19
@@ -342,6 +342,10 @@ local function lua_fn(ENV)
 
    var      = V\"Name\" + V\"prefixexp\" * P\"[\" * V\"exp\" * P\"]\" +
                  V\"prefixexp\" * \".\" * V\"Name\"
+
+   namelist = V\"Name\" * ( V\"exp\" * \",\")^0 * V\"exp\"
+
+   explist  = (V\"exp\" *)^0 * V\"exp\"
 end"]
 // END RANK codeblock_35
 
