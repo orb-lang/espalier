@@ -159,7 +159,7 @@ further elaboration to correctly resolve order of operations.
 
 ```lua
    exp      = P"nil" + P"false" + P"true"
-              + V"Number" + V"String" + P"..." + V"function"
+              + V"Number" + V"String" + P"..." + V"fn"
               + V"prefixexp" + V"tableconstructor"
               + V"exp" * V"binop" * V"exp"
               + V"unop" * V"exp"
@@ -172,5 +172,11 @@ further elaboration to correctly resolve order of operations.
    args      = P"(" * V"explist"^0 * P")"
                + V"tableconstructor"
                + V"String"
+
+   fn        = P"function" * V"funcbody"
+
+   funcbody  = P"(" * V"parlist"^0 * P")" * V"block" * _end
+
+   parlist   = V"namelist" ( P"," * P"...") + P"..."
 end
 ```

@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 196"]
+doc_0 [label="doc - 202"]
 
 
 doc_0 -> { section_1}
@@ -321,7 +321,7 @@ codeblock_53 [label="code block 104-112"]
 
 section_54 [label="section: 115-154"]
 
-section_55 [label="section: 155-196"]
+section_55 [label="section: 155-202"]
 
 
 // END RANK section_8
@@ -515,7 +515,7 @@ header_94 [label="3 : Expressions"]
 
 prose_95 [label="prose"]
 
-codeblock_96 [label="code block 162-178"]
+codeblock_96 [label="code block 162-184"]
 
 
 // END RANK section_55
@@ -544,7 +544,7 @@ further elaboration to correctly resolve order of operations.
 
 codeblock_96 -> leaf_100
 leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = P\"nil\" + P\"false\" + P\"true\"
-              + V\"Number\" + V\"String\" + P\"...\" + V\"function\"
+              + V\"Number\" + V\"String\" + P\"...\" + V\"fn\"
               + V\"prefixexp\" + V\"tableconstructor\"
               + V\"exp\" * V\"binop\" * V\"exp\"
               + V\"unop\" * V\"exp\"
@@ -557,6 +557,12 @@ leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = 
    args      = P\"(\" * V\"explist\"^0 * P\")\"
                + V\"tableconstructor\"
                + V\"String\"
+
+   fn        = P\"function\" * V\"funcbody\"
+
+   funcbody  = P\"(\" * V\"parlist\"^0 * P\")\" * V\"block\" * _end
+
+   parlist   = V\"namelist\" ( P\",\" * P\"...\") + P\"...\"
 end"]
 // END RANK codeblock_96
 
