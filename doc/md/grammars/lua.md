@@ -191,5 +191,39 @@ further elaboration to correctly resolve order of operations.
    binop     = P"+" + P"-" + P"*" + P"/" + P"^" + P"%" + P".."
                + P"<" + P"<=" + P">" + P">=" + P"==" + P"~=" +
                + P"and" + P"or"
+
+   unop      = P"-" + P"not" + P"#"
 end
 ```
+### Afterword
+
+So there's a first-pass at a literal transcription of the Lua 5.1 spec into
+LPEG/espalier format.
+
+
+There's bound to be some spelling errors in there, such as a ``+`` where I
+meant ``*``, but in writing out the spec I'm fairly sure I won't need to
+rewrite terms to compensate for direct left recursion.
+
+
+I do need to add whitespace, ``goto`` statements and labels, and get ``espalier``
+running in ``femto``, which isn't happening yet due to remaining problems with
+the modules system.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

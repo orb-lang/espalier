@@ -193,4 +193,6 @@ local function lua_fn(ENV)
    binop     = P"+" + P"-" + P"*" + P"/" + P"^" + P"%" + P".."
                + P"<" + P"<=" + P">" + P">=" + P"==" + P"~=" +
                + P"and" + P"or"
+
+   unop      = P"-" + P"not" + P"#"
 end

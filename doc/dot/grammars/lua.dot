@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 215"]
+doc_0 [label="doc - 231"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ codeblock_6 [label="code block 12-69"]
 
 section_7 [label="section: 72-87"]
 
-section_8 [label="section: 99-154"]
+section_8 [label="section: 99-201"]
 
 
 // END RANK section_1
@@ -310,8 +310,8 @@ leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 "]
 // END RANK raw_46
 
-section_8 -> { header_51 prose_52 codeblock_53 section_54 section_55}
-{rank=same; header_51 prose_52 codeblock_53 section_54 section_55}
+section_8 -> { header_51 prose_52 codeblock_53 section_54 section_55 section_56}
+{rank=same; header_51 prose_52 codeblock_53 section_54 section_55 section_56}
 
 header_51 [label="2 : The Grammar of the Lua Language"]
 
@@ -321,51 +321,53 @@ codeblock_53 [label="code block 104-112"]
 
 section_54 [label="section: 115-154"]
 
-section_55 [label="section: 155-215"]
+section_55 [label="section: 155-201"]
+
+section_56 [label="section: 202-231"]
 
 
 // END RANK section_8
 
-header_51 -> leaf_56
-leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** The Grammar of the Lua Language"]
+header_51 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** The Grammar of the Lua Language"]
 // END RANK header_51
 
-prose_52 -> { raw_57 prespace_58 literal_59 raw_60}
-{rank=same; raw_57 prespace_58 literal_59 raw_60}
+prose_52 -> { raw_58 prespace_59 literal_60 raw_61}
+{rank=same; raw_58 prespace_59 literal_60 raw_61}
 
-raw_57 [label="raw"]
+raw_58 [label="raw"]
 
-prespace_58 [label="prespace"]
+prespace_59 [label="prespace"]
 
-literal_59 [label="literal"]
+literal_60 [label="literal"]
 
-raw_60 [label="raw"]
+raw_61 [label="raw"]
 
 
 // END RANK prose_52
 
-raw_57 -> leaf_61
-leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_58 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 A Lua program consists of one or more"]
-// END RANK raw_57
+// END RANK raw_58
 
-prespace_58 -> leaf_62
-leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_58
+prespace_59 -> leaf_63
+leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_59
 
-literal_59 -> leaf_63
-leaf_63  [color=Gray,shape=rectangle,fontname=Inconsolata,label="chunks"]
-// END RANK literal_59
+literal_60 -> leaf_64
+leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label="chunks"]
+// END RANK literal_60
 
-raw_60 -> leaf_64
-leaf_64  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which are
+raw_61 -> leaf_65
+leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which are
 anonymous functions.
 "]
-// END RANK raw_60
+// END RANK raw_61
 
-codeblock_53 -> leaf_65
-leaf_65  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local _do, _end, _then = P\"do\", P\"end\", P\"then\"
+codeblock_53 -> leaf_66
+leaf_66  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local _do, _end, _then = P\"do\", P\"end\", P\"then\"
 
 local function lua_fn(ENV)
    START \"lua\"
@@ -374,111 +376,111 @@ local function lua_fn(ENV)
    block = V\"chunk\""]
 // END RANK codeblock_53
 
-section_54 -> { header_66 prose_67 prose_68 codeblock_69}
-{rank=same; header_66 prose_67 prose_68 codeblock_69}
+section_54 -> { header_67 prose_68 prose_69 codeblock_70}
+{rank=same; header_67 prose_68 prose_69 codeblock_70}
 
-header_66 [label="3 : Statement"]
-
-prose_67 [label="prose"]
+header_67 [label="3 : Statement"]
 
 prose_68 [label="prose"]
 
-codeblock_69 [label="code block 123-152"]
+prose_69 [label="prose"]
+
+codeblock_70 [label="code block 123-152"]
 
 
 // END RANK section_54
 
-header_66 -> leaf_70
-leaf_70  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Statement"]
-// END RANK header_66
+header_67 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Statement"]
+// END RANK header_67
 
-prose_67 -> { raw_71}
-{rank=same; raw_71}
+prose_68 -> { raw_72}
+{rank=same; raw_72}
 
-raw_71 [label="raw"]
-
-
-// END RANK prose_67
-
-raw_71 -> leaf_72
-leaf_72  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-
-Lua is a statement-oriented language in which expressions are
-a special case.
-"]
-// END RANK raw_71
-
-prose_68 -> { raw_73 prespace_74 literal_75 raw_76 prespace_77 literal_78 raw_79 prespace_80 literal_81 raw_82}
-{rank=same; raw_73 prespace_74 literal_75 raw_76 prespace_77 literal_78 raw_79 prespace_80 literal_81 raw_82}
-
-raw_73 [label="raw"]
-
-prespace_74 [label="prespace"]
-
-literal_75 [label="literal"]
-
-raw_76 [label="raw"]
-
-prespace_77 [label="prespace"]
-
-literal_78 [label="literal"]
-
-raw_79 [label="raw"]
-
-prespace_80 [label="prespace"]
-
-literal_81 [label="literal"]
-
-raw_82 [label="raw"]
+raw_72 [label="raw"]
 
 
 // END RANK prose_68
 
-raw_73 -> leaf_83
-leaf_83  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-Thus"]
-// END RANK raw_73
+raw_72 -> leaf_73
+leaf_73  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
-prespace_74 -> leaf_84
-leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_74
-
-literal_75 -> leaf_85
-leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label="2 + 3"]
-// END RANK literal_75
-
-raw_76 -> leaf_86
-leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is not a valid Lua program, whereas"]
-// END RANK raw_76
-
-prespace_77 -> leaf_87
-leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_77
-
-literal_78 -> leaf_88
-leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return 2 + 3"]
-// END RANK literal_78
-
-raw_79 -> leaf_89
-leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-is, and is equivalent to"]
-// END RANK raw_79
-
-prespace_80 -> leaf_90
-leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_80
-
-literal_81 -> leaf_91
-leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(function() return 2 + 3 end)()"]
-// END RANK literal_81
-
-raw_82 -> leaf_92
-leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Lua is a statement-oriented language in which expressions are
+a special case.
 "]
-// END RANK raw_82
+// END RANK raw_72
 
-codeblock_69 -> leaf_93
-leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   stat  = V\"varlist\" * P\"=\" * V\"explist\" +
+prose_69 -> { raw_74 prespace_75 literal_76 raw_77 prespace_78 literal_79 raw_80 prespace_81 literal_82 raw_83}
+{rank=same; raw_74 prespace_75 literal_76 raw_77 prespace_78 literal_79 raw_80 prespace_81 literal_82 raw_83}
+
+raw_74 [label="raw"]
+
+prespace_75 [label="prespace"]
+
+literal_76 [label="literal"]
+
+raw_77 [label="raw"]
+
+prespace_78 [label="prespace"]
+
+literal_79 [label="literal"]
+
+raw_80 [label="raw"]
+
+prespace_81 [label="prespace"]
+
+literal_82 [label="literal"]
+
+raw_83 [label="raw"]
+
+
+// END RANK prose_69
+
+raw_74 -> leaf_84
+leaf_84  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Thus"]
+// END RANK raw_74
+
+prespace_75 -> leaf_85
+leaf_85  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_75
+
+literal_76 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="2 + 3"]
+// END RANK literal_76
+
+raw_77 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is not a valid Lua program, whereas"]
+// END RANK raw_77
+
+prespace_78 -> leaf_88
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_78
+
+literal_79 -> leaf_89
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return 2 + 3"]
+// END RANK literal_79
+
+raw_80 -> leaf_90
+leaf_90  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+is, and is equivalent to"]
+// END RANK raw_80
+
+prespace_81 -> leaf_91
+leaf_91  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_81
+
+literal_82 -> leaf_92
+leaf_92  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(function() return 2 + 3 end)()"]
+// END RANK literal_82
+
+raw_83 -> leaf_93
+leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_83
+
+codeblock_70 -> leaf_94
+leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   stat  = V\"varlist\" * P\"=\" * V\"explist\" +
            V\"functioncall\" +
            _do * V\"block\" * _end +
            P\"while\" * V\"exp\" * _do * V\"block\" * _end +
@@ -506,44 +508,44 @@ leaf_93  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   stat  = V\"v
    namelist = V\"Name\" * ( V\"exp\" * \",\")^0 * V\"exp\"
 
    explist  = (V\"exp\" *)^0 * V\"exp\""]
-// END RANK codeblock_69
+// END RANK codeblock_70
 
-section_55 -> { header_94 prose_95 codeblock_96}
-{rank=same; header_94 prose_95 codeblock_96}
+section_55 -> { header_95 prose_96 codeblock_97}
+{rank=same; header_95 prose_96 codeblock_97}
 
-header_94 [label="3 : Expressions"]
+header_95 [label="3 : Expressions"]
 
-prose_95 [label="prose"]
+prose_96 [label="prose"]
 
-codeblock_96 [label="code block 162-197"]
+codeblock_97 [label="code block 162-199"]
 
 
 // END RANK section_55
 
-header_94 -> leaf_97
-leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Expressions"]
-// END RANK header_94
+header_95 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Expressions"]
+// END RANK header_95
 
-prose_95 -> { raw_98}
-{rank=same; raw_98}
+prose_96 -> { raw_99}
+{rank=same; raw_99}
 
-raw_98 [label="raw"]
+raw_99 [label="raw"]
 
 
-// END RANK prose_95
+// END RANK prose_96
 
-raw_98 -> leaf_99
-leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_99 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Expressions are necessarily somewhat complex because of
 operator precedence; Lua has fewer operators than languages
 such as C, but this translation from the grammar will require
 further elaboration to correctly resolve order of operations.
 "]
-// END RANK raw_98
+// END RANK raw_99
 
-codeblock_96 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = P\"nil\" + P\"false\" + P\"true\"
+codeblock_97 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = P\"nil\" + P\"false\" + P\"true\"
               + V\"Number\" + V\"String\" + P\"...\" + V\"fn\"
               + V\"prefixexp\" + V\"tableconstructor\"
               + V\"exp\" * V\"binop\" * V\"exp\"
@@ -576,8 +578,183 @@ leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = 
    binop     = P\"+\" + P\"-\" + P\"*\" + P\"/\" + P\"^\" + P\"%\" + P\"..\"
                + P\"<\" + P\"<=\" + P\">\" + P\">=\" + P\"==\" + P\"~=\" +
                + P\"and\" + P\"or\"
+
+   unop      = P\"-\" + P\"not\" + P\"#\"
 end"]
-// END RANK codeblock_96
+// END RANK codeblock_97
+
+section_56 -> { header_102 prose_103 prose_104 prose_105}
+{rank=same; header_102 prose_103 prose_104 prose_105}
+
+header_102 [label="3 : Afterword"]
+
+prose_103 [label="prose"]
+
+prose_104 [label="prose"]
+
+prose_105 [label="prose"]
+
+
+// END RANK section_56
+
+header_102 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Afterword"]
+// END RANK header_102
+
+prose_103 -> { raw_107}
+{rank=same; raw_107}
+
+raw_107 [label="raw"]
+
+
+// END RANK prose_103
+
+raw_107 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+So there's a first-pass at a literal transcription of the Lua 5.1 spec into
+LPEG/espalier format.
+"]
+// END RANK raw_107
+
+prose_104 -> { raw_109 prespace_110 literal_111 raw_112 prespace_113 literal_114 raw_115}
+{rank=same; raw_109 prespace_110 literal_111 raw_112 prespace_113 literal_114 raw_115}
+
+raw_109 [label="raw"]
+
+prespace_110 [label="prespace"]
+
+literal_111 [label="literal"]
+
+raw_112 [label="raw"]
+
+prespace_113 [label="prespace"]
+
+literal_114 [label="literal"]
+
+raw_115 [label="raw"]
+
+
+// END RANK prose_104
+
+raw_109 -> leaf_116
+leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+There's bound to be some spelling errors in there, such as a"]
+// END RANK raw_109
+
+prespace_110 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_110
+
+literal_111 -> leaf_118
+leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="+"]
+// END RANK literal_111
+
+raw_112 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" where I
+meant"]
+// END RANK raw_112
+
+prespace_113 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_113
+
+literal_114 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*"]
+// END RANK literal_114
+
+raw_115 -> leaf_122
+leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", but in writing out the spec I'm fairly sure I won't need to
+rewrite terms to compensate for direct left recursion.
+"]
+// END RANK raw_115
+
+prose_105 -> { raw_123 prespace_124 literal_125 raw_126 prespace_127 literal_128 raw_129 prespace_130 literal_131 raw_132}
+{rank=same; raw_123 prespace_124 literal_125 raw_126 prespace_127 literal_128 raw_129 prespace_130 literal_131 raw_132}
+
+raw_123 [label="raw"]
+
+prespace_124 [label="prespace"]
+
+literal_125 [label="literal"]
+
+raw_126 [label="raw"]
+
+prespace_127 [label="prespace"]
+
+literal_128 [label="literal"]
+
+raw_129 [label="raw"]
+
+prespace_130 [label="prespace"]
+
+literal_131 [label="literal"]
+
+raw_132 [label="raw"]
+
+
+// END RANK prose_105
+
+raw_123 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I do need to add whitespace,"]
+// END RANK raw_123
+
+prespace_124 -> leaf_134
+leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_124
+
+literal_125 -> leaf_135
+leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="goto"]
+// END RANK literal_125
+
+raw_126 -> leaf_136
+leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" statements and labels, and get"]
+// END RANK raw_126
+
+prespace_127 -> leaf_137
+leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_127
+
+literal_128 -> leaf_138
+leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="espalier"]
+// END RANK literal_128
+
+raw_129 -> leaf_139
+leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+running in"]
+// END RANK raw_129
+
+prespace_130 -> leaf_140
+leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_130
+
+literal_131 -> leaf_141
+leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_131
+
+raw_132 -> leaf_142
+leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which isn't happening yet due to remaining problems with
+the modules system.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"]
+// END RANK raw_132
 
 
 }
