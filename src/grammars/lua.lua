@@ -178,4 +178,6 @@ local function lua_fn(ENV)
    fn        = P"function" * V"funcbody"
 
    funcbody  = P"(" * V"parlist"^0 * P")" * V"block" * _end
+
+   parlist   = V"namelist" ( P"," * P"...") + P"..."
 end

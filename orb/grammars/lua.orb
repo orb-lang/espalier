@@ -178,6 +178,8 @@ further elaboration to correctly resolve order of operations.
    fn        = P"function" * V"funcbody"
 
    funcbody  = P"(" * V"parlist"^0 * P")" * V"block" * _end
+
+   parlist   = V"namelist" ( P"," * P"...") + P"..."
 end
 #/lua
 
