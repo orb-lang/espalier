@@ -184,4 +184,13 @@ local function lua_fn(ENV)
    tableconstructor = P"{" * V"fieldlist"^0 * P"}"
 
    fieldlist = V"field" * ( V"fieldsep" * V"field" )^1 * V"fieldsep"^0
+
+   field     = P"[" * V"exp" * P"]" * P"=" * V"exp"
+               + V"exp"
+
+   fieldsep  = P"," * P";"
+
+   binop     = P"+" + P"-" + P"*" + P"/" + P"^" + P"%" + P".."
+               + P"<" + P"<=" + P">" + P">=" + P"==" + P"~=" +
+               + P"and" + P"or"
 end
