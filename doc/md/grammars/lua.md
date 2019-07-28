@@ -178,5 +178,9 @@ further elaboration to correctly resolve order of operations.
    funcbody  = P"(" * V"parlist"^0 * P")" * V"block" * _end
 
    parlist   = V"namelist" ( P"," * P"...") + P"..."
+
+   tableconstructor = P"{" * V"fieldlist"^0 * P"}"
+
+   fieldlist = V"field" * ( V"fieldsep" * V"field" )^1 * V"fieldsep"^0
 end
 ```

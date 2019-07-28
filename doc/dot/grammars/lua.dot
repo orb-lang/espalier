@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 202"]
+doc_0 [label="doc - 206"]
 
 
 doc_0 -> { section_1}
@@ -321,7 +321,7 @@ codeblock_53 [label="code block 104-112"]
 
 section_54 [label="section: 115-154"]
 
-section_55 [label="section: 155-202"]
+section_55 [label="section: 155-206"]
 
 
 // END RANK section_8
@@ -515,7 +515,7 @@ header_94 [label="3 : Expressions"]
 
 prose_95 [label="prose"]
 
-codeblock_96 [label="code block 162-184"]
+codeblock_96 [label="code block 162-188"]
 
 
 // END RANK section_55
@@ -563,6 +563,10 @@ leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = 
    funcbody  = P\"(\" * V\"parlist\"^0 * P\")\" * V\"block\" * _end
 
    parlist   = V\"namelist\" ( P\",\" * P\"...\") + P\"...\"
+
+   tableconstructor = P\"{\" * V\"fieldlist\"^0 * P\"}\"
+
+   fieldlist = V\"field\" * ( V\"fieldsep\" * V\"field\" )^1 * V\"fieldsep\"^0
 end"]
 // END RANK codeblock_96
 
