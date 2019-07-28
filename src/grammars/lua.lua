@@ -160,9 +160,18 @@ local function lua_fn(ENV)
 
 
 
-   exp     = P"nil" + P"false" + P"true"
-             + V"Number" + V"String" + P"..." + V"function"
-             + V"prefixexp" + V"tableconstructor"
-             + V"exp" * V"binop" * V"exp"
-             + V"unop" * V"exp"
+   exp      = P"nil" + P"false" + P"true"
+              + V"Number" + V"String" + P"..." + V"function"
+              + V"prefixexp" + V"tableconstructor"
+              + V"exp" * V"binop" * V"exp"
+              + V"unop" * V"exp"
+
+   prefixexp = V"var" + V"functioncall" + P"(" * V"exp" * P")"
+
+   functioncall = V"prefixexp" * V"args" +
+                  V"prefixexp" * P":" * V"Name" * V"args"
+
+   args      = P"(" * V"explist"^0 * P")"
+               + V"tableconstructor"
+               + V"String"
 end
