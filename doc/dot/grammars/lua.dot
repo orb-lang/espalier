@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 231"]
+doc_0 [label="doc - 237"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ codeblock_6 [label="code block 12-69"]
 
 section_7 [label="section: 72-87"]
 
-section_8 [label="section: 99-201"]
+section_8 [label="section: 99-204"]
 
 
 // END RANK section_1
@@ -321,9 +321,9 @@ codeblock_53 [label="code block 104-112"]
 
 section_54 [label="section: 115-154"]
 
-section_55 [label="section: 155-201"]
+section_55 [label="section: 155-204"]
 
-section_56 [label="section: 202-231"]
+section_56 [label="section: 205-237"]
 
 
 // END RANK section_8
@@ -510,42 +510,85 @@ leaf_94  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   stat  = V\"v
    explist  = (V\"exp\" *)^0 * V\"exp\""]
 // END RANK codeblock_70
 
-section_55 -> { header_95 prose_96 codeblock_97}
-{rank=same; header_95 prose_96 codeblock_97}
+section_55 -> { header_95 prose_96 prose_97 codeblock_98}
+{rank=same; header_95 prose_96 prose_97 codeblock_98}
 
 header_95 [label="3 : Expressions"]
 
 prose_96 [label="prose"]
 
-codeblock_97 [label="code block 162-199"]
+prose_97 [label="prose"]
+
+codeblock_98 [label="code block 165-202"]
 
 
 // END RANK section_55
 
-header_95 -> leaf_98
-leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Expressions"]
+header_95 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Expressions"]
 // END RANK header_95
 
-prose_96 -> { raw_99}
-{rank=same; raw_99}
+prose_96 -> { raw_100}
+{rank=same; raw_100}
 
-raw_99 [label="raw"]
+raw_100 [label="raw"]
 
 
 // END RANK prose_96
 
-raw_99 -> leaf_100
-leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_100 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 Expressions are necessarily somewhat complex because of
 operator precedence; Lua has fewer operators than languages
 such as C, but this translation from the grammar will require
 further elaboration to correctly resolve order of operations.
 "]
-// END RANK raw_99
+// END RANK raw_100
 
-codeblock_97 -> leaf_101
-leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = P\"nil\" + P\"false\" + P\"true\"
+prose_97 -> { raw_102 link_103 raw_104}
+{rank=same; raw_102 link_103 raw_104}
+
+raw_102 [label="raw"]
+
+link_103 [label="link"]
+
+raw_104 [label="raw"]
+
+
+// END RANK prose_97
+
+raw_102 -> leaf_105
+leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The "]
+// END RANK raw_102
+
+link_103 -> { anchortext_106 url_107}
+{rank=same; anchortext_106 url_107}
+
+anchortext_106 [label="anchortext"]
+
+url_107 [label="url"]
+
+
+// END RANK link_103
+
+anchortext_106 -> leaf_108
+leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="LPEG manual"]
+// END RANK anchortext_106
+
+url_107 -> leaf_109
+leaf_109  [color=Gray,shape=rectangle,fontname=Inconsolata,label="http://www.inf.puc-rio.br/~roberto/lpeg/#ex"]
+// END RANK url_107
+
+raw_104 -> leaf_110
+leaf_110  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" has an
+arithmetic parser so I can just use that.
+"]
+// END RANK raw_104
+
+codeblock_98 -> leaf_111
+leaf_111  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = P\"nil\" + P\"false\" + P\"true\"
               + V\"Number\" + V\"String\" + P\"...\" + V\"fn\"
               + V\"prefixexp\" + V\"tableconstructor\"
               + V\"exp\" * V\"binop\" * V\"exp\"
@@ -581,96 +624,52 @@ leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   exp      = 
 
    unop      = P\"-\" + P\"not\" + P\"#\"
 end"]
-// END RANK codeblock_97
+// END RANK codeblock_98
 
-section_56 -> { header_102 prose_103 prose_104 prose_105}
-{rank=same; header_102 prose_103 prose_104 prose_105}
+section_56 -> { header_112 prose_113 prose_114 prose_115 prose_116}
+{rank=same; header_112 prose_113 prose_114 prose_115 prose_116}
 
-header_102 [label="3 : Afterword"]
+header_112 [label="3 : Afterword"]
 
-prose_103 [label="prose"]
+prose_113 [label="prose"]
 
-prose_104 [label="prose"]
+prose_114 [label="prose"]
 
-prose_105 [label="prose"]
+prose_115 [label="prose"]
+
+prose_116 [label="prose"]
 
 
 // END RANK section_56
 
-header_102 -> leaf_106
-leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Afterword"]
-// END RANK header_102
+header_112 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Afterword"]
+// END RANK header_112
 
-prose_103 -> { raw_107}
-{rank=same; raw_107}
+prose_113 -> { raw_118}
+{rank=same; raw_118}
 
-raw_107 [label="raw"]
+raw_118 [label="raw"]
 
 
-// END RANK prose_103
+// END RANK prose_113
 
-raw_107 -> leaf_108
-leaf_108  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+raw_118 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 
 So there's a first-pass at a literal transcription of the Lua 5.1 spec into
 LPEG/espalier format.
 "]
-// END RANK raw_107
+// END RANK raw_118
 
-prose_104 -> { raw_109 prespace_110 literal_111 raw_112 prespace_113 literal_114 raw_115}
-{rank=same; raw_109 prespace_110 literal_111 raw_112 prespace_113 literal_114 raw_115}
+prose_114 -> { raw_120 prespace_121 literal_122 raw_123 prespace_124 literal_125 raw_126}
+{rank=same; raw_120 prespace_121 literal_122 raw_123 prespace_124 literal_125 raw_126}
 
-raw_109 [label="raw"]
+raw_120 [label="raw"]
 
-prespace_110 [label="prespace"]
+prespace_121 [label="prespace"]
 
-literal_111 [label="literal"]
-
-raw_112 [label="raw"]
-
-prespace_113 [label="prespace"]
-
-literal_114 [label="literal"]
-
-raw_115 [label="raw"]
-
-
-// END RANK prose_104
-
-raw_109 -> leaf_116
-leaf_116  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-There's bound to be some spelling errors in there, such as a"]
-// END RANK raw_109
-
-prespace_110 -> leaf_117
-leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_110
-
-literal_111 -> leaf_118
-leaf_118  [color=Gray,shape=rectangle,fontname=Inconsolata,label="+"]
-// END RANK literal_111
-
-raw_112 -> leaf_119
-leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" where I
-meant"]
-// END RANK raw_112
-
-prespace_113 -> leaf_120
-leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_113
-
-literal_114 -> leaf_121
-leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*"]
-// END RANK literal_114
-
-raw_115 -> leaf_122
-leaf_122  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", but in writing out the spec I'm fairly sure I won't need to
-rewrite terms to compensate for direct left recursion.
-"]
-// END RANK raw_115
-
-prose_105 -> { raw_123 prespace_124 literal_125 raw_126 prespace_127 literal_128 raw_129 prespace_130 literal_131 raw_132}
-{rank=same; raw_123 prespace_124 literal_125 raw_126 prespace_127 literal_128 raw_129 prespace_130 literal_131 raw_132}
+literal_122 [label="literal"]
 
 raw_123 [label="raw"]
 
@@ -680,62 +679,176 @@ literal_125 [label="literal"]
 
 raw_126 [label="raw"]
 
-prespace_127 [label="prespace"]
 
-literal_128 [label="literal"]
+// END RANK prose_114
 
-raw_129 [label="raw"]
+raw_120 -> leaf_127
+leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+There's bound to be some spelling errors in there, such as a"]
+// END RANK raw_120
 
-prespace_130 [label="prespace"]
+prespace_121 -> leaf_128
+leaf_128  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_121
 
-literal_131 [label="literal"]
+literal_122 -> leaf_129
+leaf_129  [color=Gray,shape=rectangle,fontname=Inconsolata,label="+"]
+// END RANK literal_122
 
-raw_132 [label="raw"]
-
-
-// END RANK prose_105
-
-raw_123 -> leaf_133
-leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-I do need to add whitespace,"]
+raw_123 -> leaf_130
+leaf_130  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" where I
+meant"]
 // END RANK raw_123
 
-prespace_124 -> leaf_134
-leaf_134  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+prespace_124 -> leaf_131
+leaf_131  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
 // END RANK prespace_124
 
-literal_125 -> leaf_135
-leaf_135  [color=Gray,shape=rectangle,fontname=Inconsolata,label="goto"]
+literal_125 -> leaf_132
+leaf_132  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*"]
 // END RANK literal_125
 
-raw_126 -> leaf_136
-leaf_136  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" statements and labels, and get"]
+raw_126 -> leaf_133
+leaf_133  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", but in writing out the spec I'm fairly sure I won't need to
+rewrite terms to compensate for direct left recursion.
+"]
 // END RANK raw_126
 
-prespace_127 -> leaf_137
-leaf_137  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_127
+prose_115 -> { raw_134 prespace_135 literal_136 raw_137 prespace_138 literal_139 raw_140 prespace_141 literal_142 raw_143}
+{rank=same; raw_134 prespace_135 literal_136 raw_137 prespace_138 literal_139 raw_140 prespace_141 literal_142 raw_143}
 
-literal_128 -> leaf_138
-leaf_138  [color=Gray,shape=rectangle,fontname=Inconsolata,label="espalier"]
-// END RANK literal_128
+raw_134 [label="raw"]
 
-raw_129 -> leaf_139
-leaf_139  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+prespace_135 [label="prespace"]
+
+literal_136 [label="literal"]
+
+raw_137 [label="raw"]
+
+prespace_138 [label="prespace"]
+
+literal_139 [label="literal"]
+
+raw_140 [label="raw"]
+
+prespace_141 [label="prespace"]
+
+literal_142 [label="literal"]
+
+raw_143 [label="raw"]
+
+
+// END RANK prose_115
+
+raw_134 -> leaf_144
+leaf_144  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I do need to add whitespace,"]
+// END RANK raw_134
+
+prespace_135 -> leaf_145
+leaf_145  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_135
+
+literal_136 -> leaf_146
+leaf_146  [color=Gray,shape=rectangle,fontname=Inconsolata,label="goto"]
+// END RANK literal_136
+
+raw_137 -> leaf_147
+leaf_147  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" statements and labels, and get"]
+// END RANK raw_137
+
+prespace_138 -> leaf_148
+leaf_148  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_138
+
+literal_139 -> leaf_149
+leaf_149  [color=Gray,shape=rectangle,fontname=Inconsolata,label="espalier"]
+// END RANK literal_139
+
+raw_140 -> leaf_150
+leaf_150  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 running in"]
-// END RANK raw_129
+// END RANK raw_140
 
-prespace_130 -> leaf_140
-leaf_140  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
-// END RANK prespace_130
+prespace_141 -> leaf_151
+leaf_151  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_141
 
-literal_131 -> leaf_141
-leaf_141  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
-// END RANK literal_131
+literal_142 -> leaf_152
+leaf_152  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_142
 
-raw_132 -> leaf_142
-leaf_142  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which isn't happening yet due to remaining problems with
+raw_143 -> leaf_153
+leaf_153  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", which isn't happening yet due to remaining problems with
 the modules system.
+"]
+// END RANK raw_143
+
+prose_116 -> { raw_154 prespace_155 literal_156 raw_157 prespace_158 literal_159 raw_160 prespace_161 literal_162 raw_163}
+{rank=same; raw_154 prespace_155 literal_156 raw_157 prespace_158 literal_159 raw_160 prespace_161 literal_162 raw_163}
+
+raw_154 [label="raw"]
+
+prespace_155 [label="prespace"]
+
+literal_156 [label="literal"]
+
+raw_157 [label="raw"]
+
+prespace_158 [label="prespace"]
+
+literal_159 [label="literal"]
+
+raw_160 [label="raw"]
+
+prespace_161 [label="prespace"]
+
+literal_162 [label="literal"]
+
+raw_163 [label="raw"]
+
+
+// END RANK prose_116
+
+raw_154 -> leaf_164
+leaf_164  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+We also need to borrow our existing definitions for things like"]
+// END RANK raw_154
+
+prespace_155 -> leaf_165
+leaf_165  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_155
+
+literal_156 -> leaf_166
+leaf_166  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Name"]
+// END RANK literal_156
+
+raw_157 -> leaf_167
+leaf_167  [color=Gray,shape=rectangle,fontname=Inconsolata,label="s,"]
+// END RANK raw_157
+
+prespace_158 -> leaf_168
+leaf_168  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_158
+
+literal_159 -> leaf_169
+leaf_169  [color=Gray,shape=rectangle,fontname=Inconsolata,label="Number"]
+// END RANK literal_159
+
+raw_160 -> leaf_170
+leaf_170  [color=Gray,shape=rectangle,fontname=Inconsolata,label="s, and"]
+// END RANK raw_160
+
+prespace_161 -> leaf_171
+leaf_171  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_161
+
+literal_162 -> leaf_172
+leaf_172  [color=Gray,shape=rectangle,fontname=Inconsolata,label="String"]
+// END RANK literal_162
+
+raw_163 -> leaf_173
+leaf_173  [color=Gray,shape=rectangle,fontname=Inconsolata,label="s, but that's a simple copy-paste job.
 
 
 
@@ -754,7 +867,7 @@ the modules system.
 
 
 "]
-// END RANK raw_132
+// END RANK raw_163
 
 
 }

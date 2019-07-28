@@ -157,6 +157,10 @@ operator precedence; Lua has fewer operators than languages
 such as C, but this translation from the grammar will require
 further elaboration to correctly resolve order of operations.
 
+
+The [LPEG manual](http://www.inf.puc-rio.br/~roberto/lpeg/#ex) has an
+arithmetic parser so I can just use that.
+
 ```lua
    exp      = P"nil" + P"false" + P"true"
               + V"Number" + V"String" + P"..." + V"fn"
@@ -209,6 +213,10 @@ rewrite terms to compensate for direct left recursion.
 I do need to add whitespace, ``goto`` statements and labels, and get ``espalier``
 running in ``femto``, which isn't happening yet due to remaining problems with
 the modules system.
+
+
+We also need to borrow our existing definitions for things like ``Name``s,
+``Number``s, and ``String``s, but that's a simple copy-paste job.
 
 
 
