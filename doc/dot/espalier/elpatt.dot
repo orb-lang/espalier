@@ -1,0 +1,593 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 133"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-63"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 codeblock_5 section_6 section_7 section_8}
+{rank=same; header_2 prose_3 prose_4 codeblock_5 section_6 section_7 section_8}
+
+header_2 [label="1 : Extended Lpeg module"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+codeblock_5 [label="code block 10-19"]
+
+section_6 [label="section: 21-27"]
+
+section_7 [label="section: 28-36"]
+
+section_8 [label="section: 64-108"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_9
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Extended Lpeg module"]
+// END RANK header_2
+
+prose_3 -> { raw_10 prespace_11 literal_12 raw_13}
+{rank=same; raw_10 prespace_11 literal_12 raw_13}
+
+raw_10 [label="raw"]
+
+prespace_11 [label="prespace"]
+
+literal_12 [label="literal"]
+
+raw_13 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_10 -> leaf_14
+leaf_14  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+  This is where we add extended captures a la the old"]
+// END RANK raw_10
+
+prespace_11 -> leaf_15
+leaf_15  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_11
+
+literal_12 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="epeg"]
+// END RANK literal_12
+
+raw_13 -> leaf_17
+leaf_17  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+module.
+"]
+// END RANK raw_13
+
+prose_4 -> { raw_18}
+{rank=same; raw_18}
+
+raw_18 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_18 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The difference here is that we include lpeg as a metatable __index
+and can therefore use elpeg as L everywhere we currently use lpeg.
+"]
+// END RANK raw_18
+
+codeblock_5 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
+local s = require \"singletons:status\" ()
+s.verbose = false
+local Node = require \"espalier/node\"
+local elpatt = {}
+elpatt.P, elpatt.B, elpatt.V, elpatt.R = L.P, L.B, L.V, L.R
+
+local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg"]
+// END RANK codeblock_5
+
+section_6 -> { header_21 prose_22 codeblock_23}
+{rank=same; header_21 prose_22 codeblock_23}
+
+header_21 [label="3 : Errors"]
+
+prose_22 [label="prose"]
+
+codeblock_23 [label="code block 23-26"]
+
+
+// END RANK section_6
+
+header_21 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Errors"]
+// END RANK header_21
+
+prose_22 -> { raw_25}
+{rank=same; raw_25}
+
+raw_25 [label="raw"]
+
+
+// END RANK prose_22
+
+raw_25 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_25
+
+codeblock_23 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Err = require \"espalier/error\"
+elpatt.E, elpatt.EOF = Err.E, Err.EOF"]
+// END RANK codeblock_23
+
+section_7 -> { header_28 prose_29 prose_30 prose_31 section_32}
+{rank=same; header_28 prose_29 prose_30 prose_31 section_32}
+
+header_28 [label="2 : Ppt : Codepoint pattern #Todo"]
+
+prose_29 [label="prose"]
+
+prose_30 [label="prose"]
+
+prose_31 [label="prose"]
+
+section_32 [label="section: 37-63"]
+
+
+// END RANK section_7
+
+header_28 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** Ppt : Codepoint pattern #Todo"]
+// END RANK header_28
+
+prose_29 -> { raw_34}
+{rank=same; raw_34}
+
+raw_34 [label="raw"]
+
+
+// END RANK prose_29
+
+raw_34 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Captures one Unicode point
+"]
+// END RANK raw_34
+
+prose_30 -> { raw_36}
+{rank=same; raw_36}
+
+raw_36 [label="raw"]
+
+
+// END RANK prose_30
+
+raw_36 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I actually have no idea how to do this yet...
+"]
+// END RANK raw_36
+
+prose_31 -> { raw_38 prespace_39 literal_40 raw_41}
+{rank=same; raw_38 prespace_39 literal_40 raw_41}
+
+raw_38 [label="raw"]
+
+prespace_39 [label="prespace"]
+
+literal_40 [label="literal"]
+
+raw_41 [label="raw"]
+
+
+// END RANK prose_31
+
+raw_38 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Looks like byte 97 is just"]
+// END RANK raw_38
+
+prespace_39 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_39
+
+literal_40 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="\\97"]
+// END RANK literal_40
+
+raw_41 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" in Lua. That's easy enough.
+
+"]
+// END RANK raw_41
+
+section_32 -> { header_46 prose_47 prose_48 codeblock_49}
+{rank=same; header_46 prose_47 prose_48 codeblock_49}
+
+header_46 [label="3 : num_bytes(str)"]
+
+prose_47 [label="prose"]
+
+prose_48 [label="prose"]
+
+codeblock_49 [label="code block 45-61"]
+
+
+// END RANK section_32
+
+header_46 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** num_bytes(str)"]
+// END RANK header_46
+
+prose_47 -> { raw_51}
+{rank=same; raw_51}
+
+raw_51 [label="raw"]
+
+
+// END RANK prose_47
+
+raw_51 -> leaf_52
+leaf_52  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+Captures the number of bytes in the next codepoint of a string.
+"]
+// END RANK raw_51
+
+prose_48 -> { raw_53 prespace_54 literal_55 raw_56}
+{rank=same; raw_53 prespace_54 literal_55 raw_56}
+
+raw_53 [label="raw"]
+
+prespace_54 [label="prespace"]
+
+literal_55 [label="literal"]
+
+raw_56 [label="raw"]
+
+
+// END RANK prose_48
+
+raw_53 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The string must be well-formed utf-8, more precisely, a malformed
+string will return"]
+// END RANK raw_53
+
+prespace_54 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_54
+
+literal_55 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nil"]
+// END RANK literal_55
+
+raw_56 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".  A zero byte is correctly allowed by the
+standard and will match here.
+"]
+// END RANK raw_56
+
+codeblock_49 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function num_bytes(str)
+--returns the number of bytes in the next character in str
+   local c = str:byte(1)
+   if type(c) == 'number' then
+      if c >= 0x00 and c <= 0x7F then
+         return 1
+      elseif c >= 0xC2 and c <= 0xDF then
+         return 2
+      elseif c >= 0xE0 and c <= 0xEF then
+         return 3
+      elseif c >= 0xF0 and c <= 0xF4 then
+         return 4
+      end
+   end
+end"]
+// END RANK codeblock_49
+
+section_8 -> { header_62 prose_63 prose_64 prose_65 prose_66 prose_67 prose_68 codeblock_69 section_70}
+{rank=same; header_62 prose_63 prose_64 prose_65 prose_66 prose_67 prose_68 codeblock_69 section_70}
+
+header_62 [label="2 : D : Drop a capture"]
+
+prose_63 [label="prose"]
+
+prose_64 [label="prose"]
+
+prose_65 [label="prose"]
+
+prose_66 [label="prose"]
+
+prose_67 [label="prose"]
+
+prose_68 [label="prose"]
+
+codeblock_69 [label="code block 87-104"]
+
+section_70 [label="section: 109-133"]
+
+
+// END RANK section_8
+
+header_62 -> leaf_71
+leaf_71  [color=Gray,shape=rectangle,fontname=Inconsolata,label="** D : Drop a capture"]
+// END RANK header_62
+
+prose_63 -> { raw_72 prespace_73 literal_74 raw_75}
+{rank=same; raw_72 prespace_73 literal_74 raw_75}
+
+raw_72 [label="raw"]
+
+prespace_73 [label="prespace"]
+
+literal_74 [label="literal"]
+
+raw_75 [label="raw"]
+
+
+// END RANK prose_63
+
+raw_72 -> leaf_76
+leaf_76  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  We discourage the use of captures in the Node class.  The architecture
+requires that all array values of a Node table be themselves Nodes. This is
+frequently checked for, in that we use"]
+// END RANK raw_72
+
+prespace_73 -> leaf_77
+leaf_77  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_73
+
+literal_74 -> leaf_78
+leaf_78  [color=Gray,shape=rectangle,fontname=Inconsolata,label="isNode"]
+// END RANK literal_74
+
+raw_75 -> leaf_79
+leaf_79  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" to filter in iterators etc,
+but this is defensive and will be phased out.
+"]
+// END RANK raw_75
+
+prose_64 -> { raw_80}
+{rank=same; raw_80}
+
+raw_80 [label="raw"]
+
+
+// END RANK prose_64
+
+raw_80 -> leaf_81
+leaf_81  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+The use of SUPPRESS lets us drop rules that we don't want to see in the
+final AST.  A normal approach to parsing has explicit captures, but this is
+inelegant compared to treating any Node without children as a leaf.
+"]
+// END RANK raw_80
+
+prose_65 -> { raw_82 prespace_83 literal_84 raw_85}
+{rank=same; raw_82 prespace_83 literal_84 raw_85}
+
+raw_82 [label="raw"]
+
+prespace_83 [label="prespace"]
+
+literal_84 [label="literal"]
+
+raw_85 [label="raw"]
+
+
+// END RANK prose_65
+
+raw_82 -> leaf_86
+leaf_86  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+What about regions of text that don't interest us?  Canonically this
+includes whitespace.  For those occasions, we have"]
+// END RANK raw_82
+
+prespace_83 -> leaf_87
+leaf_87  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_83
+
+literal_84 -> leaf_88
+leaf_88  [color=Gray,shape=rectangle,fontname=Inconsolata,label="elpatt.D"]
+// END RANK literal_84
+
+raw_85 -> leaf_89
+leaf_89  [color=Gray,shape=rectangle,fontname=Inconsolata,label=".
+"]
+// END RANK raw_85
+
+prose_66 -> { prespace_90 literal_91 raw_92 prespace_93 literal_94 raw_95}
+{rank=same; prespace_90 literal_91 raw_92 prespace_93 literal_94 raw_95}
+
+prespace_90 [label="prespace"]
+
+literal_91 [label="literal"]
+
+raw_92 [label="raw"]
+
+prespace_93 [label="prespace"]
+
+literal_94 [label="literal"]
+
+raw_95 [label="raw"]
+
+
+// END RANK prose_66
+
+prespace_90 -> leaf_96
+leaf_96  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_90
+
+literal_91 -> leaf_97
+leaf_97  [color=Gray,shape=rectangle,fontname=Inconsolata,label="D"]
+// END RANK literal_91
+
+raw_92 -> leaf_98
+leaf_98  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" needs to take a pattern, and if it succeeds in matching it, return a
+special table, while discarding the captures if any. In"]
+// END RANK raw_92
+
+prespace_93 -> leaf_99
+leaf_99  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_93
+
+literal_94 -> leaf_100
+leaf_100  [color=Gray,shape=rectangle,fontname=Inconsolata,label="define"]
+// END RANK literal_94
+
+raw_95 -> leaf_101
+leaf_101  [color=Gray,shape=rectangle,fontname=Inconsolata,label=", we will
+check for this table, and drop it whenever encountered.
+
+"]
+// END RANK raw_95
+
+prose_67 -> { raw_102}
+{rank=same; raw_102}
+
+raw_102 [label="raw"]
+
+
+// END RANK prose_67
+
+raw_102 -> leaf_103
+leaf_103  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - patt :  The pattern to match and drop
+"]
+// END RANK raw_102
+
+prose_68 -> { raw_104}
+{rank=same; raw_104}
+
+raw_104 [label="raw"]
+
+
+// END RANK prose_68
+
+raw_104 -> leaf_105
+leaf_105  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - #return : descendant of special table DROP
+"]
+// END RANK raw_104
+
+codeblock_69 -> leaf_106
+leaf_106  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+local DROP = {}
+elpatt.DROP = DROP
+
+local function make_drop(caps)
+   local dropped = setmetatable({}, DROP)
+   dropped.DROP = DROP
+   dropped.first = caps[1]
+   dropped.last = caps[3]
+   return dropped
+end
+
+function elpatt.D(patt)
+   return Ct(Cp() * Ct(patt) * Cp()) / make_drop
+end
+"]
+// END RANK codeblock_69
+
+section_70 -> { header_107 prose_108 prose_109 prose_110 codeblock_111 codeblock_112}
+{rank=same; header_107 prose_108 prose_109 prose_110 codeblock_111 codeblock_112}
+
+header_107 [label="3 : S : Capture set"]
+
+prose_108 [label="prose"]
+
+prose_109 [label="prose"]
+
+prose_110 [label="prose"]
+
+codeblock_111 [label="code block 119-129"]
+
+codeblock_112 [label="code block 131-133"]
+
+
+// END RANK section_70
+
+header_107 -> leaf_113
+leaf_113  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** S : Capture set"]
+// END RANK header_107
+
+prose_108 -> { raw_114}
+{rank=same; raw_114}
+
+raw_114 [label="raw"]
+
+
+// END RANK prose_108
+
+raw_114 -> leaf_115
+leaf_115  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+  Uses ordered choice to create a pattern which will match any provided
+pattern.
+"]
+// END RANK raw_114
+
+prose_109 -> { raw_116}
+{rank=same; raw_116}
+
+raw_116 [label="raw"]
+
+
+// END RANK prose_109
+
+raw_116 -> leaf_117
+leaf_117  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+This will patternize anything you feed it, which is convenient for strings.
+"]
+// END RANK raw_116
+
+prose_110 -> { raw_118}
+{rank=same; raw_118}
+
+raw_118 [label="raw"]
+
+
+// END RANK prose_110
+
+raw_118 -> leaf_119
+leaf_119  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Despite being called \"Set\", it makes no attempt at uniqueness and will
+match against patterns in the order provided.
+"]
+// END RANK raw_118
+
+codeblock_111 -> leaf_120
+leaf_120  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function elpatt.S(a, ...)
+   if not a then return nil end
+   local arg = {...}
+   local set = P(a)
+   for _, patt in ipairs(arg) do
+      set = set + P(patt)
+   end
+   return set
+end"]
+// END RANK codeblock_111
+
+codeblock_112 -> leaf_121
+leaf_121  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return elpatt"]
+// END RANK codeblock_112
+
+
+}

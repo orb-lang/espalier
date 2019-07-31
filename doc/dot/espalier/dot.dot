@@ -1,0 +1,369 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 168"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-168"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 codeblock_10 prose_11 prose_12 codeblock_13 prose_14 codeblock_15}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 prose_7 prose_8 prose_9 codeblock_10 prose_11 prose_12 codeblock_13 prose_14 codeblock_15}
+
+header_2 [label="1 : Dot"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+prose_7 [label="prose"]
+
+prose_8 [label="prose"]
+
+prose_9 [label="prose"]
+
+codeblock_10 [label="code block 19-74"]
+
+prose_11 [label="prose"]
+
+prose_12 [label="prose"]
+
+codeblock_13 [label="code block 82-155"]
+
+prose_14 [label="prose"]
+
+codeblock_15 [label="code block 159-167"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_16
+leaf_16  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Dot"]
+// END RANK header_2
+
+prose_3 -> { raw_17}
+{rank=same; raw_17}
+
+raw_17 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_17 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is an early piece of code, in need of overhaul
+"]
+// END RANK raw_17
+
+prose_4 -> { raw_19}
+{rank=same; raw_19}
+
+raw_19 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_19 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+- [ ] #Todo 
+"]
+// END RANK raw_19
+
+prose_5 -> { raw_21}
+{rank=same; raw_21}
+
+raw_21 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_21 -> leaf_22
+leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - [ ]  Make header and footer configurable values of t
+"]
+// END RANK raw_21
+
+prose_6 -> { raw_23}
+{rank=same; raw_23}
+
+raw_23 [label="raw"]
+
+
+// END RANK prose_6
+
+raw_23 -> leaf_24
+leaf_24  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - [ ]  Make leaf_font and leaf_color configurable values of t
+"]
+// END RANK raw_23
+
+prose_7 -> { raw_25}
+{rank=same; raw_25}
+
+raw_25 [label="raw"]
+
+
+// END RANK prose_7
+
+raw_25 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - [ ]  Finish attaching str to all Nodes in Orb (I'm looking at you,
+         hashtag)
+"]
+// END RANK raw_25
+
+prose_8 -> { raw_27}
+{rank=same; raw_27}
+
+raw_27 [label="raw"]
+
+
+// END RANK prose_8
+
+raw_27 -> leaf_28
+leaf_28  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+  - [ ]  Add some kind of comment or other boundary marker between ranks,
+         to make it easier to use with d3:
+"]
+// END RANK raw_27
+
+prose_9 -> { raw_29 link_30 raw_31}
+{rank=same; raw_29 link_30 raw_31}
+
+raw_29 [label="raw"]
+
+link_30 [label="link"]
+
+raw_31 [label="raw"]
+
+
+// END RANK prose_9
+
+raw_29 -> leaf_32
+leaf_32  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+         "]
+// END RANK raw_29
+
+link_30 -> { anchortext_33 url_34}
+{rank=same; anchortext_33 url_34}
+
+anchortext_33 [label="anchortext"]
+
+url_34 [label="url"]
+
+
+// END RANK link_30
+
+anchortext_33 -> leaf_35
+leaf_35  [color=Gray,shape=rectangle,fontname=Inconsolata,label="nifty d3 dot magic"]
+// END RANK anchortext_33
+
+url_34 -> leaf_36
+leaf_36  [color=Gray,shape=rectangle,fontname=Inconsolata,label="https://github.com/magjac/d3-graphviz"]
+// END RANK url_34
+
+raw_31 -> leaf_37
+leaf_37  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_31
+
+codeblock_10 -> leaf_38
+leaf_38  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local t = {}
+
+local dot_header = [=[
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+]=]
+
+local dot_footer = [=[
+
+}
+]=]
+
+local leaf_font  = \"Inconsolata\"
+local leaf_color = \"Gray\"
+
+local function sanitize_string(str)
+   -- filter \\ and \"
+   local phrase = str:gsub(\"\\\\\", \"\\\\\\\\\"):gsub('\"', '\\\\\"')
+   if phrase:sub(-1,-1) == \"\\n\" then
+      return phrase:sub(1, -2)
+   else
+      return phrase
+   end
+end
+
+local function ast_to_label(ast, leaf_count)
+   -- nodes need unique names, so we append a leaf_count and increment it
+   local label      = ast.id.. \"_\" .. leaf_count 
+   local label_line = label .. \" [label=\\\"\"
+      .. sanitize_string(ast:dotLabel()) .. \"\\\"]\\n\"
+   return label, label_line, leaf_count + 1
+end
+
+local function list_from_table(tab)
+   local table_list = \"\"
+   for _,v in ipairs(tab) do
+      table_list = table_list..\" \"..v
+   end
+   return table_list
+end
+
+local function value_to_label(value, leaf_count)
+   -- Generates a name and label for a leaf node.
+   -- Returns these with an incremented leaf_count.
+   local value = sanitize_string(value)
+   local name  = \"leaf_\"..leaf_count
+   local label = \" [color=\"..leaf_color..\",shape=rectangle,fontname=\"
+         ..leaf_font..\",label=\\\"\"..value..\"\\\"]\\n\"
+
+   return name, label, leaf_count + 1
+end"]
+// END RANK codeblock_10
+
+prose_11 -> { raw_39}
+{rank=same; raw_39}
+
+raw_39 [label="raw"]
+
+
+// END RANK prose_11
+
+raw_39 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+ Recursively walk an AST, concatenating dot descriptions
+ to the phrase. 
+"]
+// END RANK raw_39
+
+prose_12 -> { raw_41}
+{rank=same; raw_41}
+
+raw_41 [label="raw"]
+
+
+// END RANK prose_12
+
+raw_41 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+ - [ ] #todo allow nodes to skip themselves to collapse
+             semantic intermediates
+"]
+// END RANK raw_41
+
+codeblock_13 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function dot_ranks(ast, phrase, leaf_count, ast_label)
+   local leaf_count = leaf_count or 0
+
+   -- Add the node we're working on
+   if ast.isNode then
+      local label = \"\"
+      local label_line = \"\"
+      local child_labels = {}
+      local child_label_lines = {}
+
+      -- Handle anonymous nodes
+      if not ast_label then
+         label, label_line, leaf_count = ast_to_label(ast, leaf_count)
+         phrase = phrase .. label_line .. \"\\n\\n\"
+      else 
+         label = ast_label 
+      end
+
+      -- Document child nodes
+      for i,v in ipairs(ast) do
+         -- assemble labels and label lines for all child nodes
+         if v.isNode then
+            child_labels[i], child_label_lines[i], leaf_count = 
+               ast_to_label(v, leaf_count)
+         end
+      end
+
+      local child_list = list_from_table(child_labels)
+
+      if next(child_labels) ~= nil then
+         phrase = phrase..label..\" -> {\"..child_list..\"}\\n\"
+         phrase = phrase..\"{rank=same;\"..list_from_table(child_labels)..\"}\\n\\n\"
+      end
+
+      -- Concatenate child label lines
+      for _, v in ipairs(child_label_lines) do
+         phrase = phrase..v..\"\\n\"
+      end
+
+      if next(child_labels) ~= nil then
+         phrase = phrase..\"\\n\"
+      end
+
+      local leaf_val = nil
+
+      if ast.val then
+         leaf_val = ast.val
+      elseif ast.toValue then
+         leaf_val = ast:toValue()
+      end
+
+      -- Document value of leaf nodes
+      if (not ast[1]) and leaf_val then
+         local name = \"\" ; local val_label = \"\"
+         name, val_label, leaf_count = value_to_label(leaf_val, leaf_count)
+         phrase = phrase..label..\" -> \"..name..\"\\n\"
+         phrase = phrase..name..\" \"..val_label
+      end
+
+      local separator = \"// END RANK \" .. label .. \"\\n\\n\"
+      phrase = phrase .. separator
+
+      -- Execute recursively for all nodes
+      for i, v in ipairs(ast) do
+         if v.isNode  then
+            phrase, leaf_count = dot_ranks(v, phrase, leaf_count, child_labels[i])
+         end
+      end
+   end
+
+   return phrase, leaf_count
+end"]
+// END RANK codeblock_13
+
+prose_14 -> { raw_44}
+{rank=same; raw_44}
+
+raw_44 [label="raw"]
+
+
+// END RANK prose_14
+
+raw_44 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+ turn an AST into a dotfile string. 
+"]
+// END RANK raw_44
+
+codeblock_15 -> leaf_46
+leaf_46  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function t.dot(ast)
+   local phrase = dot_header
+
+   return  dot_ranks(ast, phrase) .. dot_footer
+end
+
+return t"]
+// END RANK codeblock_15
+
+
+}
