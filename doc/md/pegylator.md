@@ -307,6 +307,6 @@ function t.capture_group(ast)
 end
 ```
 ```lua
-<<@>>
+--<<@>>
 return t
 ```

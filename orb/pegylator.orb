@@ -305,6 +305,6 @@ end
 #/lua
 
 #!lua
-<<@>>
+--<<@>>
 return t
 #/lua
