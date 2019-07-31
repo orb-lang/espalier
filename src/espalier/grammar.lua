@@ -117,7 +117,7 @@
 
 
 
-local s = require "singletons:status" ()
+local s = require "singletons" . status ()
 s.verbose = false
 s.angry   = false
 

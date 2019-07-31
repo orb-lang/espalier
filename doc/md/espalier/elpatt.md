@@ -10,7 +10,7 @@ and can therefore use elpeg as L everywhere we currently use lpeg.
 
 ```lua
 local L = require "lpeg"
-local s = require "singletons:status" ()
+local s = require "singletons" . status ()
 s.verbose = false
 local Node = require "espalier/node"
 local elpatt = {}

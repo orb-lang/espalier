@@ -16,7 +16,7 @@ local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
 #### requires
 
 ```lua
-local s = require "singletons:status" ()
+local s = require "singletons" . status ()
 local a = require "anterm"
 local dot = require "espalier/dot"
 ```

@@ -358,7 +358,7 @@
 <title>leaf_26</title>
 <polygon fill="none" stroke="#c0c0c0" points="2217.5,-468.401 1872.5,-468.401 1872.5,-414.0001 2217.5,-414.0001 2217.5,-468.401"/>
 <text text-anchor="middle" x="2045" y="-453.1006" font-family="Inconsolata" font-size="14.00" fill="#000000">local L &#160;&#160;= require &quot;lpeg&quot;</text>
-<text text-anchor="middle" x="2045" y="-437.7006" font-family="Inconsolata" font-size="14.00" fill="#000000">local s &#160;&#160;= require &quot;singletons:status&quot; ()</text>
+<text text-anchor="middle" x="2045" y="-437.7006" font-family="Inconsolata" font-size="14.00" fill="#000000">local s = require &quot;singletons&quot; . status ()</text>
 <text text-anchor="middle" x="2045" y="-422.3005" font-family="Inconsolata" font-size="14.00" fill="#000000">local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P</text>
 </g>
 <!-- codeblock_20&#45;&gt;leaf_26 -->

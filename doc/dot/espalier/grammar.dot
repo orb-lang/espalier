@@ -1169,7 +1169,7 @@ leaf_280  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
 // END RANK raw_279
 
 codeblock_277 -> leaf_281
-leaf_281  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local s = require \"singletons:status\" ()
+leaf_281  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local s = require \"singletons\" . status ()
 s.verbose = false
 s.angry   = false"]
 // END RANK codeblock_277

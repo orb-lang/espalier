@@ -13,7 +13,7 @@ would succeed. So a ``( ])`` type error could be "fail to close (" and =P")".
 
 ```lua
 local L   = require "lpeg"
-local s   = require "singletons:status" ()
+local s = require "singletons" . status ()
 local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P
 ```
 ```lua
