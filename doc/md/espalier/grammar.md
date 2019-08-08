@@ -180,6 +180,62 @@ if VER == " 5.1" then
    local getfenv = assert( getfenv )
 end
 ```
+### make_ast_node
+
+This takes a lot of parameters and does a lot of things.
+
+```lua
+local function make_ast_node(id, first, t, last, str, metas, offset)
+```
+
+- Parameters:
+  - id      :  'string' naming the Node
+  - first   :  'number' of the first byte of ``str``
+  - t       :  'table' capture of grammatical information
+  - last    :  'number' of the last byte of ``str``
+  - str     :  'string' being parsed
+  - metas   :  'table' of Node-inherited metatables (complex)
+  - offset  :  'number' of optional offset.  This would be provided if
+               e.g. byte 1 of ``str`` is actually byte 255 of a larger
+               ``str``.  Normally ``nil``.
+
+
+``first``, ``last`` and ``offset`` follow Wirth indexing conventions.
+
+
+Because of course they do.
+
+
+#### setup values and metatables
+
+  As [covered elsewhere](httk://), we accept three varieties of
+metatable verb.  An ordinary table is assigned; a table with ``__call`` is
+called, as is an ordinary function.
+
+
+The latter two are expected to return the original table, now a descendent
+of ``Node``.  This need not have an ``id`` field which is the same as the ``id``
+parameter.
+
+```lua
+   local offset = offset or 0
+   t.first = first + offset
+   t.last  = last + offset - 1 -- [sic]
+   t.str   = str
+   if metas[id] then
+      local meta = metas[id]
+      if type(meta) == "function" or meta.__call then
+        t = metas[id](t, str)
+      else
+        t = setmeta(t, meta)
+      end
+      assert(t.id, "no id on Node")
+   else
+      t.id = id
+      setmeta(t, { __index = Node,
+                   __tostring = Node.toString })
+   end
+```
 #### DROP
 
   The rule ``elpatt.D`` causes the match to be dropped. In order for
@@ -323,62 +379,6 @@ Now we iterate the children
    assert(t.parent, "no parent on " .. t.id)
    return t
 end
-```
-## make_ast_node
-
-This takes a lot of parameters and does a lot of things.
-
-```lua
-local function make_ast_node(id, first, t, last, str, metas, offset)
-```
-
-- Parameters:
-  - id      :  'string' naming the Node
-  - first   :  'number' of the first byte of ``str``
-  - t       :  'table' capture of grammatical information
-  - last    :  'number' of the last byte of ``str``
-  - str     :  'string' being parsed
-  - metas   :  'table' of Node-inherited metatables (complex)
-  - offset  :  'number' of optional offset.  This would be provided if
-               e.g. byte 1 of ``str`` is actually byte 255 of a larger
-               ``str``.  Normally ``nil``.
-
-
-``first``, ``last`` and ``offset`` follow Wirth indexing conventions.
-
-
-Because of course they do.
-
-
-#### setup values and metatables
-
-  As [covered elsewhere](httk://), we accept three varieties of
-metatable verb.  An ordinary table is assigned; a table with ``__call`` is
-called, as is an ordinary function.
-
-
-The latter two are expected to return the original table, now a descendent
-of ``Node``.  This need not have an ``id`` field which is the same as the ``id``
-parameter.
-
-```lua
-   local offset = offset or 0
-   t.first = first + offset
-   t.last  = last + offset - 1 -- [sic]
-   t.str   = str
-   if metas[id] then
-      local meta = metas[id]
-      if type(meta) == "function" or meta.__call then
-        t = metas[id](t, str)
-      else
-        t = setmeta(t, meta)
-      end
-      assert(t.id, "no id on Node")
-   else
-      t.id = id
-      setmeta(t, { __index = Node,
-                   __tostring = Node.toString })
-   end
 ```
 ## define(func, g, e)
 

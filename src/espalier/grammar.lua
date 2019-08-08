@@ -166,6 +166,7 @@ end
 
 
 
+local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
@@ -195,24 +196,23 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   local offset = offset or 0
+   t.first = first + offset
+   t.last  = last + offset - 1 -- [sic]
+   t.str   = str
+   if metas[id] then
+      local meta = metas[id]
+      if type(meta) == "function" or meta.__call then
+        t = metas[id](t, str)
+      else
+        t = setmeta(t, meta)
+      end
+      assert(t.id, "no id on Node")
+   else
+      t.id = id
+      setmeta(t, { __index = Node,
+                   __tostring = Node.toString })
+   end
 
 
 
@@ -345,185 +345,6 @@ end
    assert(t.parent, "no parent on " .. t.id)
    return t
 end
-local function make_ast_node(id, first, t, last, str, metas, offset)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   local offset = offset or 0
-   t.first = first + offset
-   t.last  = last + offset - 1 -- [sic]
-   t.str   = str
-   if metas[id] then
-      local meta = metas[id]
-      if type(meta) == "function" or meta.__call then
-        t = metas[id](t, str)
-      else
-        t = setmeta(t, meta)
-      end
-      assert(t.id, "no id on Node")
-   else
-      t.id = id
-      setmeta(t, { __index = Node,
-                   __tostring = Node.toString })
-   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
