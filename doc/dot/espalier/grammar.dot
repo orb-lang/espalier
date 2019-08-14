@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 498"]
+doc_0 [label="doc - 505"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ section_6 [label="section: 37-163"]
 
 section_7 [label="section: 351-428"]
 
-section_8 [label="section: 450-498"]
+section_8 [label="section: 450-505"]
 
 
 // END RANK section_1
@@ -2599,9 +2599,9 @@ header_592 [label="2 : new"]
 
 prose_593 [label="prose"]
 
-codeblock_594 [label="code block 455-494"]
+codeblock_594 [label="code block 455-501"]
 
-codeblock_595 [label="code block 496-498"]
+codeblock_595 [label="code block 503-505"]
 
 
 // END RANK section_8
@@ -2645,7 +2645,8 @@ leaf_604  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" pattern.
 // END RANK raw_600
 
 codeblock_594 -> leaf_605
-leaf_605  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas)
+leaf_605  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas, pre, post)
+  assert(post)
   if type(grammar_template) == \"function\" then
     local metas = metas or {}
     metas = refineMetas(metas)
@@ -2653,9 +2654,15 @@ leaf_605  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
 
     local function parse(str, offset)
       local offset = offset or 0
+      if pre then
+         str = pre(str)
       local match = L.match(grammar, str, 1, str, metas, offset)
       if match == nil then
         return nil
+      end
+      if post then
+         error \"error in post parsing\"
+         match = post(match)
       end
       local maybeErr = match:lastLeaf()
       if maybeErr.id then

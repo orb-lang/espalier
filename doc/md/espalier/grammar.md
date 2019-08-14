@@ -485,7 +485,8 @@ Given a grammar_template function and a set of metatables,
 yield a parsing function and the grammar as an ``lpeg`` pattern.
 
 ```lua
-local function new(grammar_template, metas)
+local function new(grammar_template, metas, pre, post)
+  assert(post)
   if type(grammar_template) == "function" then
     local metas = metas or {}
     metas = refineMetas(metas)
@@ -493,9 +494,15 @@ local function new(grammar_template, metas)
 
     local function parse(str, offset)
       local offset = offset or 0
+      if pre then
+         str = pre(str)
       local match = L.match(grammar, str, 1, str, metas, offset)
       if match == nil then
         return nil
+      end
+      if post then
+         error "error in post parsing"
+         match = post(match)
       end
       local maybeErr = match:lastLeaf()
       if maybeErr.id then
