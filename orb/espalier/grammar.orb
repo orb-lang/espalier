@@ -462,6 +462,9 @@ local function new(grammar_template, metas)
     local function parse(str, offset)
       local offset = offset or 0
       local match = L.match(grammar, str, 1, str, metas, offset)
+      if match == nil then
+        return nil
+      end
       local maybeErr = match:lastLeaf()
       if maybeErr.id then
         if maybeErr.id == "ERROR" then
@@ -485,7 +488,7 @@ local function new(grammar_template, metas)
 
     return parse, grammar
   else
-    s:halt("no way to build grammar out of " .. type(template))
+    s:halt("no way to build grammar out of " .. type(grammar_template))
   end
 end
 #/lua

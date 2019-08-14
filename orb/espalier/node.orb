@@ -124,6 +124,12 @@ function Node.toString(node, depth)
 end
 #/lua
 
+#!lua
+function Node.__repr(node, phrase, c)
+   return tostring(node)
+end
+#/lua
+
 
 *** Metrics
 

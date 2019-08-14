@@ -117,6 +117,11 @@ function Node.toString(node, depth)
    return phrase
 end
 ```
+```lua
+function Node.__repr(node, phrase, c)
+   return tostring(node)
+end
+```
 ### Metrics
 
 These retrieve various general properties of the Node.

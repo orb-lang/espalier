@@ -125,6 +125,12 @@ end
 
 
 
+function Node.__repr(node, phrase, c)
+   return tostring(node)
+end
+
+
+
 
 
 

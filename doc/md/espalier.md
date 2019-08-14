@@ -16,11 +16,16 @@ local Node    = require "espalier/node"
 -- local Spec    = require "espalier/spec"
 local Grammar = require "espalier/grammar"
 
-return { dot     = dot,
-         elpatt  = elpatt,
-         node    = Node,
+local ortho8600 = require "espalier/grammars/ortho-8600"
+
+local grammars = {ortho8600 = ortho8600}
+
+return { dot      = dot,
+         elpatt   = elpatt,
+         node     = Node,
  --        spec    = Spec,
-         phrase  = ss.Phrase,
-         grammar = Grammar,
-         stator  = ss.Stator }
+         phrase   = ss.Phrase,
+         grammar  = Grammar,
+         grammars = grammars,
+         stator   = ss.Stator }
 ```

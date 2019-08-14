@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 495"]
+doc_0 [label="doc - 498"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ section_6 [label="section: 37-163"]
 
 section_7 [label="section: 351-428"]
 
-section_8 [label="section: 450-495"]
+section_8 [label="section: 450-498"]
 
 
 // END RANK section_1
@@ -2599,9 +2599,9 @@ header_592 [label="2 : new"]
 
 prose_593 [label="prose"]
 
-codeblock_594 [label="code block 455-491"]
+codeblock_594 [label="code block 455-494"]
 
-codeblock_595 [label="code block 493-495"]
+codeblock_595 [label="code block 496-498"]
 
 
 // END RANK section_8
@@ -2654,6 +2654,9 @@ leaf_605  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
     local function parse(str, offset)
       local offset = offset or 0
       local match = L.match(grammar, str, 1, str, metas, offset)
+      if match == nil then
+        return nil
+      end
       local maybeErr = match:lastLeaf()
       if maybeErr.id then
         if maybeErr.id == \"ERROR\" then
@@ -2677,7 +2680,7 @@ leaf_605  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function
 
     return parse, grammar
   else
-    s:halt(\"no way to build grammar out of \" .. type(template))
+    s:halt(\"no way to build grammar out of \" .. type(grammar_template))
   end
 end"]
 // END RANK codeblock_594
