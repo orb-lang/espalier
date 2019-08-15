@@ -72,6 +72,8 @@ local Day = Node : inherit ()
 Day.id = "day"
 local Month = Node : inherit ()
 Month.id = "month"
+local Year = Node : inherit ()
+Year.id =  "year"
 
 local date_metas = { oneThru30 = Day,
                      oneThru29 = Day,

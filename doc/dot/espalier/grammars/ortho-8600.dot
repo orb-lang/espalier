@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 162"]
+doc_0 [label="doc - 164"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-95"]
+section_1 [label="section: 1-97"]
 
 
 // END RANK doc_0
@@ -27,9 +27,9 @@ prose_5 [label="prose"]
 
 codeblock_6 [label="code block 58-67"]
 
-section_7 [label="section: 70-95"]
+section_7 [label="section: 70-97"]
 
-section_8 [label="section: 96-162"]
+section_8 [label="section: 98-164"]
 
 
 // END RANK section_1
@@ -136,7 +136,7 @@ header_16 [label="3 : metatables"]
 
 prose_17 [label="prose"]
 
-codeblock_18 [label="code block 72-94"]
+codeblock_18 [label="code block 72-96"]
 
 
 // END RANK section_7
@@ -163,6 +163,8 @@ leaf_22  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Day = Nod
 Day.id = \"day\"
 local Month = Node : inherit ()
 Month.id = \"month\"
+local Year = Node : inherit ()
+Year.id =  \"year\"
 
 local date_metas = { oneThru30 = Day,
                      oneThru29 = Day,
@@ -189,9 +191,9 @@ header_23 [label="3 : date grammar"]
 
 prose_24 [label="prose"]
 
-codeblock_25 [label="code block 98-158"]
+codeblock_25 [label="code block 100-160"]
 
-codeblock_26 [label="code block 160-162"]
+codeblock_26 [label="code block 162-164"]
 
 
 // END RANK section_8
