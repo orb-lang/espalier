@@ -16,7 +16,10 @@ local Grammar = require "espalier/grammar"
 
 local ortho8600 = require "espalier/grammars/ortho-8600"
 
-local grammars = {ortho8600 = ortho8600}
+local dot_grammar  = require "espalier/grammars/dot"
+
+local grammars = {ortho8600 = ortho8600,
+                  dot       = dot_grammar}
 
 return { dot      = dot,
          elpatt   = elpatt,

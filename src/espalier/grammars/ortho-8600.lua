@@ -81,7 +81,8 @@ local date_metas = { oneThru30 = Day,
                      oneThru29 = Day,
                      m31       = Month,
                      m30       = Month,
-                     mFeb      = Month }
+                     mFeb      = Month,
+                     year      = Year }
 
 local function _post(date)
    date.id = "DATE"
@@ -160,4 +161,5 @@ end
 
 
 
-   return Grammar(_date_fn, date_metas, nil, _post)
+
+return Grammar(_date_fn, date_metas, nil, nil)

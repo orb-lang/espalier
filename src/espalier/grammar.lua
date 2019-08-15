@@ -454,49 +454,52 @@ end
 
 
 local function new(grammar_template, metas, pre, post)
-  assert(post)
-  if type(grammar_template) == "function" then
-    local metas = metas or {}
-    metas = refineMetas(metas)
-    local grammar = define(grammar_template, nil, metas)
+   if type(grammar_template) == "function" then
+      local metas = metas or {}
+      metas = refineMetas(metas)
+      local grammar = define(grammar_template, nil, metas)
 
-    local function parse(str, offset)
-      local offset = offset or 0
-      if pre then
-         str = pre(str)
-      local match = L.match(grammar, str, 1, str, metas, offset)
-      if match == nil then
-        return nil
-      end
-      if post then
-         error "error in post parsing"
-         match = post(match)
-      end
-      local maybeErr = match:lastLeaf()
-      if maybeErr.id then
-        if maybeErr.id == "ERROR" then
-          local line, col = match:linePos(maybeErr.first)
-          local msg = maybeErr.msg or ""
-          s:complain("Parsing Error", " line: " .. tostring(line) .. ", "
-                     .. "col: " .. tostring(col) .. ". " .. msg)
-          return match, match:lastLeaf()
-        else
-          return match
-        end
-      else
-          local maybeNode = maybeErr.isNode and " is " or " isn't "
-          s:complain("No id on match" .. "match of type, " .. type(match)
-                    .. maybeNode .. " a Node: " .. tostring(maybeErr))
+      local function parse(str, offset)
+         local offset = offset or 0
+         --[[
+         if pre then
+            str = pre(str)
+         end
+         --]]
+         local match = L.match(grammar, str, 1, str, metas, offset)
+         if match == nil then
+            return nil
+         end
+         --[[
+         if post then
+            error "error in post parsing"
+           match = post(match)
+         end
+         --]]
+         local maybeErr = match:lastLeaf()
+         if maybeErr.id then
+            if maybeErr.id == "ERROR" then
+               local line, col = match:linePos(maybeErr.first)
+               local msg = maybeErr.msg or ""
+               s:complain("Parsing Error", " line: " .. tostring(line) .. ", "
+                       .. "col: " .. tostring(col) .. ". " .. msg)
+               return match, match:lastLeaf()
+            else
+               return match
+            end
+         else
+            local maybeNode = maybeErr.isNode and " is " or " isn't "
+            s:complain("No id on match" .. "match of type, " .. type(match)
+                      .. maybeNode .. " a Node: " .. tostring(maybeErr))
+         end
+         -- This would be a bad match.
+         return match
       end
 
-      -- This would be a bad match.
-      return match
-    end
-
-    return parse, grammar
-  else
-    s:halt("no way to build grammar out of " .. type(grammar_template))
-  end
+      return parse, grammar
+   else
+      s:halt("no way to build grammar out of " .. type(grammar_template))
+   end
 end
 
 

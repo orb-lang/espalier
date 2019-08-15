@@ -3,7 +3,7 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 505"]
+doc_0 [label="doc - 508"]
 
 
 doc_0 -> { section_1}
@@ -29,7 +29,7 @@ section_6 [label="section: 37-163"]
 
 section_7 [label="section: 351-428"]
 
-section_8 [label="section: 450-505"]
+section_8 [label="section: 450-508"]
 
 
 // END RANK section_1
@@ -2599,9 +2599,9 @@ header_592 [label="2 : new"]
 
 prose_593 [label="prose"]
 
-codeblock_594 [label="code block 455-501"]
+codeblock_594 [label="code block 455-504"]
 
-codeblock_595 [label="code block 503-505"]
+codeblock_595 [label="code block 506-508"]
 
 
 // END RANK section_8
@@ -2646,49 +2646,52 @@ leaf_604  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" pattern.
 
 codeblock_594 -> leaf_605
 leaf_605  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function new(grammar_template, metas, pre, post)
-  assert(post)
-  if type(grammar_template) == \"function\" then
-    local metas = metas or {}
-    metas = refineMetas(metas)
-    local grammar = define(grammar_template, nil, metas)
+   if type(grammar_template) == \"function\" then
+      local metas = metas or {}
+      metas = refineMetas(metas)
+      local grammar = define(grammar_template, nil, metas)
 
-    local function parse(str, offset)
-      local offset = offset or 0
-      if pre then
-         str = pre(str)
-      local match = L.match(grammar, str, 1, str, metas, offset)
-      if match == nil then
-        return nil
-      end
-      if post then
-         error \"error in post parsing\"
-         match = post(match)
-      end
-      local maybeErr = match:lastLeaf()
-      if maybeErr.id then
-        if maybeErr.id == \"ERROR\" then
-          local line, col = match:linePos(maybeErr.first)
-          local msg = maybeErr.msg or \"\"
-          s:complain(\"Parsing Error\", \" line: \" .. tostring(line) .. \", \"
-                     .. \"col: \" .. tostring(col) .. \". \" .. msg)
-          return match, match:lastLeaf()
-        else
-          return match
-        end
-      else
-          local maybeNode = maybeErr.isNode and \" is \" or \" isn't \"
-          s:complain(\"No id on match\" .. \"match of type, \" .. type(match)
-                    .. maybeNode .. \" a Node: \" .. tostring(maybeErr))
+      local function parse(str, offset)
+         local offset = offset or 0
+         --[[
+         if pre then
+            str = pre(str)
+         end
+         --]]
+         local match = L.match(grammar, str, 1, str, metas, offset)
+         if match == nil then
+            return nil
+         end
+         --[[
+         if post then
+            error \"error in post parsing\"
+           match = post(match)
+         end
+         --]]
+         local maybeErr = match:lastLeaf()
+         if maybeErr.id then
+            if maybeErr.id == \"ERROR\" then
+               local line, col = match:linePos(maybeErr.first)
+               local msg = maybeErr.msg or \"\"
+               s:complain(\"Parsing Error\", \" line: \" .. tostring(line) .. \", \"
+                       .. \"col: \" .. tostring(col) .. \". \" .. msg)
+               return match, match:lastLeaf()
+            else
+               return match
+            end
+         else
+            local maybeNode = maybeErr.isNode and \" is \" or \" isn't \"
+            s:complain(\"No id on match\" .. \"match of type, \" .. type(match)
+                      .. maybeNode .. \" a Node: \" .. tostring(maybeErr))
+         end
+         -- This would be a bad match.
+         return match
       end
 
-      -- This would be a bad match.
-      return match
-    end
-
-    return parse, grammar
-  else
-    s:halt(\"no way to build grammar out of \" .. type(grammar_template))
-  end
+      return parse, grammar
+   else
+      s:halt(\"no way to build grammar out of \" .. type(grammar_template))
+   end
 end"]
 // END RANK codeblock_594
 

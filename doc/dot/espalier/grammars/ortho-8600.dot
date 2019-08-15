@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 164"]
+doc_0 [label="doc - 166"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-97"]
+section_1 [label="section: 1-98"]
 
 
 // END RANK doc_0
@@ -27,9 +27,9 @@ prose_5 [label="prose"]
 
 codeblock_6 [label="code block 58-67"]
 
-section_7 [label="section: 70-97"]
+section_7 [label="section: 70-98"]
 
-section_8 [label="section: 98-164"]
+section_8 [label="section: 99-166"]
 
 
 // END RANK section_1
@@ -136,7 +136,7 @@ header_16 [label="3 : metatables"]
 
 prose_17 [label="prose"]
 
-codeblock_18 [label="code block 72-96"]
+codeblock_18 [label="code block 72-97"]
 
 
 // END RANK section_7
@@ -170,7 +170,8 @@ local date_metas = { oneThru30 = Day,
                      oneThru29 = Day,
                      m31       = Month,
                      m30       = Month,
-                     mFeb      = Month }
+                     mFeb      = Month,
+                     year      = Year }
 
 local function _post(date)
    date.id = \"DATE\"
@@ -191,9 +192,9 @@ header_23 [label="3 : date grammar"]
 
 prose_24 [label="prose"]
 
-codeblock_25 [label="code block 100-160"]
+codeblock_25 [label="code block 101-161"]
 
-codeblock_26 [label="code block 162-164"]
+codeblock_26 [label="code block 163-166"]
 
 
 // END RANK section_8
@@ -278,7 +279,8 @@ end"]
 // END RANK codeblock_25
 
 codeblock_26 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   return Grammar(_date_fn, date_metas, nil, _post)"]
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+return Grammar(_date_fn, date_metas, nil, nil)"]
 // END RANK codeblock_26
 
 
