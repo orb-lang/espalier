@@ -121,7 +121,7 @@ local function _date_fn(_ENV)
 
    monthDay     = V"m31"  * P"-" * V"day"
                 + V"m30"  * P"-" * (-V"longMonth" * V"day")
-                + P"mFeb" * P"-" * (-V"threeDecan" * V"day")
+                + V"mFeb" * P"-" * (-V"threeDecan" * V"day")
 
    m31          = (P"01" + P"03" + P"05" + P"07" + "08" + "10" + "12")
 
