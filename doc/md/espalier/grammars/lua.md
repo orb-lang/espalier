@@ -127,7 +127,7 @@ is, and is equivalent to ``(function() return 2 + 3 end)()``
            P"while" * V"exp" * _do * V"block" * _end +
            P"repeat" * V"block" * P"until" * _end +
            P"if" * V"exp" * _then * V"block" *
-              ( P"elseif" V"exp" * _then * V"block" )^0 *
+              ( P"elseif" * V"exp" * _then * V"block" )^0 *
               ( P"else" * V"block" )^-1 * _end +
            P"for" * V"Name" * P"=" * V"exp" * P"," * V"exp" *
               ( P"," * V"exp" )^-1 * _do * V"block" * _end +
@@ -139,16 +139,16 @@ is, and is equivalent to ``(function() return 2 + 3 end)()``
 
    laststat = P"return" * V"explist"^-1 + P"break"
 
-   funcname = V"Name" * ( P"." * V"Name" )^0 * ( P":" V"Name" )
+   funcname = V"Name" * ( P"." * V"Name" )^0 * ( P":" * V"Name" )
 
-   varlist  = V"var" * ( P"," V"var")^0
+   varlist  = V"var" * ( P"," * V"var")^0
 
    var      = V"Name" + V"prefixexp" * P"[" * V"exp" * P"]" +
                  V"prefixexp" * "." * V"Name"
 
    namelist = V"Name" * ( V"exp" * ",")^0 * V"exp"
 
-   explist  = (V"exp" *)^0 * V"exp"
+   explist  = (V"exp" * P",")^0 * V"exp"
 ```
 ### Expressions
 
@@ -181,7 +181,8 @@ arithmetic parser so I can just use that.
 
    funcbody  = P"(" * V"parlist"^0 * P")" * V"block" * _end
 
-   parlist   = V"namelist" ( P"," * P"...") + P"..."
+   parlist   = (V"namelist" * ( P"," * P"...")^-1)
+             + P"..."
 
    tableconstructor = P"{" * V"fieldlist"^0 * P"}"
 
@@ -193,7 +194,7 @@ arithmetic parser so I can just use that.
    fieldsep  = P"," * P";"
 
    binop     = P"+" + P"-" + P"*" + P"/" + P"^" + P"%" + P".."
-               + P"<" + P"<=" + P">" + P">=" + P"==" + P"~=" +
+               + P"<" + P"<=" + P">" + P">=" + P"==" + P"~="
                + P"and" + P"or"
 
    unop      = P"-" + P"not" + P"#"
@@ -219,19 +220,6 @@ We also need to borrow our existing definitions for things like ``Name``s,
 ``Number``s, and ``String``s, but that's a simple copy-paste job.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```lua
+return Grammar(lua_fn)
+```

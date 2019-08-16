@@ -2078,7 +2078,7 @@
 <g id="node127" class="node">
 <title>leaf_126</title>
 <polygon fill="none" stroke="#c0c0c0" points="7295,-1253.8827 6761,-1253.8827 6761,-778.2405 7295,-778.2405 7295,-1253.8827"/>
-<text text-anchor="middle" x="7028" y="-1238.5221" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.toString(node, depth)</text>
+<text text-anchor="middle" x="7028" y="-1238.5221" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.toString(node, depth, c)</text>
 <text text-anchor="middle" x="7028" y="-1223.122" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local depth = depth or 0</text>
 <text text-anchor="middle" x="7028" y="-1207.722" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;local phrase = &quot;&quot;</text>
 <text text-anchor="middle" x="7028" y="-1192.322" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;phrase = (&quot; &#160;&quot;):rep(depth) .. a.bright(node.id) .. &quot; &#160;&#160;&#160;&quot;</text>
@@ -2120,7 +2120,7 @@
 <title>leaf_127</title>
 <polygon fill="none" stroke="#c0c0c0" points="7588.5,-1043.2621 7313.5,-1043.2621 7313.5,-988.8611 7588.5,-988.8611 7588.5,-1043.2621"/>
 <text text-anchor="middle" x="7451" y="-1027.9616" font-family="Inconsolata" font-size="14.00" fill="#000000">function Node.__repr(node, phrase, c)</text>
-<text text-anchor="middle" x="7451" y="-1012.5616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return tostring(node)</text>
+<text text-anchor="middle" x="7451" y="-1012.5616" font-family="Inconsolata" font-size="14.00" fill="#000000"> &#160;&#160;return tostring(node, 0, c)</text>
 <text text-anchor="middle" x="7451" y="-997.1616" font-family="Inconsolata" font-size="14.00" fill="#000000">end</text>
 </g>
 <!-- codeblock_120&#45;&gt;leaf_127 -->

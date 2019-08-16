@@ -86,7 +86,7 @@ We're less disciplined than we should be about up-assigning this to
 inherited Node classes.
 
 ```lua
-function Node.toString(node, depth)
+function Node.toString(node, depth, c)
    local depth = depth or 0
    local phrase = ""
    phrase = ("  "):rep(depth) .. a.bright(node.id) .. "    "
@@ -119,7 +119,7 @@ end
 ```
 ```lua
 function Node.__repr(node, phrase, c)
-   return tostring(node)
+   return tostring(node, 0, c)
 end
 ```
 ### Metrics

@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 166"]
+doc_0 [label="doc - 289"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-98"]
+section_1 [label="section: 1-76"]
 
 
 // END RANK doc_0
@@ -21,15 +21,15 @@ header_2 [label="1 : ortho 8600: date format"]
 
 prose_3 [label="prose"]
 
-codeblock_4 [label="code block 7-54"]
+codeblock_4 [label="code block 7-32"]
 
 prose_5 [label="prose"]
 
-codeblock_6 [label="code block 58-67"]
+codeblock_6 [label="code block 36-45"]
 
-section_7 [label="section: 70-98"]
+section_7 [label="section: 48-76"]
 
-section_8 [label="section: 99-166"]
+section_8 [label="section: 77-142"]
 
 
 // END RANK section_1
@@ -79,29 +79,7 @@ oneThru29 = (\"0\", positiveDigit) | ((\"1\" | \"2\"), digit);
 oneThru30 = OneThru29 | \"30\" ;
 oneThru31 = OneThru30 | \"31\" ;
 digit = positiveDigit | \"0\" ;
-positiveDigit = \"1\" | \"2\" | \"3\" | \"4\" | \"5\" | \"6\" | \"7\" | \"8\" | \"9\" ;
-
-(* 4. Date and Time Extensions *)
-(* 4.1.1 Extended Format *) yearMonthDay = year, \"-\", monthDay ; (* 4.1.1 Levels *)
-(* For the extension features, two levels are defined: level 1 *) (* and level 2. Each major subsection of section 4 covers a *) (* general feature; some functions covered by that feature are *) (* level 1 and some are level 2. These levels are defined for *) (* the purpose of profiles, which may refer to the levels when *) (* specifying conformance to the profile. *)
-(* 4.2.1 Level 1 - Uncertain and/or Approximate Date *) uaDate = yearMonthDay, uaSymbol ;
-uaSymbol = \"?\" | \"~\" | \"%\" ;
-(* Reduced accuracy *)
-reducedDate = (year | yearMonth), uaSymbol ;
-(* 4.2.2 Level 2 - Uncertain and/or Approximate Date *) qualifiedDate = [uaSymbol], year, [uaSymbol], \"-\",
-[uaSymbol], month, [uaSymbol], \"-\", [uaSymbol], day, [uaSymbol] ;
-(* 4.3.1 Level 1 - Unspecified Date *)
-unspecifiedDate = (yearMonth, \"-XX\") | (year, \"-XX-XX\") | \"XXXX-XX-XX\" ; (* Reduced accuracy *)
-reduceAccuracyDate = (2 * digit, \"XX\") | (3 * digit, \"X\")
-| (\"XXXX\", [\"-XX\"]) | (year, \"-XX\") ;
-(* 4.3.2 Level 2 - Unspecified Date *)
-replacementDate = 4 * (digit | \"X\"),
-[\"-\", 2 * (digit | \"X\"),
-[\"-\", 2 * (digit | \"X\")]] ; (* 4.4.1 Level 1 - Before or After *)
-(* This feature is not used in level 1. *)
-(* 4.4.2 Level 2 - Before or After *)
-beforeAfterDate = (\"..\", year, [\"-\", month, [\"-\", day]])
-| (year, [\"-\", month, [\"-\", day]], \"..\") ; (* 4.5.1 Level 1 - Enhanced Interval *)"]
+positiveDigit = \"1\" | \"2\" | \"3\" | \"4\" | \"5\" | \"6\" | \"7\" | \"8\" | \"9\" ;"]
 // END RANK codeblock_4
 
 prose_5 -> { raw_13}
@@ -136,7 +114,7 @@ header_16 [label="3 : metatables"]
 
 prose_17 [label="prose"]
 
-codeblock_18 [label="code block 72-97"]
+codeblock_18 [label="code block 50-75"]
 
 
 // END RANK section_7
@@ -185,16 +163,16 @@ local function _post(date)
 end"]
 // END RANK codeblock_18
 
-section_8 -> { header_23 prose_24 codeblock_25 codeblock_26}
-{rank=same; header_23 prose_24 codeblock_25 codeblock_26}
+section_8 -> { header_23 prose_24 codeblock_25 section_26}
+{rank=same; header_23 prose_24 codeblock_25 section_26}
 
 header_23 [label="3 : date grammar"]
 
 prose_24 [label="prose"]
 
-codeblock_25 [label="code block 101-161"]
+codeblock_25 [label="code block 79-136"]
 
-codeblock_26 [label="code block 163-166"]
+section_26 [label="section: 143-289"]
 
 
 // END RANK section_8
@@ -272,16 +250,238 @@ leaf_30  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local function 
 
    longMonth    = P\"31\"
 
-   threeDecan   = V\"longMonth\" + P\"30\"
-
-   -- (* 4. Date and Time Extensions *)
-end"]
+   threeDecan   = V\"longMonth\" + P\"30\""]
 // END RANK codeblock_25
 
-codeblock_26 -> leaf_31
-leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
-return Grammar(_date_fn, date_metas, nil, nil)"]
-// END RANK codeblock_26
+section_26 -> { header_31 prose_32 codeblock_33 codeblock_34 codeblock_35 prose_36 codeblock_37 codeblock_38 codeblock_39}
+{rank=same; header_31 prose_32 codeblock_33 codeblock_34 codeblock_35 prose_36 codeblock_37 codeblock_38 codeblock_39}
+
+header_31 [label="4 : (* 4. Date and Time Extensions *)"]
+
+prose_32 [label="prose"]
+
+codeblock_33 [label="code block 145-174"]
+
+codeblock_34 [label="code block 176-190"]
+
+codeblock_35 [label="code block 195-239"]
+
+prose_36 [label="prose"]
+
+codeblock_37 [label="code block 245-279"]
+
+codeblock_38 [label="code block 283-285"]
+
+codeblock_39 [label="code block 287-289"]
+
+
+// END RANK section_26
+
+header_31 -> leaf_40
+leaf_40  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** (* 4. Date and Time Extensions *)"]
+// END RANK header_31
+
+prose_32 -> { raw_41}
+{rank=same; raw_41}
+
+raw_41 [label="raw"]
+
+
+// END RANK prose_32
+
+raw_41 -> leaf_42
+leaf_42  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_41
+
+codeblock_33 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(* 4.1.1 Levels *)
+
+(* For the extension features, two levels are defined: level 1 *)
+(* and level 2. Each major subsection of section 4 covers a *)
+(* general feature; some functions covered by that feature are *)
+(* level 1 and some are level 2. These levels are defined for *)
+(* the purpose of profiles, which may refer to the levels when *)
+(* specifying conformance to the profile. *)
+
+(* 4.2.1 Level 1 - Uncertain and/or Approximate Date *)
+
+uaDate = yearMonthDay, uaSymbol ;
+
+uaSymbol = \"?\" | \"~\" | \"%\" ;
+
+(* Reduced accuracy *)
+
+reducedDate = (year | yearMonth), uaSymbol ;
+
+(* 4.2.2 Level 2 - Uncertain and/or Approximate Date *)
+
+qualifiedDate = [uaSymbol], year, [uaSymbol], \"-\",
+                [uaSymbol], month, [uaSymbol], \"-\",
+                [uaSymbol], day, [uaSymbol] ;
+
+(* 4.3.1 Level 1 - Unspecified Date *)
+
+unspecifiedDate = (yearMonth, \"-XX\") | (year, \"-XX-XX\") | \"XXXX-XX-XX\" ;"]
+// END RANK codeblock_33
+
+codeblock_34 -> leaf_44
+leaf_44  [color=Gray,shape=rectangle,fontname=Inconsolata,label="   uaDate        = V\"yearMonthDay\" * V\"uaSymbol\"
+
+   uaSymbol      = P\"?\" + P\"~\" + P\"%\"
+
+   reducedDate   = (V\"year\" + V\"yearMonth\") * V\"uaSymbol\"
+
+   qualifiedDate = V\"uaSymbol\"^0 * V\"year\" * V\"uaSymbol\"^0 * P\"-\"
+                 * V\"uaSymbol\"^0 * V\"month\" * V\"uaSymbol\"^0 * P\"-\"
+                 * V\"uaSymbol\"^0 * V\"day\" * V\"uaSymbol\"^0
+
+   unspecifiedDate    = (V\"yearMonth\" * P\"-XX\")
+                      + (V\"year\" * P\"-XX-XX\")
+                      * P \"XXXX-XX-XX\""]
+// END RANK codeblock_34
+
+codeblock_35 -> leaf_45
+leaf_45  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(* Reduced accuracy *)
+
+reduceAccuracyDate = (2 * digit, \"XX\")
+                   | (3 * digit, \"X\")
+                   | (\"XXXX\", [\"-XX\"])
+                   | (year, \"-XX\") ;
+
+(* 4.3.2 Level 2 - Unspecified Date *)
+
+replacementDate = 4 * (digit | \"X\"),
+                  [\"-\", 2 * (digit | \"X\"),
+                  [\"-\", 2 * (digit | \"X\")]] ;
+
+(* 4.4.1 Level 1 - Before or After *)
+
+(* This feature is not used in level 1. *)
+
+(* 4.4.2 Level 2 - Before or After *)
+
+beforeAfterDate = (\"..\", year, [\"-\", month, [\"-\", day]])
+                | (year, [\"-\", month, [\"-\", day]], \"..\") ;
+
+(* 4.5.1 Level 1 - Enhanced Interval *)
+
+startEndOpenOrUnknown = [yearMonthDay],[\"*\"],\"/\",[\"*\"],[yearMonthDay] ;
+
+L1Interval = [year | yearMonth | yearMonthDay], [uaSymbol | \"*\"],
+             \"/\", [\"*\"], [year | yearMonth | yearMonthDay], [uaSymbol] ;
+
+(* 4.5.2 Level 2 - Enhanced Interval *)
+
+L2Interval = [\"..\"], (qualifiedDate | unspecifiedDate | replacementDate),
+             \"/\", (qualifiedDate | unspecifiedDate | replacementDate ), [..] ;
+
+(* 4.6.1 Level 1 - Year Exceeding Four Digits *)
+
+longYear = \"Y\", [\"-\"], positiveDigit 4 * digit, {digit} ;
+
+(* 4.6.2 Level 2 - Year Exceeding Four Digits *)
+
+longYearScientific = \"y\", [\"-\"], positiveDigit, digit, \"e\" {digit}- ;
+
+(* 4.7.1 Level 1 - Significant Digits *)"]
+// END RANK codeblock_35
+
+prose_36 -> { raw_46 prespace_47 bold_48 raw_49 prespace_50 bold_51 raw_52}
+{rank=same; raw_46 prespace_47 bold_48 raw_49 prespace_50 bold_51 raw_52}
+
+raw_46 [label="raw"]
+
+prespace_47 [label="prespace"]
+
+bold_48 [label="bold"]
+
+raw_49 [label="raw"]
+
+prespace_50 [label="prespace"]
+
+bold_51 [label="bold"]
+
+raw_52 [label="raw"]
+
+
+// END RANK prose_36
+
+raw_46 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+At this point I'm just going to fold some of the EBNF out because this is a
+hyperspecified piece of crap designed to please everyone and I am"]
+// END RANK raw_46
+
+prespace_47 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_47
+
+bold_48 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="not"]
+// END RANK bold_48
+
+raw_49 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+implementing significant digits"]
+// END RANK raw_49
+
+prespace_50 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_50
+
+bold_51 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label="and"]
+// END RANK bold_51
+
+raw_52 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" approximate dates make up your mind ISO.
+"]
+// END RANK raw_52
+
+codeblock_37 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="(* 5. Repeat Rules for Recurring Time Intervals *)
+
+(* All features in this section are defined at level 1 for the *)
+(* purpose of profiles, which may refer to the levels when *)
+(* specifying conformance to the profile. *)
+
+recurringIntervalWithRules = recurringInterval, \"/\", recurringRule ;
+
+recurringInterval = 'R', {integer}, '/', interval ;
+
+interval = intervalExplicit | intervalStart | intervalEnd | duration ;
+
+intervalExplicit = dateAndTime, '/', dateAndTime ;
+
+intervalStart = dateAndTime, '/', duration ;
+
+intervalEnd = duration, '/', dateAndTime ;
+
+duration = 'P', (durationTime | durationDate | durationWeek) ;
+
+durationDate = durationDay, [durationTime] ;
+
+durationTime = 'T', (durationHour | durationMinute | durationSecond) ;
+
+durationHour = hour, 'H', [durationMinute] ;
+
+durationMinute = minute, 'M', [durationSecond] ;
+
+durationSecond = second, 'S' ;
+
+durationDay = day, 'D' ;
+
+durationWeek = week, 'W' ;"]
+// END RANK codeblock_37
+
+codeblock_38 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="end"]
+// END RANK codeblock_38
+
+codeblock_39 -> leaf_62
+leaf_62  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return Grammar(_date_fn, date_metas, nil, nil)"]
+// END RANK codeblock_39
 
 
 }

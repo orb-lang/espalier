@@ -549,7 +549,7 @@ inherited Node classes.
 // END RANK raw_124
 
 codeblock_119 -> leaf_126
-leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.toString(node, depth)
+leaf_126  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.toString(node, depth, c)
    local depth = depth or 0
    local phrase = \"\"
    phrase = (\"  \"):rep(depth) .. a.bright(node.id) .. \"    \"
@@ -583,7 +583,7 @@ end"]
 
 codeblock_120 -> leaf_127
 leaf_127  [color=Gray,shape=rectangle,fontname=Inconsolata,label="function Node.__repr(node, phrase, c)
-   return tostring(node)
+   return tostring(node, 0, c)
 end"]
 // END RANK codeblock_120
 

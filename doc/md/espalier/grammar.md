@@ -238,12 +238,7 @@ parameter.
 ```
 #### DROP
 
-  The rule ``elpatt.D`` causes the match to be dropped. In order for
-this to give use the results we want, we must adjust the peer and
-parent nodes while removing the captured element from the table.
-
-
-The use case is for eloquently expressed 'wrapper' patterns, which occur
+#NB This rule is not working correctly, big surprise.
 frequently in real languages. In a ``(typical lisp expression)`` we don't need
 the parentheses and would like our span not to include them.
 

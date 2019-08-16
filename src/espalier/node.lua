@@ -92,7 +92,7 @@ end
 
 
 
-function Node.toString(node, depth)
+function Node.toString(node, depth, c)
    local depth = depth or 0
    local phrase = ""
    phrase = ("  "):rep(depth) .. a.bright(node.id) .. "    "
@@ -126,7 +126,7 @@ end
 
 
 function Node.__repr(node, phrase, c)
-   return tostring(node)
+   return tostring(node, 0, c)
 end
 
 

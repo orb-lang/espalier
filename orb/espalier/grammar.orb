@@ -218,6 +218,8 @@ parameter.
 
 **** DROP
 
+#NB This rule is not working correctly, big surprise.
+
   The rule =elpatt.D= causes the match to be dropped. In order for
 this to give use the results we want, we must adjust the peer and
 parent nodes while removing the captured element from the table.

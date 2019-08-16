@@ -265,6 +265,8 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
+
+
    if not t.parent then
       t.parent = t
    end

@@ -29,28 +29,6 @@ oneThru30 = OneThru29 | "30" ;
 oneThru31 = OneThru30 | "31" ;
 digit = positiveDigit | "0" ;
 positiveDigit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-
-(* 4. Date and Time Extensions *)
-(* 4.1.1 Extended Format *) yearMonthDay = year, "-", monthDay ; (* 4.1.1 Levels *)
-(* For the extension features, two levels are defined: level 1 *) (* and level 2. Each major subsection of section 4 covers a *) (* general feature; some functions covered by that feature are *) (* level 1 and some are level 2. These levels are defined for *) (* the purpose of profiles, which may refer to the levels when *) (* specifying conformance to the profile. *)
-(* 4.2.1 Level 1 - Uncertain and/or Approximate Date *) uaDate = yearMonthDay, uaSymbol ;
-uaSymbol = "?" | "~" | "%" ;
-(* Reduced accuracy *)
-reducedDate = (year | yearMonth), uaSymbol ;
-(* 4.2.2 Level 2 - Uncertain and/or Approximate Date *) qualifiedDate = [uaSymbol], year, [uaSymbol], "-",
-[uaSymbol], month, [uaSymbol], "-", [uaSymbol], day, [uaSymbol] ;
-(* 4.3.1 Level 1 - Unspecified Date *)
-unspecifiedDate = (yearMonth, "-XX") | (year, "-XX-XX") | "XXXX-XX-XX" ; (* Reduced accuracy *)
-reduceAccuracyDate = (2 * digit, "XX") | (3 * digit, "X")
-| ("XXXX", ["-XX"]) | (year, "-XX") ;
-(* 4.3.2 Level 2 - Unspecified Date *)
-replacementDate = 4 * (digit | "X"),
-["-", 2 * (digit | "X"),
-["-", 2 * (digit | "X")]] ; (* 4.4.1 Level 1 - Before or After *)
-(* This feature is not used in level 1. *)
-(* 4.4.2 Level 2 - Before or After *)
-beforeAfterDate = ("..", year, ["-", month, ["-", day]])
-| (year, ["-", month, ["-", day]], "..") ; (* 4.5.1 Level 1 - Enhanced Interval *)
 #/ebnf
 
 Then we translate this into Lua:
@@ -155,12 +133,157 @@ local function _date_fn(_ENV)
    longMonth    = P"31"
 
    threeDecan   = V"longMonth" + P"30"
+#/lua
 
-   -- (* 4. Date and Time Extensions *)
+This is a credible translation of EBNF into PEG, using a bit of judicious
+negative lookahead.  I intend to add some error capture for, eg, 1991-02-30
+and the like.
+
+
+**** (* 4. Date and Time Extensions *)
+
+#!ebnf
+(* 4.1.1 Levels *)
+
+(* For the extension features, two levels are defined: level 1 *)
+(* and level 2. Each major subsection of section 4 covers a *)
+(* general feature; some functions covered by that feature are *)
+(* level 1 and some are level 2. These levels are defined for *)
+(* the purpose of profiles, which may refer to the levels when *)
+(* specifying conformance to the profile. *)
+
+(* 4.2.1 Level 1 - Uncertain and/or Approximate Date *)
+
+uaDate = yearMonthDay, uaSymbol ;
+
+uaSymbol = "?" | "~" | "%" ;
+
+(* Reduced accuracy *)
+
+reducedDate = (year | yearMonth), uaSymbol ;
+
+(* 4.2.2 Level 2 - Uncertain and/or Approximate Date *)
+
+qualifiedDate = [uaSymbol], year, [uaSymbol], "-",
+                [uaSymbol], month, [uaSymbol], "-",
+                [uaSymbol], day, [uaSymbol] ;
+
+(* 4.3.1 Level 1 - Unspecified Date *)
+
+unspecifiedDate = (yearMonth, "-XX") | (year, "-XX-XX") | "XXXX-XX-XX" ;
+#/ebnf
+
+#!lua
+   uaDate        = V"yearMonthDay" * V"uaSymbol"
+
+   uaSymbol      = P"?" + P"~" + P"%"
+
+   reducedDate   = (V"year" + V"yearMonth") * V"uaSymbol"
+
+   qualifiedDate = V"uaSymbol"^0 * V"year" * V"uaSymbol"^0 * P"-"
+                 * V"uaSymbol"^0 * V"month" * V"uaSymbol"^0 * P"-"
+                 * V"uaSymbol"^0 * V"day" * V"uaSymbol"^0
+
+   unspecifiedDate    = (V"yearMonth" * P"-XX")
+                      + (V"year" * P"-XX-XX")
+                      * P "XXXX-XX-XX"
+#/lua
+
+This is a bunch of stuff I'm going to skip, for now,  in the interest of
+getting to such solid objects as hours:
+
+#!ebnf
+(* Reduced accuracy *)
+
+reduceAccuracyDate = (2 * digit, "XX")
+                   | (3 * digit, "X")
+                   | ("XXXX", ["-XX"])
+                   | (year, "-XX") ;
+
+(* 4.3.2 Level 2 - Unspecified Date *)
+
+replacementDate = 4 * (digit | "X"),
+                  ["-", 2 * (digit | "X"),
+                  ["-", 2 * (digit | "X")]] ;
+
+(* 4.4.1 Level 1 - Before or After *)
+
+(* This feature is not used in level 1. *)
+
+(* 4.4.2 Level 2 - Before or After *)
+
+beforeAfterDate = ("..", year, ["-", month, ["-", day]])
+                | (year, ["-", month, ["-", day]], "..") ;
+
+(* 4.5.1 Level 1 - Enhanced Interval *)
+
+startEndOpenOrUnknown = [yearMonthDay],["*"],"/",["*"],[yearMonthDay] ;
+
+L1Interval = [year | yearMonth | yearMonthDay], [uaSymbol | "*"],
+             "/", ["*"], [year | yearMonth | yearMonthDay], [uaSymbol] ;
+
+(* 4.5.2 Level 2 - Enhanced Interval *)
+
+L2Interval = [".."], (qualifiedDate | unspecifiedDate | replacementDate),
+             "/", (qualifiedDate | unspecifiedDate | replacementDate ), [..] ;
+
+(* 4.6.1 Level 1 - Year Exceeding Four Digits *)
+
+longYear = "Y", ["-"], positiveDigit 4 * digit, {digit} ;
+
+(* 4.6.2 Level 2 - Year Exceeding Four Digits *)
+
+longYearScientific = "y", ["-"], positiveDigit, digit, "e" {digit}- ;
+
+(* 4.7.1 Level 1 - Significant Digits *)
+#/ebnf
+
+At this point I'm just going to fold some of the EBNF out because this is a
+hyperspecified piece of crap designed to please everyone and I am *not*
+implementing significant digits *and* approximate dates make up your mind ISO.
+
+#!ebnf
+(* 5. Repeat Rules for Recurring Time Intervals *)
+
+(* All features in this section are defined at level 1 for the *)
+(* purpose of profiles, which may refer to the levels when *)
+(* specifying conformance to the profile. *)
+
+recurringIntervalWithRules = recurringInterval, "/", recurringRule ;
+
+recurringInterval = 'R', {integer}, '/', interval ;
+
+interval = intervalExplicit | intervalStart | intervalEnd | duration ;
+
+intervalExplicit = dateAndTime, '/', dateAndTime ;
+
+intervalStart = dateAndTime, '/', duration ;
+
+intervalEnd = duration, '/', dateAndTime ;
+
+duration = 'P', (durationTime | durationDate | durationWeek) ;
+
+durationDate = durationDay, [durationTime] ;
+
+durationTime = 'T', (durationHour | durationMinute | durationSecond) ;
+
+durationHour = hour, 'H', [durationMinute] ;
+
+durationMinute = minute, 'M', [durationSecond] ;
+
+durationSecond = second, 'S' ;
+
+durationDay = day, 'D' ;
+
+durationWeek = week, 'W' ;
+#/ebnf
+
+
+
+#!lua
 end
 #/lua
 
 #!lua
-
 return Grammar(_date_fn, date_metas, nil, nil)
 #/lua

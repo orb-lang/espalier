@@ -34,28 +34,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 --local Node    =  require "espalier/node"
 --local Grammar =  require "espalier/grammar"
 local require = assert(require)
@@ -156,9 +134,154 @@ local function _date_fn(_ENV)
 
    threeDecan   = V"longMonth" + P"30"
 
-   -- (* 4. Date and Time Extensions *)
-end
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   uaDate        = V"yearMonthDay" * V"uaSymbol"
+
+   uaSymbol      = P"?" + P"~" + P"%"
+
+   reducedDate   = (V"year" + V"yearMonth") * V"uaSymbol"
+
+   qualifiedDate = V"uaSymbol"^0 * V"year" * V"uaSymbol"^0 * P"-"
+                 * V"uaSymbol"^0 * V"month" * V"uaSymbol"^0 * P"-"
+                 * V"uaSymbol"^0 * V"day" * V"uaSymbol"^0
+
+   unspecifiedDate    = (V"yearMonth" * P"-XX")
+                      + (V"year" * P"-XX-XX")
+                      * P "XXXX-XX-XX"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+end
 
 
 
