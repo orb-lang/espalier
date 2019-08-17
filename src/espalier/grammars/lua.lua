@@ -83,6 +83,14 @@ local L       =  require "espalier/elpatt"
 
 local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 
+local lex     =  require "espalier/lexemes"
+
+
+
+
+
+
+
 
 
 
@@ -105,7 +113,10 @@ local P, R, E, V, S    =  L.P, L.R, L.E, L.V, L.S
 local _do, _end, _then = P"do", P"end", P"then"
 
 local function lua_fn(ENV)
+   local K = P -- this is a hack
+
    START "lua"
+
    lua   = V"chunk"^1
    chunk = (V"stat" * P";"^0) * (V"laststat"^0 * P";"^0)^-1
    block = V"chunk"
@@ -143,8 +154,9 @@ local function lua_fn(ENV)
 
    varlist  = V"var" * ( P"," * V"var")^0
 
-   var      = V"Name" + V"prefixexp" * P"[" * V"exp" * P"]" +
-                 V"prefixexp" * "." * V"Name"
+   var      = V"Name"
+            + V"prefixexp" * P"[" * V"exp" * P"]"
+            + V"prefixexp" * "." * V"Name"
 
    namelist = V"Name" * ( V"exp" * ",")^0 * V"exp"
 
@@ -155,6 +167,101 @@ local function lua_fn(ENV)
 
 
 
+-- Let's come up with a syntax that does not use left recursion
+  -- (only listing changes to Lua 5.1 extended BNF syntax)
+  -- value ::= nil | false | true | Number | String | '...' | function |
+  --           tableconstructor | functioncall | var | '(' exp ')'
+  -- exp ::= unop exp | value [binop exp]
+  -- prefix ::= '(' exp ')' | Name
+  -- index ::= '[' exp ']' | '.' Name
+  -- call ::= args | ':' Name args
+  -- suffix ::= call | index
+  -- var ::= prefix {suffix} index | Name
+  -- functioncall ::= prefix {suffix} call
+
+  -- Something that represents a value (or many values)
+  value = K "nil" +
+          K "false" +
+          K "true" +
+          V "Number" +
+          V "String" +
+          P "..." +
+          V "func" +
+          V "tableconstructor" +
+          V "functioncall" +
+          V "var" +
+          P "(" * V "space" * V "exp" * V "space" * P ")";
+
+  -- An expression operates on values to produce a new value or is a value
+  exp = V "unop" * V "space" * V "exp" +
+        V "value" * (V "space" * V "binop" * V "space" * V "exp")^-1;
+
+  -- Index and Call
+  index = P "[" * V "space" * V "exp" * V "space" * P "]" +
+          P "." * V "space" * V "Name";
+  call = V "args" +
+         P ":" * V "space" * V "Name" * V "space" * V "args";
+
+  -- A Prefix is a the leftmost side of a var(iable) or functioncall
+  prefix = P "(" * V "space" * V "exp" * V "space" * P ")" +
+           V "Name";
+  -- A Suffix is a Call or Index
+  suffix = V "call" +
+           V "index";
+
+  var = V "prefix" * (V "space" * V "suffix" * #(V "space" * V "suffix"))^0 *
+            V "space" * V "index" +
+        V "Name";
+  functioncall = V "prefix" *
+                     (V "space" * V "suffix" * #(V "space" * V "suffix"))^0 *
+                 V "space" * V "call";
+
+  explist = V "exp" * (V "space" * P "," * V "space" * V "exp")^0;
+
+  args = P "(" * V "space" * (V "explist" * V "space")^-1 * P ")" +
+         V "tableconstructor" +
+         V "String";
+
+  func = K "function" * V "space" * V "funcbody";
+
+  funcbody = P "(" * V "space" * (V "parlist" * V "space")^-1 * P ")" *
+                 V "space" *  V "block" * V "space" * K "end";
+
+  parlist = V "namelist" * (V "space" * P "," * V "space" * P "...")^-1 +
+            P "...";
+
+  tableconstructor = P "{" * V "space" * (V "fieldlist" * V "space")^-1 * P "}";
+
+  fieldlist = V "field" * (V "space" * V "fieldsep" * V "space" * V "field")^0
+                  * (V "space" * V "fieldsep")^-1;
+
+  field = P "[" * V "space" * V "exp" * V "space" * P "]" * V "space" * P "=" *
+              V "space" * V "exp" +
+          V "Name" * V "space" * P "=" * V "space" * V "exp" +
+          V "exp";
+
+  fieldsep = P "," +
+             P ";";
+
+  binop = K "and" + -- match longest token sequences first
+          K "or" +
+          P ".." +
+          P "<=" +
+          P ">=" +
+          P "==" +
+          P "~=" +
+          P "+" +
+          P "-" +
+          P "*" +
+          P "/" +
+          P "^" +
+          P "%" +
+          P "<" +
+          P ">";
+
+  unop = P "-" +
+         P "#" +
+         K "not";
 
 
 
@@ -163,47 +270,17 @@ local function lua_fn(ENV)
 
 
 
-   exp      = P"nil" + P"false" + P"true"
-              + V"Number" + V"String" + P"..." + V"fn"
-              + V"prefixexp" + V"tableconstructor"
-              + V"exp" * V"binop" * V"exp"
-              + V"unop" * V"exp"
-
-   prefixexp = V"var" + V"functioncall" + P"(" * V"exp" * P")"
-
-   functioncall = V"prefixexp" * V"args" +
-                  V"prefixexp" * P":" * V"Name" * V"args"
-
-   args      = P"(" * V"explist"^0 * P")"
-               + V"tableconstructor"
-               + V"String"
-
-   fn        = P"function" * V"funcbody"
-
-   funcbody  = P"(" * V"parlist"^0 * P")" * V"block" * _end
-
-   parlist   = (V"namelist" * ( P"," * P"...")^-1)
-             + P"..."
-
-   tableconstructor = P"{" * V"fieldlist"^0 * P"}"
-
-   fieldlist = V"field" * ( V"fieldsep" * V"field" )^1 * V"fieldsep"^0
-
-   field     = P"[" * V"exp" * P"]" * P"=" * V"exp"
-               + V"exp"
-
-   fieldsep  = P"," * P";"
-
-   binop     = P"+" + P"-" + P"*" + P"/" + P"^" + P"%" + P".."
-               + P"<" + P"<=" + P">" + P">=" + P"==" + P"~="
-               + P"and" + P"or"
-
-   unop      = P"-" + P"not" + P"#"
 
 
 
 
 
+
+   Name      = lex.lua.symbol
+   String    = lex.lua.string
+   Number    = lex.lua.number
+   Comment   = lex.lua.comment
+   space     = lex.lua.WS
 end
 
 
