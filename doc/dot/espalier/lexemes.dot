@@ -1,0 +1,361 @@
+digraph lpegNode {
+
+node [fontname=Helvetica]
+edge [style=dashed]
+
+doc_0 [label="doc - 126"]
+
+
+doc_0 -> { section_1}
+{rank=same; section_1}
+
+section_1 [label="section: 1-27"]
+
+
+// END RANK doc_0
+
+section_1 -> { header_2 prose_3 prose_4 prose_5 prose_6 section_7 section_8}
+{rank=same; header_2 prose_3 prose_4 prose_5 prose_6 section_7 section_8}
+
+header_2 [label="1 : Lexemes"]
+
+prose_3 [label="prose"]
+
+prose_4 [label="prose"]
+
+prose_5 [label="prose"]
+
+prose_6 [label="prose"]
+
+section_7 [label="section: 17-27"]
+
+section_8 [label="section: 28-126"]
+
+
+// END RANK section_1
+
+header_2 -> leaf_9
+leaf_9  [color=Gray,shape=rectangle,fontname=Inconsolata,label="* Lexemes"]
+// END RANK header_2
+
+prose_3 -> { raw_10}
+{rank=same; raw_10}
+
+raw_10 [label="raw"]
+
+
+// END RANK prose_3
+
+raw_10 -> leaf_11
+leaf_11  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+
+Real grammars tend to be built up from small, composable elements.
+"]
+// END RANK raw_10
+
+prose_4 -> { raw_12}
+{rank=same; raw_12}
+
+raw_12 [label="raw"]
+
+
+// END RANK prose_4
+
+raw_12 -> leaf_13
+leaf_13  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+In two-stage parsers we refer to the first stage as a lexer, and the product
+as tokens.
+"]
+// END RANK raw_12
+
+prose_5 -> { raw_14 prespace_15 literal_16 raw_17}
+{rank=same; raw_14 prespace_15 literal_16 raw_17}
+
+raw_14 [label="raw"]
+
+prespace_15 [label="prespace"]
+
+literal_16 [label="literal"]
+
+raw_17 [label="raw"]
+
+
+// END RANK prose_5
+
+raw_14 -> leaf_18
+leaf_18  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+Parsing Expression Grammars don't have any real distinction between the
+lexing and parsing stages, something we consider to be an advantage.  They do
+distinguish between recursive grammars and what in"]
+// END RANK raw_14
+
+prespace_15 -> leaf_19
+leaf_19  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_15
+
+literal_16 -> leaf_20
+leaf_20  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lpeg"]
+// END RANK literal_16
+
+raw_17 -> leaf_21
+leaf_21  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is called a pattern.
+"]
+// END RANK raw_17
+
+prose_6 -> { prespace_22 literal_23 raw_24}
+{rank=same; prespace_22 literal_23 raw_24}
+
+prespace_22 [label="prespace"]
+
+literal_23 [label="literal"]
+
+raw_24 [label="raw"]
+
+
+// END RANK prose_6
+
+prespace_22 -> leaf_25
+leaf_25  [color=Gray,shape=rectangle,fontname=Inconsolata,label=""]
+// END RANK prespace_22
+
+literal_23 -> leaf_26
+leaf_26  [color=Gray,shape=rectangle,fontname=Inconsolata,label="lexemes"]
+// END RANK literal_23
+
+raw_24 -> leaf_27
+leaf_27  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" is a collection of such recurrent patterns, reusable as such across
+various grammar productions.
+
+"]
+// END RANK raw_24
+
+section_7 -> { header_28 prose_29 codeblock_30}
+{rank=same; header_28 prose_29 codeblock_30}
+
+header_28 [label="4 : imports"]
+
+prose_29 [label="prose"]
+
+codeblock_30 [label="code block 19-26"]
+
+
+// END RANK section_7
+
+header_28 -> leaf_31
+leaf_31  [color=Gray,shape=rectangle,fontname=Inconsolata,label="**** imports"]
+// END RANK header_28
+
+prose_29 -> { raw_32}
+{rank=same; raw_32}
+
+raw_32 [label="raw"]
+
+
+// END RANK prose_29
+
+raw_32 -> leaf_33
+leaf_33  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+"]
+// END RANK raw_32
+
+codeblock_30 -> leaf_34
+leaf_34  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local L = require \"lpeg\"
+local P, R, S, match = L.P, L.R, L.S, L.match
+local sub, gsub = assert(string.sub), assert(string.gsub)
+local concat = assert(table.concat)
+local c = require \"singletons/color\"
+local codepoints = assert(string.codepoints)"]
+// END RANK codeblock_30
+
+section_8 -> { header_35 prose_36 prose_37 codeblock_38 codeblock_39 codeblock_40}
+{rank=same; header_35 prose_36 prose_37 codeblock_38 codeblock_39 codeblock_40}
+
+header_35 [label="3 : Lex LuaThor"]
+
+prose_36 [label="prose"]
+
+prose_37 [label="prose"]
+
+codeblock_38 [label="code block 36-38"]
+
+codeblock_39 [label="code block 40-104"]
+
+codeblock_40 [label="code block 106-126"]
+
+
+// END RANK section_8
+
+header_35 -> leaf_41
+leaf_41  [color=Gray,shape=rectangle,fontname=Inconsolata,label="*** Lex LuaThor"]
+// END RANK header_35
+
+prose_36 -> { raw_42}
+{rank=same; raw_42}
+
+raw_42 [label="raw"]
+
+
+// END RANK prose_36
+
+raw_42 -> leaf_43
+leaf_43  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+
+This is a handy collection of lexemes for Lua.
+"]
+// END RANK raw_42
+
+prose_37 -> { raw_44 link_45 raw_46 prespace_47 literal_48 raw_49}
+{rank=same; raw_44 link_45 raw_46 prespace_47 literal_48 raw_49}
+
+raw_44 [label="raw"]
+
+link_45 [label="link"]
+
+raw_46 [label="raw"]
+
+prespace_47 [label="prespace"]
+
+literal_48 [label="literal"]
+
+raw_49 [label="raw"]
+
+
+// END RANK prose_37
+
+raw_44 -> leaf_50
+leaf_50  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+I have used this in a "]
+// END RANK raw_44
+
+link_45 -> { anchortext_51 url_52}
+{rank=same; anchortext_51 url_52}
+
+anchortext_51 [label="anchortext"]
+
+url_52 [label="url"]
+
+
+// END RANK link_45
+
+anchortext_51 -> leaf_53
+leaf_53  [color=Gray,shape=rectangle,fontname=Inconsolata,label="compulsively inefficient"]
+// END RANK anchortext_51
+
+url_52 -> leaf_54
+leaf_54  [color=Gray,shape=rectangle,fontname=Inconsolata,label="h://~/br/femto/lex"]
+// END RANK url_52
+
+raw_46 -> leaf_55
+leaf_55  [color=Gray,shape=rectangle,fontname=Inconsolata,label="
+fashion for the lexer in the"]
+// END RANK raw_46
+
+prespace_47 -> leaf_56
+leaf_56  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" "]
+// END RANK prespace_47
+
+literal_48 -> leaf_57
+leaf_57  [color=Gray,shape=rectangle,fontname=Inconsolata,label="femto"]
+// END RANK literal_48
+
+raw_49 -> leaf_58
+leaf_58  [color=Gray,shape=rectangle,fontname=Inconsolata,label=" repl, and intend to build that lexer from
+here once the patterns are transferred.
+"]
+// END RANK raw_49
+
+codeblock_38 -> leaf_59
+leaf_59  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local Lex = meta {}"]
+// END RANK codeblock_38
+
+codeblock_39 -> leaf_60
+leaf_60  [color=Gray,shape=rectangle,fontname=Inconsolata,label="local WS = (P\" \")^1
+
+local NL = P\"\\n\"
+
+local terminal = S\" \\\"'+-*^~%#;,<>={}[]().:\\n\" + -P(1)
+
+local KW = (P\"function\" + \"local\" + \"for\" + \"in\" + \"do\"
+           + \"and\" + \"or\" + \"not\" + \"true\" + \"false\"
+           + \"while\" + \"break\" + \"if\" + \"then\" + \"else\" + \"elseif\"
+           + \"goto\" + \"repeat\" + \"until\" + \"return\" + \"nil\"
+           + \"end\") * #terminal
+
+local OP = P\"+\" + \"-\" + \"*\" + \"/\" + \"%\" + \"^\" + \"#\"
+           + \"==\" + \"~=\" + \"<=\" + \">=\" + \"<\" + \">\"
+           + \"=\" + \"(\" + \")\" + \"{\" + \"}\" + \"[\" + \"]\"
+           + \";\" + \":\" + \"...\" + \"..\" + \".\" + \",\"
+
+local digit = R\"09\"
+
+local _decimal = P\"-\"^0 * ((digit^1 * P\".\"^-1 * digit^0
+                           * ((P\"e\" + P\"E\")^-1 * P\"-\"^-1 * digit^1)^-1
+                        + digit^1)^1 + digit^1)
+
+local higit = R\"09\" + R\"af\" + R\"AF\"
+
+-- hexadecimal floats. are a thing. that exists. in luajit.
+local _hexadecimal = P\"-\"^0 * P\"0\" * (P\"x\" + P\"X\")
+                        * ((higit^1 * P\".\"^-1 * higit^0
+                           * ((P\"p\" + P\"P\")^-1 * P\"-\"^-1 * higit^1)^-1
+                        + higit^1)^1 + higit^1)
+
+-- long strings, straight from the LPEG docs
+local _equals = P\"=\"^0
+local _open = \"[\" * L.Cg(_equals, \"init\") * \"[\" * P\"\\n\"^-1
+local _close = \"]\" * L.C(_equals) * \"]\"
+local _closeeq = L.Cmt(_close * L.Cb(\"init\"),
+                          function (s, i, a, b) return a == b end)
+
+local long_str = (_open * L.C((P(1) - _closeeq)^0) * _close) / 0 * L.Cp()
+
+local str_esc = P\"\\\\\" * (S\"abfnrtvz\\\\\\\"'[]\\n\"
+                         + (R\"09\" * R\"09\"^-2)
+                         + (P\"x\" + P\"X\") * higit * higit)
+
+local double_str = P\"\\\"\" * (P(1) - (P\"\\\"\" + P\"\\\\\") + str_esc)^0 * P\"\\\"\"
+local single_str = P\"\\'\" * (P(1) - (P\"\\'\" + P\"\\\\\") + str_esc)^0 * P\"\\'\"
+
+local string_short = double_str + single_str
+
+local string_long = long_str
+
+local letter = R\"az\" + R\"AZ\"
+
+local symbol =   (letter^1 + P\"_\"^1)
+               * (letter + digit + P\"_\")^0
+               * #terminal
+
+local number = _hexadecimal + _decimal
+
+local comment = P\"--\" * long_str
+              + P\"--\" * (P(1) - NL)^0 * (NL + - P(1))
+
+local ERR = P(1)"]
+// END RANK codeblock_39
+
+codeblock_40 -> leaf_61
+leaf_61  [color=Gray,shape=rectangle,fontname=Inconsolata,label="return { lua = { number      = number,
+                 digit       = digit,
+                 symbol      = symbol,
+                 comment     = comment,
+                 string      = string_short,
+                 string_long = string_long,
+                 WS          = WS,
+                 terminal    = terminal,
+                 keyword     = KW,
+                 operator    = OP },
+         digit  = digit,
+         number = number,
+         string = { str    = string_short,
+                    single = single_str,
+                    double = double_str },
+         higit   = higit,
+         hex     = _hexadecimal,
+         decimal = _decimal,
+         letter  = { latin = letter } }"]
+// END RANK codeblock_40
+
+
+}

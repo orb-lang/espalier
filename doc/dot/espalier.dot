@@ -3,13 +3,13 @@ digraph lpegNode {
 node [fontname=Helvetica]
 edge [style=dashed]
 
-doc_0 [label="doc - 35"]
+doc_0 [label="doc - 38"]
 
 
 doc_0 -> { section_1}
 {rank=same; section_1}
 
-section_1 [label="section: 1-35"]
+section_1 [label="section: 1-38"]
 
 
 // END RANK doc_0
@@ -25,7 +25,7 @@ prose_4 [label="prose"]
 
 prose_5 [label="prose"]
 
-codeblock_6 [label="code block 9-35"]
+codeblock_6 [label="code block 9-38"]
 
 
 // END RANK section_1
@@ -127,6 +127,8 @@ local dot_grammar  = require \"espalier/grammars/dot\"
 
 local lua_grammar  = require \"espalier/grammars/lua\"
 
+local lexemes = require \"espalier/lexemes\"
+
 local grammars = { ortho8600 = ortho8600,
                    dot       = dot_grammar,
                    lua       = lua_grammar }
@@ -134,6 +136,7 @@ local grammars = { ortho8600 = ortho8600,
 return { dot      = dot,
          elpatt   = elpatt,
          node     = Node,
+         lex      = lexemes,
  --        spec    = Spec,
          phrase   = ss.Phrase,
          grammar  = Grammar,

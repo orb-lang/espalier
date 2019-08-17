@@ -198,6 +198,11 @@ arithmetic parser so I can just use that.
                + P"and" + P"or"
 
    unop      = P"-" + P"not" + P"#"
+```
+
+The below is borrowed out of the mighty Lex-luaThor.
+
+```lua
 end
 ```
 ### Afterword
