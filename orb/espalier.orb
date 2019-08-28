@@ -20,11 +20,14 @@ local dot_grammar  = require "espalier/grammars/dot"
 
 local lua_grammar  = require "espalier/grammars/lua"
 
+local peg_grammar  = require "espalier/grammars/peg"
+
 local lexemes = require "espalier/lexemes"
 
 local grammars = { ortho8600 = ortho8600,
                    dot       = dot_grammar,
-                   lua       = lua_grammar }
+                   lua       = lua_grammar,
+                   peg       = peg_grammar }
 
 return { dot      = dot,
          elpatt   = elpatt,

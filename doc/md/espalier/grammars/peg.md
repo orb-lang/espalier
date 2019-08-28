@@ -136,3 +136,6 @@ local function pegylator(_ENV)
    ws = Csp(P"_")
 end
 ```
+```lua
+return Grammar(pegylator)
+```
