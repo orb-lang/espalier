@@ -28,7 +28,7 @@ local function pegylator(_ENV)
             "simple", "compound", "prefixed", "suffixed"  )
    --]]
    local comment_m  = -P"\n" * P(1)
-   local comment_c =  comment_m^0 * #P"\n"
+   local comment_c =  comment_m^0 * P"\n"^0
    local letter = R"AZ" + R"az"
    local valid_sym = letter + P"-"
    local digit = R"09"
@@ -50,7 +50,7 @@ local function pegylator(_ENV)
    rules   =  V"comment"^0 * V"rule"^1
    rule    =  V"lhs" * V"rhs"
    lhs     =  WS * V"pattern" * WS * ( P":" + P"=" + ":=")
-   rhs     =  V"form"
+   rhs     =  V"form" * (WS * V"comment")^0
 
    form   =  V"element" * V"elements"
    pattern =  symbol
@@ -60,8 +60,8 @@ local function pegylator(_ENV)
 
    element  =   -V"lhs" * WS
             *  ( V"simple"
-            +    V"compound"
-            +    V"comment" )
+            +    V"compound")
+
    elements  =  V"choice"
              +  V"cat"
              +  P""
@@ -91,7 +91,7 @@ local function pegylator(_ENV)
             +  V"prefixed"
             +  V"atom"
 
-   comment  =  D";" * comment_c
+   comment  =  P";" * comment_c
 
    prefixed =  V"if_not_this"
             +  V"not_this"
