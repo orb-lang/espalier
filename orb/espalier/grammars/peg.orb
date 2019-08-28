@@ -13,6 +13,8 @@ So let's do that.
 local L = require "espalier/elpatt"
 local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
 local Grammar = require "espalier/grammar"
+local lex = require "espalier/lexemes"
+local str_escape = lex.string.str_escape
 #/lua
 
 #!lua
@@ -32,9 +34,9 @@ local function pegylator(_ENV)
    local sym = valid_sym + digit
    local WS = (P' ' + P'\n' + P',' + P'\09')^0
    local symbol = letter * ( -(P"-" * WS) * sym )^0
-   local h_string    = (-P"`" * core.escape)^0
-   local d_string = (-P'"' * core.escape)^0
-   local s_string = (-P"'" * core.escape)^0
+   local d_string = (-P'"' * str_escape)^0
+   local h_string = (-P'`' * str_escape)^0
+   local s_string = (-P"'" * str_escape)^0
    local range_match =  -P"-" * -P"\\" * -P"]" * P(1)
    local range_capture = (range_match + P"\\-" + P"\\]" + P"\\")
    local range_c  = range_capture^1 * P"-" * range_capture^1
@@ -52,6 +54,7 @@ local function pegylator(_ENV)
    form   =  V"element" * V"elements"
    pattern =  symbol
          +  V"hidden_pattern"
+
    hidden_pattern =  P"`" * symbol * P"`"
 
    element  =   -V"lhs" * WS
@@ -108,7 +111,7 @@ local function pegylator(_ENV)
    literal =  D'"' * d_string * D'"'
            +  D"'" * s_string * D"'"
 
-   hidden_literal = -P"``" * D"`" * hidden_string * -P"``" * D"`"
+   hidden_literal = -P"``" * D"`" * h_string * -P"``" * D"`"
 
    set     =  P"{" * set_c^1 * P"}"
 
@@ -126,13 +129,13 @@ local function pegylator(_ENV)
    some_number   =  V"allowed_suffixed" * WS * V"some_suffix"
    some_suffix   = P"$" * V"repeats"
 
-   repeats       =  Csp(some_num_c)
+   repeats       =  some_num_c
    allowed_prefixed =  V"compound" + V"suffixed" + V"atom"
    allowed_suffixed =  V"compound" + V"prefixed" + V"atom"
 
    atom =  V"ws" + symbol
 
-   ws = Csp(P"_")
+   ws = P"_"
 end
 #/lua
 
