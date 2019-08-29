@@ -13,8 +13,8 @@
 local L = require "espalier/elpatt"
 local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
 local Grammar = require "espalier/grammar"
-local lex = require "espalier/lexemes"
-local str_fill = lex.string.filler
+-- local lex = require "espalier/lexemes"
+local pegMetas = require "espalier/grammars/pegmeta"
 
 
 
@@ -141,4 +141,4 @@ end
 
 
 
-return Grammar(pegylator)
+return Grammar(pegylator, pegMetas)
