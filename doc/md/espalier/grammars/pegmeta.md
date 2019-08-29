@@ -28,7 +28,8 @@ local function _toSexpr(peg, depth)
    insert(sexpr_line, name)
    insert(sexpr_line, " ")
    for _, sub_peg in ipairs(peg) do
-      insert(sexpr_line, _toSexpr(sub_peg, depth + 1))
+      local _toS = sub_peg.toSexpr or _toSexpr
+      insert(sexpr_line, _toS(sub_peg, depth + 1))
       insert(sexpr_line, " ")
    end
    remove(sexpr_line)
@@ -79,8 +80,16 @@ Rules.id = "rules"
 
 local Rule = PegMetas : inherit()
 Rule.id = "rule"
+
+local Comment = PegMetas : inherit()
+Comment.id = "comment"
+
+function Comment.toSexpr(comment, depth)
+   return ""
+end
 ```
 ```lua
 return { rules = Rules,
-         rule  = Rule }
+         rule  = Rule,
+         comment = Comment }
 ```
