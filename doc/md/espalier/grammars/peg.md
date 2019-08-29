@@ -16,7 +16,7 @@ local L = require "espalier/elpatt"
 local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
 local Grammar = require "espalier/grammar"
 local lex = require "espalier/lexemes"
-local str_escape = lex.string.str_escape
+local str_fill = lex.string.filler
 ```
 ```lua
 local function pegylator(_ENV)
@@ -25,7 +25,8 @@ local function pegylator(_ENV)
    SUPPRESS ("WS",  "enclosed", "form",
             "element" ,"elements",
             "allowed_prefixed", "allowed_suffixed",
-            "simple", "compound", "prefixed", "suffixed"  )
+            "simple", "compound", "prefixed", "suffixed",
+            "pel", "per"  )
    --]]
    local comment_m  = -P"\n" * P(1)
    local comment_c =  comment_m^0 * P"\n"^0
@@ -35,9 +36,9 @@ local function pegylator(_ENV)
    local sym = valid_sym + digit
    local WS = (P' ' + P'\n' + P',' + P'\09')^0
    local symbol = letter * ( -(P"-" * WS) * sym )^0
-   local d_string = (-P'"' * str_escape)^0
-   local h_string = (-P'`' * str_escape)^0
-   local s_string = (-P"'" * str_escape)^0
+   local d_string = P "\"" * (P "\\" * P(1) + (1 - P "\""))^0 * P "\""
+   local h_string = P "`" * (P "\\" * P(1) + (1 - P "`"))^0 * P "`"
+   local s_string = P "'" * (P "\\" * P(1) + (1 - P "'"))^0 * P "'"
    local range_match =  -P"-" * -P"\\" * -P"]" * P(1)
    local range_capture = (range_match + P"\\-" + P"\\]" + P"\\")
    local range_c  = range_capture^1 * P"-" * range_capture^1
@@ -52,9 +53,9 @@ local function pegylator(_ENV)
    lhs     =  WS * V"pattern" * WS * ( P":" + P"=" + ":=")
    rhs     =  V"form" * (WS * V"comment")^0
 
-   form   =  V"element" * V"elements"
+   form    =  V"element" * V"elements"
    pattern =  symbol
-         +  V"hidden_pattern"
+           +  V"hidden_pattern"
 
    hidden_pattern =  P"`" * symbol * P"`"
 
@@ -75,8 +76,8 @@ local function pegylator(_ENV)
    group   =  WS * V"pel"
            *  WS * V"form" * WS
            *  V"per"
-   pel     = D "("
-   per     = D ")"
+   pel     = P "("
+   per     = P ")"
 
    enclosed =  V"literal"
             +  V"hidden_literal"
@@ -109,10 +110,10 @@ local function pegylator(_ENV)
    if_and_this = P"&" * WS * V"allowed_prefixed"
    capture     = P"~" * WS * V"allowed_prefixed"
 
-   literal =  D'"' * d_string * D'"'
-           +  D"'" * s_string * D"'"
+   literal =  d_string
+           +  s_string
 
-   hidden_literal = -P"``" * D"`" * h_string * -P"``" * D"`"
+   hidden_literal =  h_string
 
    set     =  P"{" * set_c^1 * P"}"
 
