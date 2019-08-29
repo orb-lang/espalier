@@ -82,8 +82,6 @@ local str_esc = P"\\" * (S"abfnrtvz\\\"'[]\n"
                          + (R"09" * R"09"^-2)
                          + (P"x" + P"X") * higit * higit)
 
-local string_filler = ((P(1) - S "'\r\n\f\\") + (P '\\' * 1)) ^ 0
-
 local double_str = P"\"" * (P(1) - (P"\"" + P"\\") + str_esc)^0 * P"\""
 local single_str = P"\'" * (P(1) - (P"\'" + P"\\") + str_esc)^0 * P"\'"
 
@@ -121,8 +119,7 @@ return { lua = { number      = number,
          string = { str        = string_short,
                     single     = single_str,
                     double     = double_str,
-                    str_escape = str_esc,
-                    filler     = string_filler },
+                    str_escape = str_esc },
          higit   = higit,
          hex     = _hexadecimal,
          decimal = _decimal,
