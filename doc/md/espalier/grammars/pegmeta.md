@@ -21,17 +21,18 @@ Peg.id = "peg"
 ### Peg:toSexpr()
 
 ```lua
-local function _toSexpr(peg)
-   local sexpr_line = {"("} -- Phrase?
+local function _toSexpr(peg, depth)
+   depth = depth or 0
+   local sexpr_line = { (" "):rep(depth), "(" } -- Phrase?
    local name = peg.name or peg.id
    insert(sexpr_line, name)
    insert(sexpr_line, " ")
    for _, sub_peg in ipairs(peg) do
-      insert(sexpr_line, _toSexpr(sub_peg))
+      insert(sexpr_line, _toSexpr(sub_peg, depth + 1))
       insert(sexpr_line, " ")
    end
    remove(sexpr_line)
-   insert(sexpr_line, ")\n")
+   insert(sexpr_line, ")")
 
    return concat(sexpr_line)
 end
