@@ -38,6 +38,35 @@ end
 
 Peg.toSexpr = _toSexpr
 ```
+### Peg:toSexprRepr()
+
+A bit ugly perhaps, but this will let us view the sexprs as more than a
+mere string.
+
+
+I will most likely elaborate this past the useful point, in the pursuit of
+happiness.
+
+```lua
+local function __repr(repr, phrase, c)
+   return _toSexpr(repr[1])
+end
+
+local ReprMeta = { __repr = __repr,
+                   __tostring = __repr }
+ReprMeta.__index = ReprMeta
+
+local function newRepr(peg)
+   local repr = setmetatable({}, ReprMeta)
+   repr[1] = peg
+   return repr
+end
+```
+```lua
+function Peg.toSexprRepr(peg)
+   return newRepr(peg)
+end
+```
 ## PegMetas
 
 ```lua

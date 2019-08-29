@@ -47,6 +47,36 @@ Peg.toSexpr = _toSexpr
 
 
 
+
+
+
+
+
+
+local function __repr(repr, phrase, c)
+   return _toSexpr(repr[1])
+end
+
+local ReprMeta = { __repr = __repr,
+                   __tostring = __repr }
+ReprMeta.__index = ReprMeta
+
+local function newRepr(peg)
+   local repr = setmetatable({}, ReprMeta)
+   repr[1] = peg
+   return repr
+end
+
+
+
+function Peg.toSexprRepr(peg)
+   return newRepr(peg)
+end
+
+
+
+
+
 local PegMetas = Peg : inherit()
 PegMetas.id = "pegMetas"
 
