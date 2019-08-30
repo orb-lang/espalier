@@ -7,6 +7,8 @@ A collection of Node-descended metatables to provide sundry methodologies.
 ```lua
 local Node = require "espalier/node"
 local core = require "singletons/core"
+local Phrase = require "singletons/phrase"
+
 local inherit = assert(core.inherit)
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
@@ -89,9 +91,26 @@ end
 ```lua
 local PegMetas = Peg : inherit()
 PegMetas.id = "pegMetas"
+```
+### Rules
 
+```lua
 local Rules = PegMetas : inherit()
 Rules.id = "rules"
+
+function Rules.toLpeg(peg_rules)
+   -- _preProcessAST(peg_rules)
+   local phrase = Phrase()
+   -- the first rule should have an atom:
+   -- peg_rules[1]   -- this is the first rule
+   -- peg_rules[1]:select "rhs" : select "atom" . val
+   -- maybe?
+   phrase = phrase .. "local fn _" .. peg_rules.id .. "(_ENV)\n"
+   -- stick everything else in here...
+   phrase = phrase .. "end\n"
+   return phrase
+end
+
 
 local Rule = PegMetas : inherit()
 Rule.id = "rule"
