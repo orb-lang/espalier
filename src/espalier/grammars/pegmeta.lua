@@ -11,6 +11,7 @@ local inherit = assert(core.inherit)
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
+local s = require "singletons/status" ()
 
 
 
@@ -25,6 +26,7 @@ Peg.id = "peg"
 
 
 
+local nl_map = { rule = true }
 local function _toSexpr(peg, depth)
    depth = depth or 0
    local sexpr_line = { (" "):rep(depth), "(" } -- Phrase?
@@ -38,11 +40,17 @@ local function _toSexpr(peg, depth)
    end
    remove(sexpr_line)
    insert(sexpr_line, ")")
+   if nl_map[name] then
+      insert(sexpr_line, "\n")
+   end
 
    return concat(sexpr_line)
 end
 
 Peg.toSexpr = _toSexpr
+
+
+
 
 
 
@@ -73,6 +81,18 @@ end
 
 function Peg.toSexprRepr(peg)
    return newRepr(peg)
+end
+
+
+
+
+
+
+
+
+
+function Peg.toLpeg(peg)
+   s:halt "each grammar class must implement toLpeg"
 end
 
 

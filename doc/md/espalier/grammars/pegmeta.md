@@ -11,6 +11,7 @@ local inherit = assert(core.inherit)
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
+local s = require "singletons/status" ()
 ```
 ### Peg base class
 
@@ -21,6 +22,7 @@ Peg.id = "peg"
 ### Peg:toSexpr()
 
 ```lua
+local nl_map = { rule = true }
 local function _toSexpr(peg, depth)
    depth = depth or 0
    local sexpr_line = { (" "):rep(depth), "(" } -- Phrase?
@@ -34,6 +36,9 @@ local function _toSexpr(peg, depth)
    end
    remove(sexpr_line)
    insert(sexpr_line, ")")
+   if nl_map[name] then
+      insert(sexpr_line, "\n")
+   end
 
    return concat(sexpr_line)
 end
@@ -67,6 +72,16 @@ end
 ```lua
 function Peg.toSexprRepr(peg)
    return newRepr(peg)
+end
+```
+## Peg.toLpeg(peg)
+
+This needs to be implemented by each subclass, individually, so we produce a
+base method that halts if we fall back to it.
+
+```lua
+function Peg.toLpeg(peg)
+   s:halt "each grammar class must implement toLpeg"
 end
 ```
 ## PegMetas
