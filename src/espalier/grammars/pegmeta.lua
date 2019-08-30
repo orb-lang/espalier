@@ -129,7 +129,11 @@ function Rules.toLpeg(peg_rules, depth)
    -- peg_rules[1]   -- this is the first rule
    -- peg_rules[1]:select "rhs" : select "atom" . val
    -- maybe?
-   phrase = phrase .. "local fn _" .. peg_rules.id .. "(_ENV)\n"
+   local grammar_name = peg_rules : select "rule" ()
+                         : select "pattern" ()
+                         : span()
+   phrase = phrase .. "local functionn _" .. grammar_name .. "_fn(_ENV)\n"
+   phrase = phrase .. "   " .. "START " .. "\"" .. grammar_name .. "\"\n"
    -- stick everything else in here...
    ---[[
    for rule in peg_rules : select "rule" do
@@ -146,8 +150,11 @@ local Rule = PegMetas : inherit()
 Rule.id = "rule"
 
 function Rule.toLpeg(rule, depth)
+   depth = depth or 0
+   local phrase = PegPhrase(("   "):rep(depth))
    local lhs = rule:select "pattern" () : span()
-   return lhs .. "\n"
+   phrase = phrase .. lhs .. " = " .. "\n"
+   return phrase
 end
 
 local Comment = PegMetas : inherit()
