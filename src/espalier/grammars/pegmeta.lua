@@ -108,25 +108,47 @@ PegMetas.id = "pegMetas"
 
 
 
+
+
+
+
+local PegPhrase = Phrase() : inherit ()
+
+
+
+
+
 local Rules = PegMetas : inherit()
 Rules.id = "rules"
 
-function Rules.toLpeg(peg_rules)
+function Rules.toLpeg(peg_rules, depth)
+   depth = depth or 0 -- for consistency
    -- _preProcessAST(peg_rules)
-   local phrase = Phrase()
+   local phrase = PegPhrase()
    -- the first rule should have an atom:
    -- peg_rules[1]   -- this is the first rule
    -- peg_rules[1]:select "rhs" : select "atom" . val
    -- maybe?
    phrase = phrase .. "local fn _" .. peg_rules.id .. "(_ENV)\n"
    -- stick everything else in here...
-   phrase = phrase .. "end\n"
+   ---[[
+   for rule in peg_rules : select "rule" do
+      phrase = phrase .. rule:toLpeg(depth + 1)
+   end
+   --]]
+   phrase = phrase .. "\nend\n"
    return phrase
 end
 
 
+
 local Rule = PegMetas : inherit()
 Rule.id = "rule"
+
+function Rule.toLpeg(rule, depth)
+   local lhs = rule:select "pattern" () : span()
+   return lhs .. "\n"
+end
 
 local Comment = PegMetas : inherit()
 Comment.id = "comment"
