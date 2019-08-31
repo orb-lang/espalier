@@ -119,6 +119,9 @@ function Rules.toLpeg(peg_rules, depth)
                          : span()
    phrase = phrase .. "local functionn _" .. grammar_name .. "_fn(_ENV)\n"
    phrase = phrase .. "   " .. "START " .. "\"" .. grammar_name .. "\"\n"
+   -- Build the SUPPRESS function here, this requires finding the
+   -- hidden rules and suppressing them
+   --
    -- stick everything else in here...
    ---[[
    for rule in peg_rules : select "rule" do
@@ -137,8 +140,9 @@ function Rule.toLpeg(rule, depth)
    depth = depth or 0
    local phrase = PegPhrase(("   "):rep(depth))
    local lhs = rule:select "pattern" () : span()
-   phrase = phrase .. lhs .. " = " .. "\n"
-   return phrase
+   phrase = phrase .. lhs .. " = "
+   local rhs = rule:select "rhs" () : span () -- toLpeg()
+   return phrase .. rhs .. "\n"
 end
 
 local Comment = PegMetas : inherit()
