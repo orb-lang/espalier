@@ -161,6 +161,26 @@ function Rule.toLpeg(rule, depth)
    return phrase .. rhs .. "\n"
 end
 
+
+
+local Rhs = PegMetas : inherit()
+Rhs.id = "rule"
+
+
+
+local Choice = PegMetas : inherit()
+Choice.id = "choice"
+
+function Choice.toLpeg(choice, depth)
+   local phrase = PegPhrase "+"
+   for _, sub_choice in ipairs(choice) do
+      phrase = phrase .. " " .. sub_choice:toLpeg(depth + 1)
+   end
+   return phrase
+end
+
+
+
 local Comment = PegMetas : inherit()
 Comment.id = "comment"
 
@@ -172,4 +192,5 @@ end
 
 return { rules = Rules,
          rule  = Rule,
+         rhs   = Rhs,
          comment = Comment }
