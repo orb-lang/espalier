@@ -141,13 +141,21 @@ function Rule.toLpeg(rule, depth)
    local phrase = PegPhrase(("   "):rep(depth))
    local lhs = rule:select "pattern" () : span()
    phrase = phrase .. lhs .. " = "
-   local rhs = rule:select "rhs" () : span () -- toLpeg()
+   local rhs = rule:select "rhs" () : toLpeg (depth)
    return phrase .. rhs .. "\n"
 end
 ```
 ```lua
 local Rhs = PegMetas : inherit()
 Rhs.id = "rhs"
+
+function Rhs.toLpeg(rhs, depth)
+   local phrase = PegPhrase()
+   for _, twig in ipairs(rhs) do
+      phrase = phrase .. " " .. twig:toLpeg(depth + 1)
+   end
+   return phrase
+end
 ```
 ```lua
 local Choice = PegMetas : inherit()
