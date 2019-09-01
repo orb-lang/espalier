@@ -164,7 +164,7 @@ end
 
 
 local Rhs = PegMetas : inherit()
-Rhs.id = "rule"
+Rhs.id = "rhs"
 
 
 
@@ -193,4 +193,5 @@ end
 return { rules = Rules,
          rule  = Rule,
          rhs   = Rhs,
-         comment = Comment }
+         comment = Comment,
+         choice = Choice }

@@ -53,6 +53,7 @@ local function pegylator(_ENV)
    rhs     =  V"form" * (WS * V"comment")^0
 
    form    =  V"element" * V"elements"
+
    pattern =  symbol
            +  V"hidden_pattern"
 
