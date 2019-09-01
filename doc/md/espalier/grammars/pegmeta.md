@@ -103,8 +103,7 @@ local PegPhrase = Phrase() : inherit ()
 ### Rules
 
 ```lua
-local Rules = PegMetas : inherit()
-Rules.id = "rules"
+local Rules = PegMetas : inherit "rules"
 
 function Rules.toLpeg(peg_rules, depth)
    depth = depth or 0 -- for consistency
@@ -133,8 +132,7 @@ function Rules.toLpeg(peg_rules, depth)
 end
 ```
 ```lua
-local Rule = PegMetas : inherit()
-Rule.id = "rule"
+local Rule = PegMetas : inherit "rule"
 
 function Rule.toLpeg(rule, depth)
    depth = depth or 0
@@ -146,8 +144,7 @@ function Rule.toLpeg(rule, depth)
 end
 ```
 ```lua
-local Rhs = PegMetas : inherit()
-Rhs.id = "rhs"
+local Rhs = PegMetas : inherit "rhs"
 
 function Rhs.toLpeg(rhs, depth)
    local phrase = PegPhrase()
@@ -158,8 +155,7 @@ function Rhs.toLpeg(rhs, depth)
 end
 ```
 ```lua
-local Choice = PegMetas : inherit()
-Choice.id = "choice"
+local Choice = PegMetas : inherit "choice"
 
 function Choice.toLpeg(choice, depth)
    local phrase = PegPhrase "+"
@@ -168,6 +164,12 @@ function Choice.toLpeg(choice, depth)
    end
    return phrase
 end
+```
+```lua
+local Cat = PegMetas : inherit "cat"
+```
+```lua
+local Group = PegMetas : inherit "group"
 ```
 ```lua
 local Comment = PegMetas : inherit()
@@ -182,5 +184,7 @@ return { rules = Rules,
          rule  = Rule,
          rhs   = Rhs,
          comment = Comment,
-         choice = Choice }
+         choice = Choice,
+         cat     = Cat,
+         group   = Group }
 ```

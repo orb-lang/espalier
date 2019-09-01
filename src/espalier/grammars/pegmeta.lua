@@ -118,8 +118,7 @@ local PegPhrase = Phrase() : inherit ()
 
 
 
-local Rules = PegMetas : inherit()
-Rules.id = "rules"
+local Rules = PegMetas : inherit "rules"
 
 function Rules.toLpeg(peg_rules, depth)
    depth = depth or 0 -- for consistency
@@ -149,8 +148,7 @@ end
 
 
 
-local Rule = PegMetas : inherit()
-Rule.id = "rule"
+local Rule = PegMetas : inherit "rule"
 
 function Rule.toLpeg(rule, depth)
    depth = depth or 0
@@ -163,8 +161,7 @@ end
 
 
 
-local Rhs = PegMetas : inherit()
-Rhs.id = "rhs"
+local Rhs = PegMetas : inherit "rhs"
 
 function Rhs.toLpeg(rhs, depth)
    local phrase = PegPhrase()
@@ -176,8 +173,7 @@ end
 
 
 
-local Choice = PegMetas : inherit()
-Choice.id = "choice"
+local Choice = PegMetas : inherit "choice"
 
 function Choice.toLpeg(choice, depth)
    local phrase = PegPhrase "+"
@@ -186,6 +182,14 @@ function Choice.toLpeg(choice, depth)
    end
    return phrase
 end
+
+
+
+local Cat = PegMetas : inherit "cat"
+
+
+
+local Group = PegMetas : inherit "group"
 
 
 
@@ -202,4 +206,6 @@ return { rules = Rules,
          rule  = Rule,
          rhs   = Rhs,
          comment = Comment,
-         choice = Choice }
+         choice = Choice,
+         cat     = Cat,
+         group   = Group }

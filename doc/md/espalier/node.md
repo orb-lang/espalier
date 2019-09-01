@@ -571,11 +571,14 @@ both ``Meta`` and ``meta``.
 It's easier to read than to describe:
 
 ```lua
-function Node.inherit(node)
+function Node.inherit(node, id)
   local Meta = setmeta({}, node)
   Meta.__index = Meta
   local meta = setmeta({}, Meta)
   meta.__index = meta
+  if id then
+    Meta.id = id
+  end
   return Meta, meta
 end
 ```
