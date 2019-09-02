@@ -178,9 +178,25 @@ end
 ```
 ```lua
 local Cat = PegMetas : inherit "cat"
+
+function Cat.toLpeg(cat, depth)
+   local phrase = PegPhrase " * "
+   for _, sub_cat in ipairs(cat) do
+      phrase = phrase .. " " .. sub_cat:toLpeg(depth)
+   end
+   return phrase
+end
 ```
 ```lua
 local Group = PegMetas : inherit "group"
+
+function Group.toLpeg(group, depth)
+   local phrase = PegPhrase "("
+   for _, sub_group in ipairs(group) do
+      phrase = phrase .. " " .. sub_group:toLpeg(depth)
+   end
+   return phrase .. ")"
+end
 ```
 ```lua
 local Atom = PegMetas : inherit "atom"
