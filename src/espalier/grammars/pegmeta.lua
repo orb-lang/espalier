@@ -94,7 +94,7 @@ end
 
 
 function Peg.toLpeg(peg)
-   s:halt "each grammar class must implement toLpeg"
+   s:halt ("must implement toLepeg for class " .. peg.id)
 end
 
 
@@ -221,6 +221,11 @@ Comment.id = "comment"
 
 function Comment.toSexpr(comment, depth)
    return ""
+end
+
+function Comment.toLpeg(comment, depth)
+   local phrase = PegPhrase "--"
+   return phrase .. comment:span():sub(2) .. "\n"
 end
 
 

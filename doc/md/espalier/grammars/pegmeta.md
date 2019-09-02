@@ -83,7 +83,7 @@ base method that halts if we fall back to it.
 
 ```lua
 function Peg.toLpeg(peg)
-   s:halt "each grammar class must implement toLpeg"
+   s:halt ("must implement toLepeg for class " .. peg.id)
 end
 ```
 ## PegMetas
@@ -197,6 +197,11 @@ Comment.id = "comment"
 
 function Comment.toSexpr(comment, depth)
    return ""
+end
+
+function Comment.toLpeg(comment, depth)
+   local phrase = PegPhrase "--"
+   return phrase .. comment:span():sub(2) .. "\n"
 end
 ```
 ```lua

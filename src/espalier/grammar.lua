@@ -165,6 +165,15 @@ end
 
 
 
+local _astMeta = { __index = Node,
+                   __tostring = Node.toString }
+
+
+
+
+
+
+
 
 local function make_ast_node(id, first, t, last, str, metas, offset)
 
@@ -210,8 +219,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       assert(t.id, "no id on Node")
    else
       t.id = id
-      setmeta(t, { __index = Node,
-                   __tostring = Node.toString })
+      setmeta(t, _astMeta)
    end
 
 

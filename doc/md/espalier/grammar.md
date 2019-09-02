@@ -180,6 +180,13 @@ if VER == " 5.1" then
    local getfenv = assert( getfenv )
 end
 ```
+#### _astMeta
+
+
+```lua
+local _astMeta = { __index = Node,
+                   __tostring = Node.toString }
+```
 ### make_ast_node
 
 This takes a lot of parameters and does a lot of things.
@@ -232,8 +239,7 @@ parameter.
       assert(t.id, "no id on Node")
    else
       t.id = id
-      setmeta(t, { __index = Node,
-                   __tostring = Node.toString })
+      setmeta(t, _astMeta)
    end
 ```
 #### DROP
