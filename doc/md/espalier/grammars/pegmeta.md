@@ -166,10 +166,30 @@ function Choice.toLpeg(choice, depth)
 end
 ```
 ```lua
+local Maybe = PegMetas : inherit "maybe"
+
+function Maybe.toLpeg(maybe, depth)
+   local phrase = PegPhrase()
+   for _, sub_maybe in ipairs(maybe) do
+      phrase = phrase .. " " .. sub_maybe:toLpeg(depth + 1)
+   end
+   return phrase .. "^-1"
+end
+```
+```lua
 local Cat = PegMetas : inherit "cat"
 ```
 ```lua
 local Group = PegMetas : inherit "group"
+```
+```lua
+local Atom = PegMetas : inherit "atom"
+
+function Atom.toLpeg(atom, depth)
+   local phrase = PegPhrase "V"
+   phrase = phrase .. "\"" .. atom:span() .. "\""
+   return phrase
+end
 ```
 ```lua
 local Comment = PegMetas : inherit()
@@ -186,5 +206,7 @@ return { rules = Rules,
          comment = Comment,
          choice = Choice,
          cat     = Cat,
-         group   = Group }
+         group   = Group,
+         atom    = Atom,
+         maybe   = Maybe }
 ```

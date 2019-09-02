@@ -185,11 +185,34 @@ end
 
 
 
+local Maybe = PegMetas : inherit "maybe"
+
+function Maybe.toLpeg(maybe, depth)
+   local phrase = PegPhrase()
+   for _, sub_maybe in ipairs(maybe) do
+      phrase = phrase .. " " .. sub_maybe:toLpeg(depth + 1)
+   end
+   return phrase .. "^-1"
+end
+
+
+
 local Cat = PegMetas : inherit "cat"
 
 
 
 local Group = PegMetas : inherit "group"
+
+
+
+local Atom = PegMetas : inherit "atom"
+
+function Atom.toLpeg(atom, depth)
+   local phrase = PegPhrase "V"
+   phrase = phrase .. "\"" .. atom:span() .. "\""
+   return phrase
+end
+
 
 
 
@@ -208,4 +231,6 @@ return { rules = Rules,
          comment = Comment,
          choice = Choice,
          cat     = Cat,
-         group   = Group }
+         group   = Group,
+         atom    = Atom,
+         maybe   = Maybe }
