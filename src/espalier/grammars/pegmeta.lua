@@ -120,6 +120,24 @@ local PegPhrase = Phrase() : inherit ()
 
 local Rules = PegMetas : inherit "rules"
 
+local insert = assert(table.insert)
+
+local function _suppressHiddens(peg_rules)
+   local hiddens = {}
+   for hidden_patt in peg_rules : select "hidden_pattern" do
+      insert(hiddens, hidden_patt:span():sub(2,-2))
+   end
+   if #hiddens == 0 then
+      -- no hidden patterns
+      return nil
+   end
+   local phrase = PegPhrase "   " .. "SUPPRESS" .. " " .. "("
+   for _, patt in ipairs(hiddens) do
+      phrase = phrase .. "\"" .. patt .. "\"" .. "," .. " "
+   end
+   return phrase .. ")" .. "\n"
+end
+
 function Rules.toLpeg(peg_rules, depth)
    depth = depth or 0 -- for consistency
    -- _preProcessAST(peg_rules)
@@ -135,6 +153,10 @@ function Rules.toLpeg(peg_rules, depth)
    phrase = phrase .. "   " .. "START " .. "\"" .. grammar_name .. "\"\n"
    -- Build the SUPPRESS function here, this requires finding the
    -- hidden rules and suppressing them
+   local suppress = _suppressHiddens(peg_rules)
+   if suppress then
+      phrase = phrase .. suppress
+   end
    --
    -- stick everything else in here...
    ---[[
@@ -239,6 +261,18 @@ end
 
 
 
+local Optional = PegMetas : inherit "optional"
+
+function Optional.toLpeg(optional, depth)
+   local phrase = PegPhrase()
+   for _, sub_option in ipairs(optional) do
+      phrase = phrase .. " " .. sub_option:toLpeg(depth)
+   end
+   return phrase .. "^0"
+end
+
+
+
 
 local Comment = PegMetas : inherit()
 Comment.id = "comment"
@@ -263,4 +297,5 @@ return { rules = Rules,
          group   = Group,
          atom    = Atom,
          maybe   = Maybe,
-         literal = Literal }
+         literal = Literal,
+         optional = Optional }
