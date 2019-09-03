@@ -121,6 +121,22 @@ local PegPhrase = Phrase() : inherit ()
 
 local Rules = PegMetas : inherit "rules"
 
+
+
+
+
+
+
+
+local _PREFACE = PegPhrase ([[
+local L = require "lpeg"
+local P, V, S, R = L.P, L.V, L.S, L.R
+local Grammar = require "espalier/grammar"
+
+]])
+
+
+
 local insert = assert(table.insert)
 
 local function _suppressHiddens(peg_rules)
@@ -166,7 +182,7 @@ function Rules.toLpeg(peg_rules, depth)
    end
    --]]
    phrase = phrase .. "\nend\n"
-   return phrase
+   return _PREFACE .. phrase
 end
 
 
