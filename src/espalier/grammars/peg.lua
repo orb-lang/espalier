@@ -116,6 +116,9 @@ local function pegylator(_ENV)
    allowed_suffixed =  V"compound" + V"prefixed" + V"atom"
 
    some_suffix   = P"$" * V"repeats"
+   -- these are implicitly suppressed
+   with_suffix   =  V"some_number" * V"which_suffix"
+   which_suffix  =  ( P"*" + P"+" + P"?")
    -- /SUPPRESSED
 
    if_not_this = P"!" * WS * V"allowed_prefixed"
@@ -130,6 +133,7 @@ local function pegylator(_ENV)
 
    set     =  P"{" * set_c^1 * P"}"
 
+-- #Todo
 -- Change range to not use '-' separator instead require even # of bytes.
 -- Ru catches edge cases involving multi-byte chars.
 
@@ -138,9 +142,6 @@ local function pegylator(_ENV)
    optional      =  V"allowed_suffixed" * WS * P"*"
    more_than_one =  V"allowed_suffixed" * WS * P"+"
    maybe         =  V"allowed_suffixed" * WS * P"?"
-
-   with_suffix   =  V"some_number" * V"which_suffix"
-   which_suffix  =  ( P"*" + P"+" + P"?")
    some_number   =  V"allowed_suffixed" * WS * V"some_suffix"
 
    repeats       =  some_num_c
