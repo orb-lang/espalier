@@ -153,6 +153,8 @@ function Rules.toLpeg(peg_rules, depth)
    return phrase
 end
 ```
+### Rule
+
 ```lua
 local Rule = PegMetas : inherit "rule"
 
@@ -174,6 +176,8 @@ function Rule.toLpeg(rule, depth)
    return phrase .. rhs .. "\n"
 end
 ```
+### Rhs
+
 ```lua
 local Rhs = PegMetas : inherit "rhs"
 
@@ -185,6 +189,8 @@ function Rhs.toLpeg(rhs, depth)
    return phrase
 end
 ```
+### Choice
+
 ```lua
 local Choice = PegMetas : inherit "choice"
 
@@ -196,17 +202,8 @@ function Choice.toLpeg(choice, depth)
    return phrase
 end
 ```
-```lua
-local Maybe = PegMetas : inherit "maybe"
+### Cat
 
-function Maybe.toLpeg(maybe, depth)
-   local phrase = PegPhrase()
-   for _, sub_maybe in ipairs(maybe) do
-      phrase = phrase .. " " .. sub_maybe:toLpeg(depth + 1)
-   end
-   return phrase .. "^-1"
-end
-```
 ```lua
 local Cat = PegMetas : inherit "cat"
 
@@ -218,6 +215,8 @@ function Cat.toLpeg(cat, depth)
    return phrase
 end
 ```
+### Group
+
 ```lua
 local Group = PegMetas : inherit "group"
 
@@ -246,17 +245,6 @@ function Literal.toLpeg(literal, depth)
 end
 ```
 ```lua
-local Optional = PegMetas : inherit "optional"
-
-function Optional.toLpeg(optional, depth)
-   local phrase = PegPhrase()
-   for _, sub_option in ipairs(optional) do
-      phrase = phrase .. " " .. sub_option:toLpeg(depth)
-   end
-   return phrase .. "^0"
-end
-```
-```lua
 local IfNotThis = PegMetas : inherit "if_not_this"
 ```
 ```lua
@@ -268,6 +256,43 @@ local IfAndThis = PegMetas : inherit "if_and_this"
 ```lua
 -- #todo am I going to use this? what is its semantics? -Sam.
 local Capture = PegMetas : inherit "capture"
+```
+```lua
+local Set = PegMetas : inherit "set"
+```
+```lua
+local Range = PegMetas : inherit "range"
+```
+### Optional
+
+```lua
+local Optional = PegMetas : inherit "optional"
+
+function Optional.toLpeg(optional, depth)
+   local phrase = PegPhrase()
+   for _, sub_option in ipairs(optional) do
+      phrase = phrase .. " " .. sub_option:toLpeg(depth)
+   end
+   return phrase .. "^0"
+end
+```
+### MoreThanOne
+
+```lua
+local MoreThanOne = PegMetas : inherit "more_than_one"
+```
+### Maybe
+
+```lua
+local Maybe = PegMetas : inherit "maybe"
+
+function Maybe.toLpeg(maybe, depth)
+   local phrase = PegPhrase()
+   for _, sub_maybe in ipairs(maybe) do
+      phrase = phrase .. " " .. sub_maybe:toLpeg(depth + 1)
+   end
+   return phrase .. "^-1"
+end
 ```
 ```lua
 local Comment = PegMetas : inherit "comment"
@@ -293,6 +318,7 @@ return { rules = Rules,
          maybe   = Maybe,
          literal = Literal,
          optional = Optional,
+         more_than_one = MoreThanOne,
          if_not_this = IfNotThis,
          if_and_this = IfAndThis,
          not_this     = NotThis,

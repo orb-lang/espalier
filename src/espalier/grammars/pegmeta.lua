@@ -170,6 +170,9 @@ end
 
 
 
+
+
+
 local Rule = PegMetas : inherit "rule"
 
 function Rule.toLpeg(rule, depth)
@@ -192,6 +195,9 @@ end
 
 
 
+
+
+
 local Rhs = PegMetas : inherit "rhs"
 
 function Rhs.toLpeg(rhs, depth)
@@ -201,6 +207,9 @@ function Rhs.toLpeg(rhs, depth)
    end
    return phrase
 end
+
+
+
 
 
 
@@ -216,15 +225,6 @@ end
 
 
 
-local Maybe = PegMetas : inherit "maybe"
-
-function Maybe.toLpeg(maybe, depth)
-   local phrase = PegPhrase()
-   for _, sub_maybe in ipairs(maybe) do
-      phrase = phrase .. " " .. sub_maybe:toLpeg(depth + 1)
-   end
-   return phrase .. "^-1"
-end
 
 
 
@@ -237,6 +237,9 @@ function Cat.toLpeg(cat, depth)
    end
    return phrase
 end
+
+
+
 
 
 
@@ -270,18 +273,6 @@ end
 
 
 
-local Optional = PegMetas : inherit "optional"
-
-function Optional.toLpeg(optional, depth)
-   local phrase = PegPhrase()
-   for _, sub_option in ipairs(optional) do
-      phrase = phrase .. " " .. sub_option:toLpeg(depth)
-   end
-   return phrase .. "^0"
-end
-
-
-
 local IfNotThis = PegMetas : inherit "if_not_this"
 
 
@@ -296,6 +287,51 @@ local IfAndThis = PegMetas : inherit "if_and_this"
 
 -- #todo am I going to use this? what is its semantics? -Sam.
 local Capture = PegMetas : inherit "capture"
+
+
+
+local Set = PegMetas : inherit "set"
+
+
+
+local Range = PegMetas : inherit "range"
+
+
+
+
+
+
+local Optional = PegMetas : inherit "optional"
+
+function Optional.toLpeg(optional, depth)
+   local phrase = PegPhrase()
+   for _, sub_option in ipairs(optional) do
+      phrase = phrase .. " " .. sub_option:toLpeg(depth)
+   end
+   return phrase .. "^0"
+end
+
+
+
+
+
+
+local MoreThanOne = PegMetas : inherit "more_than_one"
+
+
+
+
+
+
+local Maybe = PegMetas : inherit "maybe"
+
+function Maybe.toLpeg(maybe, depth)
+   local phrase = PegPhrase()
+   for _, sub_maybe in ipairs(maybe) do
+      phrase = phrase .. " " .. sub_maybe:toLpeg(depth + 1)
+   end
+   return phrase .. "^-1"
+end
 
 
 
@@ -323,6 +359,7 @@ return { rules = Rules,
          maybe   = Maybe,
          literal = Literal,
          optional = Optional,
+         more_than_one = MoreThanOne,
          if_not_this = IfNotThis,
          if_and_this = IfAndThis,
          not_this     = NotThis,

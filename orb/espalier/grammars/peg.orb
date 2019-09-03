@@ -54,13 +54,14 @@ local function pegylator(_ENV)
    lhs     =  WS * V"pattern" * WS * ( P":" + P"=" + ":=")
    rhs     =  V"form" * (WS * V"comment")^0
 
-   form    =  V"element" * V"elements"
-
    pattern =  symbol
            +  V"hidden_pattern"
 
    hidden_pattern =  P"`" * symbol * P"`"
+
    -- SUPPRESSED
+   form    =  V"element" * V"elements"
+
    element  =   -V"lhs" * WS
             *  ( V"simple"
             +    V"compound")
@@ -82,21 +83,22 @@ local function pegylator(_ENV)
    group   =  WS * V"pel"
            *  WS * V"form" * WS
            *  V"per"
-   pel     = P "("
-   per     = P ")"
-
-   enclosed =  V"literal"
-            +  V"hidden_literal"
-            +  V"set"
-            +  V"range"
 
    hidden_match =  WS * P"``"
                 *  WS * V"form" * WS
                 *  P"``"
    -- SUPPRESSED
+   pel     = P "("
+   per     = P ")"
+
    simple   =  V"suffixed"
             +  V"prefixed"
             +  V"atom"
+
+   enclosed =  V"literal"
+            +  V"hidden_literal"
+            +  V"set"
+            +  V"range"
 
    prefixed =  V"if_not_this"
             +  V"not_this"
@@ -109,8 +111,6 @@ local function pegylator(_ENV)
             +  V"with_suffix"
             +  V"some_number"
    -- /SUPPRESSED
-
-   comment  =  P";" * comment_c
 
    if_not_this = P"!" * WS * V"allowed_prefixed"
    not_this    = P"-" * WS * V"allowed_prefixed"
@@ -141,6 +141,8 @@ local function pegylator(_ENV)
    repeats       =  some_num_c
    allowed_prefixed =  V"compound" + V"suffixed" + V"atom"
    allowed_suffixed =  V"compound" + V"prefixed" + V"atom"
+
+   comment  =  P";" * comment_c
 
    atom =  V"ws" + symbol
 
