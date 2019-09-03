@@ -159,6 +159,15 @@ local Rule = PegMetas : inherit "rule"
 function Rule.toLpeg(rule, depth)
    depth = depth or 0
    local phrase = PegPhrase(("   "):rep(depth))
+   local comment = rule : select "lead_comment" ()
+   if comment then
+      phrase = phrase .. "--" .. " " .. comment
+                                           : select "comment" ()
+                                           : span ()
+                                           : sub(2)
+                                     .. "\n"
+      phrase = phrase .. ("   "):rep(depth)
+   end
    local lhs = rule:select "pattern" () : span()
    phrase = phrase .. lhs .. " = "
    local rhs = rule:select "rhs" () : toLpeg (depth)

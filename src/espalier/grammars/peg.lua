@@ -47,8 +47,9 @@ local function pegylator(_ENV)
                 +   (P"+" + P"-")^0 * digit^1
 
 
-   rules   =  V"comment"^0 * V"rule"^1
-   rule    =  V"lhs" * V"rhs"
+   rules   =  V"rule"^1
+   rule    =  V"lead_comment"^0 * V"lhs" * V"rhs"
+   lead_comment = V"comment"
    lhs     =  WS * V"pattern" * WS * ( P":" + P"=" + ":=")
    rhs     =  V"form" * (WS * V"comment")^0
 
@@ -58,7 +59,7 @@ local function pegylator(_ENV)
            +  V"hidden_pattern"
 
    hidden_pattern =  P"`" * symbol * P"`"
-
+   -- SUPPRESSED
    element  =   -V"lhs" * WS
             *  ( V"simple"
             +    V"compound")
@@ -66,13 +67,14 @@ local function pegylator(_ENV)
    elements  =  V"choice"
              +  V"cat"
              +  P""
-
+   -- /SUPPRESSED
    choice =  WS * P"/" * V"form"
    cat =  WS * V"form"
+   -- SUPPRESSED
    compound =  V"group"
           +  V"enclosed"
           +  V"hidden_match"
-
+   -- /SUPPRESSED
    group   =  WS * V"pel"
            *  WS * V"form" * WS
            *  V"per"
@@ -87,12 +89,10 @@ local function pegylator(_ENV)
    hidden_match =  WS * P"``"
                 *  WS * V"form" * WS
                 *  P"``"
-
+   -- SUPPRESSED
    simple   =  V"suffixed"
             +  V"prefixed"
             +  V"atom"
-
-   comment  =  P";" * comment_c
 
    prefixed =  V"if_not_this"
             +  V"not_this"
@@ -104,6 +104,9 @@ local function pegylator(_ENV)
             +  V"maybe"
             +  V"with_suffix"
             +  V"some_number"
+   -- /SUPPRESSED
+
+   comment  =  P";" * comment_c
 
    if_not_this = P"!" * WS * V"allowed_prefixed"
    not_this    = P"-" * WS * V"allowed_prefixed"
