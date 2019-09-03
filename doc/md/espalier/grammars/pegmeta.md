@@ -103,6 +103,12 @@ local PegPhrase = Phrase() : inherit ()
 ```
 ### Rules
 
+``rules`` is our base class, and we manually iterate through the AST to
+generate passable Lua code.
+
+
+It won't be pretty, but it will be valid.  Eventually.
+
 ```lua
 local Rules = PegMetas : inherit "rules"
 ```
@@ -112,9 +118,9 @@ Miscellaneous imports in Bristol fashion.
 
 ```lua
 local _PREFACE = PegPhrase ([[
-local L = require "lpeg"
+local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
-local Grammar = require "espalier/grammar"
+local Grammar = assert(require "espalier/grammar")
 
 ]])
 ```
@@ -184,12 +190,23 @@ function Rule.toLpeg(rule, depth)
                                      .. "\n"
       phrase = phrase .. ("   "):rep(depth)
    end
+
    local lhs = rule:select "pattern" () : span()
    phrase = phrase .. lhs .. " = "
    local rhs = rule:select "rhs" () : toLpeg (depth)
    return phrase .. rhs .. "\n"
 end
 ```
+#### lhs, pattern, hidden_pattern
+
+These are all handled internally by Rule, so they don't require
+their own lpeg transducers.
+
+
+These should be inherited with proper PascalCaps in the event we write, for
+example, a toHtml method.
+
+
 ### Rhs
 
 ```lua
@@ -242,22 +259,13 @@ function Group.toLpeg(group, depth)
    return phrase .. ")"
 end
 ```
-```lua
-local Atom = PegMetas : inherit "atom"
+#### HiddenMatch
 
-function Atom.toLpeg(atom, depth)
-   local phrase = PegPhrase "V"
-   phrase = phrase .. "\"" .. atom:span() .. "\""
-   return phrase
-end
-```
-```lua
-local Literal = PegMetas : inherit "literal"
+This should be implemented if and only if I can get the Drop rule working
+correctly. Now, you'd **think** I could manage this, but it isn't a priority
+right now.
 
-function Literal.toLpeg(literal, depth)
-   return PegPhrase "P" .. literal:span()
-end
-```
+
 ```lua
 local IfNotThis = PegMetas : inherit "if_not_this"
 ```
@@ -271,9 +279,31 @@ local IfAndThis = PegMetas : inherit "if_and_this"
 -- #todo am I going to use this? what is its semantics? -Sam.
 local Capture = PegMetas : inherit "capture"
 ```
+### Literal
+
+This offers an exact match of a substring.
+
+```lua
+local Literal = PegMetas : inherit "literal"
+
+function Literal.toLpeg(literal, depth)
+   return PegPhrase "P" .. literal:span()
+end
+```
+### Set
+
 ```lua
 local Set = PegMetas : inherit "set"
+
+function Set.toLpeg(set, depth)
+   return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
+end
 ```
+#### Range
+
+The ``range`` class needs a semantic change since there's no percentage in
+having ``-`` as a separator, it's noisy.
+
 ```lua
 local Range = PegMetas : inherit "range"
 ```
@@ -294,6 +324,14 @@ end
 
 ```lua
 local MoreThanOne = PegMetas : inherit "more_than_one"
+
+function MoreThanOne.toLpeg(more_than_one, depth)
+   local phrase = PegPhrase()
+   for _, sub_more in ipairs(more_than_one) do
+      phrase = phrase .. " " .. sub_more:toLpeg(depth + 1)
+   end
+   return phrase .. "^1"
+end
 ```
 ### Maybe
 
@@ -320,6 +358,20 @@ function Comment.toLpeg(comment, depth)
    return phrase .. comment:span():sub(2) .. "\n"
 end
 ```
+### Atom
+
+This is grammatically different from pattern only by virtue of being on the
+right hand side.
+
+```lua
+local Atom = PegMetas : inherit "atom"
+
+function Atom.toLpeg(atom, depth)
+   local phrase = PegPhrase "V"
+   phrase = phrase .. "\"" .. atom:span() .. "\""
+   return phrase
+end
+```
 ```lua
 return { rules = Rules,
          rule  = Rule,
@@ -330,6 +382,8 @@ return { rules = Rules,
          group   = Group,
          atom    = Atom,
          maybe   = Maybe,
+         set     = Set,
+         range   = Range,
          literal = Literal,
          optional = Optional,
          more_than_one = MoreThanOne,
