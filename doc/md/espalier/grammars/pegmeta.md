@@ -82,8 +82,9 @@ This needs to be implemented by each subclass, individually, so we produce a
 base method that halts if we fall back to it.
 
 ```lua
+local a = require "singletons/anterm"
 function Peg.toLpeg(peg)
-   s:halt ("must implement toLepeg for class " .. peg.id)
+   return a.red(peg:span())
 end
 ```
 ## PegMetas

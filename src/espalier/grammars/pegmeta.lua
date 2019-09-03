@@ -93,8 +93,9 @@ end
 
 
 
+local a = require "singletons/anterm"
 function Peg.toLpeg(peg)
-   s:halt ("must implement toLepeg for class " .. peg.id)
+   return a.red(peg:span())
 end
 
 
