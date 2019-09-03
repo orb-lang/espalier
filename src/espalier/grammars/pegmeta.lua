@@ -231,6 +231,14 @@ end
 
 
 
+local Literal = PegMetas : inherit "literal"
+
+function Literal.toLpeg(literal, depth)
+   return PegPhrase "P" .. literal:span()
+end
+
+
+
 
 local Comment = PegMetas : inherit()
 Comment.id = "comment"
@@ -254,4 +262,5 @@ return { rules = Rules,
          cat     = Cat,
          group   = Group,
          atom    = Atom,
-         maybe   = Maybe }
+         maybe   = Maybe,
+         literal = Literal }

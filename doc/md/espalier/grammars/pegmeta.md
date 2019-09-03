@@ -208,6 +208,13 @@ function Atom.toLpeg(atom, depth)
 end
 ```
 ```lua
+local Literal = PegMetas : inherit "literal"
+
+function Literal.toLpeg(literal, depth)
+   return PegPhrase "P" .. literal:span()
+end
+```
+```lua
 local Comment = PegMetas : inherit()
 Comment.id = "comment"
 
@@ -229,5 +236,6 @@ return { rules = Rules,
          cat     = Cat,
          group   = Group,
          atom    = Atom,
-         maybe   = Maybe }
+         maybe   = Maybe,
+         literal = Literal }
 ```
