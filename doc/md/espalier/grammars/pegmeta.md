@@ -257,8 +257,20 @@ function Optional.toLpeg(optional, depth)
 end
 ```
 ```lua
-local Comment = PegMetas : inherit()
-Comment.id = "comment"
+local IfNotThis = PegMetas : inherit "if_not_this"
+```
+```lua
+local NotThis = PegMetas : inherit "not_this"
+```
+```lua
+local IfAndThis = PegMetas : inherit "if_and_this"
+```
+```lua
+-- #todo am I going to use this? what is its semantics? -Sam.
+local Capture = PegMetas : inherit "capture"
+```
+```lua
+local Comment = PegMetas : inherit "comment"
 
 function Comment.toSexpr(comment, depth)
    return ""
@@ -280,5 +292,9 @@ return { rules = Rules,
          atom    = Atom,
          maybe   = Maybe,
          literal = Literal,
-         optional = Optional }
+         optional = Optional,
+         if_not_this = IfNotThis,
+         if_and_this = IfAndThis,
+         not_this     = NotThis,
+         capture     = Capture }
 ```

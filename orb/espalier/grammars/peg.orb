@@ -49,6 +49,7 @@ local function pegylator(_ENV)
 
    rules   =  V"rule"^1
    rule    =  V"lead_comment"^0 * V"lhs" * V"rhs"
+
    lead_comment = V"comment"
    lhs     =  WS * V"pattern" * WS * ( P":" + P"=" + ":=")
    rhs     =  V"form" * (WS * V"comment")^0
@@ -68,13 +69,16 @@ local function pegylator(_ENV)
              +  V"cat"
              +  P""
    -- /SUPPRESSED
+
    choice =  WS * P"/" * V"form"
    cat =  WS * V"form"
+
    -- SUPPRESSED
    compound =  V"group"
           +  V"enclosed"
           +  V"hidden_match"
    -- /SUPPRESSED
+
    group   =  WS * V"pel"
            *  WS * V"form" * WS
            *  V"per"
