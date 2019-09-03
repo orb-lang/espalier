@@ -392,6 +392,15 @@ end
 
 
 
+
+
+
+
+
+local SomeNumber = PegMetas : inherit "some_number"
+
+
+
 local Comment = PegMetas : inherit "comment"
 
 function Comment.toSexpr(comment, depth)
@@ -402,6 +411,8 @@ function Comment.toLpeg(comment, depth)
    local phrase = PegPhrase "--"
    return phrase .. comment:span():sub(2) .. "\n"
 end
+
+
 
 
 
@@ -429,7 +440,6 @@ return { rules = Rules,
          cat     = Cat,
          group   = Group,
          atom    = Atom,
-         maybe   = Maybe,
          set     = Set,
          range   = Range,
          literal = Literal,
@@ -438,4 +448,6 @@ return { rules = Rules,
          if_not_this = IfNotThis,
          if_and_this = IfAndThis,
          not_this     = NotThis,
-         capture     = Capture }
+         capture     = Capture,
+         maybe   = Maybe,
+         some_number = SomeNumber }

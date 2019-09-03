@@ -346,6 +346,13 @@ function Maybe.toLpeg(maybe, depth)
    return phrase .. "^-1"
 end
 ```
+### Some Number
+
+An exact number of matches.
+
+```lua
+local SomeNumber = PegMetas : inherit "some_number"
+```
 ```lua
 local Comment = PegMetas : inherit "comment"
 
@@ -362,6 +369,9 @@ end
 
 This is grammatically different from pattern only by virtue of being on the
 right hand side.
+
+
+This is convenient, since it translates differently into lpeg.
 
 ```lua
 local Atom = PegMetas : inherit "atom"
@@ -381,7 +391,6 @@ return { rules = Rules,
          cat     = Cat,
          group   = Group,
          atom    = Atom,
-         maybe   = Maybe,
          set     = Set,
          range   = Range,
          literal = Literal,
@@ -390,5 +399,7 @@ return { rules = Rules,
          if_not_this = IfNotThis,
          if_and_this = IfAndThis,
          not_this     = NotThis,
-         capture     = Capture }
+         capture     = Capture,
+         maybe   = Maybe,
+         some_number = SomeNumber }
 ```
