@@ -154,7 +154,8 @@ function Rules.toLpeg(peg_rules, depth)
    local grammar_name = peg_rules : select "rule" ()
                          : select "pattern" ()
                          : span()
-   phrase = phrase .. "local functionn _" .. grammar_name .. "_fn(_ENV)\n"
+   local grammar_fn  = "_" .. grammar_name .."_fn"
+   phrase = phrase .. "local function " .. grammar_fn .. "(_ENV)\n"
    phrase = phrase .. "   " .. "START " .. "\"" .. grammar_name .. "\"\n"
    -- Build the SUPPRESS function here, this requires finding the
    -- hidden rules and suppressing them
@@ -268,6 +269,14 @@ right now.
 
 ```lua
 local IfNotThis = PegMetas : inherit "if_not_this"
+
+function IfNotThis.toLpeg(if_not, depth)
+   local phrase = PegPhrase "#("
+   for _, sub_if_not in ipairs(if_not) do
+      phrase = phrase .. sub_if_not:toLpeg()
+   end
+   return phrase .. ")"
+end
 ```
 ```lua
 local NotThis = PegMetas : inherit "not_this"
