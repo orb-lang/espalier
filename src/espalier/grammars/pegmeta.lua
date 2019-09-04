@@ -5,6 +5,20 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Node = require "espalier/node"
 local core = require "singletons/core"
 local Phrase = require "singletons/phrase"
@@ -199,6 +213,15 @@ end
 
 local Rule = PegMetas : inherit "rule"
 
+local function _pattToString(patt)
+   local is_hidden = patt : select "hidden_pattern" ()
+   if is_hidden then
+      return is_hidden:span():sub(2, -2)
+   else
+      return patt:span()
+   end
+end
+
 function Rule.toLpeg(rule, depth)
    depth = depth or 0
    local phrase = PegPhrase(("   "):rep(depth))
@@ -212,8 +235,8 @@ function Rule.toLpeg(rule, depth)
       phrase = phrase .. ("   "):rep(depth)
    end
 
-   local lhs = rule:select "pattern" () : span()
-   phrase = phrase .. lhs .. " = "
+   local patt = rule:select "pattern" ()
+   phrase = phrase .. _pattToString(patt) .. " = "
    local rhs = rule:select "rhs" () : toLpeg (depth)
    return phrase .. rhs .. "\n"
 end
@@ -406,7 +429,37 @@ end
 
 
 
+
+
+
+
+
+
 local SomeNumber = PegMetas : inherit "some_number"
+
+function SomeNumber.toLpeg(some_num, depth)
+   local phrase = PegPhrase "("
+   local reps =  some_num : select "repeats" ()
+   if not reps then
+      s : halt "no repeats in SomeNumber"
+   else
+      -- make reps a number, our grammar should guarantee this
+      -- succeeds.
+      reps = tonumber(reps:span())
+   end
+
+   local patt = some_num[1]:toLpeg(depth)
+   if not patt then s : halt "no pattern in some_number" end
+
+   for i = 1, reps do
+      phrase = phrase .. patt
+      if i < reps then
+         phrase = phrase .. " * "
+      end
+   end
+
+   return phrase .. ")"
+end
 
 
 

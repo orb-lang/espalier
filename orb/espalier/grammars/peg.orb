@@ -22,7 +22,8 @@ local function pegylator(_ENV)
    START "rules"
    ---[[
    SUPPRESS ("WS",  "enclosed", "form",
-            "element" ,"elements",
+            "element" ,
+            "elements",
             "allowed_prefixed", "allowed_suffixed",
             "simple", "compound", "prefixed", "suffixed",
             "some_suffix",
