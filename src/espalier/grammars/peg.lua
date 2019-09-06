@@ -138,7 +138,9 @@ local function pegylator(_ENV)
 -- Change range to not use '-' separator instead require even # of bytes.
 -- Ru catches edge cases involving multi-byte chars.
 
-   range   =  P"[" * range_c * P"]"
+   range   =  P"[" * V"range_start" * P"-" * V"range_end" * P"]"
+   range_start = range_capture
+   range_end   = range_capture
 
    optional      =  V"allowed_suffixed" * WS * P"*"
    more_than_one =  V"allowed_suffixed" * WS * P"+"

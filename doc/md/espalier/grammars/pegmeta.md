@@ -140,7 +140,6 @@ local Rules = PegMetas : inherit "rules"
 local _PREFACE = PegPhrase ([[
 local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
-local Grammar = assert(require "espalier/grammar")
 ]])
 ```
 ```lua
@@ -156,8 +155,11 @@ local function _suppressHiddens(peg_rules)
       return nil
    end
    local phrase = PegPhrase "   " .. "SUPPRESS" .. " " .. "("
-   for _, patt in ipairs(hiddens) do
-      phrase = phrase .. "\"" .. patt .. "\"" .. "," .. " "
+   for i, patt in ipairs(hiddens) do
+      phrase = phrase .. "\"" .. patt .. "\""
+       if i < #hiddens then
+          phrase = phrase .. "," .. " "
+       end
    end
    return phrase .. ")" .. "\n"
 end
@@ -344,6 +346,13 @@ having ``-`` as a separator, it's noisy.
 
 ```lua
 local Range = PegMetas : inherit "range"
+```
+```lua
+function Range.toLpeg(range, depth)
+   local phrase = PegPhrase "R\""
+   phrase = phrase .. range : select "range_start" () : span()
+   return phrase .. range : select "range_end" () : span() .. "\" "
+end
 ```
 ### Optional
 
