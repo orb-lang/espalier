@@ -523,8 +523,18 @@ end
 Given a grammar_template function and a set of metatables,
 yield a parsing function and the grammar as an ``lpeg`` pattern.
 
-```lua
 
+#### _fromString(g_str), _toFunction(maybe_grammar)
+
+Currently this is expecting pure Lua code; the structure of the module is
+such that we can't call the PEG gramamr from ``grammar.orb`` due to the
+circular dependency thereby created.
+
+
+This implies wrapping some porcelain around everything so that we can at least
+try to build the declarative form first.
+
+```lua
 local function _fromString(g_str)
    local maybe_lua = loadstring(g_str)
    if maybe_lua then

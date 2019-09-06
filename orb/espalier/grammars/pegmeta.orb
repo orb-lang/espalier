@@ -377,6 +377,10 @@ having =-= as a separator, it's noisy.
 
 #!lua
 local Range = PegMetas : inherit "range"
+
+function Range.toLpeg(range, depth)
+
+end
 #/lua
 
 
