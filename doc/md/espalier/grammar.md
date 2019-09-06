@@ -524,63 +524,74 @@ Given a grammar_template function and a set of metatables,
 yield a parsing function and the grammar as an ``lpeg`` pattern.
 
 ```lua
-local function new(grammar_template, metas, pre, post)
-   -- attempt to make a function if passed a string
-   if type(grammar_template) == "string" then
-      local g_str = grammar_template
-      grammar_template = loadstring(g_str)
-      if grammar_template then
-         grammar_template = grammar_template()
-      else
-         s : halt ("cannot make function from string: \n" .. g_str)
-      end
-   end
-   if type(grammar_template) == "function" then
-      local metas = metas or {}
-      metas = refineMetas(metas)
-      local grammar = define(grammar_template, nil, metas)
 
-      local function parse(str, offset)
-         local offset = offset or 0
-         --[[
-         if pre then
-            str = pre(str)
-         end
-         --]]
-         local match = L.match(grammar, str, 1, str, metas, offset)
-         if match == nil then
-            return nil
-         end
-         --[[
-         if post then
-            error "error in post parsing"
-           match = post(match)
-         end
-         --]]
-         local maybeErr = match:lastLeaf()
-         if maybeErr.id then
-            if maybeErr.id == "ERROR" then
-               local line, col = match:linePos(maybeErr.first)
-               local msg = maybeErr.msg or ""
-               s:complain("Parsing Error", " line: " .. tostring(line) .. ", "
-                       .. "col: " .. tostring(col) .. ". " .. msg)
-               return match, match:lastLeaf()
-            else
-               return match
-            end
-         else
-            local maybeNode = maybeErr.isNode and " is " or " isn't "
-            s:complain("No id on match" .. "match of type, " .. type(match)
-                      .. maybeNode .. " a Node: " .. tostring(maybeErr))
-         end
-         -- This would be a bad match.
-         return match
-      end
-
-      return parse, grammar
+local function _fromString(g_str)
+   local maybe_lua = loadstring(g_str)
+   if maybe_lua then
+      return maybe_lua()
    else
-      s:halt("no way to build grammar out of " .. type(grammar_template))
+      s : halt ("cannot make function from string: \n" .. g_str)
    end
+end
+
+local function _toFunction(maybe_grammar)
+   if type(maybe_grammar) == "string" then
+      return _fromString(maybe_grammar)
+   elseif type(maybe_grammar) == "table" then
+      -- we may as well cast it to string, since it might be
+      -- and sometimes is a Phrase class
+      return _fromString(tostring(maybe_grammar))
+   end
+end
+
+local function new(grammar_template, metas, pre, post)
+   if type(grammar_template) ~= "function" then
+      -- see if we can coerce it
+      grammar_template = _toFunction(grammar_template)
+   end
+
+   local metas = metas or {}
+   metas = refineMetas(metas)
+   local grammar = define(grammar_template, nil, metas)
+
+   local function parse(str, offset)
+      local offset = offset or 0
+      --[[
+      if pre then
+         str = pre(str)
+      end
+      --]]
+      local match = L.match(grammar, str, 1, str, metas, offset)
+      if match == nil then
+         return nil
+      end
+      --[[
+      if post then
+         error "error in post parsing"
+        match = post(match)
+      end
+      --]]
+      local maybeErr = match:lastLeaf()
+      if maybeErr.id then
+         if maybeErr.id == "ERROR" then
+            local line, col = match:linePos(maybeErr.first)
+            local msg = maybeErr.msg or ""
+            s:complain("Parsing Error", " line: " .. tostring(line) .. ", "
+                    .. "col: " .. tostring(col) .. ". " .. msg)
+            return match, match:lastLeaf()
+         else
+            return match
+         end
+      else
+         local maybeNode = maybeErr.isNode and " is " or " isn't "
+         s:complain("No id on match" .. "match of type, " .. type(match)
+                   .. maybeNode .. " a Node: " .. tostring(maybeErr))
+      end
+      -- This would be a bad match.
+      return match
+   end
+
+   return parse, grammar
 end
 ```
 ```lua
