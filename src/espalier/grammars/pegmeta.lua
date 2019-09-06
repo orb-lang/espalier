@@ -19,6 +19,9 @@
 
 
 
+
+
+
 local Node = require "espalier/node"
 local core = require "singletons/core"
 local Phrase = require "singletons/phrase"
@@ -146,13 +149,10 @@ local Rules = PegMetas : inherit "rules"
 
 
 
-
-
 local _PREFACE = PegPhrase ([[
 local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
 local Grammar = assert(require "espalier/grammar")
-
 ]])
 
 
@@ -203,7 +203,8 @@ function Rules.toLpeg(peg_rules, depth)
    end
    --]]
    phrase = phrase .. "\nend\n"
-   return _PREFACE .. phrase
+   local appendix = PegPhrase "return " .. grammar_fn .. "\n"
+   return _PREFACE .. phrase .. appendix
 end
 
 

@@ -99,7 +99,40 @@ You might say the return value must /inherit/ from Node, if we were using
 a language that did that sort of thing.
 
 
-*** requires
+** Roadmap
+
+  The Grammar class needs to be expanded to cover a broader array of use
+cases, and specifically to enable the features we'll be able to add given the
+declarative PEG format front end.
+
+To this end:
+
+- [ ] #Todo #version @0.0.2
+
+   - [ ]  Make =new= return a callable table, instead of a function.
+
+          This will allow us to decorate the now-single return value with
+          the grammar, and eventually grammars.  We'll include =new= as
+          =grammar.new=.
+
+          This is the most important step for this class; other capabilities
+          are either being baked in Node, or will be their own module, for
+          instance using Lua-native combinators to validate deltas into an
+          existing Node structure.
+
+** Implementation
+
+All of =espalier= is in principle compatible with the entire '5' series of
+Luas.  Any failure to execute through at least 5.4 is considered a bug.
+
+
+*** imports
+
+We follow a strict coding style for admitting dependencies into the module,
+localizing everything as an upvalue before using it.
+
+
+**** requires
 
 
 - [X] #todo  Note the require strings below, which prevent this from
@@ -464,6 +497,16 @@ yield a parsing function and the grammar as an =lpeg= pattern.
 
 #!lua
 local function new(grammar_template, metas, pre, post)
+   -- attempt to make a function if passed a string
+   if type(grammar_template) == "string" then
+      local g_str = grammar_template
+      grammar_template = loadstring(g_str)
+      if grammar_template then
+         grammar_template = grammar_template()
+      else
+         s : halt ("cannot make function from string: \n" .. g_str)
+      end
+   end
    if type(grammar_template) == "function" then
       local metas = metas or {}
       metas = refineMetas(metas)

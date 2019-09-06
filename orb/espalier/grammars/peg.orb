@@ -155,6 +155,29 @@ local function pegylator(_ENV)
 end
 #/lua
 
+
+** Roadmap
+
+This is not quite a fully-operational Death Star.
+
+
+- [ ]  #Todo #version @0.0.1alpha
+
+  - [ ]  Get a trivial grammar compiling.
+
+  - [ ]  Write microLisp parser.
+
+  - [ ]  Translate date parser into PEG format and 'complete' it.
+
+         'complete' in air quotes because I'm happy with a parser for the
+         most-common subset of ISO 8610 dates, I don't require approximates
+         or by-week or the like, not right away.
+
+  - [ ]  Write a Lua parser in PEG format.
+
+         This is of course a prerequisite to release, and will be actively
+         used throughout the codebase.
+
 #!lua
 return Grammar(pegylator, pegMetas)
 #/lua

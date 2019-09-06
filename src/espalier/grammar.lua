@@ -117,6 +117,39 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local s = require "singletons" . status ()
 s.verbose = false
 s.angry   = false
@@ -464,6 +497,16 @@ end
 
 
 local function new(grammar_template, metas, pre, post)
+   -- attempt to make a function if passed a string
+   if type(grammar_template) == "string" then
+      local g_str = grammar_template
+      grammar_template = loadstring(g_str)
+      if grammar_template then
+         grammar_template = grammar_template()
+      else
+         s : halt ("cannot make function from string: \n" .. g_str)
+      end
+   end
    if type(grammar_template) == "function" then
       local metas = metas or {}
       metas = refineMetas(metas)

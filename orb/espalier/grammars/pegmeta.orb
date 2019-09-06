@@ -18,6 +18,9 @@ in a declarative style.
 
   - [ ]  Add a =toHmtl= method set that's roughly pygments-compatible.
 
+         This should actually emit a Node of =id= =html=, capable of emitting
+         a Phrase as well as a string.
+
 #!lua
 local Node = require "espalier/node"
 local core = require "singletons/core"
@@ -145,14 +148,11 @@ local Rules = PegMetas : inherit "rules"
 
 **** _PREFACE
 
-Miscellaneous imports in Bristol fashion.
-
 #!lua
 local _PREFACE = PegPhrase ([[
 local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
 local Grammar = assert(require "espalier/grammar")
-
 ]])
 #/lua
 
@@ -203,7 +203,8 @@ function Rules.toLpeg(peg_rules, depth)
    end
    --]]
    phrase = phrase .. "\nend\n"
-   return _PREFACE .. phrase
+   local appendix = PegPhrase "return " .. grammar_fn .. "\n"
+   return _PREFACE .. phrase .. appendix
 end
 #/lua
 
