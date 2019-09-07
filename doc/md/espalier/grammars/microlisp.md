@@ -11,8 +11,8 @@ local Grammar = require "espalier/grammar"
 ```lua
 local micro_lisp_peg = [[
 lisp = (_atom_)+ / list
-list = pel _ (atom_ / list_)* per
-atom = (alpha / other) (alpha / digit / other)*
+list = pel _ (atom / list)* per _
+atom = _(alpha / other) (alpha / digit / other)*_
 `pel` = '('
 `per` = ')'
 `alpha` = [A-Z]/[a-z]
