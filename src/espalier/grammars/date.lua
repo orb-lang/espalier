@@ -11,7 +11,7 @@ local date_peg = [[
    ;comment
    ;second comment
    date = yearMonthDay / yearMonth / year
-   `yearMonthDay` = year "-" month "-" day
+   `yearMonthDay` = year "-" monthDay
    `yearMonth` = year "-" month
 
    year = positiveYear / negativeYear / "0000"
@@ -25,9 +25,9 @@ local date_peg = [[
    `monthDay` =  m31 "-" day
               /  m30 "-" (!longMonth day)
               /  mFeb "-" (!threeDecan day)
-   `m31`      =  "01" / "03" / "05" / "07" / "08" / "10" / "12"
-   `m30`      =  "06" / "04" / "09" / "11"
-   `mFeb`     =  "02"
+   m31      =  "01" / "03" / "05" / "07" / "08" / "10" / "12"
+   m30      =  "06" / "04" / "09" / "11"
+   mFeb     =  "02"
 
    longMonth = "31"
    threeDecan = "31" / "30"
