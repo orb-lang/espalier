@@ -24,13 +24,16 @@ local peg_grammar  = require "espalier/grammars/peg"
 
 local lisp_grammar = require "espalier/grammars/microlisp"
 
+local date_grammar = require "espalier/grammars/date"
+
 local lexemes = require "espalier/lexemes"
 
 local grammars = { ortho8600 = ortho8600,
                    dot       = dot_grammar,
                    lua       = lua_grammar,
                    peg       = peg_grammar,
-                   lisp      = lisp_grammar, }
+                   lisp      = lisp_grammar,
+                   date      = date_grammar, }
 
 return { dot      = dot,
          elpatt   = elpatt,

@@ -149,7 +149,7 @@ local function pegylator(_ENV)
 
    repeats       =  some_num_c
 
-   comment  =  P";" * comment_c
+   comment  =  WS * P";" * comment_c
 
    atom =  V"ws" + symbol
 

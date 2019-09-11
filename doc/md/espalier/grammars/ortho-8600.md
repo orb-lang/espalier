@@ -59,17 +59,6 @@ local date_metas = { oneThru30 = Day,
                      m30       = Month,
                      mFeb      = Month,
                      year      = Year }
-
-local function _post(date)
-   date.id = "DATE"
-   error "post function callec"
-   for day in date:select "day" do
-      if day[1].id == "day" then
-        day[1] = nil
-      end
-   end
-   return date
-end
 ```
 ### date grammar
 
@@ -91,7 +80,7 @@ local function _date_fn(_ENV)
    year         = V"positiveYear" + V"negativeYear" + P"0000"
 
    positiveYear = R"19"  * R"09" * R"09" * R"09"
-                + P"0"   * R"19" * R"09"
+                + P"0"   * R"19" * R"09" * R"09"
                 + P"00"  * R"19" * R"09"
                 + P"000" * R"19"
 

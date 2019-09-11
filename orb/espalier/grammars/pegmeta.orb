@@ -228,14 +228,13 @@ end
 function Rule.toLpeg(rule, depth)
    depth = depth or 0
    local phrase = PegPhrase(("   "):rep(depth))
-   local comment = rule : select "lead_comment" ()
-   if comment then
-      phrase = phrase .. "--" .. " " .. comment
-                                           : select "comment" ()
-                                           : span ()
-                                           : sub(2)
-                                     .. "\n"
-      phrase = phrase .. ("   "):rep(depth)
+   for commentary in rule : select "lead_comment" do
+      phrase = phrase .. "--" .. " "
+             .. commentary : select "comment" ()
+             : span()
+             : sub(2)
+             .. "\n"
+             .. ("   "):rep(depth)
    end
 
    local patt = rule:select "pattern" ()
