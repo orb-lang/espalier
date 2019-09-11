@@ -9,9 +9,11 @@ Let's give it a trial run.
 
 ```lua
 local date_peg = [[
-   ;comment
-   ;second comment
-   date = yearMonthDay / yearMonth / year
+   date  =  yearMonthDayTime
+         /  yearMonthDay
+         /  yearMonth
+         /  year
+
    `yearMonthDay` = year "-" monthDay
    `yearMonth` = year "-" month
 
@@ -20,7 +22,7 @@ local date_peg = [[
    `positiveYear` =  [1-9] [0-9] [0-9] [0-9]
                   /  "0"   [1-9] [0-9] [0-9]
                   /  "00"        [1-9] [0-9]
-                  / "000"             [1-9]
+                  /  "000"             [1-9]
    `negativeYear` = "-" positiveYear
 
    `monthDay` =  m31 "-" day
@@ -30,6 +32,7 @@ local date_peg = [[
    m30      =  "06" / "04" / "09" / "11"
    mFeb     =  "02"
 
+   ; only used in negative lookahead
    longMonth = "31"
    threeDecan = "31" / "30"
 
@@ -39,7 +42,17 @@ local date_peg = [[
         /  ("1" / "2") [0-9]
         /  ("30" / "31")
 
-
+   `yearMonthDayTime` = yearMonthDay separator time
+   `separator` = "T" / " " / "::" ; opinionated!
+   time = hourMinuteSecond
+        / hourMinute
+        / hour
+   `hourMinuteSecond` = hour ":" minute ":" second
+   `hourMinute` = hour ":" minute
+   hour = "0" [1-9] / "10" / "11" / "12"
+   minute = sexigesimal
+   second = sexigesimal
+   `sexigesimal` = [0-5] [0-9]
 ]]
 ```
 ```lua
