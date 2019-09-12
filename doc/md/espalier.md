@@ -28,6 +28,8 @@ local lisp_grammar = require "espalier/grammars/microlisp"
 
 local date_grammar = require "espalier/grammars/date"
 
+local luatoken_grammar = require "espalier/grammars/luatoken"
+
 local lexemes = require "espalier/lexemes"
 
 local grammars = { ortho8600 = ortho8600,
@@ -35,7 +37,8 @@ local grammars = { ortho8600 = ortho8600,
                    lua       = lua_grammar,
                    peg       = peg_grammar,
                    lisp      = lisp_grammar,
-                   date      = date_grammar, }
+                   date      = date_grammar,
+                   luatoken  = luatoken_grammar }
 
 return { dot      = dot,
          elpatt   = elpatt,
