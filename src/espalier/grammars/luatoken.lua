@@ -1,6 +1,10 @@
 
 
 
+local Peg = require "espalier/grammars/peg"
+
+
+
 local lua_tok_str = [[
 lua = (token _)+
 `token` = keyword / operator
@@ -15,10 +19,11 @@ operator = "+" / "-" / "*" / "/" / "%" / "^" / "#"
            / "==" / "~=" / "<=" / ">=" / "<" / ">"
            / "=" / "(" / ")" / "{" / "}" / "[" / "]"
            / ";" / ":" / "..." / ".." / "." / ","
+
  _     = { \t\n,}*
 
 ]]
 
 
 
-return lua_tok_str
+return Peg(lua_tok_str):toGrammar()

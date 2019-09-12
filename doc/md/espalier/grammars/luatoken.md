@@ -1,6 +1,9 @@
 # Lua tokenizer
 
 ```lua
+local Peg = require "espalier/grammars/peg"
+```
+```lua
 local lua_tok_str = [[
 lua = (token _)+
 `token` = keyword / operator
@@ -15,10 +18,11 @@ operator = "+" / "-" / "*" / "/" / "%" / "^" / "#"
            / "==" / "~=" / "<=" / ">=" / "<" / ">"
            / "=" / "(" / ")" / "{" / "}" / "[" / "]"
            / ";" / ":" / "..." / ".." / "." / ","
+
  _     = { \t\n,}*
 
 ]]
 ```
 ```lua
-return lua_tok_str
+return Peg(lua_tok_str):toGrammar()
 ```
