@@ -43,14 +43,18 @@ local date_peg = [[
 
    `yearMonthDayTime` = yearMonthDay separator time
    `separator` = "T" / " " / "::" ; opinionated!
+
+
    time = hourMinuteSecond
         / hourMinute
         / hour
-   `hourMinuteSecond` = hour ":" minute ":" second
+
+   `hourMinuteSecond` = hour ":" minute ":" second fracSecond?
    `hourMinute` = hour ":" minute
    hour = "0" [1-9] / "10" / "11" / "12"
    minute = sexigesimal
    second = sexigesimal
+   fracSecond = "." [0-9] [0-9]? [0-9]?
    `sexigesimal` = [0-5] [0-9]
 ]]
 
