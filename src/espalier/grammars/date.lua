@@ -49,12 +49,16 @@ local date_peg = [[
         / hourMinute
         / hour
 
-   `hourMinuteSecond` = hour ":" minute ":" second fracSecond?
+   `hourMinuteSecond` = hour ":" minute ":" second fracSecond? timeZone?
    `hourMinute` = hour ":" minute
    hour = "0" [1-9] / "10" / "11" / "12"
    minute = sexigesimal
    second = sexigesimal
    fracSecond = "." [0-9] [0-9]? [0-9]?
+   timeZone = "Z" /  offset
+   `offset` = (positive / negative)? (hour ":" minute / hour minute / hour)
+   positive = "+"
+   negative = "-"
    `sexigesimal` = [0-5] [0-9]
 ]]
 
