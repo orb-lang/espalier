@@ -8,6 +8,9 @@ a declarative PEG specification.
 Let's give it a trial run.
 
 ```lua
+local Peg = require "espalier/grammars/peg"
+```
+```lua
 local date_peg = [[
    date  =  yearMonthDayTime
          /  yearMonthDay
@@ -66,5 +69,5 @@ local date_peg = [[
 ]]
 ```
 ```lua
-return date_peg
+return Peg(date_peg):toGrammar()
 ```

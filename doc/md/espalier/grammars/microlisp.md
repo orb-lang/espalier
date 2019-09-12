@@ -5,6 +5,7 @@ A declarative PEG parser for a Platonic sexpr language.
 
 ```lua
 local Grammar = require "espalier/grammar"
+local Peg = require "espalier/grammars/peg"
 ```
 ## micro_lisp_peg
 
@@ -26,5 +27,5 @@ number = float / integer
 ]]
 ```
 ```lua
-return micro_lisp_peg
+return Peg(micro_lisp_peg) : toGrammar()
 ```

@@ -5,6 +5,7 @@
 
 
 local Grammar = require "espalier/grammar"
+local Peg = require "espalier/grammars/peg"
 
 
 
@@ -29,4 +30,4 @@ number = float / integer
 
 
 
-return micro_lisp_peg
+return Peg(micro_lisp_peg) : toGrammar()
