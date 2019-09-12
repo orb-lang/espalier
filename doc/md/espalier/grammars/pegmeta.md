@@ -28,6 +28,7 @@ in a declarative style.
 
 ```lua
 local Node = require "espalier/node"
+local Grammar = require "espalier/grammar"
 local core = require "singletons/core"
 local Phrase = require "singletons/phrase"
 
@@ -194,6 +195,13 @@ function Rules.toLpeg(peg_rules, depth)
    phrase = phrase .. "\nend\n"
    local appendix = PegPhrase "return " .. grammar_fn .. "\n"
    return _PREFACE .. phrase .. appendix
+end
+```
+#### Rules:toGrammar()
+
+```lua
+function Rules.toGrammar(rules, metas, pre, post)
+   return Grammar(rules:toLpeg(), metas, pre, post)
 end
 ```
 ### Rule

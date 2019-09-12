@@ -7,6 +7,10 @@
 
 
 
+local Peg = require "espalier/grammars/peg"
+
+
+
 local date_peg = [[
    date  =  yearMonthDayTime
          /  yearMonthDay
@@ -66,4 +70,4 @@ local date_peg = [[
 
 
 
-return date_peg
+return Peg(date_peg):toGrammar()
