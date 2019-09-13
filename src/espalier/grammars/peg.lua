@@ -35,7 +35,7 @@ local function pegylator(_ENV)
    local valid_sym = letter + P"-"
    local digit = R"09"
    local sym = valid_sym + digit
-   local WS = (P' ' + P'\n' + P',' + P'\09')^0
+   local WS = (P' ' + P'\n' + P'\t' + P'\r')^0
    local symbol = letter * ( -(P"-" * WS) * sym )^0
    local d_string = P "\"" * (P "\\" * P(1) + (1 - P "\""))^0 * P "\""
    local h_string = P "`" * (P "\\" * P(1) + (1 - P "`"))^0 * P "`"
@@ -149,7 +149,7 @@ local function pegylator(_ENV)
 
    repeats       =  some_num_c
 
-   comment  =  WS * P";" * comment_c
+   comment  =  WS * dP";" * comment_c
 
    atom =  V"ws" + symbol
 
