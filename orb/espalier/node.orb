@@ -99,19 +99,19 @@ function Node.toString(node, depth, c)
       .. a.cyan(node.first) .. "-" .. a.cyan(node.last)
    if node[1] then
       local extra = "    "
-      if Node.len(node) > 56 then
+      if node:len() > 56 then
          --  Truncate in the middle
-         local span = Node.span(node)
+         local span = node:span()
          local pre, post = sub(span, 1, 26), sub(span, -26, -1)
          extra = extra .. a.dim(pre) .. a.bright("………") .. a.dim(post)
          extra = extra:gsub("\n", "◼︎")
       else
-         extra = extra .. a.dim(Node.span(node):gsub("\n", "◼︎"))
+         extra = extra .. a.dim(node:span():gsub("\n", "◼︎"))
       end
       phrase = phrase .. extra .. "\n"
       for _,v in ipairs(node) do
          if (v.isNode) then
-            phrase = phrase .. Node.toString(v, depth + 1)
+            phrase = phrase .. v:toString(depth + 1)
          end
       end
    else
@@ -126,7 +126,7 @@ end
 
 #!lua
 function Node.__repr(node, phrase, c)
-   return tostring(node, 0, c)
+   return Node.toString(node, 0, c)
 end
 #/lua
 
