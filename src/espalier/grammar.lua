@@ -199,7 +199,8 @@ end
 
 
 local _astMeta = { __index = Node,
-                   __tostring = Node.toString }
+                   __tostring = Node.toString,
+                   __repr    = Node.__repr }
 
 
 

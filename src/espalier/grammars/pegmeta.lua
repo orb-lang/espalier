@@ -215,6 +215,7 @@ end
 
 
 function Rules.toGrammar(rules, metas, pre, post)
+   metas = metas or {}
    return Grammar(rules:toLpeg(), metas, pre, post)
 end
 
