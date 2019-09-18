@@ -138,6 +138,18 @@ local PegPhrase = Phrase() : inherit ()
 
 
 
+function PegPhrase.__repr(peg_phrase)
+   return tostring(peg_phrase)
+end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -218,6 +230,8 @@ function Rules.toGrammar(rules, metas, pre, post)
    metas = metas or {}
    return Grammar(rules:toLpeg(), metas, pre, post)
 end
+
+
 
 
 

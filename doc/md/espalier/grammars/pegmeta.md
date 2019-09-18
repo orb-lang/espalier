@@ -124,6 +124,15 @@ pull a fresh metatable:
 ```lua
 local PegPhrase = Phrase() : inherit ()
 ```
+### PegPhrase.__repr(peg_phrase)
+
+```lua
+function PegPhrase.__repr(peg_phrase)
+   return tostring(peg_phrase)
+end
+```
+```lua
+```
 ### Rules
 
 ``rules`` is our base class, and we manually iterate through the AST to

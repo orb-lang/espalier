@@ -135,6 +135,15 @@ local PegPhrase = Phrase() : inherit ()
 #/lua
 
 
+*** PegPhrase.__repr(peg_phrase)
+
+#!lua
+function PegPhrase.__repr(peg_phrase)
+   return tostring(peg_phrase)
+end
+#/lua
+
+
 *** Rules
 
 =rules= is our base class, and we manually iterate through the AST to
@@ -219,6 +228,8 @@ function Rules.toGrammar(rules, metas, pre, post)
    return Grammar(rules:toLpeg(), metas, pre, post)
 end
 #/lua
+
+
 
 
 *** Rule
