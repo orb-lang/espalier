@@ -60,7 +60,9 @@ local function pegylator(_ENV)
    pattern =  symbol
            +  V"hidden_pattern"
            +  V"ws"
+
    hidden_pattern =  P"`" * symbol * P"`"
+                  +  P"`_`"
 
    -- SUPPRESSED
    form    =  V"element" * V"elements"

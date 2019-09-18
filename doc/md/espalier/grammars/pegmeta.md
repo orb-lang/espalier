@@ -131,8 +131,6 @@ function PegPhrase.__repr(peg_phrase)
    return tostring(peg_phrase)
 end
 ```
-```lua
-```
 ### Rules
 
 ``rules`` is our base class, and we manually iterate through the AST to

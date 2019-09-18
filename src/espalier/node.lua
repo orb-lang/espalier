@@ -601,6 +601,7 @@ end
 function Node.inherit(node, id)
   local Meta = setmeta({}, node)
   Meta.__index = Meta
+
   local meta = setmeta({}, Meta)
   meta.__index = meta
   if id then

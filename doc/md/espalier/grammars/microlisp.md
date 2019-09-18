@@ -24,7 +24,7 @@ number = float / integer
 `alpha` = [A-Z]/[a-z]
 `digit` = [0-9]
 `other` = {-_-=+!@#$%^&*:/?.\\~}
-  _     = { \t\r\n,}*
+  `_`     = { \t\r\n,}*
 ]]
 ```
 ```lua
