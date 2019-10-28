@@ -5,7 +5,7 @@ local Peg = require "espalier/grammars/peg"
 ```
 ```lua
 local lua_tok_str = [[
-lua = (token _)+
+lua = _ (token _)+
 `token` = keyword / operator
 
 keyword = "function" / "local" / "for" / "in" / "do"
