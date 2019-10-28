@@ -126,6 +126,9 @@ end
 
 #!lua
 function Node.__repr(node, phrase, c)
+   if not node.str then
+      return "trying to __repr the Node metatable"
+   end
    return Node.toString(node, 0, c)
 end
 #/lua
