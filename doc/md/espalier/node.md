@@ -88,7 +88,7 @@ We're less disciplined than we should be about up-assigning this to
 inherited Node classes.
 
 ```lua
-function Node.toString(node, depth, c)
+local function toString(node, depth, c)
    assert(type(c) == 'table', "must provide color")
    local depth = depth or 0
    local phrase = Phrase ""
@@ -119,14 +119,25 @@ function Node.toString(node, depth, c)
       val = c.string(val)
       phrase = phrase .. "    " .. val  .. "\n"
    end
-   return tostring(phrase)
+   return phrase
 end
+
+Node.toString = toString
 ```
 ```lua
-function Node.__repr(node, phrase, c)
-   local node__repr = Node.toString(node, 0, c)
+local function __tostring(node)
+   return tostring(toString(node))
+end
+
+Node.__tostring = __tostring
+```
+```lua
+local function __repr(node, phrase, c)
+   local node__repr = toString(node, 0, c)
    return core.lines(node__repr)
 end
+
+Node.__repr = __repr
 ```
 ### Metrics
 
@@ -580,14 +591,17 @@ It's easier to read than to describe:
 function Node.inherit(node, id)
   local Meta = setmeta({}, node)
   Meta.__index = Meta
-  local _repr
+  local _repr, _tostring
   local node_M = getmetatable(node)
   if node_M then
     _repr = node_M.__repr
+    _tostring = node_M.__tostring
   else
-    _repr = Node.__repr
+    _repr = __repr
+    _tostring = __tostring
   end
   Meta.__repr = _repr
+  Meta.__tostring = _tostring
   if id then
     Meta.id = id
   end
