@@ -19,8 +19,9 @@ local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
 
 #!lua
 local s = require "singletons" . status ()
-local a = require "anterm"
+local a = require "singletons/anterm"
 local core = require "singletons/core"
+local Phrase = require "singletons/phrase"
 local dot = require "espalier/dot"
 #/lua
 
@@ -96,7 +97,7 @@ inherited Node classes.
 function Node.toString(node, depth, c)
    assert(type(c) == 'table', "must provide color")
    local depth = depth or 0
-   local phrase = ""
+   local phrase = Phrase ""
    phrase = ("  "):rep(depth) .. c.bold(node.id) .. "    "
       .. c.number(node.first) .. "-" .. c.number(node.last)
    if node[1] then
@@ -124,7 +125,7 @@ function Node.toString(node, depth, c)
       val = c.string(val)
       phrase = phrase .. "    " .. val  .. "\n"
    end
-   return phrase
+   return tostring(phrase)
 end
 #/lua
 
