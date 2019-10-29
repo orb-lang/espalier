@@ -25,7 +25,6 @@ number = real / hex / integer
 `integer` = [0-9]+
 `real` = integer "." integer* (("e" / "E") "-"? integer)?
 `hex` = "0" ("x" / "X") higit+ ("." higit*)? (("p" / "P") "-"? higit+)?
-`hexit` = "placeholder"
 `higit` = [0-9] / [a-f] / [A-F]
 ]]
 
