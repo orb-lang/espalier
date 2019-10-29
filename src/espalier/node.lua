@@ -93,31 +93,34 @@ end
 
 
 function Node.toString(node, depth, c)
+   assert(type(c) == 'table', "must provide color")
    local depth = depth or 0
    local phrase = ""
-   phrase = ("  "):rep(depth) .. a.bright(node.id) .. "    "
-      .. a.cyan(node.first) .. "-" .. a.cyan(node.last)
+   phrase = ("  "):rep(depth) .. c.bold(node.id) .. "    "
+      .. c.number(node.first) .. "-" .. c.number(node.last)
    if node[1] then
       local extra = "    "
       if node:len() > 56 then
          --  Truncate in the middle
          local span = node:span()
          local pre, post = sub(span, 1, 26), sub(span, -26, -1)
-         extra = extra .. a.dim(pre) .. a.bright("………") .. a.dim(post)
+         extra = extra .. c.greyscale(pre)
+                       .. c.bold("………") .. c.greyscale(post)
          extra = extra:gsub("\n", "◼︎")
       else
-         extra = extra .. a.dim(node:span():gsub("\n", "◼︎"))
+         extra = extra .. c.greyscale(node:span():gsub("\n", "◼︎"))
       end
       phrase = phrase .. extra .. "\n"
       for _,v in ipairs(node) do
          if (v.isNode) then
-            phrase = phrase .. v:toString(depth + 1)
+            phrase = phrase .. v:toString(depth + 1, c)
          end
       end
    else
       local val = node.str:sub(node.first, node.last)
-                          :gsub(" ", a.clear() .. a.dim("_") .. a.green())
-      val = a.green(val)
+                          :gsub(" ", a.clear()
+                                .. c.greyscale("_") .. c.string())
+      val = c.string(val)
       phrase = phrase .. "    " .. val  .. "\n"
    end
    return phrase
@@ -126,9 +129,6 @@ end
 
 
 function Node.__repr(node, phrase, c)
-   if not node.str then
-      return "trying to __repr the Node metatable"
-   end
    return Node.toString(node, 0, c)
 end
 
