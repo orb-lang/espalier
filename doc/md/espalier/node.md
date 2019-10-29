@@ -577,7 +577,14 @@ It's easier to read than to describe:
 function Node.inherit(node, id)
   local Meta = setmeta({}, node)
   Meta.__index = Meta
-  Meta.__repr = Node.__repr
+  local _repr
+  local node_M = getmetatable(node)
+  if node_M then
+    _repr = node_M.__repr
+  else
+    _repr = Node.__repr
+  end
+  Meta.__repr = _repr
   local meta = setmeta({}, Meta)
   meta.__index = meta
   if id then
