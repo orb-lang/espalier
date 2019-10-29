@@ -21,7 +21,8 @@ local Peg = require "espalier/grammars/peg"
 ```
 ```lua
 local lua_str = [[
-lua = symbol / number / string
+lua = _ chunk+
+chunk = (symbol / number / string)+ _
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
@@ -32,7 +33,7 @@ number = real / hex / integer
 `real` = integer "." integer* (("e" / "E") "-"? integer)?
 `hex` = "0" ("x" / "X") higit+ ("." higit*)? (("p" / "P") "-"? higit+)?
 `higit` = [0-9] / [a-f] / [A-F]
-
+`_` = { \t\n\r}*
 ]]
 ```
 ```lua
