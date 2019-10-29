@@ -525,6 +525,18 @@ end
 
 
 
+
+
+
+local Number = PegMetas : inherit "number"
+
+function Number.toLpeg(number, depth)
+   local phrase = PegPhrase "P("
+   return phrase .. number:span() .. ")"
+end
+
+
+
 return { rules = Rules,
          rule  = Rule,
          rhs   = Rhs,
@@ -533,6 +545,7 @@ return { rules = Rules,
          cat     = Cat,
          group   = Group,
          atom    = Atom,
+         number  = Number,
          set     = Set,
          range   = Range,
          literal = Literal,

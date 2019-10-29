@@ -99,6 +99,7 @@ local function pegylator(_ENV)
    simple   =  V"suffixed"
             +  V"prefixed"
             +  V"atom"
+            +  V"number"
 
    enclosed =  V"literal"
             +  V"hidden_literal"
@@ -137,10 +138,6 @@ local function pegylator(_ENV)
 
    set     =  P"{" * set_c^1 * P"}"
 
--- #Todo
--- Change range to not use '-' separator instead require even # of bytes.
--- Ru catches edge cases involving multi-byte chars.
-
    range   =  P"[" * V"range_start" * P"-" * V"range_end" * P"]"
    range_start = range_capture
    range_end   = range_capture
@@ -155,6 +152,8 @@ local function pegylator(_ENV)
    comment  =  WS * P";" * comment_c
 
    atom =  V"ws" + symbol
+
+   number = digit^1
 
    ws = P"_"
 end

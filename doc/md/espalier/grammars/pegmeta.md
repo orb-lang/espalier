@@ -476,6 +476,16 @@ function Atom.toLpeg(atom, depth)
    return phrase
 end
 ```
+### Number
+
+```lua
+local Number = PegMetas : inherit "number"
+
+function Number.toLpeg(number, depth)
+   local phrase = PegPhrase "P("
+   return phrase .. number:span() .. ")"
+end
+```
 ```lua
 return { rules = Rules,
          rule  = Rule,
@@ -485,6 +495,7 @@ return { rules = Rules,
          cat     = Cat,
          group   = Group,
          atom    = Atom,
+         number  = Number,
          set     = Set,
          range   = Range,
          literal = Literal,
