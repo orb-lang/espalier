@@ -18,6 +18,7 @@ local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
 ```lua
 local s = require "singletons" . status ()
 local a = require "anterm"
+local core = require "singletons/core"
 local dot = require "espalier/dot"
 ```
 ```lua
@@ -122,7 +123,8 @@ end
 ```
 ```lua
 function Node.__repr(node, phrase, c)
-   return Node.toString(node, 0, c)
+   local node__repr = Node.toString(node, 0, c)
+   return core.lines(node__repr)
 end
 ```
 ### Metrics
