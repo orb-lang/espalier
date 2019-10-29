@@ -612,12 +612,10 @@ function Node.inherit(node, id)
     _repr = Node.__repr
   end
   Meta.__repr = _repr
-  local meta = setmeta({}, Meta)
-  meta.__index = meta
   if id then
     Meta.id = id
   end
-  return Meta, meta
+  return Meta
 end
 
 
