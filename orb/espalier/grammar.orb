@@ -508,11 +508,11 @@ try to build the declarative form first.
 
 #!lua
 local function _fromString(g_str)
-   local maybe_lua = loadstring(g_str)
+   local maybe_lua, err = loadstring(g_str)
    if maybe_lua then
       return maybe_lua()
    else
-      s : halt ("cannot make function from string: \n" .. g_str)
+      s : halt ("cannot make function:\n" .. err)
    end
 end
 

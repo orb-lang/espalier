@@ -28,10 +28,10 @@ unop  = "-" / "#" / "not"
 binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
       / "+" / "-" / "/" / "*" / "^" / "%" / "<" / ">"
 
-value = Nil / bool / vararg / number / string / symbol
+value = nil / bool / vararg / number / string / symbol
   ; / function / tableconstructor / functioncall / var
   ; / "(" _ expr _ ")"
-Nil   = "nil"
+nil   = "nil"
 bool  = "true" / "false"
 vararg = "..."
 
