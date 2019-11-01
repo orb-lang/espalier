@@ -29,13 +29,20 @@ binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
       / "+" / "-" / "/" / "*" / "^" / "%" / "<" / ">"
 
 `value` = Nil / bool / vararg / number / string
-      / functioncall / symbol
-  ; / function / tableconstructor / var
+       / tableconstructor / functioncall / symbol
+  ; / function / var
   ; / "(" _ expr _ ")"
 Nil   = "nil"
 bool  = "true" / "false"
 vararg = "..."
 functioncall = prefix _ suffix _ call?
+tableconstructor = "{" _ fieldlist* _ "}"
+
+`fieldlist` = field (_ ("," / ";") _ field)*
+field = key _ "=" _ val
+      / expr
+key = "[" expr "]" / symbol
+val = expr
 
 prefix  = "(" expr ")" / symbol
 index   = "[" expr "]" / "." _ symbol
