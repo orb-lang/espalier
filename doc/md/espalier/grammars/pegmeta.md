@@ -313,6 +313,8 @@ correctly. Now, you'd **think** I could manage this, but it isn't a priority
 right now.
 
 
+### IfNotThis
+
 ```lua
 local IfNotThis = PegMetas : inherit "if_not_this"
 
@@ -324,11 +326,23 @@ function IfNotThis.toLpeg(if_not, depth)
    return phrase .. ")"
 end
 ```
-```lua
-local NotThis = PegMetas : inherit "not_this"
-```
+### IfAndThis
+
+Equivalent of ``#rule`` in Lpeg.
+
 ```lua
 local IfAndThis = PegMetas : inherit "if_and_this"
+
+function IfAndThis.toLpeg(if_and_this, depth)
+   local phrase = PegPhrase "#"
+   for _, sub_if_and_this in ipairs(if_and_this) do
+      phrase = phrase .. " " .. sub_if_and_this:toLpeg(depth + 1)
+   end
+   return phrase
+end
+```
+```lua
+local NotThis = PegMetas : inherit "not_this"
 ```
 ```lua
 -- #todo am I going to use this? what is its semantics? -Sam.
