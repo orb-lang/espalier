@@ -21,9 +21,11 @@ local Peg = require "espalier/grammars/peg"
 ```
 ```lua
 local lua_str = [=[
-lua = shebang* _ chunk _ finalcomment* !1
+lua = shebang* _ chunk _ finalcomment* Error*
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement (_ ";")?)?
+
+Error = 1+
 
 finalcomment = "--" 1* !1
 
@@ -104,7 +106,7 @@ number = real / hex / integer
 `hex` = "0" ("x" / "X") higit+ ("." higit*)? (("p" / "P") "-"? higit+)?
 `higit` = [0-9] / [a-f] / [A-F]
 
-`_` = comment / whitespace
+`_` = comment+ / whitespace
 comment = whitespace "--" (!"\n" 1)* "\n" whitespace
         / longcomment
 `longcomment` = "--[[placeholder]]"
