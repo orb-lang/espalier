@@ -24,18 +24,32 @@ local lua_str = [[
 lua = _ chunk+
 chunk = (expr / symbol / number / string)+ _
 
-expr  = unop _ expr
-      / value (_ binop _ expr)*
+expr  = unop _ expr _
+      / value _ (binop _ expr)* _
 unop  = "-" / "#" / "not"
 binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
       / "+" / "-" / "/" / "*" / "^" / "%" / "<" / ">"
 
-value = nil / bool / vararg / number / string / symbol
-  ; / function / tableconstructor / functioncall / var
+value = bleh / Nil / bool / vararg / number / string
+      / functioncall / symbol
+  ; / function / tableconstructor / var
   ; / "(" _ expr _ ")"
-nil   = "nil"
+Nil   = "nil"
 bool  = "true" / "false"
 vararg = "..."
+functioncall = prefix _ suffix? _ call
+
+bleh = "!" args
+
+prefix  = "(" expr ")" / symbol
+index   = "[" expr "]" / "." _ symbol
+suffix  = call / index
+call    = args / ":" _ symbol _ args
+
+args = "(" _ (explist _)? ")" / string
+    ;/ tableconstructor
+
+explist = expr ("," expr)*
 
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
