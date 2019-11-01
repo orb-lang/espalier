@@ -20,7 +20,7 @@ general-purpose.
 local Peg = require "espalier/grammars/peg"
 ```
 ```lua
-local lua_str = [[
+local lua_str = [=[
 lua = shebang* _ chunk _ !1
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement (_ ";")?)?
@@ -101,7 +101,10 @@ number = real / hex / integer
 `hex` = "0" ("x" / "X") higit+ ("." higit*)? (("p" / "P") "-"? higit+)?
 `higit` = [0-9] / [a-f] / [A-F]
 
-`_` = { \t\n\r}*
+`_` = comment / whitespace
+comment = whitespace "--" (!"\n" 1)* "\n" whitespace / longcomment
+`longcomment` = "--[[placeholder]]"
+`whitespace` = { \t\n\r}*
 
 keyword = ("and" / "break" / "do" / "else" / "elseif"
         / "end" / "false" / "for" / "function" / "if" / "in"
@@ -109,7 +112,7 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
         / "return" / "then" / "true" / "until" / "while")
         t
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
-]]
+]=]
 ```
 ```lua
 return Peg(lua_str)
