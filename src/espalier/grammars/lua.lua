@@ -28,16 +28,14 @@ unop  = "-" / "#" / "not"
 binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
       / "+" / "-" / "/" / "*" / "^" / "%" / "<" / ">"
 
-value = bleh / Nil / bool / vararg / number / string
+`value` = Nil / bool / vararg / number / string
       / functioncall / symbol
   ; / function / tableconstructor / var
   ; / "(" _ expr _ ")"
 Nil   = "nil"
 bool  = "true" / "false"
 vararg = "..."
-functioncall = prefix _ suffix? _ call
-
-bleh = "!" args
+functioncall = prefix _ suffix _ call?
 
 prefix  = "(" expr ")" / symbol
 index   = "[" expr "]" / "." _ symbol
