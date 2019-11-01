@@ -29,8 +29,8 @@ binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
       / "+" / "-" / "/" / "*" / "^" / "%" / "<" / ">"
 
 `value` = Nil / bool / vararg / number / string
-       / tableconstructor / Function / var
-       / functioncall
+       / tableconstructor / Function
+       / functioncall / var
        / "(" _ expr _ ")"
 Nil   = "nil"
 bool  = "true" / "false"
@@ -58,19 +58,18 @@ args = "(" _ (explist _)? ")" / string
     ;/ tableconstructor
 `explist` = expr ("," expr)*
 
-`funcbody` = parameters _ block _ "end"
+`funcbody` = parameters _ chunk _ "end"
 parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
           / "(" _ vararg _ ")"
 `symbollist` = (symbol ("," _ symbol)*)
 
-block = _ "return 3" _  ; placeholder
 
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
 `longstring` = "placeholder"
 
-symbol = ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
+symbol = !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
 
 number = real / hex / integer
 `integer` = [0-9]+
@@ -79,6 +78,11 @@ number = real / hex / integer
 `higit` = [0-9] / [a-f] / [A-F]
 
 `_` = { \t\n\r}*
+
+keyword = "and" / "break" / "do" / "else" / "elseif"
+        / "end" / "false" / "for" / "function" / "if" / "in"
+        / "local" / "nil" / "not" / "or" / "repeat"
+        / "return" / "then" / "true" / "until" / "while"
 ]]
 
 
