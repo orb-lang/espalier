@@ -19,8 +19,11 @@ local Peg = require "espalier/grammars/peg"
 
 #!lua
 local lua_str = [[
-lua = _ chunk+
-chunk = (expr / symbol / number / string)+ _
+lua = shebang* _ chunk* _ !1
+shebang = "#" (!"\n" 1)* "\n"
+chunk = _(expr / symbol / number / string)+ _
+
+statement = "do" chunk "end"
 
 `expr`  = unop _ expr _
       / value _ (binop _ expr)* _
@@ -79,10 +82,11 @@ number = real / hex / integer
 
 `_` = { \t\n\r}*
 
-keyword = "and" / "break" / "do" / "else" / "elseif"
+keyword = ("and" / "break" / "do" / "else" / "elseif"
         / "end" / "false" / "for" / "function" / "if" / "in"
         / "local" / "nil" / "not" / "or" / "repeat"
-        / "return" / "then" / "true" / "until" / "while"
+        / "return" / "then" / "true" / "until" / "while")
+        !([A-Z] / [a-z] / [0-9] / "_")
 ]]
 #/lua
 

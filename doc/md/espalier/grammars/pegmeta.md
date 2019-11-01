@@ -321,7 +321,7 @@ local IfNotThis = PegMetas : inherit "if_not_this"
 function IfNotThis.toLpeg(if_not, depth)
    local phrase = PegPhrase "-("
    for _, sub_if_not in ipairs(if_not) do
-      phrase = phrase .. sub_if_not:toLpeg()
+      phrase = phrase .. sub_if_not:toLpeg(depth)
    end
    return phrase .. ")"
 end
