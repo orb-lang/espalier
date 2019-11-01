@@ -24,7 +24,7 @@ local lua_str = [[
 lua = _ chunk+
 chunk = (expr / symbol / number / string)+ _
 
-expr  = unop _ expr _
+`expr`  = unop _ expr _
       / value _ (binop _ expr)* _
 unop  = "-" / "#" / "not"
 binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
@@ -46,15 +46,16 @@ field = key _ "=" _ val
 key = "[" expr "]" / symbol
 val = expr
 
-prefix  = "(" expr ")" / symbol
+`prefix`  = "(" expr ")" / symbol
 index   = "[" expr "]" / "." _ symbol
-suffix  = call / index
-call    = args / ":" _ symbol _ args
+`suffix`  = call / index
+`call`    = args / method
+method    = ":" _ symbol _ args
 
 args = "(" _ (explist _)? ")" / string
     ;/ tableconstructor
 
-explist = expr ("," expr)*
+`explist` = expr ("," expr)*
 
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
