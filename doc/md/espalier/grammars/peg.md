@@ -118,7 +118,7 @@ local function pegylator(_ENV)
             +  V"some_number"
 
    allowed_prefixed =  V"compound" + V"suffixed" + V"atom" + V"number"
-   allowed_suffixed =  V"compound" + V"prefixed" + V"atom"
+   allowed_suffixed =  V"compound" + V"prefixed" + V"atom" + V"number"
 
    some_suffix   = P"$" * V"repeats"
    -- these are implicitly suppressed

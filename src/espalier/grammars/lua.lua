@@ -19,9 +19,11 @@ local Peg = require "espalier/grammars/peg"
 
 
 local lua_str = [=[
-lua = shebang* _ chunk _ !1
+lua = shebang* _ chunk _ finalcomment* !1
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement (_ ";")?)?
+
+finalcomment = "--" 1* !1
 
 statement = "do" t chunk "end" t
           / "while" t expr "do" t chunk "end" t
@@ -38,7 +40,8 @@ statement = "do" t chunk "end" t
           / varlist _ "=" _ explist
           / functioncall
 
-laststatement = "placeholder"
+laststatement = "return" t (_ explist)?
+              / "break" t
 
 funcname = symbol _ ("." _ symbol)* (":" _ symbol)?
 varlist  = var (_ "," _ var)*
@@ -100,7 +103,8 @@ number = real / hex / integer
 `higit` = [0-9] / [a-f] / [A-F]
 
 `_` = comment / whitespace
-comment = whitespace "--" (!"\n" 1)* "\n" whitespace / longcomment
+comment = whitespace "--" (!"\n" 1)* "\n" whitespace
+        / longcomment
 `longcomment` = "--[[placeholder]]"
 `whitespace` = { \t\n\r}*
 
