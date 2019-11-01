@@ -29,15 +29,15 @@ binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
       / "+" / "-" / "/" / "*" / "^" / "%" / "<" / ">"
 
 `value` = Nil / bool / vararg / number / string
-       / tableconstructor / functioncall
-       / Function / var
+       / tableconstructor / Function / var
+       / functioncall
        / "(" _ expr _ ")"
 Nil   = "nil"
 bool  = "true" / "false"
 vararg = "..."
 functioncall = prefix (_ suffix &(_ suffix))* _ call
 tableconstructor = "{" _ fieldlist* _ "}"
-Function = "placeholder"
+Function = "function" _ funcbody
 var = prefix (_ suffix &(_ suffix))* index
     / symbol
 
@@ -56,8 +56,14 @@ method    = ":" _ symbol _ args
 
 args = "(" _ (explist _)? ")" / string
     ;/ tableconstructor
-
 `explist` = expr ("," expr)*
+
+`funcbody` = parameters _ block _ "end"
+parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
+          / "(" _ vararg _ ")"
+`symbollist` = (symbol ("," _ symbol)*)
+
+block = _ "return 3" _  ; placeholder
 
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
