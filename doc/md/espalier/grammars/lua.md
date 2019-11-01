@@ -21,14 +21,32 @@ local Peg = require "espalier/grammars/peg"
 ```
 ```lua
 local lua_str = [[
-lua = shebang* _ chunk* _ !1
+lua = shebang* _ chunk _ !1
 shebang = "#" (!"\n" 1)* "\n"
-chunk = _(expr / symbol / number / string)+ _
+chunk = _ (statement _ ";"?)* (_ laststatement (_ ";")?)?
 
-statement = "do" chunk "end"
+statement = "do" t chunk "end" t
+          / "while" t expr "do" t chunk "end" t
+          / "repeat" t chunk "until" t expr
+          / "if" t expr "then" t chunk
+            ("elseif" t expr "then" t chunk)*
+            ("else" t chunk)* "end" t
+          / "for" t _ symbol _ "=" expr _ "," _ expr _ ("," _ expr)?
+            _ "do" t chunk "end" t
+          / "for" t _ symbollist _ "in" t expr "do" t chunk "end" t
+          / "function" t _ funcname _ funcbody
+          / "local" t _ "function" t _ symbol _ funcbody
+          / "local" t _ symbollist _ ("=" _ explist)?
+          / varlist _ "=" _ explist
+          / functioncall
 
-`expr`  = unop _ expr _
-      / value _ (binop _ expr)* _
+laststatement = "placeholder"
+
+funcname = symbol _ ("." _ symbol)* (":" _ symbol)?
+varlist  = var (_ "," _ var)*
+
+`expr`  = _ unop _ expr _
+      / _ value _ (binop _ expr)* _
 unop  = "-" / "#" / "not"
 binop = "and" / "or" / ".." / "<=" / ">=" / "~=" / "=="
       / "+" / "-" / "/" / "*" / "^" / "%" / "<" / ">"
@@ -43,6 +61,7 @@ vararg = "..."
 functioncall = prefix (_ suffix &(_ suffix))* _ call
 tableconstructor = "{" _ fieldlist* _ "}"
 Function = "function" _ funcbody
+
 var = prefix (_ suffix &(_ suffix))* index
     / symbol
 
@@ -88,7 +107,8 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
         / "end" / "false" / "for" / "function" / "if" / "in"
         / "local" / "nil" / "not" / "or" / "repeat"
         / "return" / "then" / "true" / "until" / "while")
-        !([A-Z] / [a-z] / [0-9] / "_")
+        t
+`t` = !([A-Z] / [a-z] / [0-9] / "_")
 ]]
 ```
 ```lua
