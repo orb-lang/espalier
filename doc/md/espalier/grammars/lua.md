@@ -40,6 +40,8 @@ statement = "do" t chunk "end" t
           / "local" t _ "function" t _ symbol _ funcbody
           / "local" t _ symbollist _ ("=" _ explist)?
           / varlist _ "=" _ explist
+          / "goto" t _ symbol
+          / "::" symbol "::"
           / functioncall
 
 laststatement = "return" t (_ explist)?
@@ -112,14 +114,14 @@ comment = whitespace longcomment
 `whitespace` = { \t\n\r}*
 
 keyword = ("and" / "break" / "do" / "else" / "elseif"
-        / "end" / "false" / "for" / "function" / "if" / "in"
-        / "local" / "nil" / "not" / "or" / "repeat"
+        / "end" / "false" / "for" / "function" / "goto" / "if"
+        / "in" / "local" / "nil" / "not" / "or" / "repeat"
         / "return" / "then" / "true" / "until" / "while")
         t
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
 ]=]
 ```
-### Prefix and postscript
+### Header and Postscript
 
 We need to do some code injection to cover the case of long strings.
 
@@ -127,7 +129,10 @@ We need to do some code injection to cover the case of long strings.
 I intend to write a rule to cover this declaratively, but that's a task for a
 later pass.
 
+
 #### Header
+
+Adapted from the [Lpeg documentation](http://www.inf.puc-rio.br/~roberto/lpeg/).
 
 ```lua
 local header = [[
@@ -141,6 +146,10 @@ local closeeq = Cmt(close * Cb("init"),
 
 ]]
 ```
+#### Postscript
+
+Dividing by zero is a weird way to reject all captures, but eh.
+
 ```lua
 local postscript = [[
   longstring = (open * C((P(1) - closeeq)^0) * close) / 0

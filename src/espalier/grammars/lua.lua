@@ -40,6 +40,8 @@ statement = "do" t chunk "end" t
           / "local" t _ "function" t _ symbol _ funcbody
           / "local" t _ symbollist _ ("=" _ explist)?
           / varlist _ "=" _ explist
+          / "goto" t _ symbol
+          / "::" symbol "::"
           / functioncall
 
 laststatement = "return" t (_ explist)?
@@ -112,12 +114,16 @@ comment = whitespace longcomment
 `whitespace` = { \t\n\r}*
 
 keyword = ("and" / "break" / "do" / "else" / "elseif"
-        / "end" / "false" / "for" / "function" / "if" / "in"
-        / "local" / "nil" / "not" / "or" / "repeat"
+        / "end" / "false" / "for" / "function" / "goto" / "if"
+        / "in" / "local" / "nil" / "not" / "or" / "repeat"
         / "return" / "then" / "true" / "until" / "while")
         t
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
 ]=]
+
+
+
+
 
 
 
@@ -141,6 +147,10 @@ local closeeq = Cmt(close * Cb("init"),
                          function (s, i, a, b) return a == b end)
 
 ]]
+
+
+
+
 
 
 
