@@ -11,10 +11,10 @@
 
 
 
-
-
-
 local Peg = require "espalier/grammars/peg"
+
+
+
 
 
 
@@ -94,7 +94,7 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
-`longstring` = "placeholder"
+;`longstring` = "placeholder"
 
 symbol = !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
 
@@ -120,4 +120,34 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 
 
 
-return Peg(lua_str)
+
+
+
+
+
+
+
+
+
+
+local header = [[
+local L = require "lpeg"
+local C, Cg, Cmt, Cb, P = L.C, L.Cg, L.Cmt, L.Cb, L.P
+local equals = P"="^0
+local open = "[" * Cg(equals, "init") * "[" * P"\n"^-1
+local close = "]" * C(equals) * "]"
+local closeeq = Cmt(close * Cb("init"),
+                         function (s, i, a, b) return a == b end)
+
+]]
+
+
+
+
+local postscript = [[
+  longstring = (open * C((P(1) - closeeq)^0) * close) / 0
+]]
+
+
+
+return Peg(lua_str) : toGrammar(nil, postscript, header)

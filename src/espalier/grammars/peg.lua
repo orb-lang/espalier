@@ -21,7 +21,7 @@ local pegMetas = require "espalier/grammars/pegmeta"
 local function pegylator(_ENV)
    START "rules"
    ---[[
-   SUPPRESS ("WS",  "enclosed", "form",
+   SUPPRESS ("enclosed", "form",
             "element" ,
             "elements",
             "allowed_prefixed", "allowed_suffixed",

@@ -6,9 +6,6 @@ time to make a Lua language parser.
 The hard work is done on this, it's a matter of translation into the
 Pegylator paradigm.
 
-While this a hell of a lot of work, the complete BNF of Lua is available,
-and reproduced here.
-
 This will also serve as a template for Lun, and an opportunity to add some
 repl-specific syntax; ideally to replace Lex Luathor with something more
 general-purpose.
@@ -16,6 +13,9 @@ general-purpose.
 #!lua
 local Peg = require "espalier/grammars/peg"
 #/lua
+
+
+** Lua PEG grammar
 
 #!lua
 local lua_str = [=[
@@ -94,7 +94,7 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
-`longstring` = "placeholder"
+;`longstring` = "placeholder"
 
 symbol = !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
 
@@ -119,8 +119,38 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 ]=]
 #/lua
 
+
+*** Prefix and postscript
+
+We need to do some code injection to cover the case of long strings.
+
+I intend to write a rule to cover this declaratively, but that's a task for a
+later pass.
+
+**** Header
+
 #!lua
-return Peg(lua_str)
+local header = [[
+local L = require "lpeg"
+local C, Cg, Cmt, Cb, P = L.C, L.Cg, L.Cmt, L.Cb, L.P
+local equals = P"="^0
+local open = "[" * Cg(equals, "init") * "[" * P"\n"^-1
+local close = "]" * C(equals) * "]"
+local closeeq = Cmt(close * Cb("init"),
+                         function (s, i, a, b) return a == b end)
+
+]]
+#/lua
+
+
+#!lua
+local postscript = [[
+  longstring = (open * C((P(1) - closeeq)^0) * close) / 0
+]]
+#/lua
+
+#!lua
+return Peg(lua_str) : toGrammar(nil, postscript, header)
 #/lua
 
 

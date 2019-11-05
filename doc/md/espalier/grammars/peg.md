@@ -22,7 +22,7 @@ local pegMetas = require "espalier/grammars/pegmeta"
 local function pegylator(_ENV)
    START "rules"
    ---[[
-   SUPPRESS ("WS",  "enclosed", "form",
+   SUPPRESS ("enclosed", "form",
             "element" ,
             "elements",
             "allowed_prefixed", "allowed_suffixed",
@@ -164,16 +164,16 @@ This is not quite a fully-operational Death Star.
 
 
 
-- [ ]  #Todo #version @0.0.1alpha
+- [X]  #Todo #version @0.0.1alpha
 
 
-  - [ ]  Get a trivial grammar compiling.
+  - [X]  Get a trivial grammar compiling.
 
 
-  - [ ]  Write microLisp parser.
+  - [X]  Write microLisp parser.
 
 
-  - [ ]  Translate date parser into PEG format and 'complete' it.
+  - [X]  Translate date parser into PEG format and 'complete' it.
 
 
          'complete' in air quotes because I'm happy with a parser for the
@@ -181,7 +181,7 @@ This is not quite a fully-operational Death Star.
          or by-week or the like, not right away.
 
 
-  - [ ]  Write a Lua parser in PEG format.
+  - [X]  Write a Lua parser in PEG format.
 
 
          This is of course a prerequisite to release, and will be actively
