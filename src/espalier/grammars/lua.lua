@@ -105,9 +105,10 @@ number = real / hex / integer
 `higit` = [0-9] / [a-f] / [A-F]
 
 `_` = comment+ / whitespace
-comment = whitespace "--" (!"\n" 1)* "\n" whitespace
-        / longcomment
-`longcomment` = "--[[placeholder]]"
+comment = whitespace longcomment
+        / whitespace "--" (!"\n" 1)* "\n" whitespace
+
+`longcomment` = "--" longstring
 `whitespace` = { \t\n\r}*
 
 keyword = ("and" / "break" / "do" / "else" / "elseif"
