@@ -21,7 +21,7 @@ local Peg = require "espalier/peg"
 local lua_str = [=[
 lua = shebang* _ chunk _ finalcomment* Error*
 shebang = "#" (!"\n" 1)* "\n"
-chunk = _ (statement _ ";"?)* (_ laststatement (_ ";")?)?
+chunk = _ (statement _ ";"?)* (_ laststatement _ (";")?)?
 
 Error = 1+
 
