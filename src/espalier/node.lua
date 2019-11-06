@@ -20,6 +20,7 @@ local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
 
 local s = require "singletons" . status ()
 local a = require "singletons/anterm"
+local c_bw = require "singletons/color" . no_color
 local core = require "singletons/core"
 local Phrase = require "singletons/phrase"
 local dot = require "espalier/dot"
@@ -95,8 +96,8 @@ end
 
 
 local function toString(node, depth, c)
-   assert(type(c) == 'table', "must provide color")
-   local depth = depth or 0
+   c = c or c_bw
+   depth = depth or 0
    local phrase = Phrase ""
    phrase = ("  "):rep(depth) .. c.bold(node.id) .. "    "
       .. c.number(node.first) .. "-" .. c.number(node.last)
@@ -133,6 +134,9 @@ Node.toString = toString
 
 
 local function __tostring(node)
+   if not node.str then
+      return "Node"
+   end
    return tostring(toString(node))
 end
 
