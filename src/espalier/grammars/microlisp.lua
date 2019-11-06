@@ -5,7 +5,7 @@
 
 
 local Grammar = require "espalier/grammar"
-local Peg = require "espalier/grammars/peg"
+local Peg = require "espalier/peg"
 local Node = require "espalier/node"
 
 

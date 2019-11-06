@@ -13,7 +13,7 @@ repl-specific syntax; ideally to replace Lex Luathor with something more
 general-purpose.
 
 ```lua
-local Peg = require "espalier/grammars/peg"
+local Peg = require "espalier/peg"
 ```
 ## Lua PEG grammar
 

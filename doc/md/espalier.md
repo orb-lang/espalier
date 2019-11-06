@@ -15,6 +15,7 @@ local elpatt  = require "espalier/elpatt"
 local Node    = require "espalier/node"
 -- local Spec    = require "espalier/spec"
 local Grammar = require "espalier/grammar"
+local Peg  = require "espalier/peg"
 
 local ortho8600 = require "espalier/grammars/ortho-8600"
 
@@ -22,7 +23,7 @@ local dot_grammar  = require "espalier/grammars/dot"
 
 local lua_grammar  = require "espalier/grammars/lua"
 
-local peg_grammar  = require "espalier/grammars/peg"
+
 
 local lisp_grammar = require "espalier/grammars/microlisp"
 
@@ -35,7 +36,6 @@ local lexemes = require "espalier/lexemes"
 local grammars = { ortho8600 = ortho8600,
                    dot       = dot_grammar,
                    lua       = lua_grammar,
-                   peg       = peg_grammar,
                    lisp      = lisp_grammar,
                    date      = date_grammar,
                    luatoken  = luatoken_grammar }
@@ -44,6 +44,7 @@ return { dot      = dot,
          elpatt   = elpatt,
          node     = Node,
          lex      = lexemes,
+         peg      = Peg,
  --        spec    = Spec,
          phrase   = ss.Phrase,
          grammar  = Grammar,

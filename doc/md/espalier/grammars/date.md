@@ -8,7 +8,7 @@ a declarative PEG specification.
 Let's give it a trial run.
 
 ```lua
-local Peg = require "espalier/grammars/peg"
+local Peg = require "espalier/peg"
 ```
 ```lua
 local date_peg = [[

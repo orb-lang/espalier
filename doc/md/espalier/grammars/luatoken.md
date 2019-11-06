@@ -1,7 +1,7 @@
 # Lua tokenizer
 
 ```lua
-local Peg = require "espalier/grammars/peg"
+local Peg = require "espalier/peg"
 ```
 ```lua
 local lua_tok_str = [[

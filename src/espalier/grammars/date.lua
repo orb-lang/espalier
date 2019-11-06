@@ -7,7 +7,7 @@
 
 
 
-local Peg = require "espalier/grammars/peg"
+local Peg = require "espalier/peg"
 
 
 
