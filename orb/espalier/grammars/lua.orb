@@ -92,11 +92,9 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
           / "(" _ vararg _ ")"
 `symbollist` = (symbol ("," _ symbol)*)
 
-
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
-;`longstring` = "placeholder"
 
 symbol = !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
 
