@@ -13,7 +13,6 @@ So let's do that.
 local L = require "espalier/elpatt"
 local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
 local Grammar = require "espalier/grammar"
--- local lex = require "espalier/lexemes"
 local pegMetas = require "espalier/grammars/pegmeta"
 #/lua
 
@@ -157,29 +156,6 @@ local function pegylator(_ENV)
    ws = P"_"
 end
 #/lua
-
-
-** Roadmap
-
-This is not quite a fully-operational Death Star.
-
-
-- [X]  #Todo #version @0.0.1alpha
-
-  - [X]  Get a trivial grammar compiling.
-
-  - [X]  Write microLisp parser.
-
-  - [X]  Translate date parser into PEG format and 'complete' it.
-
-         'complete' in air quotes because I'm happy with a parser for the
-         most-common subset of ISO 8610 dates, I don't require approximates
-         or by-week or the like, not right away.
-
-  - [X]  Write a Lua parser in PEG format.
-
-         This is of course a prerequisite to release, and will be actively
-         used throughout the codebase.
 
 #!lua
 return Grammar(pegylator, pegMetas)
