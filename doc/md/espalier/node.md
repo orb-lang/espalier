@@ -2,7 +2,7 @@
 
 
   The Node class implements an abstract syntax tree, in collaboration with
-the [Grammar class](hts://~/grammar.orb) and lpeg more generally.
+the [[Grammar class][~/grammar.orb]] and lpeg more generally.
 
 
 #### asserts
