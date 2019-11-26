@@ -159,6 +159,30 @@ local Rules = PegMetas : inherit "rules"
 
 
 
+
+
+function Rules.__call(rules, str)
+   if not rules.parse then
+      rules.parse, rules.grammar = Grammar(rules:toLpeg())
+   end
+   return rules.parse(str)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local _PREFACE = PegPhrase ([[
 local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
@@ -222,13 +246,40 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Rules.toGrammar(rules, metas, extraLpeg, header, pre, post)
    metas = metas or {}
-   local rules = rules:toLpeg(extraLpeg)
-   if header then
-      rules = header .. rules
-   end
-   return Grammar(rules, metas, pre, post)
+   header = header or ""
+   local rule_str = rules:toLpeg(extraLpeg)
+   rule_str = header .. rule_str
+   rules.parse, rules.grammar = Grammar(rule_str, metas, pre, post)
+   return rules.parse
 end
 
 

@@ -142,6 +142,29 @@ It won't be pretty, but it will be valid.  Eventually.
 ```lua
 local Rules = PegMetas : inherit "rules"
 ```
+#### Rules.__call(rules, str)
+
+We allow the Peg root node to be callable as a Grammar.
+
+```lua
+function Rules.__call(rules, str)
+   if not rules.parse then
+      rules.parse, rules.grammar = Grammar(rules:toLpeg())
+   end
+   return rules.parse(str)
+end
+```
+### Rules:toLpeg(extraLpeg)
+
+Converts declarative Peg rules into a string of Lua code implementing a
+Grammar function.
+
+
+``extraLpeg`` is an optional string appended to the generated string before the
+final ``end``, to inject rules which aren't expressible using the subset of
+``lpeg`` which the Peg module supports.
+
+
 #### _PREFACE
 
 ```lua
@@ -202,16 +225,51 @@ function Rules.toLpeg(peg_rules, extraLpeg)
    return _PREFACE .. phrase .. appendix
 end
 ```
-#### Rules:toGrammar()
+#### Rules:toGrammar(metas, extraLpeg, header, pre, post)
+
+  Builds a Grammar out of a parsed Peg set. All non-self parameters are
+optional.
+
+
+- Params:
+
+
+  - metas:  Metatables for function behavior (this module is an example of
+            this parameter).
+
+
+  - extraLpeg:  String inserted after generated rules and before the final
+                ``end`` of the function.
+
+
+  - header:  String inserted before the beginning of the generated
+             function.
+
+
+             These must be valid Lua chunks.
+
+
+  - pre:  A function operating on the string to be parsed before the grammar
+          is Matched.  Expected to return a string.
+
+
+  - post:  A function operating on the Nodes returned by the match, before the
+           AST is returned. Expected to return an AST, but whatever it returns
+           will be passed on by the Grammar.
+
+
+The resulting Grammar is stored as ``rules.grammar`` and can be invoked with the
+corresponding ``__call`` metamethod.  ``toGrammar`` will overwrite these if they
+have been created already, since the other parameters can be changed.
 
 ```lua
 function Rules.toGrammar(rules, metas, extraLpeg, header, pre, post)
    metas = metas or {}
-   local rules = rules:toLpeg(extraLpeg)
-   if header then
-      rules = header .. rules
-   end
-   return Grammar(rules, metas, pre, post)
+   header = header or ""
+   local rule_str = rules:toLpeg(extraLpeg)
+   rule_str = header .. rule_str
+   rules.parse, rules.grammar = Grammar(rule_str, metas, pre, post)
+   return rules.parse
 end
 ```
 ### Rule
