@@ -1,9 +1,7 @@
 * Grammar Module
 
 
-The grammar module returns one function, which generates a grammar.
-
-This document is a good candidate for a more strictly literate approach.
+  The grammar module returns one function, which generates a grammar.
 
 
 ** Introduction
@@ -51,24 +49,39 @@ Both of these are reasonably complex.
 sidestepping Lua's pedantic insistance on prepending =local= to all values of
 significance.
 
-More relevantly, it constructs a full grammar, which will return a table of
-type Node.
+Thus equipped, it constructs a full grammar, which will return a table of type
+Node.
 
 If you stick to =lpeg= patterns, as you should, all array values will be of
 Node.  Captures will interpolate various other sorts of Lua values, which will
 induce halting in some places and silently corrupt execution in others.
 
-The [[elpatt module][hts://~/elpatt.orb]] is intended to provide those
+You can use captures in your rules, if it's helpful, as with named groups,
+just toss them away at the end of the rule like so:
+
+#!lua-example
+divisible_by_three = Cmt( C(R"09"^1),
+   function(s, i, val)
+      if tonumber(val) % 3 == 0
+         return i + #val
+      else
+         return false
+      end
+   end ) / 0
+#/lua
+
+Giving a rule which matches an integer evenly divisible by three.
+
+The [[elpatt module][~/elpatt.orb]] is intended to provide those
 patterns which are allowed in Grammars, while expanding the scope of some
 favorites to properly respect utf-8 and otherwise behave.
 
-There are examples of the format in the [[spec module][hts://~/spec.orb]].
-
 Also included are two functions:
 
-  -  START :  a string which must be the same as the starting rule.
-  -  SUPPRESS :  either a string or an array of strings. These rules will be
-                 removed from the Node.
+  -  START :  A string which must be the same as the starting rule.
+  -  SUPPRESS :  Either a string or an array of strings. These rules will be
+                 removed from the resulting AST, while keeping all leaf nodes,
+                 if any.
 
 The use of ALL-CAPS was Phillipe Janda's convention, I agree that it reads
 well in this singular instance.
@@ -133,18 +146,6 @@ localizing everything as an upvalue before using it.
 
 
 **** requires
-
-
-- [X] #todo  Note the require strings below, which prevent this from
-             being a usable library, because =node= not =lpegnode=.
-
-             The problem is almost a philosophical one, and it's what I'm
-             setting out to solve with =bridge= and =manifest=.
-
-             In the meantime, =lpegnode= has one consumer. Let's keep it
-             happy.
-
-             I'm renaming it =espalier= anyway.
 
 
 ***** status
@@ -230,23 +231,23 @@ Because of course they do.
 
 **** setup values and metatables
 
-  As [[covered elsewhere][httk://]], we accept three varieties of
-metatable verb.  An ordinary table is assigned; a table with =__call= is
-called, as is an ordinary function.
+  We accept two types of value for a metatable. A table must be derived from
+the Node class, while a function must return an appropriately-shaped table,
+given the capture and offset.
 
-The latter two are expected to return the original table, now a descendent
-of =Node=.  This need not have an =id= field which is the same as the =id=
-parameter.
+This can be used to process captures which aren't strings, perform validation,
+or run another grammar and return an entire AST, but currently cannot fail to
+return a Node of some sort.
 
 #!lua
    local offset = offset or 0
    t.first = first + offset
-   t.last  = last + offset - 1 -- [sic]
+   t.last  = last + offset - 1
    t.str   = str
    if metas[id] then
       local meta = metas[id]
-      if type(meta) == "function" or meta.__call then
-        t = metas[id](t, str)
+      if type(meta) == "function" then
+        t = meta(t, offset)
       else
         t = setmeta(t, meta)
       end
@@ -325,8 +326,6 @@ Now we iterate the children
       if type(cap) ~= "table" then
          s:complain("CAPTURE ISSUE",
                     "type of capture subgroup is " .. type(v) .. "\n")
-                 -- better:
-                 -- phrase {"type of capture subgroup is", type(v), "\n"}
       end
       if cap.DROP == DROP then
          s:verb("drops in " .. a.bright(t.id))

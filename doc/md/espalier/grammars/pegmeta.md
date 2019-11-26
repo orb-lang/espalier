@@ -177,8 +177,6 @@ function Rules.toLpeg(peg_rules, extraLpeg)
    extraLpeg = extraLpeg or ""
    -- the first rule should have an atom:
    -- peg_rules[1]   -- this is the first rule
-   -- peg_rules[1]:select "rhs" : select "atom" . val
-   -- maybe?
    local grammar_name = peg_rules : select "rule" ()
                          : select "pattern" ()
                          : span()

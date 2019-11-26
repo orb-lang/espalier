@@ -150,6 +150,7 @@
 
 
 
+
 local s = require "singletons" . status ()
 s.verbose = false
 s.angry   = false
@@ -241,12 +242,12 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
    local offset = offset or 0
    t.first = first + offset
-   t.last  = last + offset - 1 -- [sic]
+   t.last  = last + offset - 1
    t.str   = str
    if metas[id] then
       local meta = metas[id]
-      if type(meta) == "function" or meta.__call then
-        t = metas[id](t, str)
+      if type(meta) == "function" then
+        t = meta(t, offset)
       else
         t = setmeta(t, meta)
       end
@@ -325,8 +326,6 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       if type(cap) ~= "table" then
          s:complain("CAPTURE ISSUE",
                     "type of capture subgroup is " .. type(v) .. "\n")
-                 -- better:
-                 -- phrase {"type of capture subgroup is", type(v), "\n"}
       end
       if cap.DROP == DROP then
          s:verb("drops in " .. a.bright(t.id))
