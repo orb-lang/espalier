@@ -394,16 +394,16 @@ a Node and returns true or false on some premise.
 
 #!lua
 function Node.select(node, pred)
-   local function qualifies(node, pred)
+   local function qualifies(ast, pred)
       if type(pred) == 'string' then
-         if type(node) == 'table'
-          and node.id and node.id == pred then
+         if type(ast) == 'table'
+          and ast.id and ast.id == pred then
             return true
          else
             return false
          end
       elseif type(pred) == 'function' then
-         return pred(node)
+         return pred(ast)
       else
          s:halt("cannot select on predicate of type " .. type(pred))
       end
