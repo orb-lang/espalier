@@ -161,7 +161,7 @@ s.angry   = false
 
 
 local L = require "lpeg"
-local a = require "anterm"
+local a = require "singletons/anterm"
 
 local Node = require "espalier/node"
 local elpatt = require "espalier/elpatt"
