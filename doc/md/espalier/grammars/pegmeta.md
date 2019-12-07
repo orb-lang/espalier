@@ -438,8 +438,8 @@ local Range = PegMetas : inherit "range"
 ```lua
 function Range.toLpeg(range)
    local phrase = PegPhrase "R\""
-   phrase = phrase .. range : select "range_start" () : span()
-   return phrase .. range : select "range_end" () : span() .. "\" "
+   phrase = phrase .. range:select"range_start"():span():gsub('"','\\"')
+   return phrase .. range:select"range_end"():span():gsub('"','\\"').."\" "
 end
 ```
 ### Optional
