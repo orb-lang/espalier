@@ -455,7 +455,7 @@ end
 local Set = PegMetas : inherit "set"
 
 function Set.toLpeg(set)
-   return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
+   return PegPhrase "S\"" .. set:span():sub(2,-2):gsub('"','\\"') .. "\""
 end
 #/lua
 
