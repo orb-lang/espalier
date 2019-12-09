@@ -419,6 +419,7 @@ function Node.select(node, pred)
             traverse(v)
          end
       end
+      return nil
    end
 
    return wrap(function() traverse(node) end)
