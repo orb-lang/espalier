@@ -427,6 +427,59 @@ end
 #/lua
 
 
+*** Node.select1(node)
+
+This version uses a closure instead of a coroutine, to get around a crashing
+problem we've been having in bridge.
+
+#!lua
+local function qualifies(ast, pred)
+    if type(pred) == 'string' then
+       if type(ast) == 'table'
+        and ast.id and ast.id == pred then
+          return true
+       else
+          return false
+       end
+    elseif type(pred) == 'function' then
+       return pred(ast)
+    else
+       s:halt("cannot select on predicate of type " .. type(pred))
+    end
+ end
+
+local insert, remove = table.insert, table.remove
+function Node.select1(node, pred)
+   local ast = node
+   local stack = {}
+   local idx_stack = {}
+   local subindex = 1
+   local ast_cache = nil
+   local function repeater()
+      -- clear a cached selector
+      if ast_cache then
+         local cache_cache = ast_cache
+         ast_cache = nil
+         return cache_cache
+      end
+      -- check for a qualifier
+      if qualifies(ast, pred) then
+        ast_cache = ast
+        if ast[subindex] then
+            -- set up another round if necessary
+            insert(stack, ast)
+            -- advance the subindex
+            insert(idx_stack, subindex + 1)
+
+            ast = ast[subindex]
+        else
+
+        end
+
+
+#/lua
+
+
 **** Node.tokens(node)
 
   Iterator returning all captured values as strings.
