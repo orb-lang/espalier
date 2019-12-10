@@ -392,8 +392,11 @@ We are frequently in search of a subset of Nodes:
 =pred= is either a string, which matches to =id=, or a function, which takes
 a Node and returns true or false on some premise.
 
+#NB =select= has been triggering breakage so this is temporarily named
+=coro_select= while we fix it.
+
 #!lua
-function Node.select(node, pred)
+function Node.coro_select(node, pred)
    local function qualifies(ast, pred)
       if type(pred) == 'string' then
          if type(ast) == 'table'
@@ -419,7 +422,6 @@ function Node.select(node, pred)
             traverse(v)
          end
       end
-      return nil
    end
 
    return wrap(function() traverse(node) end)
@@ -449,34 +451,25 @@ local function qualifies(ast, pred)
  end
 
 local insert, remove = table.insert, table.remove
-function Node.select1(node, pred)
-   local ast = node
-   local stack = {}
-   local idx_stack = {}
-   local subindex = 1
-   local ast_cache = nil
-   local function repeater()
-      -- clear a cached selector
-      if ast_cache then
-         local cache_cache = ast_cache
-         ast_cache = nil
-         return cache_cache
-      end
-      -- check for a qualifier
+function Node.select(node, pred)
+   -- build up all the nodes that match
+   local matches = {}
+   local function traverse(ast)
+      -- breadth first
       if qualifies(ast, pred) then
-        ast_cache = ast
-        if ast[subindex] then
-            -- set up another round if necessary
-            insert(stack, ast)
-            -- advance the subindex
-            insert(idx_stack, subindex + 1)
-
-            ast = ast[subindex]
-        else
-
-        end
-
-
+         insert(matches, ast)
+      end
+      if ast.isNode then
+         for _, v in ipairs(ast) do
+            traverse(v)
+         end
+      end
+   end
+   traverse(node)
+   return function()
+      return remove(matches, 1)
+   end
+end
 #/lua
 
 
