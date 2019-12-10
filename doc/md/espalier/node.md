@@ -422,27 +422,9 @@ local function qualifies(ast, pred)
     end
  end
 
-local insert, remove = table.insert, table.remove
+local remove = table.remove
+
 function Node.select(node, pred)
-   -- build up all the nodes that match
-   local matches = {}
-   local function traverse(ast)
-      -- breadth first
-      if qualifies(ast, pred) then
-         insert(matches, ast)
-      end
-      if ast.isNode then
-         for _, v in ipairs(ast) do
-            traverse(v)
-         end
-      end
-   end
-   traverse(node)
-   return function()
-      return remove(matches, 1)
-   end
-end
-function Node.select1(node, pred)
    -- build up all the nodes that match
    local matches = {}
    local function traverse(ast)
@@ -453,7 +435,7 @@ function Node.select1(node, pred)
          end
       end
       if qualifies(ast, pred) then
-         insert(matches, ast)
+         matches[#matches + 1] = ast
       end
    end
    traverse(node)
