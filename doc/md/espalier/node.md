@@ -370,7 +370,7 @@ We are frequently in search of a subset of Nodes:
 a Node and returns true or false on some premise.
 
 ```lua
-function Node.select(node, pred)
+function Node.coro_select(node, pred)
    local function qualifies(ast, pred)
       if type(pred) == 'string' then
          if type(ast) == 'table'
@@ -399,6 +399,48 @@ function Node.select(node, pred)
    end
 
    return wrap(function() traverse(node) end)
+end
+```
+### Node.select1(node)
+
+This version uses a closure instead of a coroutine, to get around a crashing
+problem we've been having in bridge.
+
+```lua
+local function qualifies(ast, pred)
+    if type(pred) == 'string' then
+       if type(ast) == 'table'
+        and ast.id and ast.id == pred then
+          return true
+       else
+          return false
+       end
+    elseif type(pred) == 'function' then
+       return pred(ast)
+    else
+       s:halt("cannot select on predicate of type " .. type(pred))
+    end
+ end
+
+local insert, remove = table.insert, table.remove
+function Node.select(node, pred)
+   -- build up all the nodes that match
+   local matches = {}
+   local function traverse(ast)
+      -- breadth first
+      if qualifies(ast, pred) then
+         insert(matches, ast)
+      end
+      if ast.isNode then
+         for _, v in ipairs(ast) do
+            traverse(v)
+         end
+      end
+   end
+   traverse(node)
+   return function()
+      return remove(matches, 1)
+   end
 end
 ```
 #### Node.tokens(node)
