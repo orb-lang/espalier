@@ -471,6 +471,25 @@ function Node.select(node, pred)
       return remove(matches)
    end
 end
+function Node.select1(node, pred)
+   -- build up all the nodes that match
+   local matches = {}
+   local function traverse(ast)
+      -- depth-first, right to left
+      if ast.isNode then
+         for i = #ast, 1, -1 do
+            traverse(ast[i])
+         end
+      end
+      if qualifies(ast, pred) then
+         insert(matches, ast)
+      end
+   end
+   traverse(node)
+   return function()
+      return remove(matches)
+   end
+end
 #/lua
 
 
