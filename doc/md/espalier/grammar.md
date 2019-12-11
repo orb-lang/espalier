@@ -75,7 +75,7 @@ just toss them away at the end of the rule like so:
 divisible_by_three = Cmt( C(R"09"^1),
    function(s, i, val)
       if tonumber(val) % 3 == 0
-         return i + #val
+         return true
       else
          return false
       end
@@ -115,9 +115,16 @@ a Node.  If the ``metas`` parameter has a key corresponding to ``id``, then it
 must return a function taking two parameters:
 
 
-   - node :  The node under construction, which under normal circumstances
-             will already have the ``first`` and ``last`` fields.
-   - str  :  The entire str the grammar is parsing.
+   - node   :  The node under construction, which will already have the
+               ``first``, ``last``, and ``str`` fields.
+
+
+   - offset :  The offset, which indicates how much to add to the ``str``
+               field to get the actual offset into the string.
+
+
+               This is zero by default and is used to parse a string
+               piecewise.
 
 
 Which must return that same node, decorated in whatever fashion is

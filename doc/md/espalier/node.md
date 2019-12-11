@@ -422,7 +422,7 @@ local function qualifies(ast, pred)
     end
  end
 
-local remove = table.remove
+local remove = assert(table.remove)
 
 function Node.select(node, pred)
    -- build up all the nodes that match
@@ -436,25 +436,6 @@ function Node.select(node, pred)
       end
       if qualifies(ast, pred) then
          matches[#matches + 1] = ast
-      end
-   end
-   traverse(node)
-   return function()
-      return remove(matches)
-   end
-end
-function Node.select1(node, pred)
-   -- build up all the nodes that match
-   local matches = {}
-   local function traverse(ast)
-      -- depth-first, right to left
-      if ast.isNode then
-         for i = #ast, 1, -1 do
-            traverse(ast[i])
-         end
-      end
-      if qualifies(ast, pred) then
-         insert(matches, ast)
       end
    end
    traverse(node)
