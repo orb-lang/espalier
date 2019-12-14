@@ -32,11 +32,11 @@ local function pegylator(_ENV)
    local comment_m  = -P"\n" * P(1)
    local comment_c =  comment_m^0 * P"\n"^0
    local letter = R"AZ" + R"az"
-   local valid_sym = letter + P"-"
+   local valid_sym = letter + P"-" + P"_"
    local digit = R"09"
    local sym = valid_sym + digit
    local WS = (P' ' + P'\n' + P'\t' + P'\r')^0
-   local symbol = letter * ( -(P"-" * WS) * sym )^0
+   local symbol = letter * (sym)^0
    local d_string = P "\"" * (P "\\" * P(1) + (1 - P "\""))^0 * P "\""
    local h_string = P "`" * (P "\\" * P(1) + (1 - P "`"))^0 * P "`"
    local s_string = P "'" * (P "\\" * P(1) + (1 - P "'"))^0 * P "'"
@@ -106,7 +106,6 @@ local function pegylator(_ENV)
             +  V"range"
 
    prefixed =  V"if_not_this"
-            +  V"not_this"
             +  V"if_and_this"
             +  V"capture"
 
@@ -126,7 +125,6 @@ local function pegylator(_ENV)
    -- /SUPPRESSED
 
    if_not_this = P"!" * WS * V"allowed_prefixed"
-   not_this    = P"-" * WS * V"allowed_prefixed"
    if_and_this = P"&" * WS * V"allowed_prefixed"
    capture     = P"~" * WS * V"allowed_prefixed"
 
