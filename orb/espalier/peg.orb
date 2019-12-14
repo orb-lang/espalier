@@ -52,7 +52,7 @@ local function pegylator(_ENV)
    rule    =  V"lead_comment"^0 * V"lhs" * V"rhs"
 
    lead_comment = V"comment"
-   lhs     =  WS * V"pattern" * WS * ( P":" + P"=" + ":=")
+   lhs     =  WS * V"pattern" * WS * (P"=" + ":=" + P"<-" + P"←")
    rhs     =  V"form" * (WS * V"comment")^0
 
    pattern =  symbol
