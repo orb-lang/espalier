@@ -98,6 +98,7 @@ local function pegylator(_ENV)
    simple   =  V"suffixed"
             +  V"prefixed"
             +  V"atom"
+            +  V"not_this"
             +  V"number"
 
    enclosed =  V"literal"
@@ -115,7 +116,8 @@ local function pegylator(_ENV)
             +  V"with_suffix"
             +  V"some_number"
 
-   allowed_prefixed =  V"compound" + V"suffixed" + V"atom" + V"number"
+   allowed_prefixed =  V"compound" + V"suffixed" + V"atom"
+                    +  V"not_this"  + V"number"
    allowed_suffixed =  V"compound" + V"prefixed" + V"atom" + V"number"
 
    some_suffix   = P"$" * V"repeats"
@@ -124,6 +126,7 @@ local function pegylator(_ENV)
    which_suffix  =  ( P"*" + P"+" + P"?")
    -- /SUPPRESSED
 
+      not_this = P"-" * WS * V"allowed_prefixed"
    if_not_this = P"!" * WS * V"allowed_prefixed"
    if_and_this = P"&" * WS * V"allowed_prefixed"
    capture     = P"~" * WS * V"allowed_prefixed"
