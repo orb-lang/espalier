@@ -379,6 +379,10 @@ local Cat = PegMetas : inherit "cat"
 function Cat.toLpeg(cat)
    local phrase = PegPhrase " * "
    for _, sub_cat in ipairs(cat) do
+      -- hmm this is a hack
+      if sub_cat.id == "not_this" then
+         phrase = PegPhrase " "
+      end
       phrase = phrase .. " " .. sub_cat:toLpeg()
    end
    return phrase
@@ -411,6 +415,21 @@ end
 
 
 
+local NotThis = PegMetas : inherit "not_this"
+
+function NotThis.toLpeg(not_this)
+  local phrase = PegPhrase "-"
+  for _, sub_not in ipairs(not_this) do
+    phrase = phrase .. " " .. sub_not:toLpeg()
+  end
+  return phrase
+end
+
+
+
+
+
+
 local IfNotThis = PegMetas : inherit "if_not_this"
 
 function IfNotThis.toLpeg(if_not)
@@ -437,10 +456,6 @@ function IfAndThis.toLpeg(if_and_this)
    end
    return phrase
 end
-
-
-
-local NotThis = PegMetas : inherit "not_this"
 
 
 
@@ -643,6 +658,7 @@ return { rules = Rules,
          literal = Literal,
          optional = Optional,
          more_than_one = MoreThanOne,
+         not_this  = NotThis,
          if_not_this = IfNotThis,
          if_and_this = IfAndThis,
          not_this     = NotThis,

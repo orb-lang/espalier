@@ -107,7 +107,6 @@ local function pegylator(_ENV)
 
    prefixed =  V"if_not_this"
             +  V"if_and_this"
-            +  V"capture"
 
    suffixed =  V"optional"
             +  V"more_than_one"
@@ -128,7 +127,6 @@ local function pegylator(_ENV)
       not_this = P"-" * WS * V"allowed_prefixed"
    if_not_this = P"!" * WS * V"allowed_prefixed"
    if_and_this = P"&" * WS * V"allowed_prefixed"
-   capture     = P"~" * WS * V"allowed_prefixed"
 
    literal =  d_string
            +  s_string
