@@ -21,7 +21,7 @@ local function pegylator(_ENV)
    START "rules"
    ---[[
    SUPPRESS ("enclosed", "form",
-            "element" ,
+            "element" , "WS",
             "elements",
             "allowed_prefixed", "allowed_suffixed",
             "simple", "compound", "prefixed", "suffixed",
@@ -34,7 +34,6 @@ local function pegylator(_ENV)
    local valid_sym = letter + P"-" + P"_"
    local digit = R"09"
    local sym = valid_sym + digit
-   local WS = (P' ' + P'\n' + P'\t' + P'\r')^0
    local symbol = letter * (sym)^0
    local d_string = P "\"" * (P "\\" * P(1) + (1 - P "\""))^0 * P "\""
    local h_string = P "`" * (P "\\" * P(1) + (1 - P "`"))^0 * P "`"
@@ -49,11 +48,11 @@ local function pegylator(_ENV)
 
 
    rules   =  V"rule"^1
-   rule    =  V"lead_comment"^0 * V"lhs" * V"rhs"
+   rule    =  V"lhs" * V"rhs"
 
-   lead_comment = V"comment"
-   lhs     =  WS * V"pattern" * WS * (P"=" + ":=" + P"<-" + P"←")
-   rhs     =  V"form" * (WS * V"comment")^0
+
+   lhs     =  V"WS" * V"pattern" * V"WS" * (P"=" + ":=" + P"<-" + P"←")
+   rhs     =  V"form" * V"WS"
 
    pattern =  symbol
            +  V"hidden_pattern"
@@ -65,7 +64,7 @@ local function pegylator(_ENV)
    -- SUPPRESSED
    form    =  V"element" * V"elements"
 
-   element  =   -V"lhs" * WS
+   element  =   -V"lhs" * V"WS"
             *  ( V"simple"
             +    V"compound")
 
@@ -74,8 +73,8 @@ local function pegylator(_ENV)
              +  P""
    -- /SUPPRESSED
 
-   choice =  WS * P"/" * V"form"
-   cat =  WS * V"form"
+   choice =  V"WS" * P"/" * V"form"
+   cat =  V"WS" * V"form"
 
    -- SUPPRESSED
    compound =  V"group"
@@ -83,12 +82,12 @@ local function pegylator(_ENV)
           +  V"hidden_match"
    -- /SUPPRESSED
 
-   group   =  WS * V"pel"
-           *  WS * V"form" * WS
+   group   =  V"WS" * V"pel"
+           *  V"WS" * V"form" * V"WS"
            *  V"per"
 
-   hidden_match =  WS * P"``"
-                *  WS * V"form" * WS
+   hidden_match =  V"WS" * P"``"
+                *  V"WS" * V"form" * V"WS"
                 *  P"``"
    -- SUPPRESSED
    pel     = P "("
@@ -123,9 +122,9 @@ local function pegylator(_ENV)
    which_suffix  =  ( P"*" + P"+" + P"?")
    -- /SUPPRESSED
 
-      not_this = P"-" * WS * V"allowed_prefixed"
-   if_not_this = P"!" * WS * V"allowed_prefixed"
-   if_and_this = P"&" * WS * V"allowed_prefixed"
+      not_this = P"-" * V"WS" * V"allowed_prefixed"
+   if_not_this = P"!" * V"WS" * V"allowed_prefixed"
+   if_and_this = P"&" * V"WS" * V"allowed_prefixed"
 
    literal =  d_string
            +  s_string
@@ -138,18 +137,20 @@ local function pegylator(_ENV)
    range_start = range_capture
    range_end   = range_capture
 
-   optional      =  V"allowed_suffixed" * WS * P"*"
-   more_than_one =  V"allowed_suffixed" * WS * P"+"
-   maybe         =  V"allowed_suffixed" * WS * P"?"
-   some_number   =  V"allowed_suffixed" * WS * V"some_suffix"
+   optional      =  V"allowed_suffixed" * V"WS" * P"*"
+   more_than_one =  V"allowed_suffixed" * V"WS" * P"+"
+   maybe         =  V"allowed_suffixed" * V"WS" * P"?"
+   some_number   =  V"allowed_suffixed" * V"WS" * V"some_suffix"
 
    repeats       =  some_num_c
 
-   comment  =  WS * P";" * comment_c
+   comment  =  P";" * comment_c
 
    atom =  V"ws" + symbol
 
    number = digit^1
+
+   WS = V"comment" + (P' ' + P'\n' + P'\t' + P'\r')^0
 
    ws = P"_"
 end
