@@ -257,6 +257,9 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
         t = setmeta(t, meta)
       end
       assert(t.id, "no id on Node")
+   elseif metas.__DEFAULT then
+      t.id = id
+      setmeta(t, metas.__DEFAULT)
    else
       t.id = id
       setmeta(t, _astMeta)
@@ -481,12 +484,14 @@ end
 
 local function refineMetas(metas)
   for id, meta in pairs(metas) do
-    if type(meta) == "table" then
-      if not meta["__tostring"] then
-        meta["__tostring"] = Node.toString
-      end
-      if not meta.id then
-        meta.id = id
+    if id ~= "__DEFAULT" then
+      if type(meta) == "table" then
+        if not meta["__tostring"] then
+          meta["__tostring"] = Node.toString
+        end
+        if not meta.id then
+          meta.id = id
+        end
       end
     end
   end
