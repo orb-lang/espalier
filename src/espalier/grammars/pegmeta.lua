@@ -190,12 +190,24 @@ local P, V, S, R = L.P, L.V, L.S, L.R
 
 
 
+
+
+
+
+
+local function _normalize(str)
+   return str:gsub("%-", "%_")
+end
+
+
+
 local insert = assert(table.insert)
 
 local function _suppressHiddens(peg_rules)
    local hiddens = {}
    for hidden_patt in peg_rules : select "hidden_pattern" do
-      insert(hiddens, hidden_patt:span():sub(2,-2))
+      local normal = _normalize(hidden_patt:span():sub(2,-2))
+      insert(hiddens, normal)
    end
    if #hiddens == 0 then
       -- no hidden patterns
@@ -219,6 +231,7 @@ function Rules.toLpeg(peg_rules, extraLpeg)
    local grammar_name = peg_rules : select "rule" ()
                          : select "pattern" ()
                          : span()
+   grammar_name = _normalize(grammar_name)
    local grammar_fn  = "_" .. grammar_name .."_fn"
    phrase = phrase .. "local function " .. grammar_fn .. "(_ENV)\n"
    phrase = phrase .. "   " .. "START " .. "\"" .. grammar_name .. "\"\n"
@@ -311,8 +324,8 @@ function Rule.toLpeg(rule)
              .. "   "
    end
 
-   local patt = rule:select "pattern" ()
-   phrase = phrase .. _pattToString(patt) .. " = "
+   local patt = _normalize(_pattToString(rule:select "pattern" ()))
+   phrase = phrase .. patt .. " = "
    local rhs = rule:select "rhs" () : toLpeg ()
    return phrase .. rhs .. "\n"
 end
@@ -366,6 +379,10 @@ local Cat = PegMetas : inherit "cat"
 function Cat.toLpeg(cat)
    local phrase = PegPhrase " * "
    for _, sub_cat in ipairs(cat) do
+      -- hmm this is a hack
+      if sub_cat.id == "not_this" then
+         phrase = PegPhrase " "
+      end
       phrase = phrase .. " " .. sub_cat:toLpeg()
    end
    return phrase
@@ -398,6 +415,21 @@ end
 
 
 
+local NotThis = PegMetas : inherit "not_this"
+
+function NotThis.toLpeg(not_this)
+  local phrase = PegPhrase "-"
+  for _, sub_not in ipairs(not_this) do
+    phrase = phrase .. " " .. sub_not:toLpeg()
+  end
+  return phrase
+end
+
+
+
+
+
+
 local IfNotThis = PegMetas : inherit "if_not_this"
 
 function IfNotThis.toLpeg(if_not)
@@ -424,10 +456,6 @@ function IfAndThis.toLpeg(if_and_this)
    end
    return phrase
 end
-
-
-
-local NotThis = PegMetas : inherit "not_this"
 
 
 
@@ -587,7 +615,7 @@ local Atom = PegMetas : inherit "atom"
 
 function Atom.toLpeg(atom)
    local phrase = PegPhrase "V"
-   phrase = phrase .. "\"" .. atom:span() .. "\""
+   phrase = phrase .. "\"" .. _normalize(atom:span()) .. "\""
    return phrase
 end
 
@@ -630,6 +658,7 @@ return { rules = Rules,
          literal = Literal,
          optional = Optional,
          more_than_one = MoreThanOne,
+         not_this  = NotThis,
          if_not_this = IfNotThis,
          if_and_this = IfAndThis,
          not_this     = NotThis,
