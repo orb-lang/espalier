@@ -80,25 +80,34 @@ function Node.toLua(node)
   s:halt("No toLua method for " .. node.id)
 end
 ```
-### Visualizer
+## Visualizer
 
 This gives us a nice, tree-shaped printout of an entire Node.
 
+#todo write a =__repr= version with bells and whistles.### Node:strTag(c)
 
-We're less disciplined than we should be about up-assigning this to
-inherited Node classes.
+Returns a Phrase which prints the id and first-last range of the Node.
+
+
+``c`` is a color table, defaulting to no color.
 
 ```lua
-local function strTag(node, c)
+function  Node.strTag(node, c)
    c = c or c_bw
    local phrase = Phrase ""
    phrase = phrase .. c.bold(node.id) .. "    "
       .. c.number(node.first) .. "-" .. c.number(node.last)
    return phrase
 end
+```
+### Node:strLine(c)
 
-Node.strTag = strTag
+Returns a Phrase containing a single line of Node information.
 
+
+``c`` is a color table and default to no color.
+
+```lua
 local function _truncate(str, base_color, c)
    local phrase
    if #str > 56 then
@@ -112,7 +121,7 @@ local function _truncate(str, base_color, c)
    return phrase:gsub("\n", "◼︎"):gsub(" ", c.greyscale("_") .. base_color())
 end
 
-local function strLine(node, c)
+function Node.strLine(node, c)
    c = c or c_bw
    local phrase = Phrase ""
    phrase = phrase .. node:strTag(c)
@@ -125,8 +134,17 @@ local function strLine(node, c)
    end
    return phrase
 end
+```
+### Node:toString(depth, c)
 
-local function toString(node, depth, c)
+Recursively calls ``node:strLine(c)`` and returns an indented Phrase visualizing
+the entire Node tree.
+
+
+``depth`` defaults to 0, ``c`` is a color table defaulting to black and white.
+
+```lua
+function Node.toString(node, depth, c)
    depth = depth or 0
    local phrase = Phrase ""
    phrase = phrase .. ("  "):rep(depth)
@@ -142,16 +160,13 @@ local function toString(node, depth, c)
    --]]
    return phrase
 end
-Node.strLine = strLine
-
-Node.toString = toString
 ```
 ```lua
 local function __tostring(node)
    if not node.str then
       return "Node"
    end
-   return tostring(toString(node))
+   return tostring(node:toString())
 end
 
 Node.__tostring = __tostring
@@ -160,7 +175,7 @@ Node.__tostring = __tostring
 local lines = assert(core.lines)
 
 local function __repr(node, phrase, c)
-   local node__repr = tostring(toString(node, 0, c))
+   local node__repr = tostring(node:toString(0, c))
    return lines(node__repr)
 end
 

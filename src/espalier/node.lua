@@ -95,7 +95,14 @@ end
 
 
 
-local function strTag(node, c)
+
+
+
+
+
+
+
+function  Node.strTag(node, c)
    c = c or c_bw
    local phrase = Phrase ""
    phrase = phrase .. c.bold(node.id) .. "    "
@@ -103,7 +110,14 @@ local function strTag(node, c)
    return phrase
 end
 
-Node.strTag = strTag
+
+
+
+
+
+
+
+
 
 local function _truncate(str, base_color, c)
    local phrase
@@ -118,7 +132,7 @@ local function _truncate(str, base_color, c)
    return phrase:gsub("\n", "◼︎"):gsub(" ", c.greyscale("_") .. base_color())
 end
 
-local function strLine(node, c)
+function Node.strLine(node, c)
    c = c or c_bw
    local phrase = Phrase ""
    phrase = phrase .. node:strTag(c)
@@ -132,7 +146,17 @@ local function strLine(node, c)
    return phrase
 end
 
-local function toString(node, depth, c)
+
+
+
+
+
+
+
+
+
+
+function Node.toString(node, depth, c)
    depth = depth or 0
    local phrase = Phrase ""
    phrase = phrase .. ("  "):rep(depth)
@@ -148,9 +172,6 @@ local function toString(node, depth, c)
    --]]
    return phrase
 end
-Node.strLine = strLine
-
-Node.toString = toString
 
 
 
@@ -158,7 +179,7 @@ local function __tostring(node)
    if not node.str then
       return "Node"
    end
-   return tostring(toString(node))
+   return tostring(node:toString())
 end
 
 Node.__tostring = __tostring
@@ -168,7 +189,7 @@ Node.__tostring = __tostring
 local lines = assert(core.lines)
 
 local function __repr(node, phrase, c)
-   local node__repr = tostring(toString(node, 0, c))
+   local node__repr = tostring(node:toString(0, c))
    return lines(node__repr)
 end
 
