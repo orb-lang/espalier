@@ -89,6 +89,16 @@ We're less disciplined than we should be about up-assigning this to
 inherited Node classes.
 
 ```lua
+local function strTag(node, c)
+   c = c or c_bw
+   local phrase = Phrase ""
+   phrase = phrase .. c.bold(node.id) .. "    "
+      .. c.number(node.first) .. "-" .. c.number(node.last)
+   return phrase
+end
+
+Node.strTag = strTag
+
 local function _truncate(str, base_color, c)
    local phrase
    if #str > 56 then
@@ -105,8 +115,7 @@ end
 local function strLine(node, c)
    c = c or c_bw
    local phrase = Phrase ""
-   phrase = phrase .. c.bold(node.id) .. "    "
-      .. c.number(node.first) .. "-" .. c.number(node.last)
+   phrase = phrase .. node:strTag(c)
    if node[1] then
       phrase = phrase .. "    "
                .. _truncate(node:span(), c.greyscale, c) .. "\n"
@@ -121,7 +130,7 @@ local function toString(node, depth, c)
    depth = depth or 0
    local phrase = Phrase ""
    phrase = phrase .. ("  "):rep(depth)
-   phrase = phrase .. strLine(node, c)
+   phrase = phrase .. node:strLine(c)
    ---[[
    if node[1] then
       for _,v in ipairs(node) do
@@ -148,9 +157,11 @@ end
 Node.__tostring = __tostring
 ```
 ```lua
+local lines = assert(core.lines)
+
 local function __repr(node, phrase, c)
    local node__repr = tostring(toString(node, 0, c))
-   return core.lines(node__repr)
+   return lines(node__repr)
 end
 
 Node.__repr = __repr
