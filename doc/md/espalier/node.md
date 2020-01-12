@@ -135,7 +135,7 @@ local function toString(node, depth, c)
    if node[1] then
       for _,v in ipairs(node) do
          if (v.isNode) then
-            phrase = phrase .. toString(v, depth + 1, c)
+            phrase = phrase .. v:toString(depth + 1, c)
          end
       end
    end
