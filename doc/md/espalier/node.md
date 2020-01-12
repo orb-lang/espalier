@@ -89,6 +89,19 @@ We're less disciplined than we should be about up-assigning this to
 inherited Node classes.
 
 ```lua
+local function _truncate(str, base_color, c)
+   local phrase
+   if #str > 56 then
+       --  Truncate in the middle
+       local pre, post = sub(str, 1, 26), sub(str, -26, -1)
+       phrase = base_color(pre)
+                     .. c.bold("………") .. base_color(post)
+   else
+       phrase = base_color(str)
+   end
+   return phrase:gsub("\n", "◼︎"):gsub(" ", c.greyscale("_") .. base_color())
+end
+
 local function toString(node, depth, c)
    c = c or c_bw
    depth = depth or 0
@@ -96,18 +109,8 @@ local function toString(node, depth, c)
    phrase = ("  "):rep(depth) .. c.bold(node.id) .. "    "
       .. c.number(node.first) .. "-" .. c.number(node.last)
    if node[1] then
-      local extra = "    "
-      if node:len() > 56 then
-         --  Truncate in the middle
-         local span = node:span()
-         local pre, post = sub(span, 1, 26), sub(span, -26, -1)
-         extra = extra .. c.greyscale(pre)
-                       .. c.bold("………") .. c.greyscale(post)
-         extra = extra:gsub("\n", "◼︎")
-      else
-         extra = extra .. c.greyscale(node:span():gsub("\n", "◼︎"))
-      end
-      phrase = phrase .. extra .. "\n"
+      phrase = phrase .. "    "
+               .. _truncate(node:span(), c.grayscale, c) .. "\n"
       for _,v in ipairs(node) do
          if (v.isNode) then
             phrase = phrase .. v:toString(depth + 1, c)
@@ -115,10 +118,7 @@ local function toString(node, depth, c)
       end
    else
       local val = node.str:sub(node.first, node.last)
-                          :gsub(" ", a.clear()
-                                .. c.greyscale("_") .. c.string())
-      val = c.string(val)
-      phrase = phrase .. "    " .. val  .. "\n"
+      phrase = phrase .. "    " .. _truncate(val, c.string,c)  .. "\n"
    end
    return phrase
 end
