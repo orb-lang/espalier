@@ -119,6 +119,19 @@ end
 
 
 
+function Node.strExtra(node, c)
+   return ""
+end
+
+
+
+
+
+
+
+
+
+
 local function _truncate(str, base_color, c)
    local phrase
    if #str > 56 then
@@ -137,7 +150,7 @@ function Node.strLine(node, c)
    local phrase = Phrase ""
    phrase = phrase .. node:strTag(c)
    if node[1] then
-      phrase = phrase .. "    "
+      phrase = phrase .. " " .. node:strExtra(c) .. "   "
                .. _truncate(node:span(), c.greyscale, c) .. "\n"
    else
       local val = node.str:sub(node.first, node.last)
