@@ -116,7 +116,7 @@ local function toString(node, depth, c)
       .. c.number(node.first) .. "-" .. c.number(node.last)
    if node[1] then
       phrase = phrase .. "    "
-               .. _truncate(node:span(), c.grayscale, c) .. "\n"
+               .. _truncate(node:span(), c.greyscale, c) .. "\n"
       for _,v in ipairs(node) do
          if (v.isNode) then
             phrase = phrase .. v:toString(depth + 1, c)
