@@ -108,26 +108,38 @@ local function _truncate(str, base_color, c)
    return phrase:gsub("\n", "◼︎"):gsub(" ", c.greyscale("_") .. base_color())
 end
 
-local function toString(node, depth, c)
+local function strLine(node, c)
    c = c or c_bw
-   depth = depth or 0
    local phrase = Phrase ""
-   phrase = ("  "):rep(depth) .. c.bold(node.id) .. "    "
+   phrase = phrase .. c.bold(node.id) .. "    "
       .. c.number(node.first) .. "-" .. c.number(node.last)
    if node[1] then
       phrase = phrase .. "    "
                .. _truncate(node:span(), c.greyscale, c) .. "\n"
-      for _,v in ipairs(node) do
-         if (v.isNode) then
-            phrase = phrase .. v:toString(depth + 1, c)
-         end
-      end
    else
       local val = node.str:sub(node.first, node.last)
       phrase = phrase .. "    " .. _truncate(val, c.string,c)  .. "\n"
    end
    return phrase
 end
+
+local function toString(node, depth, c)
+   depth = depth or 0
+   local phrase = Phrase ""
+   phrase = phrase .. ("  "):rep(depth)
+   phrase = phrase .. strLine(node, c)
+   ---[[
+   if node[1] then
+      for _,v in ipairs(node) do
+         if (v.isNode) then
+            phrase = phrase .. toString(v, depth + 1, c)
+         end
+      end
+   end
+   --]]
+   return phrase
+end
+Node.strLine = strLine
 
 Node.toString = toString
 
@@ -145,7 +157,7 @@ Node.__tostring = __tostring
 
 
 local function __repr(node, phrase, c)
-   local node__repr = toString(node, 0, c)
+   local node__repr = tostring(toString(node, 0, c))
    return core.lines(node__repr)
 end
 
