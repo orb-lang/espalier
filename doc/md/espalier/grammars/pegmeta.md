@@ -400,15 +400,15 @@ function NotThis.toLpeg(not_this)
   return phrase
 end
 ```
-### IfNotThis
+### Not_predicate
 
 ```lua
-local IfNotThis = PegMetas : inherit "if_not_this"
+local Not_predicate = PegMetas : inherit "not_predicate"
 
-function IfNotThis.toLpeg(if_not)
+function Not_predicate.toLpeg(not_pred)
    local phrase = PegPhrase "-("
-   for _, sub_if_not in ipairs(if_not) do
-      phrase = phrase .. sub_if_not:toLpeg()
+   for _, sub_not_pred in ipairs(not_pred) do
+      phrase = phrase .. sub_not_pred:toLpeg()
    end
    return phrase .. ")"
 end
@@ -609,7 +609,7 @@ return { rules = Rules,
          zero_or_more = Zero_or_more,
          one_or_more = One_or_more,
          not_this  = NotThis,
-         if_not_this = IfNotThis,
+         not_predicate = Not_predicate,
          and_predicate = And_predicate,
          not_this     = NotThis,
          capture     = Capture,
