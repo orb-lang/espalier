@@ -565,11 +565,10 @@ local Repeated = PegMetas : inherit "repeated"
 function Repeated.toLpeg(repeated)
    local phrase = PegPhrase "("
    if repeated[2].id == "number_repeat" then
-      local condition = tostring(repeated:select "literal"():toLpeg())
+      local condition = repeated:select "literal"():toLpeg():intern()
       local times = repeated[2]:span()
-      local min_times = tonumber(times) - 1
       -- match at least times - 1 and no more than times
-      phrase = phrase .. "#" .. condition .. "^" .. tostring(min_times)
+      phrase = phrase .. "#" .. condition .. "^" .. times
                .. " * " .. condition .. "^-" .. times
    else
       -- handle named repeats and back references here
