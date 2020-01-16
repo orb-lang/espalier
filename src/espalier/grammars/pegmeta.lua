@@ -539,12 +539,12 @@ end
 
 
 
-local Maybe = PegMetas : inherit "maybe"
+local Optional = PegMetas : inherit "optional"
 
-function Maybe.toLpeg(maybe)
+function Optional.toLpeg(optional)
    local phrase = PegPhrase()
-   for _, sub_maybe in ipairs(maybe) do
-      phrase = phrase .. " " .. sub_maybe:toLpeg()
+   for _, sub_optional in ipairs(optional) do
+      phrase = phrase .. " " .. sub_optional:toLpeg()
    end
    return phrase .. "^-1"
 end
@@ -663,6 +663,6 @@ return { rules = Rules,
          if_and_this = IfAndThis,
          not_this     = NotThis,
          capture     = Capture,
-         maybe   = Maybe,
+         optional   = Optional,
          some_number = SomeNumber,
          WS      = Whitespace }
