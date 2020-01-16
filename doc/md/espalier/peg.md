@@ -109,7 +109,7 @@ local function pegylator(_ENV)
             +  V"not_this"
 
    suffixed =  V"zero_or_more"
-            +  V"more_than_one"
+            +  V"one_or_more"
             +  V"optional"
             +  V"with_suffix"
             +  V"some_number"
@@ -139,7 +139,7 @@ local function pegylator(_ENV)
    range_end   = range_capture
 
    zero_or_more  =  V"allowed_suffixed" * V"WS" * P"*"
-   more_than_one =  V"allowed_suffixed" * V"WS" * P"+"
+   one_or_more =  V"allowed_suffixed" * V"WS" * P"+"
    optional         =  V"allowed_suffixed" * V"WS" * P"?"
    some_number   =  V"allowed_suffixed" * V"WS" * V"some_suffix"
 

@@ -480,14 +480,14 @@ function Zero_or_more.toLpeg(zero_or_more)
    return phrase .. "^0"
 end
 ```
-### MoreThanOne
+### One_or_more
 
 ```lua
-local MoreThanOne = PegMetas : inherit "more_than_one"
+local One_or_more = PegMetas : inherit "one_or_more"
 
-function MoreThanOne.toLpeg(more_than_one)
+function One_or_more.toLpeg(one_or_more)
    local phrase = PegPhrase()
-   for _, sub_more in ipairs(more_than_one) do
+   for _, sub_more in ipairs(one_or_more) do
       phrase = phrase .. " " .. sub_more:toLpeg()
    end
    return phrase .. "^1"
@@ -607,7 +607,7 @@ return { rules = Rules,
          range   = Range,
          literal = Literal,
          zero_or_more = Zero_or_more,
-         more_than_one = MoreThanOne,
+         one_or_more = One_or_more,
          not_this  = NotThis,
          if_not_this = IfNotThis,
          if_and_this = IfAndThis,
