@@ -413,17 +413,17 @@ function IfNotThis.toLpeg(if_not)
    return phrase .. ")"
 end
 ```
-### IfAndThis
+### And_predicate
 
 Equivalent of ``#rule`` in Lpeg.
 
 ```lua
-local IfAndThis = PegMetas : inherit "if_and_this"
+local And_predicate = PegMetas : inherit "and_predicate"
 
-function IfAndThis.toLpeg(if_and_this)
+function And_predicate.toLpeg(and_predicate)
    local phrase = PegPhrase "#"
-   for _, sub_if_and_this in ipairs(if_and_this) do
-      phrase = phrase .. " " .. sub_if_and_this:toLpeg()
+   for _, sub_and_predicate in ipairs(and_predicate) do
+      phrase = phrase .. " " .. sub_and_predicate:toLpeg()
    end
    return phrase
 end
@@ -610,7 +610,7 @@ return { rules = Rules,
          one_or_more = One_or_more,
          not_this  = NotThis,
          if_not_this = IfNotThis,
-         if_and_this = IfAndThis,
+         and_predicate = And_predicate,
          not_this     = NotThis,
          capture     = Capture,
          optional   = Optional,

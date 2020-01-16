@@ -104,7 +104,7 @@ local function pegylator(_ENV)
             +  V"range"
 
    prefixed =  V"if_not_this"
-            +  V"if_and_this"
+            +  V"and_predicate"
             +  V"not_this"
 
    suffixed =  V"zero_or_more"
@@ -124,7 +124,7 @@ local function pegylator(_ENV)
 
       not_this = P"-" * V"WS" * V"allowed_prefixed"
    if_not_this = P"!" * V"WS" * V"allowed_prefixed"
-   if_and_this = P"&" * V"WS" * V"allowed_prefixed"
+   and_predicate = P"&" * V"WS" * V"allowed_prefixed"
 
    literal =  d_string
            +  s_string
