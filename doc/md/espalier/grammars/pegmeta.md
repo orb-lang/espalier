@@ -467,15 +467,15 @@ function Range.toLpeg(range)
    return phrase .. range : select "range_end" () : span() .. "\" "
 end
 ```
-### Optional
+### Zero_or_more
 
 ```lua
-local Optional = PegMetas : inherit "optional"
+local Zero_or_more = PegMetas : inherit "zero_or_more"
 
-function Optional.toLpeg(optional)
+function Zero_or_more.toLpeg(zero_or_more)
    local phrase = PegPhrase()
-   for _, sub_option in ipairs(optional) do
-      phrase = phrase .. " " .. sub_option:toLpeg()
+   for _, sub_zero in ipairs(zero_or_more) do
+      phrase = phrase .. " " .. sub_zero:toLpeg()
    end
    return phrase .. "^0"
 end
@@ -606,7 +606,7 @@ return { rules = Rules,
          set     = Set,
          range   = Range,
          literal = Literal,
-         optional = Optional,
+         zero_or_more = Zero_or_more,
          more_than_one = MoreThanOne,
          not_this  = NotThis,
          if_not_this = IfNotThis,
