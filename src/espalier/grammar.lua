@@ -156,6 +156,9 @@
 
 
 
+
+
+
 local s = require "singletons" . status ()
 s.verbose = false
 s.angry   = false
@@ -197,16 +200,6 @@ if VER == " 5.1" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
 end
-
-
-
-
-
-
-
-local _astMeta = { __index = Node,
-                   __tostring = Node.toString,
-                   __repr    = Node.__repr }
 
 
 
@@ -262,7 +255,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       setmeta(t, metas.__DEFAULT)
    else
       t.id = id
-      setmeta(t, _astMeta)
+      setmeta(t, Node)
    end
 
 

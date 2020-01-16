@@ -237,6 +237,7 @@ end
 
 
 
+
 function Node.len(node)
     return 1 + node.last - node.first
 end
@@ -248,12 +249,6 @@ end
 
 
 
-
-
-
-
-
-Node.__len = Node.len
 
 
 

@@ -140,6 +140,10 @@ You might say the return value must _inherit_ from Node, if we were using
 a language that did that sort of thing.
 
 
+A metatable with the key ``__DEFAULT`` is given special treatment, used to
+replace Node itself for classes which are not provided with a metatable.
+
+
 ## Roadmap
 
   The Grammar class needs to be expanded to cover a broader array of use
@@ -222,14 +226,6 @@ if VER == " 5.1" then
    local getfenv = assert( getfenv )
 end
 ```
-#### _astMeta
-
-
-```lua
-local _astMeta = { __index = Node,
-                   __tostring = Node.toString,
-                   __repr    = Node.__repr }
-```
 ### make_ast_node
 
 This takes a lot of parameters and does a lot of things.
@@ -285,7 +281,7 @@ return a Node of some sort.
       setmeta(t, metas.__DEFAULT)
    else
       t.id = id
-      setmeta(t, _astMeta)
+      setmeta(t, Node)
    end
 ```
 #### DROP

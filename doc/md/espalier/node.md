@@ -215,7 +215,8 @@ end
 ahh, the pleasure of indexing by one.
 
 
-``node:len()`` gives the ``#node`` and I think we can just add that as a synonym.
+``node:len()`` gives the length of the node; we can't use ``#node`` because
+``node[#node]`` is the pragmatic way to access the rightmost child.
 
 
 hmm.
@@ -232,12 +233,6 @@ Hence
 fn Node.len(node)
    -> @last - @first
 end
-```
-
-yes, we can:
-
-```lua
-Node.__len = Node.len
 ```
 #### Node:gap(node)
 
@@ -413,7 +408,7 @@ end
 We are frequently in search of a subset of Nodes:
 
 
-#### Node.select(node, pred)
+#### Node.coro_select(node, pred)
 
   Takes the Node and walks it, yielding the Nodes which match the predicate.
 ``pred`` is either a string, which matches to ``id``, or a function, which takes
@@ -451,7 +446,7 @@ function Node.coro_select(node, pred)
    return wrap(function() traverse(node) end)
 end
 ```
-### Node.select1(node)
+### Node.select(node)
 
 This version uses a closure instead of a coroutine, to get around a crashing
 problem we've been having in bridge.
