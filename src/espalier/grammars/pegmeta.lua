@@ -560,31 +560,20 @@ end
 
 
 
+local Repeated = PegMetas : inherit "repeated"
 
-
-local SomeNumber = PegMetas : inherit "some_number"
-
-function SomeNumber.toLpeg(some_num)
+function Repeated.toLpeg(repeated)
    local phrase = PegPhrase "("
-   local reps =  some_num : select "repeats" ()
-   if not reps then
-      s : halt "no repeats in SomeNumber"
+   if repeated[2].id == "number_repeat" then
+      local condition = tostring(repeated:select "literal"():toLpeg())
+      local times = repeated[2]:span()
+      local min_times = tonumber(times) - 1
+      -- match at least times - 1 and no more than times
+      phrase = phrase .. "#" .. condition .. "^" .. tostring(min_times)
+               .. " * " .. condition .. "^-" .. times
    else
-      -- make reps a number, our grammar should guarantee this
-      -- succeeds.
-      reps = tonumber(reps:span())
+      -- handle named repeats and back references here
    end
-
-   local patt = some_num[1]:toLpeg()
-   if not patt then s : halt "no pattern in some_number" end
-
-   for i = 1, reps do
-      phrase = phrase .. patt
-      if i < reps then
-         phrase = phrase .. " * "
-      end
-   end
-
    return phrase .. ")"
 end
 
@@ -664,5 +653,5 @@ return { rules = Rules,
          not_this     = NotThis,
          capture     = Capture,
          optional   = Optional,
-         some_number = SomeNumber,
+         repeated   = Repeated,
          WS      = Whitespace }

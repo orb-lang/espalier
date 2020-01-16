@@ -506,42 +506,30 @@ function Optional.toLpeg(optional)
    return phrase .. "^-1"
 end
 ```
-### SomeNumber
+### Repeated
 
-An exact number of matches.
-
-
-The simple way to express this is: ``(patt * patt * patt)``.
+This class covers two superficially similar casess with rather different
+implementation.
 
 
-SomeNumber has a set of allowable patterns, and a number parameter; the
-pattern is always at the ``[1]`` index, and the number is always called
-``"repeats"``, so we use a select for the latter and index to get the former.
+The simpler case is a numeric repeat: this simply matches the suffixed pattern
+an exact number of times.
 
 ```lua
-local SomeNumber = PegMetas : inherit "some_number"
+local Repeated = PegMetas : inherit "repeated"
 
-function SomeNumber.toLpeg(some_num)
+function Repeated.toLpeg(repeated)
    local phrase = PegPhrase "("
-   local reps =  some_num : select "repeats" ()
-   if not reps then
-      s : halt "no repeats in SomeNumber"
+   if repeated[2].id == "number_repeat" then
+      local condition = tostring(repeated:select "literal"():toLpeg())
+      local times = repeated[2]:span()
+      local min_times = tonumber(times) - 1
+      -- match at least times - 1 and no more than times
+      phrase = phrase .. "#" .. condition .. "^" .. tostring(min_times)
+               .. " * " .. condition .. "^-" .. times
    else
-      -- make reps a number, our grammar should guarantee this
-      -- succeeds.
-      reps = tonumber(reps:span())
+      -- handle named repeats and back references here
    end
-
-   local patt = some_num[1]:toLpeg()
-   if not patt then s : halt "no pattern in some_number" end
-
-   for i = 1, reps do
-      phrase = phrase .. patt
-      if i < reps then
-         phrase = phrase .. " * "
-      end
-   end
-
    return phrase .. ")"
 end
 ```
@@ -614,6 +602,6 @@ return { rules = Rules,
          not_this     = NotThis,
          capture     = Capture,
          optional   = Optional,
-         some_number = SomeNumber,
+         repeated   = Repeated,
          WS      = Whitespace }
 ```
