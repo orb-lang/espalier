@@ -111,16 +111,12 @@ local function pegylator(_ENV)
    suffixed =  V"zero_or_more"
             +  V"one_or_more"
             +  V"optional"
-            +  V"with_suffix"
-            +  V"some_number"
+            +  V"repeated"
 
    allowed_prefixed =  V"compound" + V"suffixed" + V"atom" + V"number"
    allowed_suffixed =  V"compound" + V"prefixed" + V"atom" + V"number"
 
-   some_suffix   = P"$" * V"repeats"
-   -- these are implicitly suppressed
-   with_suffix   =  V"some_number" * V"which_suffix"
-   which_suffix  =  ( P"*" + P"+" + P"?")
+   some_suffix   = P"$" * (V"number_repeat" + V"named_repeat")
    -- /SUPPRESSED
 
       not_this = P"-" * V"WS" * V"allowed_prefixed"
@@ -141,9 +137,10 @@ local function pegylator(_ENV)
    zero_or_more  =  V"allowed_suffixed" * V"WS" * P"*"
    one_or_more =  V"allowed_suffixed" * V"WS" * P"+"
    optional         =  V"allowed_suffixed" * V"WS" * P"?"
-   some_number   =  V"allowed_suffixed" * V"WS" * V"some_suffix"
+   repeated      =  V"allowed_suffixed" * V"WS" * V"some_suffix"
 
-   repeats       =  some_num_c
+   number_repeat =  some_num_c
+   named_repeat  =  symbol
 
    comment  =  P";" * comment_c
 
