@@ -26,7 +26,7 @@ local function pegylator(_ENV)
             "elements",
             "allowed_prefixed", "allowed_suffixed",
             "simple", "compound", "prefixed", "suffixed",
-            "some_suffix",
+            "some_suffix", "referred",
             "pel", "per"  )
    --]]
    local comment_m  = -P"\n" * P(1)
@@ -116,7 +116,6 @@ local function pegylator(_ENV)
    allowed_prefixed =  V"compound" + V"suffixed" + V"atom" + V"number"
    allowed_suffixed =  V"compound" + V"prefixed" + V"atom" + V"number"
 
-   some_suffix   = P"$" * (V"number_repeat" + V"named_repeat")
    -- /SUPPRESSED
 
       not_this = P"-" * V"WS" * V"allowed_prefixed"
@@ -139,6 +138,12 @@ local function pegylator(_ENV)
    optional         =  V"allowed_suffixed" * V"WS" * P"?"
    repeated      =  V"allowed_suffixed" * V"WS" * V"some_suffix"
 
+   some_suffix   = P"$" * ( V"number_repeat"
+                          + V"referred"
+                          + V"named_repeat")
+
+   referred    =  V"reference" * "$"
+   reference     =  symbol
    number_repeat =  some_num_c
    named_repeat  =  symbol
 
