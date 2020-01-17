@@ -283,67 +283,29 @@ return a Node of some sort.
       t.id = id
       setmeta(t, Node)
    end
-```
-#### DROP
 
-#NB This rule is not working correctly, big surprise.
-frequently in real languages. In a ``(typical lisp expression)`` we don't need
-the parentheses and would like our span not to include them.
-
-
-We could use a pattern like ``V"formwrap"`` and then SUPPRESS ``formwrap``, but
-this is less eloquent than ``D(P"(") * V"form" *  D(P")")``.
-
-
-Which is admittedly hard to look at.  We prefer the form
-``D(pal) * V"form" * D(par)`` for this reason among others.
-
-
-The algorithm moves from the right to the left, because ``table.remove(t)``
-is **O(1)** so we can strip any amount of rightward droppage first.  It is
-correspondingly more expensive to strip middle drops, and most expensive
-to strip leftmost drops.
-
-
-More importantly, if we counted up, we'd be tracking ``#t``, a moving target.
-Counting to 1 neatly prevents this.
-
-
-   -  [ ] #Todo :Faster:
-
-
-     -  This algorithm, as we discussed, goes quadratic toward the left side.
-        The correct way to go is if we see any drop, flip a dirty bit, and
-        compact upward.
-
-
-     -  More to the point, the mere inclusion of this much ``s:`` slows the
-        algorithm to an utter crawl. The concatenations happen anyway, to
-        pass the string into the status module.
-
-
-        This is probably 10x the cost in real work.
-
-
-        Why am I doing it in such a dumb way? This is a literate programming
-        environment, and I'm building a language with templates and macros
-        and other useful access to state at compile time.
-
-
-        That's two ways to remove the verbosity and other printfs when they
-        aren't wanted.  Better to simulate the correct behavior until I can
-        provide it.
-
-
-anyway back to our program
-
-
-The parent of the first node is always itself:
-
-```lua
    if not t.parent then
       t.parent = t
    end
+```
+#### DROP
+
+I'm removing all of this logic, but leaving the hook in place.
+
+
+We want to be able to drop things.  We want to be able to tag captures as
+ignorable, and we want to be able to do that soon.
+
+
+But the right way to do it, is to iterate the children, and if we see
+something we don't like, we trip a flag.
+
+
+If that flag is tripped, then, and only then, we compact the table, in a
+single pass, with a helper function.
+
+```lua
+
 ```
 
 This means the special case isn't a ``nil``, which I think is better.
@@ -352,66 +314,12 @@ This means the special case isn't a ``nil``, which I think is better.
 Now we iterate the children
 
 ```lua
-   for i = #t, 1 --[[0]], -1 do
-      t[i].parent = t
+   for i = #t, 1, -1 do
       local cap = t[i]
+      cap.parent = t
       if type(cap) ~= "table" then
          s:complain("CAPTURE ISSUE",
                     "type of capture subgroup is " .. type(v) .. "\n")
-      end
-      if cap.DROP == DROP then
-         s:verb("drops in " .. a.bright(t.id))
-         if i == #t then
-            s:verb(a.red("rightmost") .. " remaining node")
-            s:verb("  t.$: " .. tostring(t.last) .. " Δ: "
-                   .. tostring(cap.last - cap.first))
-            -- <action>
-            t.last = t.last - (cap.last - cap.first)
-            remove(t)
-            -- </action>
-            s:verb("  new t.$: " .. tostring(t.last))
-         else
-            -- Here we may be either in the middle or at the leftmost
-            -- margin.  Leftmost means either we're at index 1, or that
-            -- all children to the left, down to 1, are all DROPs.
-            local leftmost = (i == 1)
-            if leftmost then
-               s:verb(a.cyan("  leftmost") .. " remaining node")
-               s:verb("    t.^: " .. tostring(t.first)
-                      .. " D.$: " .. tostring(cap.last))
-               -- <action>
-               t.first = cap.last
-               --    <comment>
-               s:verb("    new t.^: " .. tostring(t.first))
-               --    </comment>
-               remove(t, 1)
-               -- </action>
-            else
-               leftmost = true -- provisionally since cap.DROP
-               for j = i, 1, -1 do
-                 leftmost = leftmost and t[j].DROP
-                 if not leftmost then break end
-               end
-               if leftmost then
-                  s:verb(a.cyan("  leftmost inner") .. " remaining node")
-                  s:verb("    t.^: " .. tostring(t.first)
-                         .. " D.$: " .. tostring(cap.last))
-                  t.first = cap.last
-                  s:verb("    new t.^: " .. tostring(t.first))
-                  -- <action>
-                  for j = i, 1, -1 do
-                     -- this is quadradic but correct
-                     -- and easy to understand.
-                        remove(t, j)
-                     break
-                  end
-                  -- </action>
-               else
-                  s:verb(a.green("  middle") .. " node dropped")
-                  remove(t, i)
-               end
-            end
-         end
       end
    end
    -- post conditions

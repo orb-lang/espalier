@@ -258,59 +258,6 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
       setmeta(t, Node)
    end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
    if not t.parent then
       t.parent = t
    end
@@ -321,66 +268,30 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
-   for i = #t, 1 --[[0]], -1 do
-      t[i].parent = t
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   for i = #t, 1, -1 do
       local cap = t[i]
+      cap.parent = t
       if type(cap) ~= "table" then
          s:complain("CAPTURE ISSUE",
                     "type of capture subgroup is " .. type(v) .. "\n")
-      end
-      if cap.DROP == DROP then
-         s:verb("drops in " .. a.bright(t.id))
-         if i == #t then
-            s:verb(a.red("rightmost") .. " remaining node")
-            s:verb("  t.$: " .. tostring(t.last) .. " Δ: "
-                   .. tostring(cap.last - cap.first))
-            -- <action>
-            t.last = t.last - (cap.last - cap.first)
-            remove(t)
-            -- </action>
-            s:verb("  new t.$: " .. tostring(t.last))
-         else
-            -- Here we may be either in the middle or at the leftmost
-            -- margin.  Leftmost means either we're at index 1, or that
-            -- all children to the left, down to 1, are all DROPs.
-            local leftmost = (i == 1)
-            if leftmost then
-               s:verb(a.cyan("  leftmost") .. " remaining node")
-               s:verb("    t.^: " .. tostring(t.first)
-                      .. " D.$: " .. tostring(cap.last))
-               -- <action>
-               t.first = cap.last
-               --    <comment>
-               s:verb("    new t.^: " .. tostring(t.first))
-               --    </comment>
-               remove(t, 1)
-               -- </action>
-            else
-               leftmost = true -- provisionally since cap.DROP
-               for j = i, 1, -1 do
-                 leftmost = leftmost and t[j].DROP
-                 if not leftmost then break end
-               end
-               if leftmost then
-                  s:verb(a.cyan("  leftmost inner") .. " remaining node")
-                  s:verb("    t.^: " .. tostring(t.first)
-                         .. " D.$: " .. tostring(cap.last))
-                  t.first = cap.last
-                  s:verb("    new t.^: " .. tostring(t.first))
-                  -- <action>
-                  for j = i, 1, -1 do
-                     -- this is quadradic but correct
-                     -- and easy to understand.
-                        remove(t, j)
-                     break
-                  end
-                  -- </action>
-               else
-                  s:verb(a.green("  middle") .. " node dropped")
-                  remove(t, i)
-               end
-            end
-         end
       end
    end
    -- post conditions
