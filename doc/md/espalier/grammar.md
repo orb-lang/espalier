@@ -426,6 +426,9 @@ local function refineMetas(metas)
   for id, meta in pairs(metas) do
     if id ~= "__DEFAULT" then
       if type(meta) == "table" then
+        -- #todo is this actually necessary now?
+        -- if all Node children are created with Node:inherit than
+        -- it isn't.
         if not meta["__tostring"] then
           meta["__tostring"] = Node.toString
         end
@@ -447,7 +450,7 @@ yield a parsing function and the grammar as an ``lpeg`` pattern.
 #### _fromString(g_str), _toFunction(maybe_grammar)
 
 Currently this is expecting pure Lua code; the structure of the module is
-such that we can't call the PEG gramamr from ``grammar.orb`` due to the
+such that we can't call the PEG grammar from ``grammar.orb`` due to the
 circular dependency thereby created.
 
 
@@ -489,6 +492,7 @@ local function new(grammar_template, metas, pre, post)
       --[[
       if pre then
          str = pre(str)
+         assert(type(str) == "string")
       end
       --]]
       local match = L.match(grammar, str, 1, str, metas, offset)
@@ -497,10 +501,10 @@ local function new(grammar_template, metas, pre, post)
       end
       --[[
       if post then
-         error "error in post parsing"
         match = post(match)
       end
       --]]
+      --[[ All of this needs rethinking
       local maybeErr = match:lastLeaf()
       if maybeErr.id then
          if maybeErr.id == "ERROR" then
@@ -517,7 +521,7 @@ local function new(grammar_template, metas, pre, post)
          s:complain("No id on match" .. "match of type, " .. type(match)
                    .. maybeNode .. " a Node: " .. tostring(maybeErr))
       end
-      -- This would be a bad match.
+      --]]
       return match
    end
 
