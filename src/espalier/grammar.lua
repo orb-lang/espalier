@@ -170,7 +170,7 @@ s.angry   = false
 
 local L = require "lpeg"
 local a = require "singletons/anterm"
-
+local compact = assert(require "core/table" . compact)
 local Node = require "espalier/node"
 local elpatt = require "espalier/elpatt"
 
@@ -286,13 +286,21 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
-   for i = #t, 1, -1 do
+
+
+
+   local top, touched = #t, false
+   for i = 1, top do
       local cap = t[i]
-      cap.parent = t
-      if type(cap) ~= "table" then
-         s:complain("CAPTURE ISSUE",
-                    "type of capture subgroup is " .. type(v) .. "\n")
+      if type(cap) ~= "table" or not cap.isNode then
+         touched = true
+         t[i] = nil
+      else
+         cap.parent = t
       end
+   end
+   if touched then
+      compact(t, top)
    end
    -- post conditions
    assert(t.isNode, "failed isNode: " .. id)
@@ -360,13 +368,13 @@ local function define(func, g, e)
           if suppressed[ name ] then
              g[ name ] = val
           else
-             g[ name ] = (Cc(name)
-                * Cp()
-                * Ct(val)
-                * Cp()
-                * arg1_str
-                * arg2_metas)
-                * arg3_offset / make_ast_node
+             g[ name ] = Cc(name)
+                       * Cp()
+                       * Ct(val)
+                       * Cp()
+                       * arg1_str
+                       * arg2_metas
+                       * arg3_offset / make_ast_node
           end
        end })
 
