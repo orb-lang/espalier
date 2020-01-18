@@ -152,7 +152,7 @@ local closeeq = Cmt(close * Cb("init"),
 
 
 local postscript = [[
-  longstring = (open * C((P(1) - closeeq)^0) * close) / 0
+  longstring = open * (P(1) - closeeq)^0 * close
 ]]
 
 

@@ -152,7 +152,7 @@ Dividing by zero is a weird way to reject all captures, but eh.
 
 #!lua
 local postscript = [[
-  longstring = (open * C((P(1) - closeeq)^0) * close) / 0
+  longstring = open * (P(1) - closeeq)^0 * close
 ]]
 #/lua
 
