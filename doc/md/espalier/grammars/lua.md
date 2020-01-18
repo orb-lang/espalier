@@ -93,9 +93,10 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
-`longstring`   = "[" ("="*)$eq "["
-                 (!("]" ("="*)$eq$ "]") 1)*
-                 "]" ("="*)$eq$ "]"
+`longstring`   = ls_open (!ls_close 1)* ls_close
+
+`ls_open` = "[" ("="*)$eq "["
+`ls_close` = "]" ("="*)$eq$ "]"
 
 symbol = !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
 
