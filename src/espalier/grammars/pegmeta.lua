@@ -186,6 +186,7 @@ end
 local _PREFACE = PegPhrase ([[
 local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
+local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
 ]])
 
 
@@ -563,17 +564,27 @@ end
 local Repeated = PegMetas : inherit "repeated"
 
 function Repeated.toLpeg(repeated)
-   local phrase = PegPhrase "("
+   local phrase = PegPhrase ""
+   local condition = repeated[1]:toLpeg():intern()
    if repeated[2].id == "number_repeat" then
-      local condition = repeated:select"literal"():toLpeg():intern()
       local times = repeated[2]:span()
       -- match at least times - 1 and no more than times
       phrase = phrase .. "#" .. condition .. "^" .. times
                .. " * " .. condition .. "^-" .. times
    else
       -- handle named repeats and (back) references here
+      if repeated[2].id == "named_repeat" then
+        -- make a capture group
+        phrase = phrase .. "Cg(" .. condition .. ",'" .. repeated[2]:span()
+                 .. PegPhrase "')"
+      elseif repeated[2].id == "reference" then
+        -- make a back reference with equality comparison
+        phrase = phrase .. "Cmt(C(" .. condition
+                 .. ") * Cb('" .. repeated[2]:span()
+                 .. PegPhrase"'),function (s, i, a, b) return a == b end)"
+      end
    end
-   return phrase .. ")"
+   return phrase
 end
 
 

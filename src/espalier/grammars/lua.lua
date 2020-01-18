@@ -138,8 +138,8 @@ local L = require "lpeg"
 local C, Cg, Cmt, Cb, P = L.C, L.Cg, L.Cmt, L.Cb, L.P
 local equals = P"="^0
 local open = "[" * Cg(equals, "init") * "[" * P"\n"^-1
-local close = Cmt(P"]" * C(equals) * P"]" * Cb("init"),
-                         function (s, i, a, b) return a == b end)
+local close = P"]" * Cmt(C(equals) * Cb("init"),
+                         function (s, i, a, b) return a == b end) * P"]"
 ]]
 
 

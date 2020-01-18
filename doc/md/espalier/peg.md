@@ -118,7 +118,7 @@ local function pegylator(_ENV)
 
    -- /SUPPRESSED
 
-      not_this = P"-" * V"WS" * V"allowed_prefixed"
+        not_this = P"-" * V"WS" * V"allowed_prefixed"
    not_predicate = P"!" * V"WS" * V"allowed_prefixed"
    and_predicate = P"&" * V"WS" * V"allowed_prefixed"
 
@@ -127,9 +127,9 @@ local function pegylator(_ENV)
 
    hidden_literal =  h_string
 
-   set     =  P"{" * set_c^1 * P"}"
+           set =  P"{" * set_c^1 * P"}"
 
-   range   =  P"[" * V"range_start" * P"-" * V"range_end" * P"]"
+       range   =  P"[" * V"range_start" * P"-" * V"range_end" * P"]"
    range_start = range_capture
    range_end   = range_capture
 
