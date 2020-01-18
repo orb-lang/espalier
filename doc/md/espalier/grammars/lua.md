@@ -136,10 +136,8 @@ local L = require "lpeg"
 local C, Cg, Cmt, Cb, P = L.C, L.Cg, L.Cmt, L.Cb, L.P
 local equals = P"="^0
 local open = "[" * Cg(equals, "init") * "[" * P"\n"^-1
-local close = "]" * C(equals) * "]"
-local closeeq = Cmt(close * Cb("init"),
+local close = Cmt(P"]" * C(equals) * P"]" * Cb("init"),
                          function (s, i, a, b) return a == b end)
-
 ]]
 ```
 #### Postscript
@@ -148,7 +146,7 @@ Dividing by zero is a weird way to reject all captures, but eh.
 
 ```lua
 local postscript = [[
-  longstring = open * (P(1) - closeeq)^0 * close
+  longstring = open * (P(1) - close)^0 * close
 ]]
 ```
 ```lua
