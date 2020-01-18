@@ -93,6 +93,9 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
 string = singlestring / doublestring / longstring
 `singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
 `doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
+`longstring`   = "[" ("="*)$eq "["
+                 (!("]" ("="*)$eq$ "]") 1)*
+                 "]" ("="*)$eq$ "]"
 
 symbol = !keyword ([A-Z] / [a-z] / "_") ([A-Z] / [a-z] / [0-9] /"_" )*
 
@@ -119,40 +122,4 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local header = [[
-local L = require "lpeg"
-local C, Cg, Cmt, Cb, P = L.C, L.Cg, L.Cmt, L.Cb, L.P
-local equals = P"="^0
-local open = "[" * Cg(equals, "init") * "[" * P"\n"^-1
-local close = P"]" * Cmt(C(equals) * Cb("init"),
-                         function (s, i, a, b) return a == b end) * P"]"
-]]
-
-
-
-
-
-
-
-
-local postscript = [[
-  longstring = open * (P(1) - close)^0 * close
-]]
-
-
-
-return Peg(lua_str) : toGrammar(nil, postscript, header)
+return Peg(lua_str) : toGrammar()
