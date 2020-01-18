@@ -31,7 +31,7 @@ statement = "do" t chunk "end" t
           / "if" t expr "then" t chunk
             ("elseif" t expr "then" t chunk)*
             ("else" t chunk)* "end" t
-          / "for" t _ symbol _ "=" expr _ "," _ expr _ ("," _ expr)?
+          / "for" t _ symbol _ "=" expr "," expr ("," expr)?
             _ "do" t chunk "end" t
           / "for" t _ symbollist _ "in" t expr "do" t chunk "end" t
           / "function" t _ funcname _ funcbody
@@ -42,7 +42,7 @@ statement = "do" t chunk "end" t
           / "::" symbol "::"
           / functioncall
 
-laststatement = "return" t _ (explist)?
+laststatement = "return" t (explist)?
               / "break" t
 
 funcname = symbol _ ("." _ symbol)* (":" _ symbol)?
@@ -118,6 +118,7 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
         / "in" / "local" / "nil" / "not" / "or" / "repeat"
         / "return" / "then" / "true" / "until" / "while")
         t
+
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
 ]=]
 #/lua
