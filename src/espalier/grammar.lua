@@ -238,65 +238,6 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   local offset = offset or 0
    t.first = first + offset
    t.last  = last + offset - 1
    t.str   = str

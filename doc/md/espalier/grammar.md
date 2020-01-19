@@ -252,75 +252,6 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 Because of course they do.
 
 
-#### Fix offset logic #Todo
-
-This is going to be difficult, given the comprehensive reliance on espalier
-throughout the codebase.
-
-
-The problem: currently, offsets just adjust the numbers on ``first`` and ``last``.
-
-
-This is useless, although it points in the right direction.
-
-
-What offset is supposed to do: parse a subset of ``str``, with a start **and end**
-point, such that the values of ``first`` and ``last`` are correct in reference to
-the given string.
-
-
-Let's illustrate what we want:
-
-```lua-example
-only_b = Peg[[b = "b"+]]
-
-b_node = only_b("aaabbbaaa", 4, 6)
-
--- giving:
--- b  4 - 6 "bbb"
-```
-
-such that ``b_node:span()`` gives back "bbb" as expected, but b_node.str equals
-"aaabbbaaa", also as expected.
-
-
-With _that_ abstraction, we could define a subgrammar as a function, and pass
-it as a metatable, which could take first and last off ``t``, call itself, and
-return the subbed parse tree, correctly offset.
-
-
-Now, what we have isn't that broken.  If we call a grammar on a slice of a
-string, with ``offset`` equal to the first cutpoint, we'll get back a set of
-Nodes with the correct offsets but the wrong value for ``str``.
-
-
-We could walk those nodes, and reset the value of ``str`` to the original ``str``,
-and get what we intended.
-
-
-So that's what we'll do, complicated by the fact that orb uses espalier
-extensively and it's difficult to make changes when everything has to be
-correct. It may even rely on the incorrect implementation of ``offset`` although
-I don't believe so; there's something wonky about prose blocks and markdown,
-but I gather this is fixable.
-
-
-There may be some further room for improvement, but I'm dubious.  ``match`` can
-receive an argument that offsets into the string, but there's no mechanism to
-provide an end point, which is an oversight imho.  Any such mechanism would be
-a breaking change, because ``match`` passes along additional arguments to the
-grammar, so this is unlikely to ever be fixed.
-
-
-So to get the behavior we're after, we need to ``sub`` the string before we run
-``match`` on it, no way around this.  And, it turns out, the string we ``match``
-on and the string we attach to the table are only accidentally the same
-string!
-
-
-That's very good news.  This is closer to fixed than I thought.
-
-
 #### Set up values and metatables
 
   We accept two types of value for a metatable. A table must be derived from
@@ -333,7 +264,6 @@ or run another grammar and return an entire AST, but currently cannot fail to
 return a Node of some sort.
 
 ```lua
-   local offset = offset or 0
    t.first = first + offset
    t.last  = last + offset - 1
    t.str   = str
