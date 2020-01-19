@@ -238,6 +238,64 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    local offset = offset or 0
    t.first = first + offset
    t.last  = last + offset - 1
@@ -450,6 +508,8 @@ local function _toFunction(maybe_grammar)
    end
 end
 
+local P = assert(L.P)
+
 local function new(grammar_template, metas, pre, post)
    if type(grammar_template) ~= "function" then
       -- see if we can coerce it
@@ -460,15 +520,20 @@ local function new(grammar_template, metas, pre, post)
    metas = refineMetas(metas)
    local grammar = define(grammar_template, nil, metas)
 
-   local function parse(str, offset)
-      local offset = offset or 0
+   local function parse(str, start, finish)
+      local sub_str = str
+      if start then
+         finish = finish or #str
+         sub_str = string.sub(str, start, finish)
+      end
+      local offset = start and start - 1 or 0
       --[[
       if pre then
          str = pre(str)
          assert(type(str) == "string")
       end
       --]]
-      local match = L.match(grammar, str, 1, str, metas, offset)
+      local match = L.match(grammar, sub_str, 1, str, metas, offset)
       if match == nil then
          return nil
       end

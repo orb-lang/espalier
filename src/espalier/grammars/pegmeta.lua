@@ -111,6 +111,7 @@ end
 
 
 
+
 local a = require "singletons/anterm"
 function Peg.toLpeg(peg)
    return a.red(peg:span())
@@ -161,11 +162,11 @@ local Rules = PegMetas : inherit "rules"
 
 
 
-function Rules.__call(rules, str)
+function Rules.__call(rules, str, start, finish)
    if not rules.parse then
       rules.parse, rules.grammar = Grammar(rules:toLpeg())
    end
-   return rules.parse(str)
+   return rules.parse(str, start, finish)
 end
 
 

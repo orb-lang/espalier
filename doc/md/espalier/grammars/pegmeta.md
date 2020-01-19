@@ -102,7 +102,8 @@ end
 ## Peg.toLpeg(peg)
 
 This needs to be implemented by each subclass, individually, so we produce a
-base method that halts if we fall back to it.
+base method that highlights the span in red.  This makes it stick out, and
+will produce an error if we attempt to compile it.
 
 ```lua
 local a = require "singletons/anterm"
@@ -118,8 +119,8 @@ PegMetas.id = "pegMetas"
 ```
 ### PegPhrase class
 
-We'll want to decorate our phrases with various REPRy enhancements, so let's
-pull a fresh metatable:
+  We might want to decorate our phrases with various REPRy enhancements, so
+let's pull a fresh metatable:
 
 ```lua
 local PegPhrase = Phrase() : inherit ()
@@ -137,7 +138,7 @@ end
 generate passable Lua code.
 
 
-It won't be pretty, but it will be valid.  Eventually.
+It's not pretty, but it's valid.  At least, so far; PRs welcome.
 
 ```lua
 local Rules = PegMetas : inherit "rules"
@@ -147,11 +148,11 @@ local Rules = PegMetas : inherit "rules"
 We allow the Peg root node to be callable as a Grammar.
 
 ```lua
-function Rules.__call(rules, str)
+function Rules.__call(rules, str, start, finish)
    if not rules.parse then
       rules.parse, rules.grammar = Grammar(rules:toLpeg())
    end
-   return rules.parse(str)
+   return rules.parse(str, start, finish)
 end
 ```
 ### Rules:toLpeg(extraLpeg)
@@ -258,7 +259,7 @@ optional.
              function.
 
 
-             These must be valid Lua chunks.
+             This and ``extraLpeg`` must be valid Lua chunks.
 
 
   - pre:  A function operating on the string to be parsed before the grammar
