@@ -234,6 +234,18 @@ end
 
 
 
+function Node.bounds(node)
+   return node.first, node.last
+end
+
+
+
+
+
+
+
+
+
 
 
 

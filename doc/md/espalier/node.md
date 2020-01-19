@@ -210,6 +210,16 @@ function Node.span(node)
    return sub(node.str, node.first, node.last)
 end
 ```
+#### node:bounds()
+
+Returns ``node.first`` and ``node.last``, such that
+``string.sub(node.str, node:bounds())`` is equal to ``node:span()``.
+
+```lua
+function Node.bounds(node)
+   return node.first, node.last
+end
+```
 #### node:len()
 
 ahh, the pleasure of indexing by one.
