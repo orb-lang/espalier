@@ -489,19 +489,23 @@ local function new(grammar_template, metas, pre, post)
    local grammar = define(grammar_template, nil, metas)
 
    local function parse(str, start, finish)
-      local sub_str = str
-      if start then
-         finish = finish or #str
+      local sub_str, begin = str, 1
+      local offset = start and start - 1 or 0
+      if start and finish then
          sub_str = string.sub(str, start, finish)
       end
-      local offset = start and start - 1 or 0
+      if start and not finish then
+         begin = start
+         offset = 0
+      end
+
       --[[
       if pre then
          str = pre(str)
          assert(type(str) == "string")
       end
       --]]
-      local match = L.match(grammar, sub_str, 1, str, metas, offset)
+      local match = L.match(grammar, sub_str, begin, str, metas, offset)
       if match == nil then
          return nil
       end
