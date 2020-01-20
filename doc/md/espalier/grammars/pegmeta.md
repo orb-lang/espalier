@@ -538,7 +538,7 @@ function Repeated.toLpeg(repeated)
         -- make a back reference with equality comparison
         phrase = phrase .. "Cmt(C(" .. condition
                  .. ") * Cb('" .. repeated[2]:span()
-                 .. PegPhrase"'),function (s, i, a, b) return a == b end)"
+                 .. PegPhrase"'),function (s, i, a, b) return #a == #b end)"
       end
    end
    return phrase
