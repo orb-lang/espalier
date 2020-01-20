@@ -176,7 +176,9 @@ local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
 local function __EQ_LEN(s, i, a, b)
    return #a == #b
 end
-
+local function __EQ_EXACT(s, i, a, b)
+   return a == b
+end
 ]])
 ```
 #### _normalize
@@ -527,23 +529,35 @@ local Repeated = PegMetas : inherit "repeated"
 function Repeated.toLpeg(repeated)
    local phrase = PegPhrase ""
    local condition = repeated[1]:toLpeg():intern()
-   if repeated[2].id == "number_repeat" then
-      local times = repeated[2]:span()
+   local times = repeated[2]:span()
       -- match at least times - 1 and no more than times
-      phrase = phrase .. "#" .. condition .. "^" .. times
-               .. " * " .. condition .. "^-" .. times
-   else
-      -- handle named repeats and (back) references here
-      if repeated[2].id == "named_repeat" then
-        -- make a capture group
-        phrase = phrase .. "Cg(" .. condition .. ",'" .. repeated[2]:span()
-                 .. PegPhrase "')"
-      elseif repeated[2].id == "reference" then
-        -- make a back reference with equality comparison
-        phrase = phrase .. "Cmt(C(" .. condition
-                 .. ") * Cb('" .. repeated[2]:span()
-                 .. PegPhrase"'), __EQ_LEN)"
-      end
+   phrase = phrase .. "#" .. condition .. "^" .. times
+               .. " * " .. condition .. "^-" .. PegPhrase(times)
+   return phrase
+end
+```
+### Named
+
+```lua
+local Named = PegMetas : inherit "named"
+
+function Named.toLpeg(named)
+   local phrase = PegPhrase ""
+   local condition = named[1]:toLpeg():intern()
+   if named[2].id == "named_match" then
+     -- make a capture group
+     phrase = phrase .. "Cg(" .. condition .. ",'" .. named[2]:span()
+               .. PegPhrase "')"
+   elseif named[2].id == "back_reference" then
+     -- make a back reference with equality comparison
+     phrase = phrase .. "Cmt(C(" .. condition
+               .. ") * Cb('" .. named[2]:span()
+               .. PegPhrase"'), __EQ_EXACT)"
+   elseif named[2].id == "equal_reference" then
+     -- make a back reference, compare by length
+     phrase = phrase .. "Cmt(C(" .. condition
+               .. ") * Cb('" .. named[2]:span()
+               .. PegPhrase"'), __EQ_LEN)"
    end
    return phrase
 end
@@ -618,5 +632,6 @@ return { rules = Rules,
          capture     = Capture,
          optional   = Optional,
          repeated   = Repeated,
+         named    = Named,
          WS      = Whitespace }
 ```

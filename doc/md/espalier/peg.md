@@ -24,10 +24,10 @@ local function pegylator(_ENV)
    SUPPRESS ("enclosed", "form",
             "element" , "WS",
             "elements", "allowed_repeated",
-            "allowed_prefixed", "allowed_suffixed",
+            "allowed_prefixed", "allowed_suffixed", "allowed_referred",
             "simple", "compound", "prefixed", "suffixed",
-            "some_suffix", "referred", "named_suffix", "named_referred",
-            "pel", "per"  )
+            "referred", "named_suffix", "back_referred", "equal_referred",
+            "pel", "per" )
    --]]
    local comment_m  = -P"\n" * P(1)
    local comment_c =  comment_m^0 * P"\n"^0
@@ -143,17 +143,17 @@ local function pegylator(_ENV)
     zero_or_more =  V"allowed_suffixed" * V"WS" * P"*"
      one_or_more =  V"allowed_suffixed" * V"WS" * P"+"
         optional =  V"allowed_suffixed" * V"WS" * P"?"
-        repeated =  V"allowed_repeated" * V"WS" * V"some_suffix"
+        repeated =  V"allowed_repeated" * V"WS" * P"%" * V"number_repeat"
            named =  V"allowed_repeated" * V"WS" * V"named_suffix"
 
-   some_suffix   = P"$" * ( V"number_repeat"
-                          + V"referred"
-                          + V"named_repeat")
-   named_suffix  =  P"%" * (V"named_referred" + V"named_match")
+   named_suffix  =  P"@" * ( V"named_match"
+                           + V"back_referred"
+                           + V"equal_referred" )
 
-   named_referred = V"named_reference" * "%"
-
-   named_reference = symbol
+   back_referred   =  P"(" * V"back_reference" * P")"
+   equal_referred  =  P"(#" * V"equal_reference" * P")"
+   equal_reference = symbol
+   back_reference  = symbol
    named_match     = symbol
 
    referred    =  V"reference" * "$"
@@ -167,7 +167,7 @@ local function pegylator(_ENV)
 
    number = digit^1
 
-   WS = V"comment" + (P' ' + P'\n' + P'\t' + P'\r')^0
+   WS = (V"comment" + P' ' + P'\n' + P'\t' + P'\r')^0
 
    ws = P"_"
 end
