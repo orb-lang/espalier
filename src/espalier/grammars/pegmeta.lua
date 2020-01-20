@@ -188,6 +188,10 @@ local _PREFACE = PegPhrase ([[
 local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
 local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
+local function __EQ_LEN(s, i, a, b)
+   return #a == #b
+end
+
 ]])
 
 
@@ -582,7 +586,7 @@ function Repeated.toLpeg(repeated)
         -- make a back reference with equality comparison
         phrase = phrase .. "Cmt(C(" .. condition
                  .. ") * Cb('" .. repeated[2]:span()
-                 .. PegPhrase"'),function (s, i, a, b) return #a == #b end)"
+                 .. PegPhrase"'), __EQ_LEN)"
       end
    end
    return phrase
