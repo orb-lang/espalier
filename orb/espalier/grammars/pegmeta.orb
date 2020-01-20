@@ -264,7 +264,7 @@ end
 #/lua
 
 
-**** Rules:toGrammar(metas, extraLpeg, header, pre, post)
+**** Rules:toGrammar(metas, pre, post, extraLpeg, header)
 
   Builds a Grammar out of a parsed Peg set. All non-self parameters are
 optional.
@@ -274,6 +274,13 @@ optional.
   - metas:  Metatables for function behavior (this module is an example of
             this parameter).
 
+  - pre:  A function operating on the string to be parsed before the grammar
+          is Matched.  Expected to return a string.
+
+  - post:  A function operating on the Nodes returned by the match, before the
+           AST is returned. Expected to return an AST, but whatever it returns
+           will be passed on by the Grammar.
+
   - extraLpeg:  String inserted after generated rules and before the final
                 =end= of the function.
 
@@ -282,19 +289,12 @@ optional.
 
              This and =extraLpeg= must be valid Lua chunks.
 
-  - pre:  A function operating on the string to be parsed before the grammar
-          is Matched.  Expected to return a string.
-
-  - post:  A function operating on the Nodes returned by the match, before the
-           AST is returned. Expected to return an AST, but whatever it returns
-           will be passed on by the Grammar.
-
 The resulting Grammar is stored as =rules.grammar= and can be invoked with the
 corresponding =__call= metamethod.  =toGrammar= will overwrite these if they
 have been created already, since the other parameters can be changed.
 
 #!lua
-function Rules.toGrammar(rules, metas, extraLpeg, header, pre, post)
+function Rules.toGrammar(rules, metas, pre, post, extraLpeg, header)
    metas = metas or {}
    header = header or ""
    local rule_str = rules:toLpeg(extraLpeg)

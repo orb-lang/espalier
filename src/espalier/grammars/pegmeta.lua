@@ -294,7 +294,7 @@ end
 
 
 
-function Rules.toGrammar(rules, metas, extraLpeg, header, pre, post)
+function Rules.toGrammar(rules, metas, pre, post, extraLpeg, header)
    metas = metas or {}
    header = header or ""
    local rule_str = rules:toLpeg(extraLpeg)
