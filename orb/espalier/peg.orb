@@ -25,7 +25,7 @@ local function pegylator(_ENV)
             "elements", "allowed_repeated",
             "allowed_prefixed", "allowed_suffixed",
             "simple", "compound", "prefixed", "suffixed",
-            "some_suffix", "referred",
+            "some_suffix", "referred", "named_suffix", "named_referred",
             "pel", "per"  )
    --]]
    local comment_m  = -P"\n" * P(1)
@@ -95,6 +95,7 @@ local function pegylator(_ENV)
 
    simple   =  V"prefixed"
             +  V"repeated"
+            +  V"named"
             +  V"suffixed"
             +  V"atom"
             +  V"number"
@@ -138,14 +139,21 @@ local function pegylator(_ENV)
    range_start = range_capture
    range_end   = range_capture
 
-   zero_or_more  =  V"allowed_suffixed" * V"WS" * P"*"
-   one_or_more =  V"allowed_suffixed" * V"WS" * P"+"
-   optional         =  V"allowed_suffixed" * V"WS" * P"?"
-   repeated      =  V"allowed_repeated" * V"WS" * V"some_suffix"
+    zero_or_more =  V"allowed_suffixed" * V"WS" * P"*"
+     one_or_more =  V"allowed_suffixed" * V"WS" * P"+"
+        optional =  V"allowed_suffixed" * V"WS" * P"?"
+        repeated =  V"allowed_repeated" * V"WS" * V"some_suffix"
+           named =  V"allowed_repeated" * V"WS" * V"named_suffix"
 
    some_suffix   = P"$" * ( V"number_repeat"
                           + V"referred"
                           + V"named_repeat")
+   named_suffix  =  P"%" * (V"named_referred" + V"named_match")
+
+   named_referred = V"named_reference" * "%"
+
+   named_reference = symbol
+   named_match     = symbol
 
    referred    =  V"reference" * "$"
    reference     =  symbol
