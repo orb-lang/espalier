@@ -23,7 +23,7 @@ local function pegylator(_ENV)
    ---[[
    SUPPRESS ("enclosed", "form",
             "element" , "WS",
-            "elements",
+            "elements", "allowed_repeated",
             "allowed_prefixed", "allowed_suffixed",
             "simple", "compound", "prefixed", "suffixed",
             "some_suffix", "referred",
@@ -94,9 +94,10 @@ local function pegylator(_ENV)
    pel     = P "("
    per     = P ")"
 
-   simple   =  V"suffixed"
+   simple   =  V"prefixed"
+            +  V"repeated"
+            +  V"suffixed"
             +  V"atom"
-            +  V"prefixed"
             +  V"number"
 
    enclosed =  V"literal"
@@ -111,10 +112,15 @@ local function pegylator(_ENV)
    suffixed =  V"zero_or_more"
             +  V"one_or_more"
             +  V"optional"
-            +  V"repeated"
 
    allowed_prefixed =  V"compound" + V"suffixed" + V"atom" + V"number"
    allowed_suffixed =  V"compound" + V"prefixed" + V"atom" + V"number"
+
+   allowed_repeated =  V"prefixed"
+                    +  V"suffixed"
+                    +  V"compound"
+                    +  V"atom"
+                    +  V"number"
 
    -- /SUPPRESSED
 
@@ -136,7 +142,7 @@ local function pegylator(_ENV)
    zero_or_more  =  V"allowed_suffixed" * V"WS" * P"*"
    one_or_more =  V"allowed_suffixed" * V"WS" * P"+"
    optional         =  V"allowed_suffixed" * V"WS" * P"?"
-   repeated      =  V"allowed_suffixed" * V"WS" * V"some_suffix"
+   repeated      =  V"allowed_repeated" * V"WS" * V"some_suffix"
 
    some_suffix   = P"$" * ( V"number_repeat"
                           + V"referred"
