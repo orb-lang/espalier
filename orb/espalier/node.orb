@@ -142,7 +142,10 @@ local function _truncate(str, base_color, c)
    else
        phrase = base_color(str)
    end
-   return phrase:gsub("\n", "◼︎"):gsub(" ", c.greyscale("_") .. base_color())
+   return phrase
+           : gsub("\n", "◼︎")
+           : gsub("[ ]+", c.greyscale("_")
+           .. base_color())
 end
 
 function Node.strLine(node, c)
