@@ -38,6 +38,18 @@ local insert, remove, concat = assert(table.insert),
                                assert(table.concat)
 local s = require "singletons/status" ()
 ```
+```lua
+local ok, lex = pcall(require, "helm:helm/lex")
+if not ok then
+   lex = function(repr) return "missing" end
+else
+   local lua_thor = lex.lua_thor
+   lex = function(repr)
+            local toks = lua_thor(tostring(repr))
+            return concat(toks)
+         end
+end
+```
 ### Peg base class
 
 ```lua
@@ -123,14 +135,7 @@ PegMetas.id = "pegMetas"
 let's pull a fresh metatable:
 
 ```lua
-local PegPhrase = Phrase() : inherit ()
-```
-### PegPhrase.__repr(peg_phrase)
-
-```lua
-function PegPhrase.__repr(peg_phrase)
-   return tostring(peg_phrase)
-end
+local PegPhrase = Phrase : inherit ({__repr = lex})
 ```
 ### Rules
 

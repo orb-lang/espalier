@@ -35,6 +35,19 @@ local s = require "singletons/status" ()
 
 
 
+local ok, lex = pcall(require, "helm:helm/lex")
+if not ok then
+   lex = function(repr) return "missing" end
+else
+   local lua_thor = lex.lua_thor
+   lex = function(repr)
+            local toks = lua_thor(tostring(repr))
+            return concat(toks)
+         end
+end
+
+
+
 
 
 
@@ -132,16 +145,7 @@ PegMetas.id = "pegMetas"
 
 
 
-local PegPhrase = Phrase() : inherit ()
-
-
-
-
-
-
-function PegPhrase.__repr(peg_phrase)
-   return tostring(peg_phrase)
-end
+local PegPhrase = Phrase : inherit ({__repr = lex})
 
 
 
