@@ -38,10 +38,12 @@ local insert, remove, concat = assert(table.insert),
                                assert(table.concat)
 local s = require "singletons/status" ()
 ```
+#### Optional Lex Lua_thor
+
 ```lua
 local ok, lex = pcall(require, "helm:helm/lex")
 if not ok then
-   lex = function(repr) return "missing" end
+   lex = function(repr) return tostring(repr) end
 else
    local lua_thor = lex.lua_thor
    lex = function(repr)

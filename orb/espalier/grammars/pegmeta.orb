@@ -34,6 +34,9 @@ local insert, remove, concat = assert(table.insert),
 local s = require "singletons/status" ()
 #/lua
 
+
+**** Optional Lex Lua_thor
+
 #!lua
 local ok, lex = pcall(require, "helm:helm/lex")
 if not ok then

@@ -173,4 +173,17 @@ end
 
 
 
-return Grammar(pegylator, pegMetas)
+local PegGrammar = Grammar(pegylator, pegMetas)
+
+
+
+local function new(peg_str, metas, pre, post)
+   local peg_node = PegGrammar(peg_str)
+   peg_node.parse, peg_node.grammar = Grammar(peg_node:toLpeg(),
+                                              metas, pre, post)
+   return peg_node
+end
+
+
+
+return new

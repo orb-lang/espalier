@@ -35,9 +35,12 @@ local s = require "singletons/status" ()
 
 
 
+
+
+
 local ok, lex = pcall(require, "helm:helm/lex")
 if not ok then
-   lex = function(repr) return "missing" end
+   lex = function(repr) return tostring(repr) end
 else
    local lua_thor = lex.lua_thor
    lex = function(repr)
