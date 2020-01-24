@@ -202,6 +202,9 @@ Node.__tostring = __tostring
 
 
 
+
+
+
 local lines = assert(core.lines)
 
 local function __repr(node, phrase, c)
@@ -524,7 +527,7 @@ function Node.select(node, pred)
    local matches = {}
    local function traverse(ast)
       -- depth-first, right to left
-      if ast.isNode then
+      if ast and ast.isNode then
          for i = #ast, 1, -1 do
             traverse(ast[i])
          end

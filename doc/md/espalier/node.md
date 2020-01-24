@@ -84,7 +84,7 @@ end
 
 This gives us a nice, tree-shaped printout of an entire Node.
 
-#todo write a =__repr= version with bells and whistles.### Node:strTag(c)
+#todo write a =__repr= version with bells and whistles.#### Node:strTag(c)
 
 Returns a Phrase which prints the id and first-last range of the Node.
 
@@ -100,7 +100,7 @@ function  Node.strTag(node, c)
    return phrase
 end
 ```
-### Node:strExtra(c)
+#### Node:strExtra(c)
 
 A placeholder for inserting extra information about a Node subclass.
 
@@ -112,7 +112,7 @@ function Node.strExtra(node, c)
    return ""
 end
 ```
-### Node:strLine(c)
+#### Node:strLine(c)
 
 Returns a Phrase containing a single line of Node information.
 
@@ -186,6 +186,8 @@ end
 
 Node.__tostring = __tostring
 ```
+### Node__repr
+
 ```lua
 local lines = assert(core.lines)
 
@@ -487,7 +489,7 @@ function Node.select(node, pred)
    local matches = {}
    local function traverse(ast)
       -- depth-first, right to left
-      if ast.isNode then
+      if ast and ast.isNode then
          for i = #ast, 1, -1 do
             traverse(ast[i])
          end

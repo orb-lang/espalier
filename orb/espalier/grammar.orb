@@ -479,7 +479,7 @@ local function new(grammar_template, metas, pre, post)
       if match == nil then
          return nil
       end
-      --[[
+      ---[[
       if post then
         match = post(match)
       end

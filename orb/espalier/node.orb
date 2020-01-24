@@ -95,7 +95,7 @@ inherited Node classes.
 #todo write a =__repr= version with bells and whistles.
 
 
-*** Node:strTag(c)
+**** Node:strTag(c)
 
 Returns a Phrase which prints the id and first-last range of the Node.
 
@@ -112,7 +112,7 @@ end
 #/lua
 
 
-*** Node:strExtra(c)
+**** Node:strExtra(c)
 
 A placeholder for inserting extra information about a Node subclass.
 
@@ -125,7 +125,7 @@ end
 #/lua
 
 
-*** Node:strLine(c)
+**** Node:strLine(c)
 
 Returns a Phrase containing a single line of Node information.
 
@@ -200,6 +200,9 @@ end
 
 Node.__tostring = __tostring
 #/lua
+
+
+*** Node__repr
 
 #!lua
 local lines = assert(core.lines)
@@ -524,7 +527,7 @@ function Node.select(node, pred)
    local matches = {}
    local function traverse(ast)
       -- depth-first, right to left
-      if ast.isNode then
+      if ast and ast.isNode then
          for i = #ast, 1, -1 do
             traverse(ast[i])
          end
