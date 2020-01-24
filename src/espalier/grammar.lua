@@ -244,6 +244,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
    if metas[id] then
       local meta = metas[id]
       if type(meta) == "function" then
+        t.id = id
         t = meta(t, offset)
       else
         t = setmeta(t, meta)
@@ -260,10 +261,6 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
    if not t.parent then
       t.parent = t
    end
-
-
-
-
 
 
 

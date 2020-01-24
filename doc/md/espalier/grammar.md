@@ -243,7 +243,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
   - metas   :  'table' of Node-inherited metatables (complex)
   - offset  :  'number' of optional offset.  This would be provided if
                e.g. byte 1 of ``str`` is actually byte 255 of a larger
-               ``str``.  Normally ``nil``.
+               ``str``.  Normally 0.
 
 
 ``first``, ``last`` and ``offset`` follow Wirth indexing conventions.
@@ -270,6 +270,7 @@ return a Node of some sort.
    if metas[id] then
       local meta = metas[id]
       if type(meta) == "function" then
+        t.id = id
         t = meta(t, offset)
       else
         t = setmeta(t, meta)
@@ -303,9 +304,6 @@ something we don't like, we trip a flag.
 If that flag is tripped, then, and only then, we compact the table, in a
 single pass, with a helper function.
 
-```lua
-
-```
 
 This means the special case isn't a ``nil``, which I think is better.
 
