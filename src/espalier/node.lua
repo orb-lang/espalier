@@ -414,7 +414,7 @@ end
 
 function Node.walkPost(node)
     local function traverse(ast)
-        if not ast.isNode then return nil end
+        if not type(ast) == 'table' and ast.isNode then return nil end
 
         for _, v in ipairs(ast) do
             if type(v) == 'table' and v.isNode then
@@ -436,7 +436,7 @@ end
 
 function Node.walk(node)
   local function traverse(ast)
-    if not ast.isNode then return nil end
+    if not type(ast) == 'table' and ast.isNode then return nil end
     yield(ast)
     for _, v in ipairs(ast) do
       if type(v) == 'table' and v.isNode then
@@ -487,7 +487,7 @@ function Node.coro_select(node, pred)
       if qualifies(ast, pred) then
          yield(ast)
       end
-      if ast.isNode then
+      if type(ast) == 'table' and ast.isNode then
          for _, v in ipairs(ast) do
             traverse(v)
          end
@@ -527,7 +527,7 @@ function Node.select(node, pred)
    local matches = {}
    local function traverse(ast)
       -- depth-first, right to left
-      if ast and ast.isNode then
+      if type(ast) == 'table' and ast.isNode then
          for i = #ast, 1, -1 do
             traverse(ast[i])
          end
