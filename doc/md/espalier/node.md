@@ -698,14 +698,11 @@ It's easier to read than to describe:
 function Node.inherit(node, id)
   local Meta = setmeta({}, node)
   Meta.__index = Meta
-  local _repr, _tostring
+  local _repr, _tostring = __repr, __tostring
   local node_M = getmetatable(node)
   if node_M then
     _repr = node_M.__repr
     _tostring = node_M.__tostring
-  else
-    _repr = __repr
-    _tostring = __tostring
   end
   Meta.__repr = _repr
   Meta.__tostring = _tostring
