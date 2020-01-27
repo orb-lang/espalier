@@ -201,6 +201,18 @@ end
 local function __EQ_EXACT(s, i, a, b)
    return a == b
 end
+local function __GTE_LEN(s, i, a, b)
+   return #a >= #b
+end
+local function __GT_LEN(s, i, a, b)
+   return #a > #b
+end
+local function __LTE_LEN(s, i, a, b)
+   return #a <= #b
+end
+local function __LT_LEN(s, i, a, b)
+   return #a < #b
+end
 ]])
 
 
@@ -610,6 +622,24 @@ function Named.toLpeg(named)
      phrase = phrase .. "Cmt(C(" .. condition
                .. ") * Cb('" .. named[2]:span()
                .. PegPhrase"'), __EQ_LEN)"
+   elseif named[2].id == "gte_reference" then
+      phrase = phrase .. "Cmt(C(" .. condition
+               .. ") * Cb('" .. named[2]:span()
+               .. PegPhrase"'), __GTE_LEN)"
+   elseif named[2].id == "gt_reference" then
+      phrase = phrase .. "Cmt(C(" .. condition
+               .. ") * Cb('" .. named[2]:span()
+               .. PegPhrase"'), __GT_LEN)"
+   elseif named[2].id == "lte_reference" then
+      phrase = phrase .. "Cmt(C(" .. condition
+               .. ") * Cb('" .. named[2]:span()
+               .. PegPhrase"'), __LTE_LEN)"
+   elseif named[2].id == "gte_reference" then
+      phrase = phrase .. "Cmt(C(" .. condition
+               .. ") * Cb('" .. named[2]:span()
+               .. PegPhrase"'), __LT_LEN)"
+   else
+      error("unexpected back reference, id " .. tostring(named[2].id))
    end
    return phrase
 end

@@ -26,6 +26,8 @@ local function pegylator(_ENV)
             "allowed_prefixed", "allowed_suffixed", "allowed_referred",
             "simple", "compound", "prefixed", "suffixed",
             "referred", "named_suffix", "back_referred", "equal_referred",
+            "greater_equal_referred", "greater_referred",
+            "lesser_equal_referred", "lesser_referred",
             "pel", "per" )
    --]]
    local comment_m  = -P"\n" * P(1)
@@ -147,13 +149,26 @@ local function pegylator(_ENV)
 
    named_suffix  =  P"@" * ( V"named_match"
                            + V"back_referred"
-                           + V"equal_referred" )
+                           + V"equal_referred"
+                           + V"greater_equal_referred"
+                           + V"greater_referred"
+                           + V"lesser_equal_referred"
+                           + V"lesser_referred" )
 
    back_referred   =  P"(" * V"back_reference" * P")"
    equal_referred  =  P"(#" * V"equal_reference" * P")"
-   equal_reference = symbol
-   back_reference  = symbol
+   greater_equal_referred = P"(>=" * V"gte_reference" * P")"
+   greater_referred = P"(>" * V"gt_reference" * P")"
+   lesser_equal_referred = P"(<=" * V"lte_reference" * P")"
+   lesser_referred = P"(>" * V"gt_reference" * P")"
+
    named_match     = symbol
+   back_reference  = symbol
+   equal_reference = symbol
+   gte_reference   = symbol
+   gt_reference    = symbol
+   lte_reference   = symbol
+   lt_reference    = symbol
 
    referred    =  V"reference" * "$"
    reference     =  symbol
@@ -179,8 +194,12 @@ local PegGrammar = Grammar(pegylator, pegMetas)
 #!lua
 local function new(peg_str, metas, pre, post)
    local peg_node = PegGrammar(peg_str)
-   peg_node.parse, peg_node.grammar = Grammar(peg_node:toLpeg(),
+   local ok
+   ok, peg_node.parse, peg_node.grammar = pcall(Grammar,peg_node:toLpeg(),
                                               metas, pre, post)
+   if not ok then
+      peg_node.parse, peg_node.grammar = nil, nil
+   end
    return peg_node
 end
 #/lua
