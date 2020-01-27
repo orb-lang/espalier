@@ -496,40 +496,19 @@ local function new(grammar_template, metas, pre, post)
          begin = start
          offset = 0
       end
-
-      --[[
       if pre then
          str = pre(str)
          assert(type(str) == "string")
       end
-      --]]
+
       local match = L.match(grammar, sub_str, begin, str, metas, offset)
       if match == nil then
          return nil
       end
-      ---[[
       if post then
         match = post(match)
       end
-      --]]
-      --[[ All of this needs rethinking
-      local maybeErr = match:lastLeaf()
-      if maybeErr.id then
-         if maybeErr.id == "ERROR" then
-            local line, col = match:linePos(maybeErr.first)
-            local msg = maybeErr.msg or ""
-            s:complain("Parsing Error", " line: " .. tostring(line) .. ", "
-                    .. "col: " .. tostring(col) .. ". " .. msg)
-            return match, match:lastLeaf()
-         else
-            return match
-         end
-      else
-         local maybeNode = maybeErr.isNode and " is " or " isn't "
-         s:complain("No id on match" .. "match of type, " .. type(match)
-                   .. maybeNode .. " a Node: " .. tostring(maybeErr))
-      end
-      --]]
+
       return match
    end
 
