@@ -195,25 +195,42 @@ local _PREFACE = PegPhrase ([[
 local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
 local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
-local function __EQ_LEN(s, i, a, b)
-   return #a == #b
-end
+]])
+#/lua
+
+#!lua
+local backref_rules = {
+   back_reference = [[
 local function __EQ_EXACT(s, i, a, b)
    return a == b
 end
+]],
+   equal_reference = [[
+local function __EQ_LEN(s, i, a, b)
+   return #a == #b
+end
+]],
+   gte_reference = [[
 local function __GTE_LEN(s, i, a, b)
    return #a >= #b
 end
+]],
+   gt_reference = [[
 local function __GT_LEN(s, i, a, b)
    return #a > #b
 end
+]],
+   lte_reference = [[
 local function __LTE_LEN(s, i, a, b)
    return #a <= #b
 end
+]],
+   lt_reference = [[
 local function __LT_LEN(s, i, a, b)
    return #a < #b
 end
-]])
+]]
+}
 #/lua
 
 
@@ -252,7 +269,13 @@ end
 
 function Rules.toLpeg(peg_rules, extraLpeg)
    local phrase = PegPhrase()
-   extraLpeg = extraLpeg or ""
+   -- Add matching functions if those rules are used
+   for rule, fn_str in pairs(backref_rules) do
+       if peg_rules:select(rule)() then
+          phrase = phrase .. fn_str
+       end
+   end
+   phrase = phrase .. "\n"
    -- the first rule should have an atom:
    -- peg_rules[1]   -- this is the first rule
    local grammar_name = peg_rules : select "rule" ()
@@ -275,7 +298,7 @@ function Rules.toLpeg(peg_rules, extraLpeg)
       phrase = phrase .. rule:toLpeg()
    end
    --]]
-   phrase = phrase .. extraLpeg
+   phrase = phrase .. (extraLpeg or "")
    phrase = phrase .. "\nend\n"
    local appendix = PegPhrase "return " .. grammar_fn .. "\n"
    return _PREFACE .. phrase .. appendix
