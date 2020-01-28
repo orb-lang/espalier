@@ -280,7 +280,7 @@ function Rules.toLpeg(peg_rules, extraLpeg)
    end
    --]]
    phrase = phrase .. (extraLpeg or "")
-   phrase = phrase .. "\nend\n"
+   phrase = phrase .. "\nend\n\n"
    local appendix = PegPhrase "return " .. grammar_fn .. "\n"
    return _PREFACE .. phrase .. appendix
 end

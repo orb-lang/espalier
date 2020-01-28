@@ -575,10 +575,7 @@ end
 
 Returns the line and column given a position.
 
-
-This currently builds up the line array.
-
-
+#Todo this function doesn't work and is badly written. Fix.
 - [ ]  #todo  Optimal Node.linePos().
 
 
@@ -598,7 +595,7 @@ function Node.linePos(node, position)
       end
    end
    local offset = 0
-   local position = position
+   local position = position or node.last
    local linum = nil
    for i, v in ipairs(node.__lines) do
        linum = i

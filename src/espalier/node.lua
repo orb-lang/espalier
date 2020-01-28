@@ -629,6 +629,8 @@ end
 
 
 
+
+
 function Node.linePos(node, position)
    if not node.__lines then
       for _ in node:lines() do
@@ -636,7 +638,7 @@ function Node.linePos(node, position)
       end
    end
    local offset = 0
-   local position = position
+   local position = position or node.last
    local linum = nil
    for i, v in ipairs(node.__lines) do
        linum = i
