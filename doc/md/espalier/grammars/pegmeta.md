@@ -262,6 +262,10 @@ function Rules.toLpeg(peg_rules, extraLpeg)
    local grammar_name = peg_rules : select "rule" ()
                          : select "pattern" ()
                          : span()
+   -- the root pattern can conceivably be hidden:
+   if grammar_name:sub(1,1) == "`" then
+      grammar_name = grammar_name:sub(2,-2)
+   end
    grammar_name = _normalize(grammar_name)
    local grammar_fn  = "_" .. grammar_name .."_fn"
    phrase = phrase .. "local function " .. grammar_fn .. "(_ENV)\n"

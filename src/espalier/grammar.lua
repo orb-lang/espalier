@@ -187,8 +187,9 @@ local DROP = elpatt.DROP
 
 local assert = assert
 local string, io = assert( string ), assert( io )
+local sub = assert(string.sub)
 local remove = assert(table.remove)
-local VER = string.sub( assert( _VERSION ), -4 )
+local VER = sub( assert( _VERSION ), -4 )
 local _G = assert( _G )
 local error = assert( error )
 local pairs = assert( pairs )
@@ -462,7 +463,7 @@ local function new(grammar_template, metas, pre, post)
       local sub_str, begin = str, 1
       local offset = start and start - 1 or 0
       if start and finish then
-         sub_str = string.sub(str, start, finish)
+         sub_str = sub(str, start, finish)
       end
       if start and not finish then
          begin = start
@@ -476,6 +477,8 @@ local function new(grammar_template, metas, pre, post)
       local match = L.match(grammar, sub_str, begin, str, metas, offset)
       if match == nil then
          return nil
+      elseif type(match) == 'number' then
+         return sub(sub_str, 1, match)
       end
       if post then
         match = post(match)
