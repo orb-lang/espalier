@@ -1,4 +1,4 @@
-# Metatable functions
+# Subgrammar
 
 
   A metatable function can do anything, and so long as it returns a valid
@@ -14,7 +14,8 @@ string, returning a function suitable for use as a metatable.
 ```lua
 local Node = require "espalier:espalier/node"
 
-local function metafn(grammar, errstring)
+local function subgrammar(grammar, meta, errstring)
+   meta = meta or Node
    return function (t)
       local match = grammar(t.str, t.first, t.last)
       if match then
@@ -28,9 +29,9 @@ local function metafn(grammar, errstring)
       if errstring then
          t.id = errstring
       end
-      return setmetatable(t, Node)
+      return setmetatable(t, meta)
    end
 end
 
-return metafn
+return subgrammar
 ```

@@ -11,12 +11,16 @@ generating a parser from the description.
 
 So let's do that.
 
+#### Imports
+
 ```lua
 local L = require "espalier/elpatt"
 local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
 local Grammar = require "espalier/grammar"
 local pegMetas = require "espalier/grammars/pegmeta"
 ```
+## Pegylator: A Parsing Expression Grammar for Parsing Expression Grammars
+
 ```lua
 local function pegylator(_ENV)
    START "rules"
