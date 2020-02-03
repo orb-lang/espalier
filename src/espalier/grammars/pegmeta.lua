@@ -62,6 +62,16 @@ Peg.id = "peg"
 
 
 
+
+
+
+local PegPhrase = Phrase : inherit ({__repr = lex})
+
+
+
+
+
+
 local nl_map = { rule = true }
 local function _toSexpr(peg)
    depth = depth or 0
@@ -130,7 +140,11 @@ end
 
 local a = require "singletons/anterm"
 function Peg.toLpeg(peg)
-   return a.red(peg:span())
+   local phrase = PegPhrase ""
+   for _, sub in ipairs(peg) do
+      phrase = phrase .. sub:toLpeg()
+   end
+   return phrase
 end
 
 
@@ -139,16 +153,6 @@ end
 
 local PegMetas = Peg : inherit()
 PegMetas.id = "pegMetas"
-
-
-
-
-
-
-
-
-
-local PegPhrase = Phrase : inherit ({__repr = lex})
 
 
 
@@ -732,4 +736,5 @@ return { rules = Rules,
          optional   = Optional,
          repeated   = Repeated,
          named    = Named,
-         WS      = Whitespace }
+         WS      = Whitespace,
+         __DEFAULT = Peg }

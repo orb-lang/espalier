@@ -58,6 +58,14 @@ end
 local Peg, peg = Node : inherit()
 Peg.id = "peg"
 ```
+### PegPhrase class
+
+  We might want to decorate our phrases with various REPRy enhancements, so
+let's pull a fresh metatable:
+
+```lua
+local PegPhrase = Phrase : inherit ({__repr = lex})
+```
 ### Peg:toSexpr()
 
 ```lua
@@ -122,7 +130,11 @@ will produce an error if we attempt to compile it.
 ```lua
 local a = require "singletons/anterm"
 function Peg.toLpeg(peg)
-   return a.red(peg:span())
+   local phrase = PegPhrase ""
+   for _, sub in ipairs(peg) do
+      phrase = phrase .. sub:toLpeg()
+   end
+   return phrase
 end
 ```
 ## PegMetas
@@ -130,14 +142,6 @@ end
 ```lua
 local PegMetas = Peg : inherit()
 PegMetas.id = "pegMetas"
-```
-### PegPhrase class
-
-  We might want to decorate our phrases with various REPRy enhancements, so
-let's pull a fresh metatable:
-
-```lua
-local PegPhrase = Phrase : inherit ({__repr = lex})
 ```
 ### Rules
 
@@ -681,5 +685,6 @@ return { rules = Rules,
          optional   = Optional,
          repeated   = Repeated,
          named    = Named,
-         WS      = Whitespace }
+         WS      = Whitespace,
+         __DEFAULT = Peg }
 ```
