@@ -498,9 +498,6 @@ end
 ```
 #### Range
 
-The ``range`` class needs a semantic change since there's no percentage in
-having ``-`` as a separator, it's noisy.
-
 ```lua
 local Range = PegMetas : inherit "range"
 ```

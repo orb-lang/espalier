@@ -46,7 +46,7 @@ local function pegylator(_ENV)
    local h_string = P "`" * (P "\\" * P(1) + (1 - P "`"))^0 * P "`"
    local s_string = P "'" * (P "\\" * P(1) + (1 - P "'"))^0 * P "'"
    local range_match =  -P"-" * -P"\\" * -P"]" * P(1)
-   local range_capture = (range_match + P"\\-" + P"\\]" + P"\\")
+   local range_capture = (range_match + P"\\-" + P"\\]" + P"\\")^1
    local range_c  = range_capture^1 * P"-" * range_capture^1
    local set_match = -P"}" * -P"\\" * P(1)
    local set_c    = (set_match + P"\\}" + P"\\")^1
@@ -195,6 +195,7 @@ local PegGrammar = Grammar(pegylator, pegMetas)
 ```lua
 local function new(peg_str, metas, pre, post)
    local peg_node = PegGrammar(peg_str)
+   if not peg_node then return nil end
    local ok
    ok, peg_node.parse, peg_node.grammar = pcall(Grammar,peg_node:toLpeg(),
                                               metas, pre, post)
