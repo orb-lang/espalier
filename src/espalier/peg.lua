@@ -114,7 +114,6 @@ local function pegylator(_ENV)
 
    prefixed =  V"not_predicate"
             +  V"and_predicate"
-            +  V"not_this"
 
    suffixed =  V"zero_or_more"
             +  V"one_or_more"
@@ -131,7 +130,6 @@ local function pegylator(_ENV)
 
    -- /SUPPRESSED
 
-        not_this = P"-" * V"WS" * V"allowed_prefixed"
    not_predicate = P"!" * V"WS" * V"allowed_prefixed"
    and_predicate = P"&" * V"WS" * V"allowed_prefixed"
 
@@ -184,7 +182,7 @@ local function pegylator(_ENV)
 
    atom =  V"ws" + symbol
 
-   number = digit^1
+   number = P"-"^-1 * digit^1
 
    WS = (V"comment" + P' ' + P'\n' + P'\t' + P'\r')^0
 

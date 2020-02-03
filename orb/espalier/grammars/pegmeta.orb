@@ -466,21 +466,6 @@ correctly. Now, you'd *think* I could manage this, but it isn't a priority
 right now.
 
 
-*** NotThis
-
-#!lua
-local NotThis = PegMetas : inherit "not_this"
-
-function NotThis.toLpeg(not_this)
-  local phrase = PegPhrase "-"
-  for _, sub_not in ipairs(not_this) do
-    phrase = phrase .. " " .. sub_not:toLpeg()
-  end
-  return phrase
-end
-#/lua
-
-
 *** Not_predicate
 
 #!lua
@@ -741,10 +726,8 @@ return { rules = Rules,
          literal = Literal,
          zero_or_more = Zero_or_more,
          one_or_more = One_or_more,
-         not_this  = NotThis,
          not_predicate = Not_predicate,
          and_predicate = And_predicate,
-         not_this     = NotThis,
          capture     = Capture,
          optional   = Optional,
          repeated   = Repeated,

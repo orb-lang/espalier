@@ -469,21 +469,6 @@ end
 
 
 
-local NotThis = PegMetas : inherit "not_this"
-
-function NotThis.toLpeg(not_this)
-  local phrase = PegPhrase "-"
-  for _, sub_not in ipairs(not_this) do
-    phrase = phrase .. " " .. sub_not:toLpeg()
-  end
-  return phrase
-end
-
-
-
-
-
-
 local Not_predicate = PegMetas : inherit "not_predicate"
 
 function Not_predicate.toLpeg(not_pred)
@@ -741,10 +726,8 @@ return { rules = Rules,
          literal = Literal,
          zero_or_more = Zero_or_more,
          one_or_more = One_or_more,
-         not_this  = NotThis,
          not_predicate = Not_predicate,
          and_predicate = And_predicate,
-         not_this     = NotThis,
          capture     = Capture,
          optional   = Optional,
          repeated   = Repeated,
