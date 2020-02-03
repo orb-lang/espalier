@@ -174,9 +174,12 @@ end
 
 function Node.toString(node, depth, c)
    depth = depth or 0
+   local line =  node:strLine(c)
    local phrase = Phrase ""
-   phrase = phrase .. ("  "):rep(depth)
-   phrase = phrase .. node:strLine(c)
+   if tostring(line) ~= "" then
+      phrase = phrase .. ("  "):rep(depth)
+      phrase = phrase .. line
+   end
    ---[[
    if node[1] then
       for _,v in ipairs(node) do
@@ -756,6 +759,8 @@ function Node.inherit(node, id)
   end
   return Meta
 end
+
+
 
 
 

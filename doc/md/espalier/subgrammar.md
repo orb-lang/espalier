@@ -22,7 +22,7 @@ local function subgrammar(grammar, meta, errstring)
          if match.last == t. last then
             return match
          else
-            match.id = match.id .. "-INCOMPLETE"
+            match.id = match.id .. "_INCOMPLETE"
             return match
          end
       end
