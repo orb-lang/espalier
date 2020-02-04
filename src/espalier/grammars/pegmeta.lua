@@ -261,14 +261,20 @@ local function _suppressHiddens(peg_rules)
       -- no hidden patterns
       return nil
    end
+   local len = 14
    local phrase = PegPhrase "   " .. "SUPPRESS" .. " " .. "("
    for i, patt in ipairs(hiddens) do
       phrase = phrase .. "\"" .. patt .. "\""
-       if i < #hiddens then
-          phrase = phrase .. "," .. " "
-       end
+      len = len + #patt + 2
+      if i < #hiddens then
+         phrase = phrase .. "," .. " "
+         if len > 80 then
+            phrase = phrase .. "\n" .. (" "):rep(14)
+            len = 14
+         end
+      end
    end
-   return phrase .. ")" .. "\n"
+   return phrase .. ")" .. "\n\n"
 end
 
 function Rules.toLpeg(peg_rules, extraLpeg)
@@ -282,9 +288,9 @@ function Rules.toLpeg(peg_rules, extraLpeg)
    phrase = phrase .. "\n"
    -- the first rule should have an atom:
    -- peg_rules[1]   -- this is the first rule
-   local grammar_name = peg_rules : select "rule" ()
+   local grammar_patt = peg_rules : select "rule" ()
                          : select "pattern" ()
-                         : span()
+   local grammar_name = grammar_patt:span()
    -- the root pattern can conceivably be hidden:
    if grammar_name:sub(1,1) == "`" then
       grammar_name = grammar_name:sub(2,-2)
@@ -299,6 +305,8 @@ function Rules.toLpeg(peg_rules, extraLpeg)
    if suppress then
       phrase = phrase .. suppress
    end
+   -- add initial indentation:
+   phrase = phrase .. peg_rules.str:sub(1, grammar_patt.first - 1)
    --
    -- stick everything else in here...
    ---[[
@@ -373,19 +381,9 @@ end
 
 function Rule.toLpeg(rule)
    local phrase = PegPhrase ""
-   for commentary in rule : select "lead_comment" do
-      phrase = phrase .. "--" .. " "
-             .. commentary : select "comment" ()
-             : span()
-             : sub(2)
-             .. "\n"
-             .. "   "
-   end
-
    local patt = _normalize(_pattToString(rule:select "pattern" ()))
    phrase = phrase .. patt .. " = "
-   local rhs = rule:select "rhs" () : toLpeg ()
-   return phrase .. rhs .. "\n"
+   return phrase .. rule:select "rhs" () : toLpeg ()
 end
 
 
@@ -435,12 +433,8 @@ end
 local Cat = PegMetas : inherit "cat"
 
 function Cat.toLpeg(cat)
-   local phrase = PegPhrase " * "
+   local phrase = PegPhrase "*"
    for _, sub_cat in ipairs(cat) do
-      -- hmm this is a hack
-      if sub_cat.id == "not_this" then
-         phrase = PegPhrase " "
-      end
       phrase = phrase .. " " .. sub_cat:toLpeg()
    end
    return phrase
@@ -499,11 +493,6 @@ function And_predicate.toLpeg(and_predicate)
    end
    return phrase
 end
-
-
-
--- #todo am I going to use this? what is its semantics? -Sam.
-local Capture = PegMetas : inherit "capture"
 
 
 
@@ -659,6 +648,9 @@ end
 
 
 
+
+
+
 local Comment = PegMetas : inherit "comment"
 
 function Comment.toSexpr(comment)
@@ -667,7 +659,7 @@ end
 
 function Comment.toLpeg(comment)
    local phrase = PegPhrase "--"
-   return phrase .. comment:span():sub(2) .. "\n"
+   return phrase .. comment:span():sub(2)
 end
 
 
@@ -705,6 +697,24 @@ end
 
 
 
+
+
+
+local Dent = PegMetas : inherit "dent"
+
+function Dent.toLpeg(dent)
+   return dent:span()
+end
+
+function Dent.strLine(dent)
+   return ""
+end
+
+
+
+
+
+
 local Whitespace = PegMetas : inherit "WS"
 
 function Whitespace.toLpeg(whitespace)
@@ -713,11 +723,11 @@ end
 
 
 
-return { rules = Rules,
-         rule  = Rule,
-         rhs   = Rhs,
+return { rules   = Rules,
+         rule    = Rule,
+         rhs     = Rhs,
          comment = Comment,
-         choice = Choice,
+         choice  = Choice,
          cat     = Cat,
          group   = Group,
          atom    = Atom,
@@ -725,13 +735,13 @@ return { rules = Rules,
          set     = Set,
          range   = Range,
          literal = Literal,
-         zero_or_more = Zero_or_more,
-         one_or_more = One_or_more,
+         zero_or_more  = Zero_or_more,
+         one_or_more   = One_or_more,
          not_predicate = Not_predicate,
          and_predicate = And_predicate,
-         capture     = Capture,
-         optional   = Optional,
-         repeated   = Repeated,
-         named    = Named,
-         WS      = Whitespace,
+         optional  = Optional,
+         repeated  = Repeated,
+         named     = Named,
+         WS        = Whitespace,
+         dent      = Dent,
          __DEFAULT = Peg }

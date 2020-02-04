@@ -36,7 +36,7 @@ local function pegylator(_ENV)
             "pel", "per" )
    --]]
    local comment_m  = -P"\n" * P(1)
-   local comment_c =  comment_m^0 * P"\n"^0
+   local comment_c =  comment_m^0
    local letter = R"AZ" + R"az"
    local valid_sym = letter + P"-" + P"_"
    local digit = R"09"
@@ -184,7 +184,9 @@ local function pegylator(_ENV)
 
    number = P"-"^-1 * digit^1
 
-   WS = (V"comment" + P' ' + P'\n' + P'\t' + P'\r')^0
+   WS = (V"comment" + V"dent" + P' ' + P'\t' + P'\r')^0
+
+   dent = P"\n" * (P"\n" + P" ")^0
 
    ws = P"_"
 end
