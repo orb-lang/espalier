@@ -561,6 +561,9 @@ end
 ```
 ### Named
 
+The most complex rule in the book, this handles capture groups and back
+references.
+
 ```lua
 local Named = PegMetas : inherit "named"
 

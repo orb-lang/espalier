@@ -20,12 +20,15 @@ local function subgrammar(grammar, meta, errstring)
          if match.last == t. last then
             return match
          else
-            match.id = match.id .. "_INCOMPLETE"
+            match.should_be = match.id
+            match.id = "INCOMPLETE"
             return match
          end
       end
       if errstring then
-         t.id = errstring
+         t.errstring = errstring
+         t.should_be = t.id
+         t.id        = "NOMATCH"
       end
       return setmetatable(t, meta)
    end
