@@ -19,7 +19,7 @@ local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
 local s = require "singletons" . status ()
 local a = require "singletons/anterm"
 local c_bw = require "singletons/color" . no_color
-local core = require "singletons/core"
+local core = require "core:core"
 local Phrase = require "singletons/phrase"
 local dot = require "espalier/dot"
 ```
@@ -201,7 +201,7 @@ end
 
 Node.__repr = __repr
 ```
-### Metrics
+## Metrics
 
 These retrieve various general properties of the Node.
 
@@ -287,7 +287,7 @@ function Node.gap(left, right)
   elseif left.last > right.first then
     s:halt("overlapping regions or str issue")
   end
-  local gap = left
+  local gap = left - right - 1
   if gap >= 0 then
     return gap
   else
@@ -650,13 +650,66 @@ function Node.gather(node, pred)
   return gathered
 end
 ```
-### Validation
+## Copying
 
-This checks that a Node, including all its children, meets the social
-contract of Node behavior.
+Methods to create another Node from a given Node.
+
+
+### Node:clone()
+
+This is a thin wrapper around ``cloneinstance``, which takes care of copying the
+metatables and detecting the cycles created by the ``parent`` element.
 
 ```lua
+local cloneinstance = assert(core.cloneinstance)
 
+function Node.clone(node)
+   return cloneinstance(node)
+end
+```
+### Node:pluck()
+
+This method creates a self-contained Node.  So instead of the whole ``str``, we
+have ``node:span()``, and the value of ``node.first`` at the root level is 1.
+
+```lua
+local function _pluck(node, str, offset, parent)
+   local clone = setmetatable({}, getmetatable(node))
+   parent = parent or clone
+   for k, v in pairs(node) do
+      if type(k) == "number" then
+        clone[k] = _pluck(v, str, offset, clone)
+      elseif k == "first" or k == "last" then
+        clone[k] = v + offset
+      elseif k == "parent" then
+        clone.parent = parent
+      else
+        clone[k] = v
+      end
+   end
+   clone.str = str
+   return clone
+end
+
+function Node.pluck(node)
+   local str = node:span()
+   local offset = - node.first + 1
+   local plucked = _pluck(node, str, offset)
+--   assert(plucked.first == 1)
+   return plucked
+end
+```
+## Validation
+
+These methods check that a Node, including all its children, meets the social
+contract of Node behavior.
+
+
+### Node:isValid()
+
+Performs assertions on a single Node table.
+
+```lua
 function Node.isValid(node)
   assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
          .. node.id .. " " .. tostring(node))
@@ -671,7 +724,12 @@ function Node.isValid(node)
   assert(type(node:span()) == "string", "span() must yield string")
   return true
 end
+```
+### Node:validate()
 
+Runs Node:isValid() on every Node in a tree.
+
+```lua
 function Node.validate(node)
   for twig in node:walk() do
     twig:isValid()

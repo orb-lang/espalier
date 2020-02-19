@@ -21,7 +21,7 @@ local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
 local s = require "singletons" . status ()
 local a = require "singletons/anterm"
 local c_bw = require "singletons/color" . no_color
-local core = require "singletons/core"
+local core = require "core:core"
 local Phrase = require "singletons/phrase"
 local dot = require "espalier/dot"
 
@@ -309,7 +309,7 @@ function Node.gap(left, right)
   elseif left.last > right.first then
     s:halt("overlapping regions or str issue")
   end
-  local gap = left
+  local gap = left - right - 1
   if gap >= 0 then
     return gap
   else
@@ -704,6 +704,63 @@ end
 
 
 
+
+
+
+
+local cloneinstance = assert(core.cloneinstance)
+
+function Node.clone(node)
+   return cloneinstance(node)
+end
+
+
+
+
+
+
+
+
+
+local function _pluck(node, str, offset, parent)
+   local clone = setmetatable({}, getmetatable(node))
+   parent = parent or clone
+   for k, v in pairs(node) do
+      if type(k) == "number" then
+        clone[k] = _pluck(v, str, offset, clone)
+      elseif k == "first" or k == "last" then
+        clone[k] = v + offset
+      elseif k == "parent" then
+        clone.parent = parent
+      else
+        clone[k] = v
+      end
+   end
+   clone.str = str
+   return clone
+end
+
+function Node.pluck(node)
+   local str = node:span()
+   local offset = - node.first + 1
+   local plucked = _pluck(node, str, offset)
+--   assert(plucked.first == 1)
+   return plucked
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Node.isValid(node)
   assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
          .. node.id .. " " .. tostring(node))
@@ -718,6 +775,13 @@ function Node.isValid(node)
   assert(type(node:span()) == "string", "span() must yield string")
   return true
 end
+
+
+
+
+
+
+
 
 function Node.validate(node)
   for twig in node:walk() do
