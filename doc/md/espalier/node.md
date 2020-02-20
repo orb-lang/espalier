@@ -376,11 +376,25 @@ function Node.toValue(node)
   end
 end
 ```
-### Iterators
+## Traversal
 
-Traversal may be done several ways.
+Methods to move around inside a Node.
 
 
+#### Node:root()
+
+Returns the root of a given Node tree structure.
+
+```lua
+local function _root(node)
+   if node.parent == node then
+      return node
+   end
+   return _root(node.parent)
+end
+
+Node.root = _root
+```
 #### Node.walkPost
 
 Depth-first iterator, postfix

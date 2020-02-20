@@ -415,6 +415,22 @@ end
 
 
 
+local function _root(node)
+   if node.parent == node then
+      return node
+   end
+   return _root(node.parent)
+end
+
+Node.root = _root
+
+
+
+
+
+
+
+
 function Node.walkPost(node)
     local function traverse(ast)
         if not type(ast) == 'table' and ast.isNode then return nil end
