@@ -702,6 +702,10 @@ end
 
 
 
+
+
+
+
 function Node.gather(node, pred)
   local gathered = {}
   for ast in node:select(pred) do
@@ -710,6 +714,7 @@ function Node.gather(node, pred)
 
   return gathered
 end
+
 
 
 
@@ -763,6 +768,32 @@ function Node.pluck(node)
 --   assert(plucked.first == 1)
    return plucked
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

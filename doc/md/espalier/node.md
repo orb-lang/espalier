@@ -435,7 +435,7 @@ function Node.walk(node)
 end
 
 ```
-### Selection
+## Selection
 
 We are frequently in search of a subset of Nodes:
 
@@ -478,7 +478,7 @@ function Node.coro_select(node, pred)
    return wrap(function() traverse(node) end)
 end
 ```
-### Node.select(node)
+#### Node.select(node)
 
 This version uses a closure instead of a coroutine, to get around a crashing
 problem we've been having in bridge.
@@ -646,9 +646,14 @@ function Node.lastLeaf(node)
   end
 end
 ```
-### Collectors
+#### Node:gather(pred)
 
 These return an array of all results.
+
+
+- [ ] #todo  This could be reimplemented as
+             ``core.collect(node.select, node, pred)`` and probably renamed
+             ``node:collect(pred)`` while we're at it.
 
 
 - [ ] #todo  Add a Forest class to provide the iterator interface for
@@ -664,12 +669,13 @@ function Node.gather(node, pred)
   return gathered
 end
 ```
-## Copying
+## Mutation
 
-Methods to create another Node from a given Node.
+Methods to create another Node from a given Node, or change the structure of
+a Node mutably.
 
 
-### Node:clone()
+#### Node:clone()
 
 This is a thin wrapper around ``cloneinstance``, which takes care of copying the
 metatables and detecting the cycles created by the ``parent`` element.
@@ -681,7 +687,7 @@ function Node.clone(node)
    return cloneinstance(node)
 end
 ```
-### Node:pluck()
+#### Node:pluck()
 
 This method creates a self-contained Node.  So instead of the whole ``str``, we
 have ``node:span()``, and the value of ``node.first`` at the root level is 1.
@@ -713,6 +719,39 @@ function Node.pluck(node)
    return plucked
 end
 ```
+#### Node:graft(graft, [index])
+
+Takes a proper Node and splices it into another Node at ``index``, which
+defaults to ``#node + 1``.
+
+
+There are several steps here, we need to:
+
+
+-  Splice ``str`` on the old Node with ``str`` on the new Node, at the indicated
+   position, which is calculated base on a ``.first`` or ``.last``, depending.
+
+
+-  Iterate the ``graft`` node, replacing ``str`` and adjusting ``first`` and ``last``.
+
+
+-  Iterate the root of the original ``node``, replacing ``str``, adjusting ``first``
+   and ``last`` where appropriate (i.e. greater than the splice index).
+
+
+   lastly:
+
+
+-  Insert the ``graft`` node at the appropriate place, and set node.parent to
+   point to ``node``.
+
+
+This being a mutable table method, it returns nothing.  A case could be made
+for this being an immutable method, which returns an entirely new Node, but
+we can make that out of ``node:clone()`` and ``node:graft(graft)``, where the
+reverse isn't possible with an immutable method.
+
+
 ## Validation
 
 These methods check that a Node, including all its children, meets the social
