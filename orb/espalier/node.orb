@@ -582,50 +582,14 @@ end
 
 **** Node.lines(node)
 
-A memoized iterator returning =str= one line at a time.
-
-Newlines are not included.
-
-In addition, the first =node:lines()= traversal builds up
-a source map subsequently used by =node:atLine(pos)= to
-return the line and column of a given position.
+A simple wrapper around =core.lines=, kept around because, due to the name,
+it's moderately annoying to tell whether it's in use.
 
 #!lua
+local lines = assert(core.lines)
+
 function Node.lines(node)
-  local function yieldLines(node, linum)
-     for _, str in ipairs(node.__lines) do
-        yield(str)
-      end
-  end
-
-  if node.__lines then
-     return wrap(function ()
-                    yieldLines(node)
-                 end)
-  else
-     node.__lines = {}
-  end
-
-  local function buildLines(str)
-      if str == nil then
-        return nil
-      end
-      local rest = ""
-      local first, last = find(str, "\n")
-      if first == nil then
-        return nil
-      else
-        local line = sub(str, 1, first - 1) -- no newline
-        rest       = sub(str, last + 1)    -- skip newline
-        node.__lines[#node.__lines + 1] = line
-        yield(line)
-      end
-      buildLines(rest)
-  end
-
-  return wrap(function ()
-            buildLines(node.str)
-         end)
+  return lines(node:span())
 end
 #/lua
 
@@ -638,8 +602,6 @@ the line and column offset of =node.last=.
 
 
 #!lua
-local lines = assert(core.lines)
-
 function Node.linePos(node)
    local row, col = 0, 0
    local row_first, col_first, row_last, col_last

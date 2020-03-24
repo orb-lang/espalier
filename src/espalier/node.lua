@@ -586,46 +586,10 @@ end
 
 
 
-
-
-
-
+local lines = assert(core.lines)
 
 function Node.lines(node)
-  local function yieldLines(node, linum)
-     for _, str in ipairs(node.__lines) do
-        yield(str)
-      end
-  end
-
-  if node.__lines then
-     return wrap(function ()
-                    yieldLines(node)
-                 end)
-  else
-     node.__lines = {}
-  end
-
-  local function buildLines(str)
-      if str == nil then
-        return nil
-      end
-      local rest = ""
-      local first, last = find(str, "\n")
-      if first == nil then
-        return nil
-      else
-        local line = sub(str, 1, first - 1) -- no newline
-        rest       = sub(str, last + 1)    -- skip newline
-        node.__lines[#node.__lines + 1] = line
-        yield(line)
-      end
-      buildLines(rest)
-  end
-
-  return wrap(function ()
-            buildLines(node.str)
-         end)
+  return lines(node:span())
 end
 
 
@@ -637,8 +601,6 @@ end
 
 
 
-
-local lines = assert(core.lines)
 
 function Node.linePos(node)
    local row, col = 0, 0
