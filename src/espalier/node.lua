@@ -363,8 +363,6 @@ end
 
 
 
-
-
 function Node.toMarkdown(node)
   if not node[1] then
     return sub(node.str, node.first, node.last)
@@ -640,39 +638,33 @@ end
 
 
 
+local lines = assert(core.lines)
 
-
-
-
-
-
-
-
-
-
-function Node.linePos(node, position)
-   if not node.__lines then
-      for _ in node:lines() do
-        -- nothing, this generates the line map
+function Node.linePos(node)
+   local row, col = 0, 0
+   local row_first, col_first, row_last, col_last
+   local cursor, target = 0, node.first
+   for line in lines(node.str) do
+      row = row + 1
+      ::start::
+      if cursor + #line >= target then
+         -- we have our row
+         col = target - cursor
+         if target == node.first then
+            row_first, col_first = row, col
+            target = node.last
+            goto start
+         else
+            row_last, col_last = row, col
+            break
+         end
+      else
+         cursor = cursor + #line + 1 -- for newline
       end
    end
-   local offset = 0
-   local position = position or node.last
-   local linum = nil
-   for i, v in ipairs(node.__lines) do
-       linum = i
-       local len = #v + 1 -- for nl
-       local offset = offset + len
-       if offset > position then
-          return linum, position
-       elseif offset == position then
-          return linum, len
-       else
-          position = position - #v - 1
-       end
-   end
-   -- this position is off the end of the string
-   return nil, "exceeds #str", - offset  -- I think that's the best 3rd value?
+   if not row_last then return "no row_last", cursor end
+
+   return row_first, col_first, row_last, col_last
 end
 
 
@@ -768,6 +760,18 @@ function Node.pluck(node)
 --   assert(plucked.first == 1)
    return plucked
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

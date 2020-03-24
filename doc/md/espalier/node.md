@@ -322,10 +322,6 @@ function Node.label(node)
    return node.id
 end
 ```
-
-Worth writing twice.
-
-
 ### Backstops
 
 The backstops prevent malformed parsing of some key format transitions.
@@ -588,46 +584,41 @@ function Node.lines(node)
          end)
 end
 ```
-#### Node.linePos(node, position)
+#### Node.linePos(node)
 
-Returns the line and column given a position.
-
-#Todo this function doesn't work and is badly written. Fix.
-- [ ]  #todo  Optimal Node.linePos().
+Returns four values: the line, and column offset, of ``node.first``, followed by
+the line and column offset of ``node.last``.
 
 
-       This needs to be more optimal; it should use ``string.find`` to
-       build up a memoized collection of start and end points and
-       never break up the string directly.
-
-
-       At least we're only paying the price once, but Node is supposed
-       to be lazy about slicing strings, and this is eager.
 
 ```lua
-function Node.linePos(node, position)
-   if not node.__lines then
-      for _ in node:lines() do
-        -- nothing, this generates the line map
+local lines = assert(core.lines)
+
+function Node.linePos(node)
+   local row, col = 0, 0
+   local row_first, col_first, row_last, col_last
+   local cursor, target = 0, node.first
+   for line in lines(node.str) do
+      row = row + 1
+      ::start::
+      if cursor + #line >= target then
+         -- we have our row
+         col = target - cursor
+         if target == node.first then
+            row_first, col_first = row, col
+            target = node.last
+            goto start
+         else
+            row_last, col_last = row, col
+            break
+         end
+      else
+         cursor = cursor + #line + 1 -- for newline
       end
    end
-   local offset = 0
-   local position = position or node.last
-   local linum = nil
-   for i, v in ipairs(node.__lines) do
-       linum = i
-       local len = #v + 1 -- for nl
-       local offset = offset + len
-       if offset > position then
-          return linum, position
-       elseif offset == position then
-          return linum, len
-       else
-          position = position - #v - 1
-       end
-   end
-   -- this position is off the end of the string
-   return nil, "exceeds #str", - offset  -- I think that's the best 3rd value?
+   if not row_last then return "no row_last", cursor end
+
+   return row_first, col_first, row_last, col_last
 end
 ```
 #### Node.lastLeaf(node)
@@ -751,7 +742,18 @@ for this being an immutable method, which returns an entirely new Node, but
 we can make that out of ``node:clone()`` and ``node:graft(graft)``, where the
 reverse isn't possible with an immutable method.
 
+```lua-noknit
+function Node.graft(node, graft, index)
+   local root = node:root()
+   local new_str = ""
+   if not index then
+      new_str = node.str .. graft.str
+      insert(node, graft)
+   else -- to be continued...
 
+   end
+end
+```
 ## Validation
 
 These methods check that a Node, including all its children, meets the social
