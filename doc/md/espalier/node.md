@@ -551,8 +551,6 @@ end
 Returns four values: the line, and column offset, of ``node.first``, followed by
 the line and column offset of ``node.last``.
 
-
-
 ```lua
 function Node.linePos(node)
    local row, col = 0, 0
@@ -589,13 +587,15 @@ Returns the last leaf of the node.
 Useful to check for terminal errors, for stop-on-error parsing.
 
 ```lua
-function Node.lastLeaf(node)
+local function _lastLeaf(node)
   if #node == 0 then
     return node
   else
-    return Node.lastLeaf(node[#node])
+    return _lastLeaf(node[#node])
   end
 end
+
+Node.lastLeaf = _lastLeaf
 ```
 #### Node:gather(pred)
 

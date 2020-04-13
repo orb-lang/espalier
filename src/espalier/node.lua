@@ -600,8 +600,6 @@ end
 
 
 
-
-
 function Node.linePos(node)
    local row, col = 0, 0
    local row_first, col_first, row_last, col_last
@@ -638,13 +636,15 @@ end
 
 
 
-function Node.lastLeaf(node)
+local function _lastLeaf(node)
   if #node == 0 then
     return node
   else
-    return Node.lastLeaf(node[#node])
+    return _lastLeaf(node[#node])
   end
 end
+
+Node.lastLeaf = _lastLeaf
 
 
 
