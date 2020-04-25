@@ -251,12 +251,9 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
         t = setmeta(t, meta)
       end
       assert(t.id, "no id on Node")
-   elseif metas.__DEFAULT then
-      t.id = id
-      setmeta(t, metas.__DEFAULT)
    else
       t.id = id
-      setmeta(t, Node)
+      setmeta(t, metas[1])
    end
 
    if not t.parent then
@@ -393,7 +390,7 @@ end
 
 local function refineMetas(metas)
   for id, meta in pairs(metas) do
-    if id ~= "__DEFAULT" then
+    if id ~= 1 then
       if type(meta) == "table" then
         -- #todo is this actually necessary now?
         -- if all Node children are created with Node:inherit than
@@ -406,6 +403,9 @@ local function refineMetas(metas)
         end
       end
     end
+  end
+  if not metas[1] then
+     metas[1] = Node
   end
   return metas
 end
