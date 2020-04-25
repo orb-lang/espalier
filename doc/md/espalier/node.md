@@ -322,10 +322,6 @@ function Node.label(node)
    return node.id
 end
 ```
-
-Worth writing twice.
-
-
 ### Backstops
 
 The backstops prevent malformed parsing of some key format transitions.
@@ -376,11 +372,25 @@ function Node.toValue(node)
   end
 end
 ```
-### Iterators
+## Traversal
 
-Traversal may be done several ways.
+Methods to move around inside a Node.
 
 
+#### Node:root()
+
+Returns the root of a given Node tree structure.
+
+```lua
+local function _root(node)
+   if node.parent == node then
+      return node
+   end
+   return _root(node.parent)
+end
+
+Node.root = _root
+```
 #### Node.walkPost
 
 Depth-first iterator, postfix
@@ -421,7 +431,7 @@ function Node.walk(node)
 end
 
 ```
-### Selection
+## Selection
 
 We are frequently in search of a subset of Nodes:
 
@@ -464,7 +474,7 @@ function Node.coro_select(node, pred)
    return wrap(function() traverse(node) end)
 end
 ```
-### Node.select(node)
+#### Node.select(node)
 
 This version uses a closure instead of a coroutine, to get around a crashing
 problem we've been having in bridge.
@@ -526,94 +536,47 @@ end
 ```
 #### Node.lines(node)
 
-A memoized iterator returning ``str`` one line at a time.
-
-
-Newlines are not included.
-
-
-In addition, the first ``node:lines()`` traversal builds up
-a source map subsequently used by ``node:atLine(pos)`` to
-return the line and column of a given position.
+A simple wrapper around ``core.lines``, kept around because, due to the name,
+it's moderately annoying to tell whether it's in use.
 
 ```lua
+local lines = assert(core.lines)
+
 function Node.lines(node)
-  local function yieldLines(node, linum)
-     for _, str in ipairs(node.__lines) do
-        yield(str)
-      end
-  end
-
-  if node.__lines then
-     return wrap(function ()
-                    yieldLines(node)
-                 end)
-  else
-     node.__lines = {}
-  end
-
-  local function buildLines(str)
-      if str == nil then
-        return nil
-      end
-      local rest = ""
-      local first, last = find(str, "\n")
-      if first == nil then
-        return nil
-      else
-        local line = sub(str, 1, first - 1) -- no newline
-        rest       = sub(str, last + 1)    -- skip newline
-        node.__lines[#node.__lines + 1] = line
-        yield(line)
-      end
-      buildLines(rest)
-  end
-
-  return wrap(function ()
-            buildLines(node.str)
-         end)
+  return lines(node:span())
 end
 ```
-#### Node.linePos(node, position)
+#### Node.linePos(node)
 
-Returns the line and column given a position.
-
-#Todo this function doesn't work and is badly written. Fix.
-- [ ]  #todo  Optimal Node.linePos().
-
-
-       This needs to be more optimal; it should use ``string.find`` to
-       build up a memoized collection of start and end points and
-       never break up the string directly.
-
-
-       At least we're only paying the price once, but Node is supposed
-       to be lazy about slicing strings, and this is eager.
+Returns four values: the line, and column offset, of ``node.first``, followed by
+the line and column offset of ``node.last``.
 
 ```lua
-function Node.linePos(node, position)
-   if not node.__lines then
-      for _ in node:lines() do
-        -- nothing, this generates the line map
+function Node.linePos(node)
+   local row, col = 0, 0
+   local row_first, col_first, row_last, col_last
+   local cursor, target = 0, node.first
+   for line in lines(node.str) do
+      row = row + 1
+      ::start::
+      if cursor + #line >= target then
+         -- we have our row
+         col = target - cursor
+         if target == node.first then
+            row_first, col_first = row, col
+            target = node.last
+            goto start
+         else
+            row_last, col_last = row, col
+            break
+         end
+      else
+         cursor = cursor + #line + 1 -- for newline
       end
    end
-   local offset = 0
-   local position = position or node.last
-   local linum = nil
-   for i, v in ipairs(node.__lines) do
-       linum = i
-       local len = #v + 1 -- for nl
-       local offset = offset + len
-       if offset > position then
-          return linum, position
-       elseif offset == position then
-          return linum, len
-       else
-          position = position - #v - 1
-       end
-   end
-   -- this position is off the end of the string
-   return nil, "exceeds #str", - offset  -- I think that's the best 3rd value?
+   if not row_last then return "no row_last", cursor end
+
+   return row_first, col_first, row_last, col_last
 end
 ```
 #### Node.lastLeaf(node)
@@ -624,17 +587,24 @@ Returns the last leaf of the node.
 Useful to check for terminal errors, for stop-on-error parsing.
 
 ```lua
-function Node.lastLeaf(node)
+local function _lastLeaf(node)
   if #node == 0 then
     return node
   else
-    return Node.lastLeaf(node[#node])
+    return _lastLeaf(node[#node])
   end
 end
+
+Node.lastLeaf = _lastLeaf
 ```
-### Collectors
+#### Node:gather(pred)
 
 These return an array of all results.
+
+
+- [ ] #todo  This could be reimplemented as
+             ``core.collect(node.select, node, pred)`` and probably renamed
+             ``node:collect(pred)`` while we're at it.
 
 
 - [ ] #todo  Add a Forest class to provide the iterator interface for
@@ -650,12 +620,13 @@ function Node.gather(node, pred)
   return gathered
 end
 ```
-## Copying
+## Mutation
 
-Methods to create another Node from a given Node.
+Methods to create another Node from a given Node, or change the structure of
+a Node mutably.
 
 
-### Node:clone()
+#### Node:clone()
 
 This is a thin wrapper around ``cloneinstance``, which takes care of copying the
 metatables and detecting the cycles created by the ``parent`` element.
@@ -667,7 +638,7 @@ function Node.clone(node)
    return cloneinstance(node)
 end
 ```
-### Node:pluck()
+#### Node:pluck()
 
 This method creates a self-contained Node.  So instead of the whole ``str``, we
 have ``node:span()``, and the value of ``node.first`` at the root level is 1.
@@ -697,6 +668,50 @@ function Node.pluck(node)
    local plucked = _pluck(node, str, offset)
 --   assert(plucked.first == 1)
    return plucked
+end
+```
+#### Node:graft(graft, [index])
+
+Takes a proper Node and splices it into another Node at ``index``, which
+defaults to ``#node + 1``.
+
+
+There are several steps here, we need to:
+
+
+-  Splice ``str`` on the old Node with ``str`` on the new Node, at the indicated
+   position, which is calculated base on a ``.first`` or ``.last``, depending.
+
+
+-  Iterate the ``graft`` node, replacing ``str`` and adjusting ``first`` and ``last``.
+
+
+-  Iterate the root of the original ``node``, replacing ``str``, adjusting ``first``
+   and ``last`` where appropriate (i.e. greater than the splice index).
+
+
+   lastly:
+
+
+-  Insert the ``graft`` node at the appropriate place, and set node.parent to
+   point to ``node``.
+
+
+This being a mutable table method, it returns nothing.  A case could be made
+for this being an immutable method, which returns an entirely new Node, but
+we can make that out of ``node:clone()`` and ``node:graft(graft)``, where the
+reverse isn't possible with an immutable method.
+
+```lua-noknit
+function Node.graft(node, graft, index)
+   local root = node:root()
+   local new_str = ""
+   if not index then
+      new_str = node.str .. graft.str
+      insert(node, graft)
+   else -- to be continued...
+
+   end
 end
 ```
 ## Validation

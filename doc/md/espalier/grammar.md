@@ -140,8 +140,8 @@ You might say the return value must _inherit_ from Node, if we were using
 a language that did that sort of thing.
 
 
-A metatable with the key ``__DEFAULT`` is given special treatment, used to
-replace Node itself for classes which are not provided with a metatable.
+If a metatable of the given ``.id`` is not provided, the metatable at ``metas[1]``
+is used instead.  If no default is provided, this defaults to Node.
 
 
 ## Roadmap
@@ -277,12 +277,9 @@ return a Node of some sort.
         t = setmeta(t, meta)
       end
       assert(t.id, "no id on Node")
-   elseif metas.__DEFAULT then
-      t.id = id
-      setmeta(t, metas.__DEFAULT)
    else
       t.id = id
-      setmeta(t, Node)
+      setmeta(t, metas[1])
    end
 
    if not t.parent then
@@ -422,7 +419,7 @@ Takes metatables, distributing defaults and denormalizations.
 ```lua
 local function refineMetas(metas)
   for id, meta in pairs(metas) do
-    if id ~= "__DEFAULT" then
+    if id ~= 1 then
       if type(meta) == "table" then
         -- #todo is this actually necessary now?
         -- if all Node children are created with Node:inherit than
@@ -435,6 +432,9 @@ local function refineMetas(metas)
         end
       end
     end
+  end
+  if not metas[1] then
+     metas[1] = Node
   end
   return metas
 end

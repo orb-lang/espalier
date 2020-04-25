@@ -363,8 +363,6 @@ end
 
 
 
-
-
 function Node.toMarkdown(node)
   if not node[1] then
     return sub(node.str, node.first, node.last)
@@ -407,6 +405,22 @@ end
 
 
 
+
+
+
+
+
+
+
+
+local function _root(node)
+   if node.parent == node then
+      return node
+   end
+   return _root(node.parent)
+end
+
+Node.root = _root
 
 
 
@@ -572,46 +586,45 @@ end
 
 
 
-
-
-
-
+local lines = assert(core.lines)
 
 function Node.lines(node)
-  local function yieldLines(node, linum)
-     for _, str in ipairs(node.__lines) do
-        yield(str)
-      end
-  end
+  return lines(node:span())
+end
 
-  if node.__lines then
-     return wrap(function ()
-                    yieldLines(node)
-                 end)
-  else
-     node.__lines = {}
-  end
 
-  local function buildLines(str)
-      if str == nil then
-        return nil
-      end
-      local rest = ""
-      local first, last = find(str, "\n")
-      if first == nil then
-        return nil
+
+
+
+
+
+
+
+function Node.linePos(node)
+   local row, col = 0, 0
+   local row_first, col_first, row_last, col_last
+   local cursor, target = 0, node.first
+   for line in lines(node.str) do
+      row = row + 1
+      ::start::
+      if cursor + #line >= target then
+         -- we have our row
+         col = target - cursor
+         if target == node.first then
+            row_first, col_first = row, col
+            target = node.last
+            goto start
+         else
+            row_last, col_last = row, col
+            break
+         end
       else
-        local line = sub(str, 1, first - 1) -- no newline
-        rest       = sub(str, last + 1)    -- skip newline
-        node.__lines[#node.__lines + 1] = line
-        yield(line)
+         cursor = cursor + #line + 1 -- for newline
       end
-      buildLines(rest)
-  end
+   end
+   if not row_last then return "no row_last", cursor end
 
-  return wrap(function ()
-            buildLines(node.str)
-         end)
+   return row_first, col_first, row_last, col_last
 end
 
 
@@ -623,58 +636,19 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-function Node.linePos(node, position)
-   if not node.__lines then
-      for _ in node:lines() do
-        -- nothing, this generates the line map
-      end
-   end
-   local offset = 0
-   local position = position or node.last
-   local linum = nil
-   for i, v in ipairs(node.__lines) do
-       linum = i
-       local len = #v + 1 -- for nl
-       local offset = offset + len
-       if offset > position then
-          return linum, position
-       elseif offset == position then
-          return linum, len
-       else
-          position = position - #v - 1
-       end
-   end
-   -- this position is off the end of the string
-   return nil, "exceeds #str", - offset  -- I think that's the best 3rd value?
-end
-
-
-
-
-
-
-
-
-
-
-function Node.lastLeaf(node)
+local function _lastLeaf(node)
   if #node == 0 then
     return node
   else
-    return Node.lastLeaf(node[#node])
+    return _lastLeaf(node[#node])
   end
 end
+
+Node.lastLeaf = _lastLeaf
+
+
+
+
 
 
 
@@ -694,6 +668,7 @@ function Node.gather(node, pred)
 
   return gathered
 end
+
 
 
 
@@ -747,6 +722,44 @@ function Node.pluck(node)
 --   assert(plucked.first == 1)
    return plucked
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
