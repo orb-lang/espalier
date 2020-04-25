@@ -727,7 +727,8 @@ end
 
 
 
-return { rules   = Rules,
+return { Peg,
+         rules   = Rules,
          rule    = Rule,
          rhs     = Rhs,
          comment = Comment,
@@ -747,5 +748,4 @@ return { rules   = Rules,
          repeated  = Repeated,
          named     = Named,
          WS        = Whitespace,
-         dent      = Dent,
-         __DEFAULT = Peg }
+         dent      = Dent }
