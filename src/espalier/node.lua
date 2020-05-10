@@ -812,6 +812,49 @@ end
 
 
 
+local function _isCompact(node, breaks)
+   local is_compact = true
+   if #node > 0 then
+      -- node.first must match first of subnode
+      local first_match = node.first == node[1].first
+      if not first_match then
+        -- register the 'break'
+        insert(breaks.pre, {node[1].first - node.first, node})
+      end
+      is_compact = is_compact and first_match
+      for i = 2, #node do
+        -- check gap between subNodes
+        local inter_match = node[i-1].last == node[i].first - 1
+        if not inter_match then
+           insert(breaks.inter, {node[i-1].last - node[i].first - 1,
+                                 node[i-1], node[i]})
+        end
+        is_compact = is_compact and inter_match
+        -- run isCompact recursively
+        is_compact = is_compact and _isCompact(node[i-1], breaks)
+      end
+      -- test last node if not already covered
+      if #node >= 2 then
+        is_compact = is_compact and _isCompact(node[#node], breaks)
+      end
+      -- node.last must match last of subnode
+      local last_match = node.last == node[#node].last
+      if not last_match then
+        insert(breaks.post, {node[#node].last - node.last, node})
+      end
+      is_compact = is_compact and last_match
+   end
+   return is_compact
+end
+
+
+
+
+
+
+
+
+
 
 
 

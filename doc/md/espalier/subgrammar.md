@@ -19,7 +19,7 @@ local function subgrammar(grammar, meta, errstring)
    return function (t)
       local match = grammar(t.str, t.first, t.last)
       if match then
-         if match.last == t. last then
+         if match.last == t.last then
             return match
          else
             match.should_be = match.id
