@@ -781,8 +781,10 @@ local function _isCompact(node, breaks)
         local left, right = node[i-1].last, node[i].first
         local inter_match = left == right - 1
         if not inter_match then
+           -- this should be node[i]:linePos(), but that hangs the machine
+           -- and I don't know why yet
            local line, col =  node:linePos()
-           insert(breaks.inter, {node.id, right - left - 1,
+           insert(breaks.inter, {node[i-1].id, node[i].id, right - left - 1,
                                  line, col,
                                  node.str:sub(left + 1, right - 1)})
         end
