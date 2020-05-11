@@ -770,8 +770,9 @@ local function _isCompact(node, breaks)
       local first_match = node.first == node[1].first
       if not first_match then
         -- register the 'break'
+        local line, col = node:linePos()
         insert(breaks.pre, {node.id, node[1].first - node.first,
-                            node.first, node[1].first,
+                            line, col,
                             node.str:sub(node.first, node[1].first - 1)})
       end
       is_compact = is_compact and first_match
@@ -780,8 +781,9 @@ local function _isCompact(node, breaks)
         local left, right = node[i-1].last, node[i].first
         local inter_match = left == right - 1
         if not inter_match then
+           local line, col =  node:linePos()
            insert(breaks.inter, {node.id, right - left - 1,
-                                 left, right,
+                                 line, col,
                                  node.str:sub(left + 1, right - 1)})
         end
         is_compact = is_compact and inter_match
@@ -795,8 +797,9 @@ local function _isCompact(node, breaks)
       -- node.last must match last of subnode
       local last_match = node.last == node[#node].last
       if not last_match then
+        local _, __, line, col = node[#node]:linePos()
         insert(breaks.post, {node.id, node.last - node[#node].last,
-                             node[#node].last, node.last,
+                             line, col + 1,
                              node.str:sub(node[#node].last + 1, node.last)})
       end
       is_compact = is_compact and last_match
