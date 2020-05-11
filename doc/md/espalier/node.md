@@ -759,39 +759,55 @@ Checks if a Node is compact: that is, that the Tokens in the Node are either
 empty, or collectively span all substrings of the ``str`` field.
 
 ```lua
+local insert = assert(table.insert)
+
 local function _isCompact(node, breaks)
    local is_compact = true
+   local subCompact
+   breaks[1] = breaks[1] + 1
    if #node > 0 then
       -- node.first must match first of subnode
       local first_match = node.first == node[1].first
       if not first_match then
         -- register the 'break'
-        insert(breaks.pre, {node[1].first - node.first, node})
+        insert(breaks.pre, {node.id, node[1].first - node.first,
+                            node.first, node[1].first,
+                            node.str:sub(node.first, node[1].first - 1)})
       end
       is_compact = is_compact and first_match
       for i = 2, #node do
         -- check gap between subNodes
-        local inter_match = node[i-1].last == node[i].first - 1
+        local left, right = node[i-1].last, node[i].first
+        local inter_match = left == right - 1
         if not inter_match then
-           insert(breaks.inter, {node[i-1].last - node[i].first - 1,
-                                 node[i-1], node[i]})
+           insert(breaks.inter, {node.id, right - left - 1,
+                                 left, right,
+                                 node.str:sub(left + 1, right - 1)})
         end
         is_compact = is_compact and inter_match
         -- run isCompact recursively
-        is_compact = is_compact and _isCompact(node[i-1], breaks)
+        subCompact = _isCompact(node[i-1], breaks)
+        is_compact = is_compact and subCompact
       end
-      -- test last node if not already covered
-      if #node >= 2 then
-        is_compact = is_compact and _isCompact(node[#node], breaks)
-      end
+      -- test last node
+      subCompact = _isCompact(node[#node], breaks)
+      is_compact = is_compact and subCompact
       -- node.last must match last of subnode
       local last_match = node.last == node[#node].last
       if not last_match then
-        insert(breaks.post, {node[#node].last - node.last, node})
+        insert(breaks.post, {node.id, node.last - node[#node].last,
+                             node[#node].last, node.last,
+                             node.str:sub(node[#node].last + 1, node.last)})
       end
       is_compact = is_compact and last_match
    end
    return is_compact
+end
+
+function Node.isCompact(node)
+   local breaks = {0, pre = {}, inter = {}, post = {} }
+   local is_compact = _isCompact(node, breaks)
+   return is_compact, breaks
 end
 ```
 ### Subclassing and construction

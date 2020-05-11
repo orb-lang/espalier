@@ -125,7 +125,7 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 #/lua
 
 #!lua
-return Peg(lua_str) : toGrammar()
+return Peg(lua_str)
 #/lua
 
 
