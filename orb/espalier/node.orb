@@ -604,15 +604,17 @@ function Node.linePos(node)
    local row, col = 0, 0
    local row_first, col_first, row_last, col_last
    local cursor, target = 0, node.first
+   local first = true
    for line in lines(node.str) do
       row = row + 1
       ::start::
       if cursor + #line >= target then
          -- we have our row
          col = target - cursor
-         if target == node.first then
+         if first then
             row_first, col_first = row, col
             target = node.last
+            first = false
             goto start
          else
             row_last, col_last = row, col
@@ -834,11 +836,9 @@ local function _isCompact(node, breaks)
         local left, right = node[i-1].last, node[i].first
         local inter_match = left == right - 1
         if not inter_match then
-           -- this should be node[i]:linePos(), but that hangs the machine
-           -- and I don't know why yet
-           local line, col =  node:linePos()
+           local _, __, line, col =  node[i-1]:linePos()
            insert(breaks.inter, {node[i-1].id, node[i].id, right - left - 1,
-                                 line, col,
+                                 line, col + 1,
                                  node.str:sub(left + 1, right - 1)})
         end
         is_compact = is_compact and inter_match
