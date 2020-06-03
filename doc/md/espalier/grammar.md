@@ -511,7 +511,7 @@ local function new(grammar_template, metas, pre, post)
       if post then
         match = post(match)
       end
-      match.complete = match.last == #sub_str + offset and true or false
+      match.complete = match.last == #sub_str + offset
       return match
    end
 

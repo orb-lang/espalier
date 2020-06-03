@@ -600,33 +600,42 @@ end
 
 
 
-function Node.linePos(node)
-   local row, col = 0, 0
-   local row_first, col_first, row_last, col_last
-   local cursor, target = 0, node.first
-   local first = true
-   for line in lines(node.str) do
-      row = row + 1
-      ::start::
-      if cursor + #line >= target then
-         -- we have our row
-         col = target - cursor
-         if first then
-            row_first, col_first = row, col
-            target = node.last
-            first = false
-            goto start
-         else
-            row_last, col_last = row, col
-            break
-         end
+local _nl_map = setmetatable({}, { __mode = 'kv' })
+local findall = assert(require "core:core/string".findall)
+
+local function _findPos(nl_map, target, start)
+   local line = start or 1
+   local cursor = 0
+   local col
+   while true do
+      if line > #nl_map then return nil end
+      local next_nl = nl_map[line][1]
+      if target > next_nl then
+         -- advance
+         cursor = next_nl + 1
+         line = line + 1
       else
-         cursor = cursor + #line + 1 -- for newline
+         return line, target - cursor + 1
       end
    end
-   if not row_last then return "no row_last", cursor end
+end
 
-   return row_first, col_first, row_last, col_last
+function Node.linePos(node)
+   local nl_map
+   if _nl_map[node.str] then
+      nl_map = _nl_map[node.str]
+   else
+      nl_map = findall(node.str, "\n")
+      _nl_map[node.str] = nl_map
+   end
+   if not nl_map then
+      -- there are no newlines:
+      return 1, node.first, 1, node.last
+   end
+   -- otherwise find the offsets
+   local line_first, col_first = _findPos(nl_map, node.first)
+   local line_last, col_last = _findPos(nl_map, node.last, line_first)
+   return line_first, col_first, line_last, col_last
 end
 
 
@@ -819,7 +828,6 @@ local insert = assert(table.insert)
 local function _isCompact(node, breaks)
    local is_compact = true
    local subCompact
-   breaks[1] = breaks[1] + 1
    if #node > 0 then
       -- node.first must match first of subnode
       local first_match = node.first == node[1].first
@@ -837,8 +845,8 @@ local function _isCompact(node, breaks)
         local inter_match = left == right - 1
         if not inter_match then
            local _, __, line, col =  node[i-1]:linePos()
-           insert(breaks.inter, {node[i-1].id, node[i].id, right - left - 1,
-                                 line, col + 1,
+           insert(breaks.inter, {node[i-1].id, i, node[i].id,
+                                 right - left - 1, line, col + 1,
                                  node.str:sub(left + 1, right - 1)})
         end
         is_compact = is_compact and inter_match
@@ -863,7 +871,7 @@ local function _isCompact(node, breaks)
 end
 
 function Node.isCompact(node)
-   local breaks = {0, pre = {}, inter = {}, post = {} }
+   local breaks = { pre = {}, inter = {}, post = {} }
    local is_compact = _isCompact(node, breaks)
    return is_compact, breaks
 end
