@@ -546,7 +546,7 @@ function Node.lines(node)
   return lines(node:span())
 end
 ```
-#### Node.linePos(node)
+#### Node:linePos()
 
 Returns four values: the line, and column offset, of ``node.first``, followed by
 the line and column offset of ``node.last``.
@@ -560,7 +560,15 @@ local function _findPos(nl_map, target, start)
    local cursor = 0
    local col
    while true do
-      if line > #nl_map then return nil end
+      if line > #nl_map then
+         -- technically two possibilities: node.last is after the
+         -- end of node.str, or it's on a final line with no newline.
+         -- the former would be quite exceptional, so we assume the latter
+         -- here.
+         -- so we need the old cursor back:
+         cursor = nl_map[line - 1][1] + 1
+         return line, target - cursor + 1
+      end
       local next_nl = nl_map[line][1]
       if target > next_nl then
          -- advance
