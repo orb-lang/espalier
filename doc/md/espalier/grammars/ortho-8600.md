@@ -2,7 +2,7 @@
 
 
 Let's start with the EBNF for a date, straight from
-[[iso][]]:
+\[\[iso\]\[\]\]:
 
 ```ebnf
 (* Base definitions *)
@@ -43,6 +43,8 @@ local Grammar =  require "espalier/grammar"
 
 local P, R, E, V, S, D   =  L.P, L.R, L.E, L.V, L.S, L.D
 ```
+
+
 ### metatables
 
 ```lua
@@ -60,6 +62,7 @@ local date_metas = { oneThru30 = Day,
                      mFeb      = Month,
                      year      = Year }
 ```
+
 ### date grammar
 
 ```lua
@@ -120,7 +123,13 @@ local function _date_fn(_ENV)
 
    threeDecan   = V"longMonth" + P"30"
 ```
-#### (* 4. Date and Time Extensions *)
+
+This is a credible translation of EBNF into PEG, using a bit of judicious
+negative lookahead\.  I intend to add some error capture for, eg, 1991\-02\-30
+and the like\.
+
+
+#### \(\* 4\. Date and Time Extensions \*\)
 
 ```ebnf
 (* 4.1.1 Levels *)
@@ -152,6 +161,7 @@ qualifiedDate = [uaSymbol], year, [uaSymbol], "-",
 
 unspecifiedDate = (yearMonth, "-XX") | (year, "-XX-XX") | "XXXX-XX-XX" ;
 ```
+
 ```lua
    uaDate        = V"yearMonthDay" * V"uaSymbol"
 
@@ -167,6 +177,10 @@ unspecifiedDate = (yearMonth, "-XX") | (year, "-XX-XX") | "XXXX-XX-XX" ;
                       + (V"year" * P"-XX-XX")
                       * P "XXXX-XX-XX"
 ```
+
+This is a bunch of stuff I'm going to skip, for now,  in the interest of
+getting to such solid objects as hours:
+
 ```ebnf
 (* Reduced accuracy *)
 
@@ -215,7 +229,7 @@ longYearScientific = "y", ["-"], positiveDigit, digit, "e" {digit}- ;
 
 At this point I'm just going to fold some of the EBNF out because this is a
 hyperspecified piece of crap designed to please everyone and I am **not**
-implementing significant digits **and** approximate dates make up your mind ISO.
+implementing significant digits **and** approximate dates make up your mind ISO\.
 
 ```ebnf
 (* 5. Repeat Rules for Recurring Time Intervals *)
@@ -252,9 +266,13 @@ durationDay = day, 'D' ;
 
 durationWeek = week, 'W' ;
 ```
+
+
+
 ```lua
 end
 ```
+
 ```lua
 return Grammar(_date_fn, date_metas, nil, nil)
 ```

@@ -1,15 +1,13 @@
 # Parsing Expression Grammar
 
 
-Now, at last, we are ready to swallow the tail.
-
+Now, at last, we are ready to swallow the tail\.
 
 Parsing Expression Grammars can be expressed in a format which is itself
-grammatical.  We could use this to build Lua code against our Node class,
-generating a parser from the description.
+grammatical\.  We could use this to build Lua code against our Node class,
+generating a parser from the description\.
 
-
-So let's do that.
+So let's do that\.
 
 #### Imports
 
@@ -19,6 +17,8 @@ local D, E, P, R, S, V   =  L.D, L.E, L.P, L.R, L.S, L.V
 local Grammar = require "espalier/grammar"
 local pegMetas = require "espalier/grammars/pegmeta"
 ```
+
+
 ## Pegylator: A Parsing Expression Grammar for Parsing Expression Grammars
 
 ```lua
@@ -191,9 +191,11 @@ local function pegylator(_ENV)
    ws = P"_"
 end
 ```
+
 ```lua
 local PegGrammar = Grammar(pegylator, pegMetas)
 ```
+
 ```lua
 local function new(peg_str, metas, pre, post)
    local peg_node = PegGrammar(peg_str)
@@ -207,6 +209,7 @@ local function new(peg_str, metas, pre, post)
    return peg_node
 end
 ```
+
 ```lua
 return new
 ```

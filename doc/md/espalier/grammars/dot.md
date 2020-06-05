@@ -2,7 +2,6 @@
 
 Turns out there's a [grammar](https://graphviz.gitlab.io/_pages/doc/info/lang.html)
 
-
 So
 
 ```lua

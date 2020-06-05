@@ -1,110 +1,93 @@
 # Phrase
 
 
-This is a string builder class.
-
+This is a string builder class\.
 
 It is [heritable](httk://), may be concatenated with either a string or itself,
-and will eventually implement the full string library as method calls.
+and will eventually implement the full string library as method calls\.
 
+I use a definite string building paradigm for which the Phrase class is a drop\-in
+replacement\.
 
-I use a definite string building paradigm for which the Phrase class is a drop-in
-replacement.
-
-
-The base Phrase class is mutable.  Concatenating strings will add to the array
+The base Phrase class is mutable\.  Concatenating strings will add to the array
 portion of the Phrase, while catting another Phrase will combine the two
-into a new Phrase.  This means in normal use, once a Phrase is added to another
-Phrase, it will stay put.
+into a new Phrase\.  This means in normal use, once a Phrase is added to another
+Phrase, it will stay put\.
 
-
-Specifically, Phrases are mutable until they are concatenated to another Phrase.
+Specifically, Phrases are mutable until they are concatenated to another Phrase\.
 At that point they are interned, any attempt to concatenate will spill the
-contents into a new Phrase.
+contents into a new Phrase\.
+
+I thought, let's call it 'spill', rather than abbreviate Copy on Concat\.
 
 
-I thought, let's call it 'spill', rather than abbreviate Copy on Concat.
+### Phrase is string\-like
+
+It may be concatenated with strings at any point, and the result will be a Phrase\.
+
+It will render the same string you would expect any time `tostring` is triggered\.
 
 
-### Phrase is string-like
+### Phrase is not entirely string\-like
 
-It may be concatenated with strings at any point, and the result will be a Phrase.
+We have a field `phrase.len` that tells you what `#tostring(phrase)` would be\.
+`#phrase` is the number of fragments in the array portion of the phrase\.
 
-
-It will render the same string you would expect any time ``tostring`` is triggered.
-
-
-### Phrase is not entirely string-like
-
-We have a field ``phrase.len`` that tells you what ``#tostring(phrase)`` would be.
-``#phrase`` is the number of fragments in the array portion of the phrase.
-
-
-We use ``#Phrase`` all the time for iteration, so we don't want to block it.
+We use `#Phrase` all the time for iteration, so we don't want to block it\.
 
 
 ## Phrase is contagious
 
-Phrases, by design, subsume strings any time they are concatenated. This
-will tend to cause failure when handed to things like the string library.
+Phrases, by design, subsume strings any time they are concatenated\. This
+will tend to cause failure when handed to things like the string library\.
+
+Better to write a Phrase\-native substitute unless it's an endpoint like
+`write`\.  The combination of interned immutable strings and pervasing tabling
+over concatenation is powerful and fast in Lua\.
+
+It's ok to just call `tostring` and be done\.
 
 
-Better to write a Phrase-native substitute unless it's an endpoint like
-``write``.  The combination of interned immutable strings and pervasing tabling
-over concatenation is powerful and fast in Lua.
+## Phrase is \(relatively\) primitive
 
-
-It's ok to just call ``tostring`` and be done.
-
-
-## Phrase is (relatively) primitive
-
-It provides concatenation, ``tostring``, and a length field ``len`` separate
-from ``#``.  It has ``it`` and ``idEst``, the latter particularly useful to
-avoid repetitive importing of the class.
-
+It provides concatenation, `tostring`, and a length field `len` separate
+from `#`\.  It has `it` and `idEst`, the latter particularly useful to
+avoid repetitive importing of the class\.
 
 In particular, and on purpose, Phrase makes no effort to balance its binary
-structure.  This way, sensible, ordinary use of Phrase will preserve the
-tree structure of the DAG being transduced.
+structure\.  This way, sensible, ordinary use of Phrase will preserve the
+tree structure of the DAG being transduced\.
 
+The typical grammar is of the form ` a : b* EOF / Err, b: c c*`, which will
+naturally take a head\-weighted form\.
 
-The typical grammar is of the form `` a : b* EOF / Err, b: c c*``, which will
-naturally take a head-weighted form.
-
-
-It is a trivial log-log operation to bring a Phrase into balance if that
-is desireable.
+It is a trivial log\-log operation to bring a Phrase into balance if that
+is desireable\.
 
 
 ### Roadmap
 
-I would like to add ``Phrase:ffind(str)``, for fast find.  This only works if
-the ``str`` is a literal fragment somewhere in the phrase.
+I would like to add `Phrase:ffind(str)`, for fast find\.  This only works if
+the `str` is a literal fragment somewhere in the phrase\.
 
-
-More enhancements of that nature should be in an extended class. Think gsub
+More enhancements of that nature should be in an extended class\. Think gsub
 with the full power of lpeg instead of the quirky pattern syntax I can never
-remember.
+remember\.
 
-
-Also, one premise of Phrase is that it's encoding-unaware. I'd like to add
+Also, one premise of Phrase is that it's encoding\-unaware\. I'd like to add
 to it by calculating the codepoints and adding a "ulen" field, but don't
 want to pay the cost for the base class, since Node in particular counts on
-grammars to be correct about the bytes they want to consume.
-
+grammars to be correct about the bytes they want to consume\.
 
 The language interface of lpeg emphasises text, as it should, but Lua strings
-are eight-bit clean and commonly enough used to intern userdata and query it.
+are eight\-bit clean and commonly enough used to intern userdata and query it\.
 
+Phrase can actually be used as\-is to build up rope\-like binary data, if that
+ever comes in handy\.  I'd want a different `idEst` to not puke all over
+my terminal by accident\.
 
-Phrase can actually be used as-is to build up rope-like binary data, if that
-ever comes in handy.  I'd want a different ``idEst`` to not puke all over
-my terminal by accident.
-
-
-Speaking of rope-like, Phrase will have better performance in environments
-where it is more 'bushy'.
+Speaking of rope\-like, Phrase will have better performance in environments
+where it is more 'bushy'\.
 
 ```lua
 local init, new
@@ -113,25 +96,24 @@ s.angry = false
 local Phrase = {}
 Phrase.it = require "core/check"
 ```
-## __concat
-
-  Concatenation is the frequent operation in working with Nodes.  By default,
-all a Node is in a position to do is yield a string.  Phrase allows us to
-enhance that with various table-assisted superpowers.
 
 
-Also, Lua strings are very cheap once created. Concatenating them together in
+## \_\_concat
+
+  Concatenation is the frequent operation in working with Nodes\.  By default,
+all a Node is in a position to do is yield a string\.  Phrase allows us to
+enhance that with various table\-assisted superpowers\.
+
+Also, Lua strings are very cheap once created\. Concatenating them together in
 a recursively larger pattern is really expensive by comparison, and that's
-the entire paradigm of all these tools right now.
+the entire paradigm of all these tools right now\.
 
+This and retaining the Docs in\-memory will get the spring back in our step\.
 
-This and retaining the Docs in-memory will get the spring back in our step.
-
-
-- parameters
-  -  head_phrase:  This may be either a primitive string or a Phrase.
-  -  tail_phrase:  This may be either primitive or a Phrase.  If head_phrase
-                   is a string, tail_phrase is not, or we'd be in the VM.
+\- parameters
+  \-  head\_phrase:  This may be either a primitive string or a Phrase\.
+  \-  tail\_phrase:  This may be either primitive or a Phrase\.  If head\_phrase
+                   is a string, tail\_phrase is not, or we'd be in the VM\.
 
 ```lua
 local function spill(phrase)
@@ -177,9 +159,11 @@ local function __concat(head_phrase, tail_phrase)
    return nil, "tail phrase was unsuitable for concatenation"
 end
 ```
-## __tostring
 
-Treating Phrase as a string at any point should render it into one.
+
+## \_\_tostring
+
+Treating Phrase as a string at any point should render it into one\.
 
 ```lua
 local function __tostring(phrase)
@@ -191,11 +175,13 @@ local function __tostring(phrase)
    return str
 end
 ```
+
 ```lua
 local PhraseMeta = {__index = Phrase,
                   __concat = __concat,
                   __tostring = __tostring}
 ```
+
 ```lua
 
 init = function()
@@ -218,6 +204,8 @@ end
 
 Phrase.idEst = new
 ```
+
+
 ### spec
 
 Stick this somewhere better
@@ -240,6 +228,29 @@ end
 
 spec()
 ```
+
+
 ```lua
 return new
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,14 +2,12 @@
 
 
   A metatable function can do anything, and so long as it returns a valid
-Node over the appropriate range, everything else should still work.
+Node over the appropriate range, everything else should still work\.
 
-
-The simplest way to achieve this is to wrap a Grammar in a function.
-
+The simplest way to achieve this is to wrap a Grammar in a function\.
 
 This helper method achieves this, taking a grammar and an optional error
-string, returning a function suitable for use as a metatable.
+string, returning a function suitable for use as a metatable\.
 
 ```lua
 local Node = require "espalier:espalier/node"

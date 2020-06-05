@@ -1,14 +1,16 @@
 # Microlisp
 
 
-A declarative PEG parser for a Platonic sexpr language.
+A declarative PEG parser for a Platonic sexpr language\.
 
 ```lua
 local Grammar = require "espalier/grammar"
 local Peg = require "espalier/peg"
 local Node = require "espalier/node"
 ```
-## micro_lisp_peg
+
+
+## micro\_lisp\_peg
 
 ```lua
 local micro_lisp_peg = [[
@@ -27,12 +29,14 @@ number = float / integer
   `_`     = { \t\r\n,}*
 ]]
 ```
+
 ```lua
 local micro_lisp_metas = { lisp = Node : inherit "lisp",
                            atom = Node : inherit "atom",
                            symbol = Node : inherit "symbol",
                            number = Node : inherit "number" }
 ```
+
 ```lua
 return Peg(micro_lisp_peg) : toGrammar(micro_lisp_metas)
 ```

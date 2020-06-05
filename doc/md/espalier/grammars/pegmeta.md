@@ -1,30 +1,25 @@
 # PEG metatables
 
 
-A collection of Node-descended metatables to provide sundry methodologies.
+A collection of Node\-descended metatables to provide sundry methodologies\.
 
 
 ## Status
 
-This module currently covers enough ground to start co-developing PEG grammars
-in a declarative style.
+This module currently covers enough ground to start co\-developing PEG grammars
+in a declarative style\.
 
+\- \[ \] \#Todo
 
-- [ ] #Todo
+  \- \[ \]  Assemble =toLpeg= methods for the remaining classes\.
 
+  \- \[ \]  Add a PEG syntax highlighter to the \[\[=orb/etc= directory\]
+         \[codex://orb:orb/etc/\]\]\.
 
-  - [ ]  Assemble ``toLpeg`` methods for the remaining classes.
+  \- \[ \]  Add a =toHmtl= method set that's roughly pygments\-compatible\.
 
-
-  - [ ]  Add a PEG syntax highlighter to the [[=orb/etc= directory]
-         [codex://orb:orb/etc/]].
-
-
-  - [ ]  Add a ``toHmtl`` method set that's roughly pygments-compatible.
-
-
-         This should actually emit a Node of ``id`` ``html``, capable of emitting
-         a Phrase as well as a string.
+         This should actually emit a Node of =id= =html=, capable of emitting
+         a Phrase as well as a string\.
 
 ```lua
 local Node = require "espalier/node"
@@ -38,7 +33,9 @@ local insert, remove, concat = assert(table.insert),
                                assert(table.concat)
 local s = require "singletons/status" ()
 ```
-#### Optional Lex Lua_thor
+
+
+#### Optional Lex Lua\_thor
 
 ```lua
 local ok, lex = pcall(require, "helm:helm/lex")
@@ -52,12 +49,16 @@ else
          end
 end
 ```
+
+
 ### Peg base class
 
 ```lua
 local Peg, peg = Node : inherit()
 Peg.id = "peg"
 ```
+
+
 ### PegPhrase class
 
   We might want to decorate our phrases with various REPRy enhancements, so
@@ -66,7 +67,9 @@ let's pull a fresh metatable:
 ```lua
 local PegPhrase = Phrase : inherit ({__repr = lex})
 ```
-### Peg:toSexpr()
+
+
+### Peg:toSexpr\(\)
 
 ```lua
 local nl_map = { rule = true }
@@ -92,14 +95,18 @@ end
 
 Peg.toSexpr = _toSexpr
 ```
-### Peg:toSexprRepr()
+
+
+### Peg:toSexprRepr\(\)
 
 A bit ugly perhaps, but this will let us view the sexprs as more than a
-mere string.
-
+mere string\.
 
 I will most likely elaborate this past the useful point, in the pursuit of
-happiness.
+happiness\.
+
+\#Todo
+interpolate colors into the repr string representation\.\.
 
 ```lua
 local function __repr(repr, phrase, c)
@@ -116,16 +123,19 @@ local function newRepr(peg)
    return repr
 end
 ```
+
 ```lua
 function Peg.toSexprRepr(peg)
    return newRepr(peg)
 end
 ```
-## Peg.toLpeg(peg)
+
+
+## Peg\.toLpeg\(peg\)
 
 This needs to be implemented by each subclass, individually, so we produce a
-base method that highlights the span in red.  This makes it stick out, and
-will produce an error if we attempt to compile it.
+base method that highlights the span in red\.  This makes it stick out, and
+will produce an error if we attempt to compile it\.
 
 ```lua
 local a = require "singletons/anterm"
@@ -137,26 +147,30 @@ function Peg.toLpeg(peg)
    return phrase
 end
 ```
+
 ## PegMetas
 
 ```lua
 local PegMetas = Peg : inherit()
 PegMetas.id = "pegMetas"
 ```
+
+
 ### Rules
 
-``rules`` is our base class, and we manually iterate through the AST to
-generate passable Lua code.
+`rules` is our base class, and we manually iterate through the AST to
+generate passable Lua code\.
 
-
-It's not pretty, but it's valid.  At least, so far; PRs welcome.
+It's not pretty, but it's valid\.  At least, so far; PRs welcome\.
 
 ```lua
 local Rules = PegMetas : inherit "rules"
 ```
-#### Rules.__call(rules, str)
 
-We allow the Peg root node to be callable as a Grammar.
+
+#### Rules\.\_\_call\(rules, str\)
+
+We allow the Peg root node to be callable as a Grammar\.
 
 ```lua
 function Rules.__call(rules, str, start, finish)
@@ -166,18 +180,19 @@ function Rules.__call(rules, str, start, finish)
    return rules.parse(str, start, finish)
 end
 ```
-### Rules:toLpeg(extraLpeg)
+
+
+### Rules:toLpeg\(extraLpeg\)
 
 Converts declarative Peg rules into a string of Lua code implementing a
-Grammar function.
+Grammar function\.
+
+`extraLpeg` is an optional string appended to the generated string before the
+final `end`, to inject rules which aren't expressible using the subset of
+`lpeg` which the Peg module supports\.
 
 
-``extraLpeg`` is an optional string appended to the generated string before the
-final ``end``, to inject rules which aren't expressible using the subset of
-``lpeg`` which the Peg module supports.
-
-
-#### _PREFACE
+#### \_PREFACE
 
 ```lua
 local _PREFACE = PegPhrase ([[
@@ -186,6 +201,7 @@ local P, V, S, R = L.P, L.V, L.S, L.R
 local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
 ]])
 ```
+
 ```lua
 local backref_rules = {
    back_reference = [[
@@ -220,15 +236,18 @@ end
 ]]
 }
 ```
-#### _normalize
 
-Causes any ``-`` in a pattern or atom to become ``_``.
+
+#### \_normalize
+
+Causes any `-` in a pattern or atom to become `_`\.
 
 ```lua
 local function _normalize(str)
    return str:gsub("%-", "%_")
 end
 ```
+
 ```lua
 local insert = assert(table.insert)
 
@@ -301,42 +320,36 @@ function Rules.toLpeg(peg_rules, extraLpeg)
    return _PREFACE .. phrase .. appendix
 end
 ```
-#### Rules:toGrammar(metas, pre, post, extraLpeg, header)
-
-  Builds a Grammar out of a parsed Peg set. All non-self parameters are
-optional.
 
 
-- Params:
+#### Rules:toGrammar\(metas, pre, post, extraLpeg, header\)
 
+  Builds a Grammar out of a parsed Peg set\. All non\-self parameters are
+optional\.
 
-  - metas:  Metatables for function behavior (this module is an example of
-            this parameter).
+\- Params:
 
+  \- metas:  Metatables for function behavior \(this module is an example of
+            this parameter\)\.
 
-  - pre:  A function operating on the string to be parsed before the grammar
-          is Matched.  Expected to return a string.
+  \- pre:  A function operating on the string to be parsed before the grammar
+          is Matched\.  Expected to return a string\.
 
+  \- post:  A function operating on the Nodes returned by the match, before the
+           AST is returned\. Expected to return an AST, but whatever it returns
+           will be passed on by the Grammar\.
 
-  - post:  A function operating on the Nodes returned by the match, before the
-           AST is returned. Expected to return an AST, but whatever it returns
-           will be passed on by the Grammar.
+  \- extraLpeg:  String inserted after generated rules and before the final
+                =end= of the function\.
 
+  \- header:  String inserted before the beginning of the generated
+             function\.
 
-  - extraLpeg:  String inserted after generated rules and before the final
-                ``end`` of the function.
+             This and =extraLpeg= must be valid Lua chunks\.
 
-
-  - header:  String inserted before the beginning of the generated
-             function.
-
-
-             This and ``extraLpeg`` must be valid Lua chunks.
-
-
-The resulting Grammar is stored as ``rules.grammar`` and can be invoked with the
-corresponding ``__call`` metamethod.  ``toGrammar`` will overwrite these if they
-have been created already, since the other parameters can be changed.
+The resulting Grammar is stored as `rules.grammar` and can be invoked with the
+corresponding `__call` metamethod\.  `toGrammar` will overwrite these if they
+have been created already, since the other parameters can be changed\.
 
 ```lua
 function Rules.toGrammar(rules, metas, pre, post, extraLpeg, header)
@@ -348,6 +361,10 @@ function Rules.toGrammar(rules, metas, pre, post, extraLpeg, header)
    return rules.parse
 end
 ```
+
+
+
+
 ### Rule
 
 ```lua
@@ -369,14 +386,15 @@ function Rule.toLpeg(rule)
    return phrase .. rule:select "rhs" () : toLpeg ()
 end
 ```
-#### lhs, pattern, hidden_pattern
+
+
+#### lhs, pattern, hidden\_pattern
 
 These are all handled internally by Rule, so they don't require
-their own lpeg transducers.
-
+their own lpeg transducers\.
 
 These should be inherited with proper PascalCaps in the event we write, for
-example, a toHtml method.
+example, a toHtml method\.
 
 
 ### Rhs
@@ -392,6 +410,8 @@ function Rhs.toLpeg(rhs)
    return phrase
 end
 ```
+
+
 ### Choice
 
 ```lua
@@ -405,6 +425,8 @@ function Choice.toLpeg(choice)
    return phrase
 end
 ```
+
+
 ### Cat
 
 ```lua
@@ -418,6 +440,8 @@ function Cat.toLpeg(cat)
    return phrase
 end
 ```
+
+
 ### Group
 
 ```lua
@@ -431,14 +455,16 @@ function Group.toLpeg(group)
    return phrase .. ")"
 end
 ```
+
+
 #### HiddenMatch
 
 This should be implemented if and only if I can get the Drop rule working
-correctly. Now, you'd **think** I could manage this, but it isn't a priority
-right now.
+correctly\. Now, you'd **think** I could manage this, but it isn't a priority
+right now\.
 
 
-### Not_predicate
+### Not\_predicate
 
 ```lua
 local Not_predicate = PegMetas : inherit "not_predicate"
@@ -451,9 +477,11 @@ function Not_predicate.toLpeg(not_pred)
    return phrase .. ")"
 end
 ```
-### And_predicate
 
-Equivalent of ``#rule`` in Lpeg.
+
+### And\_predicate
+
+Equivalent of `#rule` in Lpeg\.
 
 ```lua
 local And_predicate = PegMetas : inherit "and_predicate"
@@ -466,9 +494,11 @@ function And_predicate.toLpeg(and_predicate)
    return phrase
 end
 ```
+
+
 ### Literal
 
-This offers an exact match of a substring.
+This offers an exact match of a substring\.
 
 ```lua
 local Literal = PegMetas : inherit "literal"
@@ -477,6 +507,8 @@ function Literal.toLpeg(literal)
    return PegPhrase "P" .. literal:span()
 end
 ```
+
+
 ### Set
 
 ```lua
@@ -486,11 +518,14 @@ function Set.toLpeg(set)
    return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
 end
 ```
+
+
 #### Range
 
 ```lua
 local Range = PegMetas : inherit "range"
 ```
+
 ```lua
 function Range.toLpeg(range)
    local phrase = PegPhrase "R\""
@@ -498,7 +533,9 @@ function Range.toLpeg(range)
    return phrase .. range : select "range_end" () : span() .. "\" "
 end
 ```
-### Zero_or_more
+
+
+### Zero\_or\_more
 
 ```lua
 local Zero_or_more = PegMetas : inherit "zero_or_more"
@@ -511,7 +548,9 @@ function Zero_or_more.toLpeg(zero_or_more)
    return phrase .. "^0"
 end
 ```
-### One_or_more
+
+
+### One\_or\_more
 
 ```lua
 local One_or_more = PegMetas : inherit "one_or_more"
@@ -524,6 +563,8 @@ function One_or_more.toLpeg(one_or_more)
    return phrase .. "^1"
 end
 ```
+
+
 ### Optional
 
 ```lua
@@ -537,14 +578,15 @@ function Optional.toLpeg(optional)
    return phrase .. "^-1"
 end
 ```
+
+
 ### Repeated
 
 This class covers two superficially similar casess with rather different
-implementation.
-
+implementation\.
 
 The simpler case is a numeric repeat: this simply matches the suffixed pattern
-an exact number of times.
+an exact number of times\.
 
 ```lua
 local Repeated = PegMetas : inherit "repeated"
@@ -559,10 +601,12 @@ function Repeated.toLpeg(repeated)
    return phrase
 end
 ```
+
+
 ### Named
 
 The most complex rule in the book, this handles capture groups and back
-references.
+references\.
 
 ```lua
 local Named = PegMetas : inherit "named"
@@ -606,6 +650,8 @@ function Named.toLpeg(named)
    return phrase
 end
 ```
+
+
 ### Comment
 
 ```lua
@@ -620,13 +666,14 @@ function Comment.toLpeg(comment)
    return phrase .. comment:span():sub(2)
 end
 ```
+
+
 ### Atom
 
 This is grammatically different from pattern only by virtue of being on the
-right hand side.
+right hand side\.
 
-
-This is convenient, since it translates differently into lpeg.
+This is convenient, since it translates differently into lpeg\.
 
 ```lua
 local Atom = PegMetas : inherit "atom"
@@ -637,6 +684,8 @@ function Atom.toLpeg(atom)
    return phrase
 end
 ```
+
+
 ### Number
 
 ```lua
@@ -647,10 +696,12 @@ function Number.toLpeg(number)
    return phrase .. number:span() .. ")"
 end
 ```
+
+
 ### Dent
 
-An in ``dent`` tation; we want the Lpeg to reflect the spacing of the source
-document.
+An in `dent` tation; we want the Lpeg to reflect the spacing of the source
+document\.
 
 ```lua
 local Dent = PegMetas : inherit "dent"
@@ -663,6 +714,8 @@ function Dent.strLine(dent)
    return ""
 end
 ```
+
+
 ### Whitespace
 
 ```lua
@@ -672,6 +725,7 @@ function Whitespace.toLpeg(whitespace)
    return PegPhrase(whitespace:span())
 end
 ```
+
 ```lua
 return { Peg,
          rules   = Rules,

@@ -3,16 +3,25 @@
 
   Having gotten about as far as I can with mere string concatenation, it's
 time to put together a proper set of operations for transducing across a
-Node.
+Node\.
 
-#todo add theory#### asserts
+This isn't a great place to put theory, let's build the structure and
+flesh out from there\.
+
+\#todo
+
+
+#### asserts
 
 ```lua
 local setmeta = assert(setmetatable)
 ```
+
 ```lua
 local Stator = meta {}
 ```
+
+
 ## Weak Table
 
 I imagine we'll want weak references to every state keyed by Node, so
@@ -21,15 +30,18 @@ I imagine we'll want weak references to every state keyed by Node, so
 -- local _weakstate = setmeta({}, {__mode = 'v'})
 ```
 
-One of these will be closed over a Stator.
+One of these will be closed over a Stator\.
 
 ## Constructor
 
 We set up a new stator on each Node we're transducing, so we want it to
-be quick and cheap.
+be quick and cheap\.
 
-#todo  adding =_weakstate= changes the calling convention.  To make this work
-       table, which will shall populate by and by.
+\#todo
+       right, we need to call with one argument for a root, say Doc from Orb\.
+
+       Then subsequent Stator creation passes in the single `_weakstate`
+       table, which will shall populate by and by\.
 
 ```lua
 local function call(stator, _weakstate)
@@ -39,10 +51,12 @@ local function call(stator, _weakstate)
    return _M
 end
 ```
+
+
 ## New
 
-The root Stator has a global context, which is itself.  This is given
-the synonyms ``G``, ``g`` and ``_G``, to suit various styles.
+The root Stator has a global context, which is itself\.  This is given
+the synonyms `G`, `g` and `_G`, to suit various styles\.
 
 ```lua
 local function new(Stator, _weakstate)
@@ -51,6 +65,8 @@ local function new(Stator, _weakstate)
    return stator
 end
 ```
+
+
 ```lua
 return setmetatable(Stator, {__call = new})
 ```

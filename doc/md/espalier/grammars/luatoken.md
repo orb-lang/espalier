@@ -3,6 +3,7 @@
 ```lua
 local Peg = require "espalier/peg"
 ```
+
 ```lua
 local lua_tok_str = [[
 lua = _ (token _)+
@@ -23,6 +24,7 @@ operator = "+" / "-" / "*" / "/" / "%" / "^" / "#"
 
 ]]
 ```
+
 ```lua
 return Peg(lua_tok_str):toGrammar()
 ```

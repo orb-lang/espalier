@@ -2,25 +2,19 @@
 
 This is an early piece of code, in need of overhaul
 
+\- \[ \] \#Todo 
 
-- [ ] #Todo 
+  \- \[ \]  Make header and footer configurable values of t
 
+  \- \[ \]  Make leaf\_font and leaf\_color configurable values of t
 
-  - [ ]  Make header and footer configurable values of t
-
-
-  - [ ]  Make leaf_font and leaf_color configurable values of t
-
-
-  - [ ]  Finish attaching str to all Nodes in Orb (I'm looking at you,
-         hashtag)
+  \- \[ \]  Finish attaching str to all Nodes in Orb \(I'm looking at you,
+         hashtag\)
 
 
-  - [ ]  Add some kind of comment or other boundary marker between ranks,
-         to make it easier to use with d3:
 
 
-         [nifty d3 dot magic](https://github.com/magjac/d3-graphviz)
+
 
 ```lua
 local t = {}
@@ -80,10 +74,9 @@ end
 ```
 
  Recursively walk an AST, concatenating dot descriptions
- to the phrase. 
+ to the phrase\. 
 
-
- - [ ] #todo allow nodes to skip themselves to collapse
+ \- \[ \] \#todo allow nodes to skip themselves to collapse
              semantic intermediates
 
 ```lua
@@ -161,7 +154,7 @@ local function dot_ranks(ast, phrase, leaf_count, ast_label)
 end
 ```
 
- turn an AST into a dotfile string. 
+ turn an AST into a dotfile string\. 
 
 ```lua
 function t.dot(ast)

@@ -1,20 +1,20 @@
 # A Grammar For Lua
 
 While the most important grammar for pegylator is pegylator itself, it's
-time to make a Lua language parser.
-
+time to make a Lua language parser\.
 
 The hard work is done on this, it's a matter of translation into the
-Pegylator paradigm.
-
+Pegylator paradigm\.
 
 This will also serve as a template for Lun, and an opportunity to add some
-repl-specific syntax; ideally to replace Lex Luathor with something more
-general-purpose.
+repl\-specific syntax; ideally to replace Lex Luathor with something more
+general\-purpose\.
 
 ```lua
 local Peg = require "espalier/peg"
 ```
+
+
 ## Lua PEG grammar
 
 ```lua
@@ -123,6 +123,21 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
 ]=]
 ```
+
 ```lua
 return Peg(lua_str)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

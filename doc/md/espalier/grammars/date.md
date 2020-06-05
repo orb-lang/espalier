@@ -2,14 +2,14 @@
 
 
 A useful subset, eventually all, of ISO 8601, is an interesting candidtate for
-a declarative PEG specification.
+a declarative PEG specification\.
 
-
-Let's give it a trial run.
+Let's give it a trial run\.
 
 ```lua
 local Peg = require "espalier/peg"
 ```
+
 ```lua
 local date_peg = [[
    date  =  yearMonthDayTime
@@ -68,6 +68,7 @@ local date_peg = [[
    `sexigesimal` = [0-5] [0-9]
 ]]
 ```
+
 ```lua
 return Peg(date_peg):toGrammar()
 ```

@@ -1,5 +1,4 @@
 # lpegnode
 
-Master module for library.
-
+Master module for library\.
 

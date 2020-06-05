@@ -1,8 +1,8 @@
 # Serve
 
 
-  A simple command-line server for parsing peg parsers and returning the
-result.
+  A simple command\-line server for parsing peg parsers and returning the
+result\.
 
 ```lua
 local Peg = require "espalier/peg"

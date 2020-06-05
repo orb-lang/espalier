@@ -3,27 +3,29 @@
 
 
 Rather than throwing errors, we prefer to add them to the parse tree in some
-cases.
-
+cases\.
 
 Optionally, we can include a pattern which, if the parse were to be correct,
-would succeed. So a ``( ])`` type error could be "fail to close (" and =P")".
+would succeed\. So a `( ])` type error could be "fail to close \(" and =P"\)"\.
 
-### includes #nw
+### includes \#nw
 
 ```lua
 local L   = require "lpeg"
 local s = require "singletons" . status ()
 local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P
 ```
+
 ```lua
 local Err = require "espalier/node" : inherit()
 Err.id = "ERROR"
 
 ```
-#### Err.toLua #remove
 
-This is while I work on having grammars catch terminal Errors.
+
+#### Err\.toLua \#remove
+
+This is while I work on having grammars catch terminal Errors\.
 
 ```lua
 function Err.toLua(err)
@@ -32,9 +34,10 @@ function Err.toLua(err)
 end
 ```
 
-We want parse_error to be able to return the actual point of failure,
-which I think involves a match-time capture. In the meantime,
-``err.last`` is set to be ``#str``.
+
+We want parse\_error to be able to return the actual point of failure,
+which I think involves a match\-time capture\. In the meantime,
+`err.last` is set to be `#str`\.
 
 ```lua
 local function parse_error(pos, name, msg, patt, str)
@@ -53,16 +56,17 @@ local function parse_error(pos, name, msg, patt, str)
 end
 
 ```
-### Err.Err, Err.E : Capture an Error
-
-For now these are synonyms. ``E`` will eventually use a back capture ``B`` at
-the beginning of a rule, and a match-time at the end, to provide a
-sensible, bookended approach to error diagnosis and possible recovery.
 
 
-``Err`` is the catchbucket, that simply succeeds and poisons the AST if
-non-terminal. It will at least prominently yell "ERROR" at you given
-the least opportunity.
+### Err\.Err, Err\.E : Capture an Error
+
+For now these are synonyms\. `E` will eventually use a back capture `B` at
+the beginning of a rule, and a match\-time at the end, to provide a
+sensible, bookended approach to error diagnosis and possible recovery\.
+
+`Err` is the catchbucket, that simply succeeds and poisons the AST if
+non\-terminal\. It will at least prominently yell "ERROR" at you given
+the least opportunity\.
 
 ```lua
 function Err.Err(name, msg, patt)

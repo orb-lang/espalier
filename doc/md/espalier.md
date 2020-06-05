@@ -1,12 +1,10 @@
 # Espalier
 
-This library is now called ``espalier``.
+This library is now called `espalier`\.
 
+Because it `PEG`s trees to the wall\.
 
-Because it ``PEG``s trees to the wall.
-
-
-Heh.
+Heh\.
 
 ```lua
 local ss      = require "singletons"

@@ -1,7 +1,7 @@
 # Spec
 
 
-  A small test harness to exercise our fresh Node class.
+  A small test harness to exercise our fresh Node class\.
 
 ### includes
 
@@ -20,17 +20,18 @@ local C = L.C
 
 
 ```
+
 ```lua
 local Spec = {}
 Spec.dot = require "espalier/grammars/dot"
 Spec.peg = require "espalier/grammars/peg"
 ```
+
 ## Trivial Grammar
 
-This should succeed under all circumstances.
+This should succeed under all circumstances\.
 
-
-I think this is probably "loop body may accept empty string". Hmm.
+I think this is probably "loop body may accept empty string"\. Hmm\.
 
 ```lua
 local function epsilon(_ENV)
@@ -66,6 +67,7 @@ local function clu_gm(_ENV)
    number = m.number
 end
 ```
+
 ## Easy mode
 
 ```lua
@@ -73,6 +75,7 @@ Spec.trivial = Grammar(epsilon)
 Spec.a = Grammar(a)
 Spec.clu = Grammar(clu_gm)
 ```
+
 ## With metas
 
 ```lua
@@ -91,9 +94,11 @@ end
 
 metas["A"] = u.export(amt, Anew)
 ```
+
 ```lua
 Spec.ab = Grammar(ab, metas)
 ```
+
 ```lua
 return Spec
 ```

@@ -2,18 +2,16 @@
 
 
 This module takes a declarative grammar specification, and optional affiliated
-Orb code, and emits a working Grammar for that specification and code.
+Orb code, and emits a working Grammar for that specification and code\.
+
+I've written large parts of it\.  There may be bugs\.
+
+Let's dive in and start patching this together\.
 
 
-I've written large parts of it.  There may be bugs.
+## peg\.peg
 
-
-Let's dive in and start patching this together.
-
-
-## peg.peg
-
-This is ``peg``, a grammar language defined in its own syntax.
+This is `peg`, a grammar language defined in its own syntax\.
 
 ```peg
                rules :  comment* rule+
@@ -73,6 +71,7 @@ This is ``peg``, a grammar language defined in its own syntax.
     digit = [0-9]
 ```
 
+
 Next up:
 
 
@@ -80,5 +79,4 @@ Next up:
 
 How far have we gotten?
 
-
-Pretty far!
+Pretty far\!

@@ -1,20 +1,17 @@
 # Lexemes
 
 
-Real grammars tend to be built up from small, composable elements.
+Real grammars tend to be built up from small, composable elements\.
 
-
-In two-stage parsers we refer to the first stage as a lexer, and the product
-as tokens.
-
+In two\-stage parsers we refer to the first stage as a lexer, and the product
+as tokens\.
 
 Parsing Expression Grammars don't have any real distinction between the
-lexing and parsing stages, something we consider to be an advantage.  They do
-distinguish between recursive grammars and what in ``lpeg`` is called a pattern.
+lexing and parsing stages, something we consider to be an advantage\.  They do
+distinguish between recursive grammars and what in `lpeg` is called a pattern\.
 
-
-``lexemes`` is a collection of such recurrent patterns, reusable as such across
-various grammar productions.
+`lexemes` is a collection of such recurrent patterns, reusable as such across
+various grammar productions\.
 
 
 #### imports
@@ -27,18 +24,19 @@ local concat = assert(table.concat)
 local c = require "singletons/color"
 local codepoints = require "singletons/codepoints"
 ```
+
 ### Lex LuaThor
 
-This is a handy collection of lexemes for Lua.
-
+This is a handy collection of lexemes for Lua\.
 
 I have used this in a [compulsively inefficient](h://~/br/femto/lex)
-fashion for the lexer in the ``femto`` repl, and intend to build that lexer from
-here once the patterns are transferred.
+fashion for the lexer in the `femto` repl, and intend to build that lexer from
+here once the patterns are transferred\.
 
 ```lua
 local Lex = meta {}
 ```
+
 ```lua
 local WS = (P" ")^1
 
@@ -104,6 +102,7 @@ local comment = P"--" * long_str
 
 local ERR = P(1)
 ```
+
 ```lua
 return { lua = { number      = number,
                  digit       = digit,
