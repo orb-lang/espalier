@@ -23,39 +23,39 @@ local num     =  P"-"^0 * (P"." + R"09"^1)
 local string_patt = P"\"" * (P(1) - (P"\"" * - P"\\\""))^0 * P"\""
 
 local function dot_fn(_ENV)
-  START "dot"
+   START "dot"
 
-  dot =  _ * P"strict"^0 * _ * (P"graph" + P"digraph")
-      *  _ * V"ID"^0 * _ * "{" * _ * V"statment_list" * _ * "}" * _
+   dot =  _ * P"strict"^0 * _ * (P"graph" + P"digraph")
+       *  _ * V"ID"^0 * _ * "{" * _ * V"statment_list" * _ * "}" * _
 
-  statement_list =  V"statement"^0 * _ * P";"^0 * _ * V"statement"^0
+   statement_list =  V"statement"^0 * _ * P";"^0 * _ * V"statement"^0
 
-  statement  =  V"node_statement"
-             +  V"edge_statement"
-             +  V"attr_statement"
-             +  V"ID" * _ * "=" * _ * V"ID"
-             +  V"subgraph"
+   statement  =  V"node_statement"
+              +  V"edge_statement"
+              +  V"attr_statement"
+              +  V"ID" * _ * "=" * _ * V"ID"
+              +  V"subgraph"
 
-  attr_statement =  (P"graph" + "node" + "edge") * V"attr_list"
-  attr_list      =  P"[" * _ * V"a_list"^0 * _ * P"]" * _ * V"attr_list"^0
-  a_list         =  V"ID" * _ * "=" * _ * V"ID"
-                 * (P";" + P",")^0 * _ * V"a_list"^0
+   attr_statement =  (P"graph" + "node" + "edge") * V"attr_list"
+   attr_list      =  P"[" * _ * V"a_list"^0 * _ * P"]" * _ * V"attr_list"^0
+   a_list         =  V"ID" * _ * "=" * _ * V"ID"
+                  * (P";" + P",")^0 * _ * V"a_list"^0
 
-  edge_statement =  (V"node_id" + V"subgraph") * _ * V"edgeRHS" * V"attr_list"^0
-  edgeRHS        =  V"edgeop" * _ * (V"node_id" + V"subgraph") * _ * V"edgeRHS"^0
+   edge_statement =  (V"node_id" + V"subgraph") * _ * V"edgeRHS" * V"attr_list"^0
+   edgeRHS        =  V"edgeop" * _ * (V"node_id" + V"subgraph") * _ * V"edgeRHS"^0
 
-  node_statement =  V"node_id" * _ * V"attr_list"^0
-  node_id        =  V"ID" * _ * V"port"^0
-  port           =  P":" * _ * V"ID" * _ * (P":" * _ * V"compass_point")^0
+   node_statement =  V"node_id" * _ * V"attr_list"^0
+   node_id        =  V"ID" * _ * V"port"^0
+   port           =  P":" * _ * V"ID" * _ * (P":" * _ * V"compass_point")^0
 
-  subgraph       =  (V"subgraph" * _ * V"ID"^0)^0 * _
-                 *  "{" * _ * V"statement_list" * _ * "}"
+   subgraph       =  (V"subgraph" * _ * V"ID"^0)^0 * _
+                  *  "{" * _ * V"statement_list" * _ * "}"
 
-  compass_point  =  S("n","ne","e","se","s","sw","w","nw","_")
+   compass_point  =  S("n","ne","e","se","s","sw","w","nw","_")
 
-  ID    =  (V"IDstart"^1 * V"IDrest"^0) + V"num" + V"string_patt"
+   ID    =  (V"IDstart"^1 * V"IDrest"^0) + V"num" + V"string_patt"
 
-  -- Add C-style comments
+   -- Add C-style comments
 
 end
 

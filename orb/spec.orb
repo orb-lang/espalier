@@ -35,36 +35,36 @@ I think this is probably "loop body may accept empty string". Hmm.
 
 #!lua
 local function epsilon(_ENV)
-	START "any"
-	any = V"anything" + V"other"
-	anything = P(1)
-	other = P(1)^0
+   START "any"
+   any = V"anything" + V"other"
+   anything = P(1)
+   other = P(1)^0
 end
 
 local function a(_ENV)
-	START "A"
-	A = P"a" + P"A"
+   START "A"
+   A = P"a" + P"A"
 end
 
 local function ab(_ENV)
-	START "AB"
-	AB = V"B" + V"A"
-	A = P"a" + P"A"
-	B = V"bmatch" + (V"A" * V"bmatch")
-	bmatch = P"b" + P"B"
+   START "AB"
+   AB = V"B" + V"A"
+   A = P"a" + P"A"
+   B = V"bmatch" + (V"A" * V"bmatch")
+   bmatch = P"b" + P"B"
 end
 
 local function clu_gm(_ENV)
-	local WS = D(P(m._ + m.NL)^0)
-	START "clu"
-	SUPPRESS "form"
-	clu = V"form"^1
-	form = D((V"number" * WS))
-	     + (V"atom" * WS)
-	     + (V"expr" * WS)
-	expr = D(m.pal) * WS * V"form"^0 * WS * D(m.par)
-	atom = m.symbol
-	number = m.number
+   local WS = D(P(m._ + m.NL)^0)
+   START "clu"
+   SUPPRESS "form"
+   clu = V"form"^1
+   form = D((V"number" * WS))
+        + (V"atom" * WS)
+        + (V"expr" * WS)
+   expr = D(m.pal) * WS * V"form"^0 * WS * D(m.par)
+   atom = m.symbol
+   number = m.number
 end
 #/lua
 
@@ -87,9 +87,9 @@ local meta = meta or u.inherit
 local AMt, amt = meta(Node)
 
 local function Anew(A, t, str)
-	local a = setmetatable(t, AMt)
-	a.id = "A"
-	return a
+   local a = setmetatable(t, AMt)
+   a.id = "A"
+   return a
 end
 
 metas["A"] = u.export(amt, Anew)

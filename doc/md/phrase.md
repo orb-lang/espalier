@@ -183,12 +183,12 @@ Treating Phrase as a string at any point should render it into one.
 
 ```lua
 local function __tostring(phrase)
-  local str = ""
-  for i,v in ipairs(phrase) do
-    str = str .. tostring(v)
-  end
+   local str = ""
+   for i,v in ipairs(phrase) do
+      str = str .. tostring(v)
+   end
 
-  return str
+   return str
 end
 ```
 ```lua

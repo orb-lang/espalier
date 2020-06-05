@@ -167,12 +167,12 @@ end
 
 
 local function __tostring(phrase)
-  local str = ""
-  for i,v in ipairs(phrase) do
-    str = str .. tostring(v)
-  end
+   local str = ""
+   for i,v in ipairs(phrase) do
+      str = str .. tostring(v)
+   end
 
-  return str
+   return str
 end
 
 

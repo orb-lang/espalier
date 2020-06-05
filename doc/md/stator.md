@@ -36,7 +36,7 @@ local function call(stator, _weakstate)
    local _weakstate = _weakstate or setmeta({}, {__mode = 'v'})
    local _M = setmeta({}, {__index = stator, __call = call })
    _M._weakstate =  _weakstate
-  return _M
+   return _M
 end
 ```
 ## New
@@ -46,9 +46,9 @@ the synonyms ``G``, ``g`` and ``_G``, to suit various styles.
 
 ```lua
 local function new(Stator, _weakstate)
-  local stator = call(Stator, _weakstate)
-  stator.g, stator.G, stator._G = stator, stator, stator
-  return stator
+   local stator = call(Stator, _weakstate)
+   stator.g, stator.G, stator._G = stator, stator, stator
+   return stator
 end
 ```
 ```lua
