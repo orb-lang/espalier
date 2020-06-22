@@ -68,7 +68,7 @@ divisible_by_three = Cmt( C(R"09"^1),
          return false
       end
    end ) / 0
-#/lua
+#/lua-example
 
 Giving a rule which matches an integer evenly divisible by three.
 

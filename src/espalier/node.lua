@@ -329,8 +329,6 @@ end
 
 
 
-
-
 function Node.dotLabel(node)
   return node.id
 end
@@ -556,6 +554,40 @@ function Node.select(node, pred)
    traverse(node)
    return function()
       return remove(matches)
+   end
+end
+
+
+
+
+
+
+
+
+
+
+function Node.selectFrom(node, pred, index)
+   -- build up all the nodes that match
+   local matches = {}
+   local function traverse(ast)
+      -- depth-first, right to left
+      if type(ast) == 'table' and ast.isNode then
+         for i = #ast, 1, -1 do
+            traverse(ast[i])
+         end
+      end
+      if qualifies(ast, pred) then
+         matches[#matches + 1] = ast
+      end
+   end
+   traverse(node)
+   return function()
+      while true do
+         local match = remove(matches)
+         if match == nil or match.first > index then
+            return match
+         end
+      end
    end
 end
 

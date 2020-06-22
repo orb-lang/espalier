@@ -68,106 +68,106 @@ divisible_by_three = Cmt( C(R"09"^1),
          return false
       end
    end ) / 0
-#/lua
+```
 
-Giving a rule which matches an integer evenly divisible by three.
+Giving a rule which matches an integer evenly divisible by three\.
 
-The [[elpatt module][~/elpatt.orb]] is intended to provide those
+The [elpatt module](~/elpatt.orb) is intended to provide those
 patterns which are allowed in Grammars, while expanding the scope of some
-favorites to properly respect utf-8 and otherwise behave.
+favorites to properly respect utf\-8 and otherwise behave\.
 
 Also included are two functions:
 
-  -  START :  A string which must be the same as the starting rule.
-  -  SUPPRESS :  Either a string or an array of strings. These rules will be
+  \-  START :  A string which must be the same as the starting rule\.
+  \-  SUPPRESS :  Either a string or an array of strings\. These rules will be
                  removed from the resulting AST, while keeping all leaf nodes,
-                 if any.
+                 if any\.
 
-The use of ALL-CAPS was Phillipe Janda's convention, I agree that it reads
-well in this singular instance.
+The use of ALL\-CAPS was Phillipe Janda's convention, I agree that it reads
+well in this singular instance\.
 
 
-*** metas
+### metas
 
-  By default a node will inherit from the Node class.  If you want custom
-behavior, you must pass in a table of metatable constructors.
+  By default a node will inherit from the Node class\.  If you want custom
+behavior, you must pass in a table of metatable constructors\.
 
-That's a fairly specific beast.  Any rule defined above will have an =id=
-corresonding to the name of the rule.  Unless =SUPPRESS=ed, this will become
-a Node.  If the =metas= parameter has a key corresponding to =id=, then it
+That's a fairly specific beast\.  Any rule defined above will have an `id`
+corresonding to the name of the rule\.  Unless `SUPPRESS`ed, this will become
+a Node\.  If the `metas` parameter has a key corresponding to `id`, then it
 must return a function taking two parameters:
 
-   - node   :  The node under construction, which will already have the
-               =first=, =last=, and =str= fields.
+   \- node   :  The node under construction, which will already have the
+               =first=, =last=, and =str= fields\.
 
-   - offset :  The offset, which indicates how much to add to the =str=
-               field to get the actual offset into the string.
+   \- offset :  The offset, which indicates how much to add to the =str=
+               field to get the actual offset into the string\.
 
                This is zero by default and is used to parse a string
-               piecewise.
+               piecewise\.
 
 Which must return that same node, decorated in whatever fashion is
-appropriate.
+appropriate\.
 
 The node will not have a metatable at this point, and the function must attach
-a metatable with =__index= equal to some table which itself has the =__index=
-Node as some recursive backstop.
+a metatable with `__index` equal to some table which itself has the `__index`
+Node as some recursive backstop\.
 
-You might say the return value must /inherit/ from Node, if we were using
-a language that did that sort of thing.
+You might say the return value must *inherit* from Node, if we were using
+a language that did that sort of thing\.
 
-If a metatable of the given =.id= is not provided, the metatable at =metas[1]=
-is used instead.  If no default is provided, this defaults to Node.
+If a metatable of the given `.id` is not provided, the metatable at `metas[1]`
+is used instead\.  If no default is provided, this defaults to Node\.
 
 
-** Roadmap
+## Roadmap
 
   The Grammar class needs to be expanded to cover a broader array of use
 cases, and specifically to enable the features we'll be able to add given the
-declarative PEG format front end.
+declarative PEG format front end\.
 
 To this end:
 
-- [ ] #Todo #version @0.0.2
+\- \[ \] \#Todo \#version @0\.0\.2
 
-   - [ ]  Make =new= return a callable table, instead of a function.
+   \- \[ \]  Make =new= return a callable table, instead of a function\.
 
-          This will allow us to decorate the now-single return value with
-          the grammar, and eventually grammars.  We'll include =new= as
-          =grammar.new=.
+          This will allow us to decorate the now\-single return value with
+          the grammar, and eventually grammars\.  We'll include =new= as
+          =grammar\.new=\.
 
           This is the most important step for this class; other capabilities
           are either being baked in Node, or will be their own module, for
-          instance using Lua-native combinators to validate deltas into an
-          existing Node structure.
+          instance using Lua\-native combinators to validate deltas into an
+          existing Node structure\.
 
-** Implementation
+## Implementation
 
-All of =espalier= is in principle compatible with the entire '5' series of
-Luas.  Any failure to execute through at least 5.4 is considered a bug.
+All of `espalier` is in principle compatible with the entire '5' series of
+Luas\.  Any failure to execute through at least 5\.4 is considered a bug\.
 
 
-*** imports
+### imports
 
 We follow a strict coding style for admitting dependencies into the module,
-localizing everything as an upvalue before using it.
+localizing everything as an upvalue before using it\.
 
 
-**** requires
+#### requires
 
 
-***** status
+##### status
 
-#!lua
+```lua
 local s = require "singletons" . status ()
 s.verbose = false
 s.angry   = false
-#/lua
+```
 
 
-**** requires, contd.
+#### requires, contd\.
 
-#!lua
+```lua
 local L = require "lpeg"
 local a = require "singletons/anterm"
 local compact = assert(require "core/table" . compact)
@@ -175,16 +175,16 @@ local Node = require "espalier/node"
 local elpatt = require "espalier/elpatt"
 
 local DROP = elpatt.DROP
-#/lua
+```
 
-I like the dedication shown in this style of import.
+I like the dedication shown in this style of import\.
 
-It's the kind of thing I'd like to automate.
+It's the kind of thing I'd like to automate\.
 
 
-**** asserts
+#### asserts
 
-#!lua
+```lua
 local assert = assert
 local string, io = assert( string ), assert( io )
 local sub = assert(string.sub)
@@ -201,44 +201,44 @@ if VER == " 5.1" then
    local setfenv = assert( setfenv )
    local getfenv = assert( getfenv )
 end
-#/lua
+```
 
 
-*** make_ast_node
+### make\_ast\_node
 
-This takes a lot of parameters and does a lot of things.
+This takes a lot of parameters and does a lot of things\.
 
-#!lua
+```lua
 local function make_ast_node(id, first, t, last, str, metas, offset)
-#/lua
+```
 
-- Parameters:
-  - id      :  'string' naming the Node
-  - first   :  'number' of the first byte of =str=
-  - t       :  'table' capture of grammatical information
-  - last    :  'number' of the last byte of =str=
-  - str     :  'string' being parsed
-  - metas   :  'table' of Node-inherited metatables (complex)
-  - offset  :  'number' of optional offset.  This would be provided if
-               e.g. byte 1 of =str= is actually byte 255 of a larger
-               =str=.  Normally 0.
+\- Parameters:
+  \- id      :  'string' naming the Node
+  \- first   :  'number' of the first byte of =str=
+  \- t       :  'table' capture of grammatical information
+  \- last    :  'number' of the last byte of =str=
+  \- str     :  'string' being parsed
+  \- metas   :  'table' of Node\-inherited metatables \(complex\)
+  \- offset  :  'number' of optional offset\.  This would be provided if
+               e\.g\. byte 1 of =str= is actually byte 255 of a larger
+               =str=\.  Normally 0\.
 
-=first=, =last= and =offset= follow Wirth indexing conventions.
+`first`, `last` and `offset` follow Wirth indexing conventions\.
 
-Because of course they do.
+Because of course they do\.
 
 
-**** Set up values and metatables
+#### Set up values and metatables
 
-  We accept two types of value for a metatable. A table must be derived from
-the Node class, while a function must return an appropriately-shaped table,
-given the capture and offset.
+  We accept two types of value for a metatable\. A table must be derived from
+the Node class, while a function must return an appropriately\-shaped table,
+given the capture and offset\.
 
 This can be used to process captures which aren't strings, perform validation,
 or run another grammar and return an entire AST, but currently cannot fail to
-return a Node of some sort.
+return a Node of some sort\.
 
-#!lua
+```lua
    t.first = first + offset
    t.last  = last + offset - 1
    t.str   = str
@@ -259,30 +259,30 @@ return a Node of some sort.
    if not t.parent then
       t.parent = t
    end
-#/lua
+```
 
 
-**** DROP
+#### DROP
 
-I'm removing all of this logic, but leaving the hook in place.
+I'm removing all of this logic, but leaving the hook in place\.
 
-We want to be able to drop things.  We want to be able to tag captures as
-ignorable, and we want to be able to do that soon.
+We want to be able to drop things\.  We want to be able to tag captures as
+ignorable, and we want to be able to do that soon\.
 
 But the right way to do it, is to iterate the children, and if we see
-something we don't like, we trip a flag.
+something we don't like, we trip a flag\.
 
 If that flag is tripped, then, and only then, we compact the table, in a
-single pass, with a helper function.
+single pass, with a helper function\.
 
-This means the special case isn't a =nil=, which I think is better.
+This means the special case isn't a `nil`, which I think is better\.
 
-Now we iterate the children, caching the value of =#t= before we begin.  I
+Now we iterate the children, caching the value of `#t` before we begin\.  I
 don't actually know if the VM will update that value on each iteration, and
-don't want to find out.  Also, we need it to =compact= the table if we drop
-anything.
+don't want to find out\.  Also, we need it to `compact` the table if we drop
+anything\.
 
-#!lua
+```lua
    local top, touched = #t, false
    for i = 1, top do
       local cap = t[i]
@@ -302,41 +302,41 @@ anything.
    assert(t.parent, "no parent on " .. t.id)
    return t
 end
-#/lua
+```
 
 
-** define(func, g, e)
+## define\(func, g, e\)
 
-This is [[Phillipe Janda][http://siffiejoe.github.io/lua-luaepnf/]]'s
-algorithm, with my adaptations.
+This is [Phillipe Janda](http://siffiejoe.github.io/lua-luaepnf/)'s
+algorithm, with my adaptations\.
 
-=e=, either is or becomes =_ENV=.
+`e`, either is or becomes `_ENV`\.
 
-This is not needed in LuaJIT, while for Lua 5.2 and above, it is.
+This is not needed in LuaJIT, while for Lua 5\.2 and above, it is\.
 
-=func= is the grammar definition function, pieces of which we've provided.
-We'll see how the rest is put together presently.
+`func` is the grammar definition function, pieces of which we've provided\.
+We'll see how the rest is put together presently\.
 
-=g= is, or becomes, a =Grammar=.
+`g` is, or becomes, a `Grammar`\.
 
 
-**** localizations
+#### localizations
 
-We localize the patterns we use.
+We localize the patterns we use\.
 
-#!lua
+```lua
 local Cp = L.Cp
 local Cc = L.Cc
 local Ct = L.Ct
 local arg1_str = L.Carg(1)
 local arg2_metas = L.Carg(2)
 local arg3_offset = L.Carg(3)
-#/lua
+```
 
 Setup an environment where you can easily define lpeg grammars
 with lots of syntax sugar, compatible with the 5 series of Luas:
 
-#!lua
+```lua
 local function define(func, g, e)
    g = g or {}
    if e == nil then
@@ -380,14 +380,14 @@ local function define(func, g, e)
    assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
    return g
 end
-#/lua
+```
 
 
-*** refineMetas(metas)
+### refineMetas\(metas\)
 
-Takes metatables, distributing defaults and denormalizations.
+Takes metatables, distributing defaults and denormalizations\.
 
-#!lua
+```lua
 local function refineMetas(metas)
   for id, meta in pairs(metas) do
     if id ~= 1 then
@@ -409,25 +409,25 @@ local function refineMetas(metas)
   end
   return metas
 end
-#/lua
+```
 
 
-** new
+## new
 
-Given a grammar_template function and a set of metatables,
-yield a parsing function and the grammar as an =lpeg= pattern.
+Given a grammar\_template function and a set of metatables,
+yield a parsing function and the grammar as an `lpeg` pattern\.
 
 
-**** _fromString(g_str), _toFunction(maybe_grammar)
+#### \_fromString\(g\_str\), \_toFunction\(maybe\_grammar\)
 
 Currently this is expecting pure Lua code; the structure of the module is
-such that we can't call the PEG grammar from =grammar.orb= due to the
-circular dependency thereby created.
+such that we can't call the PEG grammar from `grammar.orb` due to the
+circular dependency thereby created\.
 
 This implies wrapping some porcelain around everything so that we can at least
-try to build the declarative form first.
+try to build the declarative form first\.
 
-#!lua
+```lua
 local function _fromString(g_str)
    local maybe_lua, err = loadstring(g_str)
    if maybe_lua then
@@ -489,8 +489,8 @@ local function new(grammar_template, metas, pre, post)
 
    return parse, grammar
 end
-#/lua
+```
 
-#!lua
+```lua
 return new
 ```
