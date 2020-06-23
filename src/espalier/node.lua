@@ -573,7 +573,9 @@ function Node.selectFrom(node, pred, index)
       -- depth-first, right to left
       if type(ast) == 'table' and ast.isNode then
          for i = #ast, 1, -1 do
-            traverse(ast[i])
+            if ast[i].last > index then
+               traverse(ast[i])
+            end
          end
       end
       if qualifies(ast, pred) then
@@ -582,12 +584,7 @@ function Node.selectFrom(node, pred, index)
    end
    traverse(node)
    return function()
-      while true do
-         local match = remove(matches)
-         if match == nil or match.first > index then
-            return match
-         end
-      end
+      return remove(matches)
    end
 end
 
