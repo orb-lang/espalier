@@ -573,12 +573,12 @@ function Node.selectFrom(node, pred, index)
       -- depth-first, right to left
       if type(ast) == 'table' and ast.isNode then
          for i = #ast, 1, -1 do
-            if ast[i].last > index then
+            if ast[i].last >= index then
                traverse(ast[i])
             end
          end
       end
-      if qualifies(ast, pred) then
+      if ast.first > index and qualifies(ast, pred) then
          matches[#matches + 1] = ast
       end
    end
