@@ -18,8 +18,8 @@ local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
 
 
 
-local s = require "singletons" . status ()
-local a = require "singletons/anterm"
+local s = require "status:status" ()
+local a = require "anterm:anterm"
 local c_bw = require "singletons/color" . no_color
 local core = require "core:core"
 local Phrase = require "singletons/phrase"

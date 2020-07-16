@@ -9,7 +9,7 @@
 
 
 local L = require "lpeg"
-local s = require "singletons" . status ()
+local s = require "status:status" ()
 s.verbose = false
 local Node = require "espalier/node"
 local elpatt = {}

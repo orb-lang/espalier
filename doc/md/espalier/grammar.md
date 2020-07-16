@@ -159,7 +159,7 @@ localizing everything as an upvalue before using it\.
 ##### status
 
 ```lua
-local s = require "singletons" . status ()
+local s = require "status:status" ()
 s.verbose = false
 s.angry   = false
 ```
@@ -169,7 +169,7 @@ s.angry   = false
 
 ```lua
 local L = require "lpeg"
-local a = require "singletons/anterm"
+local a = require "anterm:anterm"
 local compact = assert(require "core/table" . compact)
 local Node = require "espalier/node"
 local elpatt = require "espalier/elpatt"

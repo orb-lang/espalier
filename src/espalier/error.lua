@@ -12,7 +12,7 @@
 
 
 local L   = require "lpeg"
-local s = require "singletons" . status ()
+local s = require "status:status" ()
 local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P
 
 
