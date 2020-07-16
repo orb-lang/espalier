@@ -24,14 +24,13 @@ in a declarative style\.
 ```lua
 local Node = require "espalier/node"
 local Grammar = require "espalier/grammar"
-local core = require "singletons/core"
 local Phrase = require "singletons/phrase"
 
-local inherit = assert(core.inherit)
+local inherit = assert(require "core:core/meta" . inherit)
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
-local s = require "singletons/status" ()
+local s = require "status:status" ()
 ```
 
 
@@ -138,7 +137,7 @@ base method that highlights the span in red\.  This makes it stick out, and
 will produce an error if we attempt to compile it\.
 
 ```lua
-local a = require "singletons/anterm"
+local a = require "anterm:anterm"
 function Peg.toLpeg(peg)
    local phrase = PegPhrase ""
    for _, sub in ipairs(peg) do
