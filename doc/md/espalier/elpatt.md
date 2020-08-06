@@ -80,9 +80,9 @@ special table, while discarding the captures if any\. In `define`, we will
 check for this table, and drop it whenever encountered\.
 
 
-  \- patt :  The pattern to match and drop
+  - patt :  The pattern to match and drop
 
-  \- \#return : descendant of special table DROP
+  - \#return : descendant of special table DROP
 
 ```lua
 

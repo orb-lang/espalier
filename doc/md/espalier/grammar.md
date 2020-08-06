@@ -36,9 +36,9 @@ In the meantime, let us build a Grammar from parts\.
 
 This function takes two parameters, namely:
 
-  \- grammar\_template :  A function with one parameter, which must be =\_ENV=\.
-  \- metas :  A map with keys of string and values of Node subclass
-             constructors\.
+  - grammar\_template :  A function with one parameter, which must be `_ENV`\.
+  - metas :  A map with keys of string and values of Node subclass
+      constructors\.
 
 Both of these are reasonably complex\.
 
@@ -78,10 +78,10 @@ favorites to properly respect utf\-8 and otherwise behave\.
 
 Also included are two functions:
 
-  \-  START :  A string which must be the same as the starting rule\.
-  \-  SUPPRESS :  Either a string or an array of strings\. These rules will be
-                 removed from the resulting AST, while keeping all leaf nodes,
-                 if any\.
+  -  START :  A string which must be the same as the starting rule\.
+  -  SUPPRESS :  Either a string or an array of strings\. These rules will be
+      removed from the resulting AST, while keeping all leaf nodes,
+      if any\.
 
 The use of ALL\-CAPS was Phillipe Janda's convention, I agree that it reads
 well in this singular instance\.
@@ -97,14 +97,14 @@ corresonding to the name of the rule\.  Unless `SUPPRESS`ed, this will become
 a Node\.  If the `metas` parameter has a key corresponding to `id`, then it
 must return a function taking two parameters:
 
-   \- node   :  The node under construction, which will already have the
-               =first=, =last=, and =str= fields\.
+   - node   :  The node under construction, which will already have the
+       `first`, `last`, and `str` fields\.
 
-   \- offset :  The offset, which indicates how much to add to the =str=
-               field to get the actual offset into the string\.
+   - offset :  The offset, which indicates how much to add to the `str`
+       field to get the actual offset into the string\.
 
-               This is zero by default and is used to parse a string
-               piecewise\.
+       This is zero by default and is used to parse a string
+       piecewise\.
 
 Which must return that same node, decorated in whatever fashion is
 appropriate\.
@@ -128,18 +128,18 @@ declarative PEG format front end\.
 
 To this end:
 
-\- \[ \] \#Todo \#version @0\.0\.2
+- [ ] \#Todo \#version @0\.0\.2
 
-   \- \[ \]  Make =new= return a callable table, instead of a function\.
+   - [ ]  Make `new` return a callable table, instead of a function\.
 
-          This will allow us to decorate the now\-single return value with
-          the grammar, and eventually grammars\.  We'll include =new= as
-          =grammar\.new=\.
+       This will allow us to decorate the now\-single return value with
+       the grammar, and eventually grammars\.  We'll include `new` as
+       `grammar.new`\.
 
-          This is the most important step for this class; other capabilities
-          are either being baked in Node, or will be their own module, for
-          instance using Lua\-native combinators to validate deltas into an
-          existing Node structure\.
+       This is the most important step for this class; other capabilities
+       are either being baked in Node, or will be their own module, for
+       instance using Lua\-native combinators to validate deltas into an
+       existing Node structure\.
 
 ## Implementation
 
@@ -212,16 +212,16 @@ This takes a lot of parameters and does a lot of things\.
 local function make_ast_node(id, first, t, last, str, metas, offset)
 ```
 
-\- Parameters:
-  \- id      :  'string' naming the Node
-  \- first   :  'number' of the first byte of =str=
-  \- t       :  'table' capture of grammatical information
-  \- last    :  'number' of the last byte of =str=
-  \- str     :  'string' being parsed
-  \- metas   :  'table' of Node\-inherited metatables \(complex\)
-  \- offset  :  'number' of optional offset\.  This would be provided if
-               e\.g\. byte 1 of =str= is actually byte 255 of a larger
-               =str=\.  Normally 0\.
+- Parameters:
+  - id      :  'string' naming the Node
+  - first   :  'number' of the first byte of `str`
+  - t       :  'table' capture of grammatical information
+  - last    :  'number' of the last byte of `str`
+  - str     :  'string' being parsed
+  - metas   :  'table' of Node\-inherited metatables \(complex\)
+  - offset  :  'number' of optional offset\.  This would be provided if
+      e\.g\. byte 1 of `str` is actually byte 255 of a larger
+      `str`\.  Normally 0\.
 
 `first`, `last` and `offset` follow Wirth indexing conventions\.
 

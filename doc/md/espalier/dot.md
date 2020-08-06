@@ -2,14 +2,14 @@
 
 This is an early piece of code, in need of overhaul
 
-\- \[ \] \#Todo 
+- [ ] \#Todo 
 
-  \- \[ \]  Make header and footer configurable values of t
+  - [ ]  Make header and footer configurable values of t
 
-  \- \[ \]  Make leaf\_font and leaf\_color configurable values of t
+  - [ ]  Make leaf\_font and leaf\_color configurable values of t
 
-  \- \[ \]  Finish attaching str to all Nodes in Orb \(I'm looking at you,
-         hashtag\)
+  - [ ]  Finish attaching str to all Nodes in Orb \(I'm looking at you,
+      hashtag\)
 
 
 
@@ -76,8 +76,8 @@ end
  Recursively walk an AST, concatenating dot descriptions
  to the phrase\. 
 
- \- \[ \] \#todo allow nodes to skip themselves to collapse
-             semantic intermediates
+ - [ ] \#todo allow nodes to skip themselves to collapse
+     semantic intermediates
 
 ```lua
 local function dot_ranks(ast, phrase, leaf_count, ast_label)

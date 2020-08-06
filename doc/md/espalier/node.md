@@ -26,16 +26,16 @@ local Phrase = require "singletons/phrase"
 local dot = require "espalier/dot"
 ```
 
-\- \[ \] \#todo Planned expansions:
+- [ ] \#todo Planned expansions:
 
-   \#\!lua \#noKnit \-\- this isn't working yet
-   \-\- ergo
-   \-\-\[\[
-   local html = require "espalier/html"
-   local css  = require "espalier/css"
-   local portal = require "espalier/portal"
-   \-\-\]\]
-   \#/lua
+    \#\!lua \#noKnit \-\- this isn't working yet
+    \-\- ergo
+    \-\-[
+    local html = require "espalier/html"
+    local css  = require "espalier/css"
+    local portal = require "espalier/portal"
+    --]()
+    \#/lua
 
 
 ## Node metatable
@@ -57,14 +57,14 @@ orthogonality\.
 
 ## Fields
 
-   \- id :  A string naming the Node\.
-           This is identical to the name of the pattern that recognizes
-           or captures it\.
+   - id :  A string naming the Node\.
+       This is identical to the name of the pattern that recognizes
+       or captures it\.
 
-           This is never set on Node itself, and Grammar will fail to
-           produce a Node which lacks this flag\.
+       This is never set on Node itself, and Grammar will fail to
+       produce a Node which lacks this flag\.
 
-   \- isNode :  A boolean, always =true=/truthy\.
+   - isNode :  A boolean, always `true`/truthy\.
 
 
 ## Methods
@@ -277,9 +277,9 @@ end
 
 \#NB
 
-\- \[ \] \#todo either use this, validate it, or get rid of it
+- [ ] \#todo either use this, validate it, or get rid of it
 
-     \[ \]  validate\.  Validate and use\.  that sounds right
+    \[ \]  validate\.  Validate and use\.  that sounds right
 
 `Node.gap(left, right)` compares the `last` field of the `left` parameter
 with the `first` field of the `right` parameter, **if** this is greater than
@@ -700,12 +700,12 @@ Node.lastLeaf = _lastLeaf
 
 These return an array of all results\.
 
-\- \[ \] \#todo  This could be reimplemented as
-             =core\.collect\(node\.select, node, pred\)= and probably renamed
-             =node:collect\(pred\)= while we're at it\.
+- [ ] \#todo  This could be reimplemented as
+    `core.collect(node.select, node, pred)` and probably renamed
+    `node:collect(pred)` while we're at it\.
 
-\- \[ \] \#todo  Add a Forest class to provide the iterator interface for
-             the return arrays of this class\.
+- [ ] \#todo  Add a Forest class to provide the iterator interface for
+    the return arrays of this class\.
 
 ```lua
 function Node.gather(node, pred)
@@ -780,18 +780,18 @@ defaults to `#node + 1`\.
 
 There are several steps here, we need to:
 
-\-  Splice =str= on the old Node with =str= on the new Node, at the indicated
-   position, which is calculated base on a =\.first= or =\.last=, depending\.
+-  Splice `str` on the old Node with `str` on the new Node, at the indicated
+    position, which is calculated base on a `.first` or `.last`, depending\.
 
-\-  Iterate the =graft= node, replacing =str= and adjusting =first= and =last=\.
+-  Iterate the `graft` node, replacing `str` and adjusting `first` and `last`\.
 
-\-  Iterate the root of the original =node=, replacing =str=, adjusting =first=
-   and =last= where appropriate \(i\.e\. greater than the splice index\)\.
+-  Iterate the root of the original `node`, replacing `str`, adjusting `first`
+    and `last` where appropriate \(i\.e\. greater than the splice index\)\.
 
-   lastly:
+    lastly:
 
-\-  Insert the =graft= node at the appropriate place, and set node\.parent to
-   point to =node=\.
+-  Insert the `graft` node at the appropriate place, and set node\.parent to
+    point to `node`\.
 
 This being a mutable table method, it returns nothing\.  A case could be made
 for this being an immutable method, which returns an entirely new Node, but
@@ -979,13 +979,13 @@ cyclic Node graphs are made\.  The Grammar class will not do this to you\.
 
   There are invariant fields a Node is also expected to have, they are:
 
-  \- first    :  Index into =str= which begins the span\.
-  \- last     :  Index into =str= which ends the span\.
-  \- str      :  The string of which the Node spans part or the whole, or
-                a Phrase of same\.
-  \- isPhrase :  Equals =Phrase= iff str is a Phrase\.
-  \- parent   :  A Node, which may be a self\-reference for a root node\.
-  \- isNode   :  This equals to =Node=\.
+  - first    :  Index into `str` which begins the span\.
+  - last     :  Index into `str` which ends the span\.
+  - str      :  The string of which the Node spans part or the whole, or
+      a Phrase of same\.
+  - isPhrase :  Equals `Phrase` iff str is a Phrase\.
+  - parent   :  A Node, which may be a self\-reference for a root node\.
+  - isNode   :  This equals to `Node`\.
 
 
 ### Other fields

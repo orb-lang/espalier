@@ -9,17 +9,16 @@ A collection of Node\-descended metatables to provide sundry methodologies\.
 This module currently covers enough ground to start co\-developing PEG grammars
 in a declarative style\.
 
-\- \[ \] \#Todo
+- [ ] \#Todo
 
-  \- \[ \]  Assemble =toLpeg= methods for the remaining classes\.
+  - [ ]  Assemble `toLpeg` methods for the remaining classes\.
 
-  \- \[ \]  Add a PEG syntax highlighter to the \[\[=orb/etc= directory\]
-         \[codex://orb:orb/etc/\]\]\.
+  - [ ]  Add a PEG syntax highlighter to the [=orb/etc= directory](codex://orb:orb/etc/)\.
 
-  \- \[ \]  Add a =toHmtl= method set that's roughly pygments\-compatible\.
+  - [ ]  Add a `toHmtl` method set that's roughly pygments\-compatible\.
 
-         This should actually emit a Node of =id= =html=, capable of emitting
-         a Phrase as well as a string\.
+      This should actually emit a Node of `id` `html`, capable of emitting
+      a Phrase as well as a string\.
 
 ```lua
 local Node = require "espalier/node"
@@ -326,25 +325,25 @@ end
   Builds a Grammar out of a parsed Peg set\. All non\-self parameters are
 optional\.
 
-\- Params:
+- Params:
 
-  \- metas:  Metatables for function behavior \(this module is an example of
-            this parameter\)\.
+  - metas:  Metatables for function behavior \(this module is an example of
+      this parameter\)\.
 
-  \- pre:  A function operating on the string to be parsed before the grammar
-          is Matched\.  Expected to return a string\.
+  - pre:  A function operating on the string to be parsed before the grammar
+      is Matched\.  Expected to return a string\.
 
-  \- post:  A function operating on the Nodes returned by the match, before the
-           AST is returned\. Expected to return an AST, but whatever it returns
-           will be passed on by the Grammar\.
+  - post:  A function operating on the Nodes returned by the match, before the
+      AST is returned\. Expected to return an AST, but whatever it returns
+      will be passed on by the Grammar\.
 
-  \- extraLpeg:  String inserted after generated rules and before the final
-                =end= of the function\.
+  - extraLpeg:  String inserted after generated rules and before the final
+      `end` of the function\.
 
-  \- header:  String inserted before the beginning of the generated
-             function\.
+  - header:  String inserted before the beginning of the generated
+      function\.
 
-             This and =extraLpeg= must be valid Lua chunks\.
+      This and `extraLpeg` must be valid Lua chunks\.
 
 The resulting Grammar is stored as `rules.grammar` and can be invoked with the
 corresponding `__call` metamethod\.  `toGrammar` will overwrite these if they
