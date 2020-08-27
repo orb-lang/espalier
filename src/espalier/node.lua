@@ -806,8 +806,42 @@ end
 
 
 
+local inbounds = assert(require "core:math" . inbounds)
 
+local function graft(node, branch, index)
+   assert(type(index) == 'number', "index must be a number")
+   if #node == 0 then
+     -- we can't graft onto a token
+     local line, col = node:linePos()
+     error("can't graft in the middle of token " .. node.id
+           .. "at line: " .. line .. ", col: " .. col .. ", index: " .. index)
+   end
+   -- search for a graft point at index
+   -- we can graft anywhere between node.first and node[1].first:
+   if inbounds(index, node.first, node[1].first) then
+      return _applyGraft(node, branch, index, 1)
+   -- same for node[#node].last + 1 and node.last + 1:
+   elseif inbounds(index + 1, node[1].last, node.last) then
+      return _applyGraft(node, branch, index, #node + 1)
+   end
+   -- we either find a gap, or a sub-node we should search through.
+   -- check the first sub-node for recursive potential first:
+   if inbounds(index, node[1].first + 1, node[1].last) then
+      return graft(node[1], branch, index)
+   end
+   for i = 2, #node do
+      if inbounds(index, node[i - 1].last + 1, node[i].first) then
+         return _applyGraft(node, branch, index, i)
+      elseif inbounds(index, node[i].first + 1, node[i].last) then
+         return graft(node[1], branch, index)
+      end
+   end
+   -- here we're just stuck: bad index is likely
+   error("unable to graft " .. branch.id .. " onto " .. node.id
+         .. " at index " .. index .. ". #node.str == " .. #node.str)
+end
 
+Node.graft = graft
 
 
 
