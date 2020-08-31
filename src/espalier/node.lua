@@ -807,6 +807,34 @@ end
 
 
 local inbounds = assert(require "core:math" . inbounds)
+local insert = assert(table.insert)
+
+local function _applyGraft(node, branch, index, insertion)
+   local branch = cloneinstance(branch)
+   -- create new string
+   local str = sub(node.str, 1, index)
+                   .. branch.str
+                   .. sub(node.str, index + 1)
+   -- walk the root node, swapping in the new str, and adjusting the
+   -- appropriate indices.
+   local offset = #branch.str
+   for twig in branch:walk() do
+      twig.str = str
+      twig.first = twig.first + index
+      twig.last = twig.last + index
+   end
+   for twig in node:root():walk() do
+      twig.str = str
+      if twig.first >= index then
+         twig.first = twig.first + offset
+      end
+      if twig.last > index then
+         twig.last = twig.last + offset
+      end
+   end
+   -- now graft
+   insert(node, insertion, branch)
+end
 
 local function graft(node, branch, index)
    assert(type(index) == 'number', "index must be a number")
@@ -821,7 +849,7 @@ local function graft(node, branch, index)
    if inbounds(index, node.first, node[1].first) then
       return _applyGraft(node, branch, index, 1)
    -- same for node[#node].last + 1 and node.last + 1:
-   elseif inbounds(index + 1, node[1].last, node.last) then
+   elseif inbounds(index + 1, node[#node].last + 1, node.last) then
       return _applyGraft(node, branch, index, #node + 1)
    end
    -- we either find a gap, or a sub-node we should search through.
@@ -838,7 +866,8 @@ local function graft(node, branch, index)
    end
    -- here we're just stuck: bad index is likely
    error("unable to graft " .. branch.id .. " onto " .. node.id
-         .. " at index " .. index .. ". #node.str == " .. #node.str)
+         .. "'" .. node:span().. "'" .. " at index " .. index
+         .. ". #node.str == " .. #node.str)
 end
 
 Node.graft = graft
@@ -893,8 +922,6 @@ end
 
 
 
-
-local insert = assert(table.insert)
 
 local function _isCompact(node, breaks)
    local is_compact = true
