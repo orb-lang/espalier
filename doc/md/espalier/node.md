@@ -812,20 +812,20 @@ local insert = assert(table.insert)
 local function _applyGraft(node, branch, index, insertion)
    local branch = cloneinstance(branch)
    -- create new string
-   local str = sub(node.str, 1, index)
+   local str = sub(node.str, 1, index - 1)
                    .. branch.str
-                   .. sub(node.str, index + 1)
+                   .. sub(node.str, index)
    -- walk the root node, swapping in the new str, and adjusting the
    -- appropriate indices.
-   local offset = #branch.str
+   local offset = #branch.str - 1
    for twig in branch:walk() do
       twig.str = str
-      twig.first = twig.first + index
-      twig.last = twig.last + index
+      twig.first = twig.first + index - 1
+      twig.last = twig.last + index - 1
    end
    for twig in node:root():walk() do
       twig.str = str
-      if twig.first >= index then
+      if twig.first > index then
          twig.first = twig.first + offset
       end
       if twig.last > index then
@@ -849,7 +849,7 @@ local function graft(node, branch, index)
    if inbounds(index, node.first, node[1].first) then
       return _applyGraft(node, branch, index, 1)
    -- same for node[#node].last + 1 and node.last + 1:
-   elseif inbounds(index + 1, node[#node].last + 1, node.last) then
+   elseif inbounds(index, node[#node].last + 1, node.last + 1) then
       return _applyGraft(node, branch, index, #node + 1)
    end
    -- we either find a gap, or a sub-node we should search through.
