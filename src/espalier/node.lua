@@ -104,10 +104,8 @@ end
 
 function  Node.strTag(node, c)
    c = c or c_bw
-   local phrase = Phrase ""
-   phrase = phrase .. c.bold(node.id) .. "    "
+   return c.bold(node.id) .. "    "
       .. c.number(node.first) .. "-" .. c.number(node.last)
-   return phrase
 end
 
 
@@ -144,7 +142,7 @@ local function _truncate(str, base_color, c)
    end
    return phrase
            : gsub("\n", "◼︎")
-           : gsub("[ ]+", c.greyscale("_")
+           : gsub("[ ]+", c.greyscale("␣")
            .. base_color())
 end
 
@@ -157,7 +155,7 @@ function Node.strLine(node, c)
                .. _truncate(node:span(), c.greyscale, c) .. "\n"
    else
       local val = node.str:sub(node.first, node.last)
-      phrase = phrase .. "    " .. _truncate(val, c.string,c)  .. "\n"
+      phrase = phrase .. "    " .. _truncate(val, c.string, c)  .. "\n"
    end
    return phrase
 end
@@ -809,31 +807,76 @@ end
 local inbounds = assert(require "core:math" . inbounds)
 local insert = assert(table.insert)
 
-local function _applyGraft(node, branch, index, insertion)
+local function _offsetBy(node, str, offset, dupes)
+   for twig in node:walk() do
+      if not dupes[twig] then
+         twig.str = str
+         twig.first = twig.first + offset
+         twig.last = twig.last + offset
+         dupes[twig] = true
+      end
+   end
+end
+
+local function _applyGraft(node, branch, index, insertion, replace)
    local branch = cloneinstance(branch)
    -- create new string
-   local str = sub(node.str, 1, index - 1)
-                   .. branch.str
-                   .. sub(node.str, index)
-   -- walk the root node, swapping in the new str, and adjusting the
-   -- appropriate indices.
-   local offset = #branch.str - 1
-   for twig in branch:walk() do
-      twig.str = str
-      twig.first = twig.first + index - 1
-      twig.last = twig.last + index - 1
+   local str = ""
+   if replace then
+      error "NYI"
+   else
+      str = sub(node.str, 1, index - 1) .. branch.str .. sub(node.str, index)
    end
-   for twig in node:root():walk() do
-      twig.str = str
-      if twig.first > index then
-         twig.first = twig.first + offset
-      end
-      if twig.last > index then
-         twig.last = twig.last + offset
-      end
+   -- walk the branch node, swapping in the new str, and adjusting the
+   -- appropriate indices.
+   local offset = (not replace) and #branch.str or error "NYI"
+   local dupes = {}
+   _offsetBy(branch, str, index - 1, dupes)
+   for i = insertion, #node do
+      _offsetBy(node[i], str, offset, dupes)
    end
    -- now graft
-   insert(node, insertion, branch)
+   branch.parent = node
+   if replace then
+      error "NYI" -- node[insertion] = branch
+   else
+      insert(node, insertion, branch)
+   end
+   --[[
+   -- here comes the tricky part.
+   -- - all parents must be adjusted on .last += offset
+   -- - all left peers of any parent are get strings replaced
+   -- - any right peers of any parent must be adjusted by offset
+
+   local walking = true
+   local parent = node
+   repeat
+     if parent.parent == parent then
+        walking = false
+     else
+        local child = parent
+        parent = parent.parent
+        dupes[parent] = true
+        parent.last = parent.last + offset
+        local on_left = true
+        for i = 1, #parent do
+           if on_left and parent[i] ~= child then
+              _offsetBy(parent[i], str, 0, dupes)
+           elseif parent[i] == child then
+              on_left = false
+              -- we've offset the
+   --]]
+   for twig in node:root():walk() do
+      if not dupes[twig] then
+         twig.str = str
+         if twig.first > index then
+            twig.first = twig.first + offset
+         end
+         if twig.last > index then
+            twig.last = twig.last + offset
+         end
+      end
+   end
 end
 
 local function graft(node, branch, index)
