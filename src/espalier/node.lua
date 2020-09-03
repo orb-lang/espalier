@@ -808,13 +808,13 @@ local inbounds = assert(require "core:math" . inbounds)
 local insert = assert(table.insert)
 
 local function _offsetBy(node, str, offset, dupes)
-   for twig in node:walk() do
-      if not dupes[twig] then
-         twig.str = str
-         twig.first = twig.first + offset
-         twig.last = twig.last + offset
-         dupes[twig] = true
-      end
+   if dupes[node] then return end
+   node.str = str
+   node.first = node.first + offset
+   node.last = node.last + offset
+   dupes[node] = true
+   for i = 1, #node do
+      _offsetBy(node[i], str, offset, dupes)
    end
 end
 
@@ -842,7 +842,6 @@ local function _applyGraft(node, branch, index, insertion, replace)
    else
       insert(node, insertion, branch)
    end
-   --[[
    -- here comes the tricky part.
    -- - all parents must be adjusted on .last += offset
    -- - all left peers of any parent are get strings replaced
@@ -850,33 +849,30 @@ local function _applyGraft(node, branch, index, insertion, replace)
 
    local walking = true
    local parent = node
+   local child = node[insertion]
    repeat
-     if parent.parent == parent then
-        walking = false
-     else
-        local child = parent
-        parent = parent.parent
-        dupes[parent] = true
-        parent.last = parent.last + offset
-        local on_left = true
-        for i = 1, #parent do
-           if on_left and parent[i] ~= child then
-              _offsetBy(parent[i], str, 0, dupes)
-           elseif parent[i] == child then
-              on_left = false
-              -- we've offset the
-   --]]
-   for twig in node:root():walk() do
-      if not dupes[twig] then
-         twig.str = str
-         if twig.first > index then
-            twig.first = twig.first + offset
-         end
-         if twig.last > index then
-            twig.last = twig.last + offset
+      if parent.parent == parent then
+         -- this is the root
+         walking = false
+      end
+      dupes[parent] = true
+      parent.last = parent.last + offset
+      parent.str = str
+      local on_left = true
+      for i = 1, #parent do
+         if on_left and parent[i] ~= child then
+            -- (only) replace the string
+            _offsetBy(parent[i], str, 0, dupes)
+         elseif parent[i] == child then
+            on_left = false
+          -- we've offset this already
+         else
+            _offsetBy(parent[i], str, offset, dupes)
          end
       end
-   end
+      child = parent
+      parent = parent.parent
+   until not walking
 end
 
 local function graft(node, branch, index)
