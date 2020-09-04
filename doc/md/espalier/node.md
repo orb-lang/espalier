@@ -820,16 +820,30 @@ end
 
 local function _applyGraft(node, branch, index, insertion, replace)
    local branch = cloneinstance(branch)
+   if replace then
+      assert(node[insertion].first == index,
+             "illegal replacement: index is " .. index .. " but first of "
+             .. node.id .. ", '" .. node:span() .. "', is " .. node.first)
+   end
    -- create new string
    local str = ""
    if replace then
-      error "NYI"
+      str = sub(node.str, 1, index - 1)
+            .. branch.str .. sub(node.str, node[insertion].last + 1)
    else
       str = sub(node.str, 1, index - 1) .. branch.str .. sub(node.str, index)
    end
    -- walk the branch node, swapping in the new str, and adjusting the
    -- appropriate indices.
-   local offset = (not replace) and #branch.str or error "NYI"
+   local offset
+   if replace then
+      -- difference between new span and old (could be negative)
+      local old_span = node[insertion].last - node[insertion].first + 1
+      offset = #branch.str - old_span
+   else
+      offset = #branch.str
+   end
+   -- avoid offsetting nodes more than once by keeping a dupes collection:
    local dupes = {}
    _offsetBy(branch, str, index - 1, dupes)
    for i = insertion, #node do
@@ -838,7 +852,7 @@ local function _applyGraft(node, branch, index, insertion, replace)
    -- now graft
    branch.parent = node
    if replace then
-      error "NYI" -- node[insertion] = branch
+      node[insertion] = branch
    else
       insert(node, insertion, branch)
    end
@@ -892,17 +906,17 @@ local function graft(node, branch, index, replace)
       return _applyGraft(node, branch, index, #node + 1, replace)
    end
    -- we either find a gap, or a sub-node we should search through.
-   -- first, check for subnodes:
-   for _, twig in ipairs(node) do
-     if inbounds(index, twig.first + 1, twig.last) then
-        return graft(twig, branch, index, replace)
-     end
-   end
-   -- now look for gaps
+   -- first we look for gaps:
    for i = 2, #node do
       if inbounds(index, node[i - 1].last + 1, node[i].first) then
          return _applyGraft(node, branch, index, i, replace)
       end
+   end
+   -- now, check for compatible subnodes:
+   for _, twig in ipairs(node) do
+     if inbounds(index, twig.first + 1, twig.last) then
+        return graft(twig, branch, index, replace)
+     end
    end
    -- here we're just stuck: bad index is likely
    error("unable to graft " .. branch.id .. " onto " .. node.id
@@ -912,6 +926,24 @@ end
 
 function Node.graft(node, branch, index)
    return graft(node, branch, index)
+end
+```
+
+
+### Node:replace\(branch, index\)
+
+Replaces the Node at `index` with `branch`\.
+
+`index` must equal the old `node.first`, exactly; this is different from
+`node:graft()`, which is legal between two Nodes which have a gap in the
+string between them\.
+
+If there are several Nodes with a compatible `node.first`, the one nearest to
+the calling Node will be chosen\.
+
+```lua
+function Node.replace(node, branch, index)
+   return graft(node, branch, index, true)
 end
 ```
 
