@@ -79,6 +79,21 @@ Node.isNode = Node
 
 
 
+function Node.bustCache(node)
+   return
+end
+
+
+
+
+
+
+
+
+
+
+
+
 function Node.toLua(node)
   s:halt("No toLua method for " .. node.id)
 end
@@ -813,6 +828,7 @@ local function _offsetBy(node, str, offset, dupes)
    node.first = node.first + offset
    node.last = node.last + offset
    dupes[node] = true
+   node:bustCache()
    for i = 1, #node do
       _offsetBy(node[i], str, offset, dupes)
    end
@@ -833,8 +849,7 @@ local function _applyGraft(node, branch, index, insertion, replace)
    else
       str = sub(node.str, 1, index - 1) .. branch.str .. sub(node.str, index)
    end
-   -- walk the branch node, swapping in the new str, and adjusting the
-   -- appropriate indices.
+   -- calculate offset for first and last adjustment
    local offset
    if replace then
       -- difference between new span and old (could be negative)
@@ -845,10 +860,9 @@ local function _applyGraft(node, branch, index, insertion, replace)
    end
    -- avoid offsetting nodes more than once by keeping a dupes collection:
    local dupes = {}
+
+   -- offset the branch clone to the new index
    _offsetBy(branch, str, index - 1, dupes)
-   for i = insertion, #node do
-      _offsetBy(node[i], str, offset, dupes)
-   end
    -- now graft
    branch.parent = node
    if replace then
@@ -856,11 +870,9 @@ local function _applyGraft(node, branch, index, insertion, replace)
    else
       insert(node, insertion, branch)
    end
-   -- here comes the tricky part.
    -- - all parents must be adjusted on .last += offset
-   -- - all left peers of any parent are get strings replaced
+   -- - all left peers of any parent get strings replaced, no adjustment
    -- - any right peers of any parent must be adjusted by offset
-
    local walking = true
    local parent = node
    local child = node[insertion]
@@ -873,20 +885,21 @@ local function _applyGraft(node, branch, index, insertion, replace)
       parent.last = parent.last + offset
       parent.str = str
       local on_left = true
-      for i = 1, #parent do
-         if on_left and parent[i] ~= child then
+      for i, sibling in ipairs(parent) do
+         if on_left and sibling ~= child then
             -- (only) replace the string
-            _offsetBy(parent[i], str, 0, dupes)
-         elseif parent[i] == child then
+            _offsetBy(sibling, str, 0, dupes)
+         elseif sibling == child then
             on_left = false
           -- we've offset this already
          else
-            _offsetBy(parent[i], str, offset, dupes)
+            _offsetBy(sibling, str, offset, dupes)
          end
       end
       child = parent
       parent = parent.parent
    until not walking
+
 end
 
 local function graft(node, branch, index, replace)

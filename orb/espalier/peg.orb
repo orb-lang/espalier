@@ -163,7 +163,7 @@ local function pegylator(_ENV)
    greater_equal_referred = P"(>=" * V"gte_reference" * P")"
    greater_referred = P"(>" * V"gt_reference" * P")"
    lesser_equal_referred = P"(<=" * V"lte_reference" * P")"
-   lesser_referred = P"(>" * V"gt_reference" * P")"
+   lesser_referred = P"(<" * V"lt_reference" * P")"
 
    named_match     = symbol
    back_reference  = symbol
@@ -173,8 +173,6 @@ local function pegylator(_ENV)
    lte_reference   = symbol
    lt_reference    = symbol
 
-   referred    =  V"reference" * "$"
-   reference     =  symbol
    number_repeat =  some_num_c
    named_repeat  =  symbol
 
