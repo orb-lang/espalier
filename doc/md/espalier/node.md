@@ -72,8 +72,10 @@ orthogonality\.
 
 ### Node:bustCache\(\)
 
-The root Node class doesn't cache derived values \(I don't think?\) but derived
-classes might\.
+The root Node class doesn't cache derived values but derived classes might\.
+
+`:linePos` caches the map of newlines, but it keys off `node.str`, which is
+changed by grafting, so no action is required in that case\.
 
 We provide this method so that `graft` can call it\. Specifically because the
 Orb Twig class does cache calls to `:select`, and we need to remove those\.
