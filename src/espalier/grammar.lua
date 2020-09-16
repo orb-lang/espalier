@@ -158,8 +158,6 @@
 
 
 
-
-
 local s = require "status:status" ()
 s.verbose = false
 s.angry   = false
@@ -170,7 +168,6 @@ s.angry   = false
 
 
 local L = require "lpeg"
-local a = require "anterm:anterm"
 local compact = assert(require "core/table" . compact)
 local Node = require "espalier/node"
 local elpatt = require "espalier/elpatt"
@@ -187,20 +184,20 @@ local DROP = elpatt.DROP
 
 
 local assert = assert
-local string, io = assert( string ), assert( io )
+local string = assert(string)
 local sub = assert(string.sub)
 local remove = assert(table.remove)
-local VER = sub( assert( _VERSION ), -4 )
-local _G = assert( _G )
-local error = assert( error )
-local pairs = assert( pairs )
-local next = assert( next )
-local type = assert( type )
-local tostring = assert( tostring )
-local setmeta = assert( setmetatable )
+local VER = sub(assert(_VERSION), -4)
+local _G = assert(_G)
+local error = assert(error)
+local pairs = assert(pairs)
+local next = assert(next)
+local type = assert(type)
+local tostring = assert(tostring)
+local setmeta = assert(setmetatable)
 if VER == " 5.1" then
-   local setfenv = assert( setfenv )
-   local getfenv = assert( getfenv )
+   local setfenv = assert(setfenv)
+   local getfenv = assert(getfenv)
 end
 
 
@@ -275,15 +272,6 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
-
-
-
-
-
-
-
-
-
    local top, touched = #t, false
    for i = 1, top do
       local cap = t[i]
@@ -297,6 +285,15 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
    if touched then
       compact(t, top)
    end
+
+
+
+
+
+
+
+
+
    -- post conditions
    assert(t.isNode, "failed isNode: " .. id)
    assert(t.str)
@@ -410,6 +407,10 @@ local function refineMetas(metas)
   end
   return metas
 end
+
+
+
+
 
 
 
