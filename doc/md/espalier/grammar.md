@@ -9,7 +9,7 @@
 This module is in a very real sense a **duet**\.
 
 It is an adaptation, refinement, extension, of Phillipe Janda's work,
-\[\[luaepnf\]\[http://siffiejoe\.github\.io/lua\-luaepnf/\]\]\.
+\[\[luaepnf \]\[http://siffiejoe\.github\.io/lua\-luaepnf/\]\]\.
 
 While `helm` was built from a repl provided by Tim Caswell in `luv`, that is a
 case of taking a sketch and painting a picture\.
@@ -133,7 +133,7 @@ This lets us define a `metas` parameter thus:
 ```lua-example
 local metas = { Default,
                 a = A,
-                b = Bfn, } --etc
+                b = Bfn, } -- etc
 ```
 
 Which combines nicely with using `:inherit(id)` to make a base class, which
