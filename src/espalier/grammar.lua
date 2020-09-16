@@ -159,6 +159,7 @@
 
 
 
+
 local s = require "status:status" ()
 s.verbose = false
 s.angry   = false
@@ -393,7 +394,7 @@ local function refineMetas(metas)
     if id ~= 1 then
       if type(meta) == "table" then
         -- #todo is this actually necessary now?
-        -- if all Node children are created with Node:inherit than
+        -- if all Node children are created with Node:inherit then
         -- it isn't.
         if not meta["__tostring"] then
           meta["__tostring"] = Node.toString

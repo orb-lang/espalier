@@ -94,52 +94,53 @@ behavior, you must pass in a table of metatable constructors\.
 
 That's a fairly specific beast\.  Any rule defined above will have an `id`
 corresonding to the name of the rule\.  Unless `SUPPRESS`ed, this will become
-a Node\.  If the `metas` parameter has a key corresponding to `id`, then it
-must return a function taking two parameters:
+a Node\.
 
-   - node   :  The node under construction, which will already have the
-       `first`, `last`, and `str` fields\.
+The `metas` parameter will have keys which correspond to the `.id` field of a
+given rule\.  The value is either a table, or a function\.
 
-   - offset :  The offset, which indicates how much to add to the `str`
-       field to get the actual offset into the string\.
+If a table, this must inherit from Node via `:inherit(id)`\.  These are simply
+assigned as the metatable for the node in question\.
 
-       This is zero by default and is used to parse a string
-       piecewise\.
+If a function, that function itself must be a container for a Grammar; we
+provide the [subgrammar](@:espalier/subgrammar) module to construct a basic
+variety\.
 
-Which must return that same node, decorated in whatever fashion is
-appropriate\.
+The Grammar constructor returns a function, which has optional parameters
+for a `first` and `last`\.  If provided, it will parse only over that slice of
+the string, with the indices correctly adjusted\.
 
-The node will not have a metatable at this point, and the function must attach
-a metatable with `__index` equal to some table which itself has the `__index`
-Node as some recursive backstop\.
+So a subgrammar is called thus: `subgrammar(node, node:bounds())`, and the
+return value will be inserted as a subNode\.  Which is hopefully well\-formed
+with respect to the rest of the tree, and will be if a subgrammar is used
+carefully\.
 
-You might say the return value must *inherit* from Node, if we were using
-a language that did that sort of thing\.
+The generic subgrammar isn't always adequate, but serves to provide a template
+for the sort of function which must be provided\.
+
+The result of all these machinations is that we're able to define a rule twice:
+once with a loose rule, adequate to uniquely identify the rule and its
+boundaries, and a second which can resolve in more detail, and freed from the
+requirement to cooperate with the rest of the containing Grammar\.
+
+Subgrammars may themselves receive a `meta` parameter, so this procedure can
+be repeated as often as necessary\.
 
 If a metatable of the given `.id` is not provided, the metatable at `metas[1]`
-is used instead\.  If no default is provided, this defaults to Node\.
+is used instead\.  If no default is provided, this defaults to Node, just as if
+the `metas` parameter is `nil`\.
 
+This lets us define a `metas` parameter thus:
 
-## Roadmap
+```lua-example
+local metas = { Default,
+                a = A,
+                b = Bfn, } --etc
+```
 
-  The Grammar class needs to be expanded to cover a broader array of use
-cases, and specifically to enable the features we'll be able to add given the
-declarative PEG format front end\.
+Which combines nicely with using `:inherit(id)` to make a base class, which
+other Nodes can specify through further inheritance\.
 
-To this end:
-
-- [ ] \#Todo \#version @0\.0\.2
-
-   - [ ]  Make `new` return a callable table, instead of a function\.
-
-       This will allow us to decorate the now\-single return value with
-       the grammar, and eventually grammars\.  We'll include `new` as
-       `grammar.new`\.
-
-       This is the most important step for this class; other capabilities
-       are either being baked in Node, or will be their own module, for
-       instance using Lua\-native combinators to validate deltas into an
-       existing Node structure\.
 
 ## Implementation
 
@@ -393,7 +394,7 @@ local function refineMetas(metas)
     if id ~= 1 then
       if type(meta) == "table" then
         -- #todo is this actually necessary now?
-        -- if all Node children are created with Node:inherit than
+        -- if all Node children are created with Node:inherit then
         -- it isn't.
         if not meta["__tostring"] then
           meta["__tostring"] = Node.toString
