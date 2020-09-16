@@ -2,7 +2,7 @@
 
 
 Let's start with the EBNF for a date, straight from
-\[\[iso\]\[\]\]:
+[iso](link line not found for obelus: [)\]:
 
 ```ebnf
 (* Base definitions *)
