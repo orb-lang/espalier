@@ -26,12 +26,11 @@ local Peg = require "espalier:espalier/peg"
 ```peg
 
 ;; Overall Structure
-
    toml    <-  expression (nl expression)*
 
-expression <-  ws comment?
-            /  ws keyval ws comment?
+expression <-  ws keyval ws comment?
             /  ws table  ws comment?
+            /  ws comment
 
 ;; Whitespace
 
@@ -137,7 +136,7 @@ local-time <- "placeholder@#$%@$#%"
 
         array  <-  "[" array-values? opt-comment "]"
 
-`opt-comment`  <-  (ws / comment nl)*
+`opt-comment`  <-  ws / (comment nl)*
 
  array-values  <-  opt-comment val (opt-comment "," opt-comment val)* ","*
 
