@@ -26,15 +26,18 @@ local Peg = require "espalier:espalier/peg"
 ```peg
 
 ;; Overall Structure
+
    toml    <-  expression (nl expression)*
 
-expression <-  ws keyval ws comment?
-            /  ws table  ws comment?
-            /  ws comment
+`expression` <-  ws keyval ws comment?
+             /  ws table  ws comment?
+             /  ws comment
+             /  ws &nl
 
 ;; Whitespace
 
-        `ws`  <- {\t }*
+        `ws`  <-  {\t }*
+    `wschar`  <-  {\t }+
 
 ;; Newline
 
@@ -51,7 +54,7 @@ expression <-  ws keyval ws comment?
 
          key  <-  dotted-key / simple-key ; / (!"=" 1) &"=" Error
 
-  simple-key  <-  quoted-key / unquoted-key
+`simple-key`  <-  quoted-key / unquoted-key
 
 unquoted-key  <-  ([A-Z] / [a-z] / [0-9] / "-" / "_")+
 
@@ -64,8 +67,8 @@ unquoted-key  <-  ([A-Z] / [a-z] / [0-9] / "-" / "_")+
 
 ;; String
 
-      string  <-    ml-basic-string   / basic-string
-                  / ml-literal-string / literal-string
+        `string`  <-  ml-basic-string   / basic-string
+                  /   ml-literal-string / literal-string
 
 ;; Note: this isn't technically TOML, because we'll use Lua string
 ;; conventions. I have no interest in implementing \u.
@@ -84,21 +87,21 @@ ml-literal-string <- "'''" (!"'''" 1 / &"''''" "'")* "'''"
 
 ;; Integer
 
-integer  <-  decimal / hexadecimal / octal / binary
+    integer  <-  decimal / hexadecimal / octal / binary
 
-decimal  <-  sign? dec-int
+    decimal  <-  sign? dec-int
 
-sign     <-  "+" / "-"
+       sign  <-  "+" / "-"
 
-dec-int  <-  [0-9] / [1-9] ([0-9] / "_" [0-9])+
+  `dec-int`  <-  [0-9] / [1-9] ([0-9] / "_" [0-9])+
 
 hexadecimal  <-  "0x" higit (higit / "_" higit)*
 
-`higit`    <- [A-F] / [a-f] / [0-9]
+    `higit`  <- [A-F] / [a-f] / [0-9]
 
-octal        <- "0o" [0-7] ([0-7] / "_" [0-7])*
+      octal  <- "0o" [0-7] ([0-7] / "_" [0-7])*
 
-binary       <- "0b" [0-1] ([0-1] / "_" [0-1])*
+     binary  <- "0b" [0-1] ([0-1] / "_" [0-1])*
 
 ;; Float
 
@@ -136,7 +139,7 @@ local-time <- "placeholder@#$%@$#%"
 
         array  <-  "[" array-values? opt-comment "]"
 
-`opt-comment`  <-  ws / (comment nl)*
+`opt-comment`  <-  (ws comment? nl ws)+ / ws
 
  array-values  <-  opt-comment val (opt-comment "," opt-comment val)* ","*
 
