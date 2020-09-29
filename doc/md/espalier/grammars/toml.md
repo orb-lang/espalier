@@ -87,7 +87,7 @@ ml-literal-string <- "'''" (!"'''" 1 / &"''''" "'")* "'''"
 
 ;; Integer
 
-    integer  <-  decimal / hexadecimal / octal / binary
+    integer  <-  hexadecimal / octal / binary / decimal
 
     decimal  <-  sign? dec-int
 
