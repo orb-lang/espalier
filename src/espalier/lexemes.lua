@@ -17,6 +17,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local L = require "lpeg"
 local P, R, S, match = L.P, L.R, L.S, L.match
 local sub, gsub = assert(string.sub), assert(string.gsub)
@@ -34,7 +53,21 @@ local codepoints = require "singletons/codepoints"
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 local Lex = meta {}
+
+
+
 
 
 
@@ -104,6 +137,9 @@ local ERR = P(1)
 
 
 
+
+
+
 return { lua = { number      = number,
                  digit       = digit,
                  symbol      = symbol,
@@ -124,3 +160,4 @@ return { lua = { number      = number,
          hex     = _hexadecimal,
          decimal = _decimal,
          letter  = { latin = letter } }
+

@@ -8,6 +8,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 local L = require "lpeg"
 local s = require "status:status" ()
 s.verbose = false
@@ -21,8 +31,33 @@ local P, C, Cc, Cp, Ct, Carg = L.P, L.C, L.Cc, L.Cp, L.Ct, L.Carg
 
 
 
+
+
+
+
+
 local Err = require "espalier/error"
 elpatt.E, elpatt.EOF = Err.E, Err.EOF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -86,6 +121,33 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local DROP = {}
 elpatt.DROP = DROP
 
@@ -117,6 +179,22 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function elpatt.S(a, ...)
    if not a then return nil end
    local arg = {...}
@@ -129,4 +207,8 @@ end
 
 
 
+
+
+
 return elpatt
+

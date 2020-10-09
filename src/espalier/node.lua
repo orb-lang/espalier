@@ -8,10 +8,26 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 local yield = assert(coroutine.yield, "uses coroutines")
 local wrap = assert(coroutine.wrap)
 local sub, find = assert(string.sub, "uses string"), assert(string.find)
 local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
+
+
+
+
+
+
 
 
 
@@ -24,6 +40,26 @@ local c_bw = require "singletons/color" . no_color
 local core = require "core:core"
 local Phrase = require "singletons/phrase"
 local dot = require "espalier/dot"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -81,9 +117,55 @@ Node.isNode = Node
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Node.bustCache(node)
    return
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -119,6 +201,26 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function  Node.strTag(node, c)
    c = c or c_bw
    return c.bold(node.id) .. "    "
@@ -134,9 +236,29 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 function Node.strExtra(node, c)
    return ""
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -187,6 +309,17 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 function Node.toString(node, depth, c)
    depth = depth or 0
    local line =  node:strLine(c)
@@ -209,6 +342,9 @@ end
 
 
 
+
+
+
 local function __tostring(node)
    if not node.str then
       return "Node"
@@ -217,6 +353,12 @@ local function __tostring(node)
 end
 
 Node.__tostring = __tostring
+
+
+
+
+
+
 
 
 
@@ -246,9 +388,33 @@ Node.__repr = __repr
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Node.span(node)
    return sub(node.str, node.first, node.last)
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -274,9 +440,59 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Node.len(node)
     return 1 + node.last - node.first
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -344,6 +560,17 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 function Node.dotLabel(node)
   return node.id
 end
@@ -357,9 +584,35 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 function Node.label(node)
    return node.id
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -390,9 +643,26 @@ end
 
 
 
+
+
+
+
+
+
+
 function Node.dot(node)
   return dot.dot(node)
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -426,6 +696,19 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function _root(node)
    if node.parent == node then
       return node
@@ -434,6 +717,14 @@ local function _root(node)
 end
 
 Node.root = _root
+
+
+
+
+
+
+
+
 
 
 
@@ -464,6 +755,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Node.walk(node)
   local function traverse(ast)
     if not type(ast) == 'table' and ast.isNode then return nil end
@@ -477,6 +776,24 @@ function Node.walk(node)
 
   return wrap(function() traverse(node) end)
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -535,6 +852,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 local function qualifies(ast, pred)
     if type(pred) == 'string' then
        if type(ast) == 'table'
@@ -581,6 +907,16 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 function Node.selectFrom(node, pred, index)
    -- build up all the nodes that match
    local matches = {}
@@ -610,6 +946,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Node.tokens(node)
   local function traverse(ast)
     for node in Node.walk(ast) do
@@ -630,11 +974,29 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 local lines = assert(core.lines)
 
 function Node.lines(node)
   return lines(node:span())
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -699,6 +1061,16 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
 local function _lastLeaf(node)
   if #node == 0 then
     return node
@@ -708,6 +1080,21 @@ local function _lastLeaf(node)
 end
 
 Node.lastLeaf = _lastLeaf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -746,11 +1133,35 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local cloneinstance = assert(core.cloneinstance)
 
 function Node.clone(node)
    return cloneinstance(node)
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -785,6 +1196,42 @@ function Node.pluck(node)
 --   assert(plucked.first == 1)
    return plucked
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -957,9 +1404,38 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Node.replace(node, branch, index)
    return graft(node, branch, index, true)
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -996,12 +1472,29 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Node.validate(node)
   for twig in node:walk() do
     twig:isValid()
   end
   return true
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1079,6 +1572,23 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Node.inherit(node, id)
   local Meta = setmeta({}, node)
   Meta.__index = Meta
@@ -1095,6 +1605,18 @@ function Node.inherit(node, id)
   end
   return Meta
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1143,4 +1665,37 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 return Node
+

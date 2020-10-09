@@ -4,9 +4,21 @@
 
 
 
+
+
+
+
+
+
 local Grammar = require "espalier/grammar"
 local Peg = require "espalier/peg"
 local Node = require "espalier/node"
+
+
+
+
+
+
 
 
 
@@ -31,6 +43,9 @@ number = float / integer
 
 
 
+
+
+
 local micro_lisp_metas = { lisp = Node : inherit "lisp",
                            atom = Node : inherit "atom",
                            symbol = Node : inherit "symbol",
@@ -38,4 +53,8 @@ local micro_lisp_metas = { lisp = Node : inherit "lisp",
 
 
 
+
+
+
 return Peg(micro_lisp_peg) : toGrammar(micro_lisp_metas)
+

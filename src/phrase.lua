@@ -90,11 +90,124 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local init, new
 local s = require "core/status" ()
 s.angry = false
 local Phrase = {}
 Phrase.it = require "core/check"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -166,6 +279,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 local function __tostring(phrase)
    local str = ""
    for i,v in ipairs(phrase) do
@@ -177,9 +298,15 @@ end
 
 
 
+
+
+
 local PhraseMeta = {__index = Phrase,
                   __concat = __concat,
                   __tostring = __tostring}
+
+
+
 
 
 
@@ -211,6 +338,14 @@ Phrase.idEst = new
 
 
 
+
+
+
+
+
+
+
+
 local function spec()
    local a = new "Sphinx of " .. "black quartz "
    a: it "phrase-a"
@@ -231,4 +366,9 @@ spec()
 
 
 
+
+
+
+
 return new
+

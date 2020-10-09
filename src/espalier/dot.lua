@@ -17,6 +17,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local t = {}
 
 local dot_header = [=[
@@ -71,6 +90,15 @@ local function value_to_label(value, leaf_count)
 
    return name, label, leaf_count + 1
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -157,6 +185,11 @@ end
 
 
 
+
+
+
+
+
 function t.dot(ast)
    local phrase = dot_header
 
@@ -164,3 +197,4 @@ function t.dot(ast)
 end
 
 return t
+

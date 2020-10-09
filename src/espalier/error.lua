@@ -11,9 +11,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 local L   = require "lpeg"
 local s = require "status:status" ()
 local Carg, Cc, Cp, P = L.Carg, L.Cc, L.Cp, L.P
+
+
+
 
 
 
@@ -28,10 +44,26 @@ Err.id = "ERROR"
 
 
 
+
+
+
+
+
+
+
+
 function Err.toLua(err)
   local line, col = err:linePos(err.first)
   s:halt("ERROR at line: " .. line .. " col: " .. col)
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -69,6 +101,20 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Err.Err(name, msg, patt)
   return Cp() * Cc(name) * Cc(msg) * Cc(patt) * Carg(1) / parse_error
 end
@@ -80,3 +126,4 @@ function Err.EOF(name, msg)
 end
 
 return Err
+

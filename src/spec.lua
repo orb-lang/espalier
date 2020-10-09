@@ -6,6 +6,14 @@
 
 
 
+
+
+
+
+
+
+
+
 --local u = require "util"
 local m = require "Orbit/morphemes"
 
@@ -22,9 +30,21 @@ local C = L.C
 
 
 
+
+
+
 local Spec = {}
 Spec.dot = require "espalier/grammars/dot"
 Spec.peg = require "espalier/grammars/peg"
+
+
+
+
+
+
+
+
+
 
 
 
@@ -71,9 +91,19 @@ end
 
 
 
+
+
+
+
+
 Spec.trivial = Grammar(epsilon)
 Spec.a = Grammar(a)
 Spec.clu = Grammar(clu_gm)
+
+
+
+
+
 
 
 
@@ -96,8 +126,15 @@ metas["A"] = u.export(amt, Anew)
 
 
 
+
+
+
 Spec.ab = Grammar(ab, metas)
 
 
 
+
+
+
 return Spec
+

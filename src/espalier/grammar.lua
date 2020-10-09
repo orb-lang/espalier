@@ -158,9 +158,175 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local s = require "status:status" ()
 s.verbose = false
 s.angry   = false
+
+
+
+
+
+
 
 
 
@@ -173,6 +339,16 @@ local Node = require "espalier/node"
 local elpatt = require "espalier/elpatt"
 
 local DROP = elpatt.DROP
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -207,7 +383,44 @@ end
 
 
 
+
+
+
+
+
+
+
+
 local function make_ast_node(id, first, t, last, str, metas, offset)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -272,6 +485,21 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
    local top, touched = #t, false
    for i = 1, top do
       local cap = t[i]
@@ -285,6 +513,15 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
    if touched then
       compact(t, top)
    end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -323,12 +560,41 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Cp = L.Cp
 local Cc = L.Cc
 local Ct = L.Ct
 local arg1_str = L.Carg(1)
 local arg2_metas = L.Carg(2)
 local arg3_offset = L.Carg(3)
+
+
+
+
+
+
 
 
 
@@ -386,6 +652,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 local function refineMetas(metas)
   for id, meta in pairs(metas) do
     if id ~= 1 then
@@ -407,6 +681,29 @@ local function refineMetas(metas)
   end
   return metas
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -494,4 +791,8 @@ end
 
 
 
+
+
+
 return new
+

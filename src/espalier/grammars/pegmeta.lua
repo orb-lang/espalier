@@ -22,6 +22,30 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Node = require "espalier/node"
 local Grammar = require "espalier/grammar"
 local Phrase = require "singletons/phrase"
@@ -31,6 +55,12 @@ local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
 local s = require "status:status" ()
+
+
+
+
+
+
 
 
 
@@ -54,6 +84,12 @@ end
 
 
 
+
+
+
+
+
+
 local Peg, peg = Node : inherit()
 Peg.id = "peg"
 
@@ -65,7 +101,22 @@ Peg.id = "peg"
 
 
 
+
+
+
+
+
+
+
+
+
 local PegPhrase = Phrase : inherit ({__repr = lex})
+
+
+
+
+
+
 
 
 
@@ -109,6 +160,21 @@ Peg.toSexpr = _toSexpr
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function __repr(repr, phrase, c)
    return _toSexpr(repr[1])
 end
@@ -125,9 +191,22 @@ end
 
 
 
+
+
+
 function Peg.toSexprRepr(peg)
    return newRepr(peg)
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -151,6 +230,11 @@ end
 
 
 
+
+
+
+
+
 local PegMetas = Peg : inherit()
 PegMetas.id = "pegMetas"
 
@@ -164,7 +248,26 @@ PegMetas.id = "pegMetas"
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 local Rules = PegMetas : inherit "rules"
+
+
+
+
+
+
+
+
 
 
 
@@ -195,11 +298,30 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local _PREFACE = PegPhrase ([[
 local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
 local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
 ]])
+
+
+
 
 
 
@@ -243,9 +365,20 @@ end
 
 
 
+
+
+
+
+
+
+
+
 local function _normalize(str)
    return str:gsub("%-", "%_")
 end
+
+
+
 
 
 
@@ -352,6 +485,39 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Rules.toGrammar(rules, metas, pre, post, extraLpeg, header)
    metas = metas or {}
    header = header or ""
@@ -360,6 +526,14 @@ function Rules.toGrammar(rules, metas, pre, post, extraLpeg, header)
    rules.parse, rules.grammar = Grammar(rule_str, metas, pre, post)
    return rules.parse
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -400,6 +574,21 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Rhs = PegMetas : inherit "rhs"
 
 function Rhs.toLpeg(rhs)
@@ -409,6 +598,12 @@ function Rhs.toLpeg(rhs)
    end
    return phrase
 end
+
+
+
+
+
+
 
 
 
@@ -430,6 +625,12 @@ end
 
 
 
+
+
+
+
+
+
 local Cat = PegMetas : inherit "cat"
 
 function Cat.toLpeg(cat)
@@ -445,6 +646,12 @@ end
 
 
 
+
+
+
+
+
+
 local Group = PegMetas : inherit "group"
 
 function Group.toLpeg(group)
@@ -454,6 +661,19 @@ function Group.toLpeg(group)
    end
    return phrase .. ")"
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -484,6 +704,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 local And_predicate = PegMetas : inherit "and_predicate"
 
 function And_predicate.toLpeg(and_predicate)
@@ -493,6 +721,14 @@ function And_predicate.toLpeg(and_predicate)
    end
    return phrase
 end
+
+
+
+
+
+
+
+
 
 
 
@@ -512,6 +748,12 @@ end
 
 
 
+
+
+
+
+
+
 local Set = PegMetas : inherit "set"
 
 function Set.toLpeg(set)
@@ -523,7 +765,16 @@ end
 
 
 
+
+
+
+
+
+
 local Range = PegMetas : inherit "range"
+
+
+
 
 
 
@@ -532,6 +783,12 @@ function Range.toLpeg(range)
    phrase = phrase .. range : select "range_start" () : span()
    return phrase .. range : select "range_end" () : span() .. "\" "
 end
+
+
+
+
+
+
 
 
 
@@ -553,6 +810,12 @@ end
 
 
 
+
+
+
+
+
+
 local One_or_more = PegMetas : inherit "one_or_more"
 
 function One_or_more.toLpeg(one_or_more)
@@ -562,6 +825,12 @@ function One_or_more.toLpeg(one_or_more)
    end
    return phrase .. "^1"
 end
+
+
+
+
+
+
 
 
 
@@ -589,6 +858,18 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 local Repeated = PegMetas : inherit "repeated"
 
 function Repeated.toLpeg(repeated)
@@ -600,6 +881,15 @@ function Repeated.toLpeg(repeated)
                .. " * " .. condition .. "^-" .. PegPhrase(times)
    return phrase
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -655,6 +945,12 @@ end
 
 
 
+
+
+
+
+
+
 local Comment = PegMetas : inherit "comment"
 
 function Comment.toSexpr(comment)
@@ -665,6 +961,17 @@ function Comment.toLpeg(comment)
    local phrase = PegPhrase "--"
    return phrase .. comment:span():sub(2)
 end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -689,12 +996,27 @@ end
 
 
 
+
+
+
+
+
+
 local Number = PegMetas : inherit "number"
 
 function Number.toLpeg(number)
    local phrase = PegPhrase "P("
    return phrase .. number:span() .. ")"
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -719,11 +1041,20 @@ end
 
 
 
+
+
+
+
+
+
 local Whitespace = PegMetas : inherit "WS"
 
 function Whitespace.toLpeg(whitespace)
    return PegPhrase(whitespace:span())
 end
+
+
+
 
 
 
@@ -749,3 +1080,4 @@ return { Peg,
          named     = Named,
          WS        = Whitespace,
          dent      = Dent }
+

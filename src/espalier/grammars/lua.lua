@@ -11,13 +11,32 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Peg = require "espalier/peg"
 
 
 
 
 
+
+
+
+
+
 local lua_str = [[
+
 lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement _ ";"?)?
@@ -123,4 +142,8 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 ]]
 
 
+
+
+
 return Peg(lua_str)
+

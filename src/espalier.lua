@@ -7,6 +7,15 @@
 
 
 
+
+
+
+
+
+
+
+
+
 local Phrase  = require "singletons/phrase"
 local Stator  = require "singletons/stator"
 local dot     = require "espalier/dot"
@@ -49,3 +58,4 @@ return { dot      = dot,
          grammar  = Grammar,
          grammars = grammars,
          stator   = Stator }
+

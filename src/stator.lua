@@ -14,7 +14,26 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local setmeta = assert(setmetatable)
+
+
+
 
 
 
@@ -27,7 +46,31 @@ local Stator = meta {}
 
 
 
+
+
+
+
+
+
+
+
 -- local _weakstate = setmeta({}, {__mode = 'v'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -59,6 +102,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 local function new(Stator, _weakstate)
    local stator = call(Stator, _weakstate)
    stator.g, stator.G, stator._G = stator, stator, stator
@@ -68,4 +120,9 @@ end
 
 
 
+
+
+
+
 return setmetatable(Stator, {__call = new})
+

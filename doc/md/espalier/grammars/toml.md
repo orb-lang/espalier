@@ -8,7 +8,7 @@ The leading candidate for manifest files, which we will use in Orb to specify
 metadata about a given project\.
 
 It may be that these will eventually be in Orb format, which is surely rich
-enough to do the job\.  But it is better, I think, to have a simpler,
+enough to do the job\.  But its better, I think, to have a simpler,
 well\-understood format, because any Orb format would be a subset of Orb, and
 therefore more of a challenge to write correctly\.
 
@@ -54,11 +54,11 @@ local Peg = require "espalier:espalier/peg"
 
          key  <-  dotted-key / simple-key ; / (!"=" 1) &"=" Error
 
-`simple-key`  <-  quoted-key / unquoted-key
+`simple-key`  <-  quoted-key / symbol
 
-unquoted-key  <-  ([A-Z] / [a-z] / [0-9] / "-" / "_")+
+      symbol  <-  ([A-Z] / [a-z] / [0-9] / "-" / "_")+
 
-  quoted-key  <-  basic-string / literal-string
+`quoted-key`  <-  basic-string / literal-string
 
   dotted-key  <-  simple-key ("." simple-key)+
 
