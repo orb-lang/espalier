@@ -36,6 +36,7 @@ local s = require "status:status" ()
 #### Optional Lex Lua\_thor
 
 ```lua
+local c = require "singletons:color" . color
 local ok, lex = pcall(require, "helm:helm/lex")
 if not ok then
    lex = function(repr) return tostring(repr) end
@@ -43,6 +44,9 @@ else
    local lua_thor = lex.lua_thor
    lex = function(repr)
             local toks = lua_thor(tostring(repr))
+            for i, tok in ipairs(toks) do
+              toks[i] = tok:toString(c)
+            end
             return concat(toks)
          end
 end
