@@ -69,3 +69,4 @@ end
 
 
 return setmetatable(Stator, {__call = new})
+

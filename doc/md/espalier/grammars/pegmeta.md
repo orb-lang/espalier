@@ -9,6 +9,7 @@ A collection of Node\-descended metatables to provide sundry methodologies\.
 This module currently covers enough ground to start co\-developing PEG grammars
 in a declarative style\.
 
+
 - [ ] \#Todo
 
   - [ ]  Assemble `toLpeg` methods for the remaining classes\.
@@ -328,6 +329,7 @@ end
 
   Builds a Grammar out of a parsed Peg set\. All non\-self parameters are
 optional\.
+
 
 - Params:
 

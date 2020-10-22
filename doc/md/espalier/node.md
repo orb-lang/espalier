@@ -26,6 +26,7 @@ local Phrase = require "singletons/phrase"
 local dot = require "espalier/dot"
 ```
 
+
 - [ ] \#todo Planned expansions:
 
     \#\!lua \#noKnit \-\- this isn't working yet
@@ -34,8 +35,8 @@ local dot = require "espalier/dot"
     local html = require "espalier/html"
     local css  = require "espalier/css"
     local portal = require "espalier/portal"
-    --]()
-    \#/lua
+    
+    --]()  \#/lua
 
 
 ## Node metatable
@@ -291,6 +292,7 @@ end
 #### Node:gap\(node\)
 
 \#NB
+
 
 - [ ] \#todo either use this, validate it, or get rid of it
 
@@ -715,9 +717,11 @@ Node.lastLeaf = _lastLeaf
 
 These return an array of all results\.
 
+
 - [ ] \#todo  This could be reimplemented as
     `core.collect(node.select, node, pred)` and probably renamed
     `node:collect(pred)` while we're at it\.
+
 
 - [ ] \#todo  Add a Forest class to provide the iterator interface for
     the return arrays of this class\.
@@ -795,15 +799,19 @@ defaults to `#node + 1`\.
 
 There are several steps here, we need to:
 
+
 -  Splice `str` on the old Node with `str` on the new Node, at the indicated
     position, which is calculated base on a `.first` or `.last`, depending\.
 
+
 -  Iterate the `graft` node, replacing `str` and adjusting `first` and `last`\.
+
 
 -  Iterate the root of the original `node`, replacing `str`, adjusting `first`
     and `last` where appropriate \(i\.e\. greater than the splice index\)\.
 
     lastly:
+
 
 -  Insert the `graft` node at the appropriate place, and set node\.parent to
     point to `node`\.

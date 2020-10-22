@@ -27,3 +27,4 @@ operator = "+" / "-" / "*" / "/" / "%" / "^" / "#"
 
 
 return Peg(lua_tok_str):toGrammar()
+

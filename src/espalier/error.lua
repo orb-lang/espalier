@@ -80,3 +80,4 @@ function Err.EOF(name, msg)
 end
 
 return Err
+

@@ -124,3 +124,4 @@ return { lua = { number      = number,
          hex     = _hexadecimal,
          decimal = _decimal,
          letter  = { latin = letter } }
+

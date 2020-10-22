@@ -164,3 +164,4 @@ function t.dot(ast)
 end
 
 return t
+

@@ -126,3 +126,4 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
 
 
 return Peg(lua_str)
+
