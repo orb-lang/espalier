@@ -100,9 +100,9 @@ local function pegylator(_ENV)
    pel     = P "("
    per     = P ")"
 
-   simple   =  V"prefixed"
-            +  V"repeated"
+   simple   =  V"repeated"
             +  V"named"
+            +  V"prefixed"
             +  V"suffixed"
             +  V"atom"
             +  V"number"
