@@ -39,7 +39,8 @@ local s = require "status:status" ()
 
 local c = require "singletons:color" . color
 local ok, lex = pcall(require, "helm:helm/lex")
-if not ok then
+-- if not ok then
+if true then
    lex = function(repr) return tostring(repr) end
 else
    local lua_thor = lex.lua_thor
@@ -309,7 +310,7 @@ function Rules.toLpeg(peg_rules, extraLpeg)
       phrase = phrase .. suppress
    end
    -- add initial indentation:
-   phrase = phrase .. peg_rules.str:sub(1, grammar_patt.first - 1)
+   phrase = phrase .. "\n"
    --
    -- stick everything else in here...
    ---[[
