@@ -17,8 +17,7 @@ local Peg = require "espalier/peg"
 
 ## Lua PEG grammar
 
-```lua
-local lua_str = [=[
+```peg
 lua = shebang* _ chunk _ Error*
 shebang = "#" (!"\n" 1)* "\n"
 chunk = _ (statement _ ";"?)* (_ laststatement _ ";"?)?
@@ -92,8 +91,8 @@ parameters = "(" _ (symbollist (_ "," _ vararg)*)* ")"
 `symbollist` = (symbol ("," _ symbol)*)
 
 string = singlestring / doublestring / longstring
-`singlestring` = "'" ("\\" "'" / (!"'" 1))* "'"
-`doublestring` = '"' ('\\' '"' / (!'"' 1))* '"'
+`singlestring` = "'" ("\\" "'" / (!"'" !"\n" 1))* "'"
+`doublestring` = '"' ('\\' '"' / (!'"' !"\n" 1))* '"'
 `longstring`   = ls_open (!ls_close 1)* ls_close
 
 `ls_open` = "[" "="*@eq "["
@@ -121,7 +120,6 @@ keyword = ("and" / "break" / "do" / "else" / "elseif"
         t
 
 `t` = !([A-Z] / [a-z] / [0-9] / "_")
-]=]
 ```
 
 ```lua

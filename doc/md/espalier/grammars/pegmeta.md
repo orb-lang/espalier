@@ -308,7 +308,7 @@ function Rules.toLpeg(peg_rules, extraLpeg)
       phrase = phrase .. suppress
    end
    -- add initial indentation:
-   phrase = phrase .. peg_rules.str:sub(1, grammar_patt.first - 1)
+   phrase = phrase .. "\n"
    --
    -- stick everything else in here...
    ---[[
