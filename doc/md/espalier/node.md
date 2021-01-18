@@ -645,6 +645,27 @@ end
 Returns four values: the line, and column offset, of `node.first`, followed by
 the line and column offset of `node.last`\.
 
+
+
+##### \_findPos\(nl\_map, target, start\)
+
+\#Todo
+
+ `_findPos` is suboptimal\.  Because it's a linear search, it's O\(n\), and we
+could switch to a binary search and get O\(log n\)\.
+
+When we start doing source mapping, `linePos` will be a pretty hot loop, so
+it's probably worth doing this right\.
+
+This would be annoying to get right with our existing data structure\.  At the
+cost of some extra allocation, we could gather up all the newlines, then put
+them in an array wherein `[1]` is the start of a line and `[2]` is the newline;
+if there is a final line with no newline, it doesn't have a `[2]`\.
+
+This would allow for an ordinary binary search by testing if `target` was
+bounded by `[1]` and `[2]`, with the only exceptional case being the last
+line\.
+
 ```lua
 local _nl_map = setmetatable({}, { __mode = 'kv' })
 local findall = assert(require "core:core/string".findall)

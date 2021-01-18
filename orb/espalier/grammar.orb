@@ -496,3 +496,57 @@ end
 #!lua
 return new
 #/lua
+
+
+* Generalizing
+
+Espalier has been a rousing success thus far.
+
+I continue to use the declarative PEG specification to expand Orb, with no
+regrets.
+
+The most important consequence of usingn a declarative specification has yet
+to be realized, however.  Nor can we get there with the codebase written as it
+is.
+
+Yet we're very close!  Currently, a PEG generates Lua code, which is then
+passed to =define=, which produces exactly one sort of artifact: a parser
+which transforms a string into an Abstract (or Concrete) Syntax Tree.
+
+However, there is no hard-coded reason why this needs to be the only sort of
+code which a Grammar can generate.  The Lua code which is created from a PEG
+specification doesn't invoke Lpeg directly, although it appears to: it calls a
+number of functions named =P=, =R=, and so on, doing most of the heavy lifting
+through predefined operator overloading.
+
+The interesting part is that the operator overloading is simply parser
+combinators: and we can define similar combinators for other purposes using
+the same conventions, such that the generated functions can be purposed
+towards, for a motivating example, confirming that the shape of a given Node
+could have been produced from the Grammar in question.
+
+Or, we could change the target to Hammer, and use some clever user types to
+get the same return values as Lpeg, while using packrat parsing.
+
+Even if we stick with the Lpeg code exactly as generated, passing it to the
+sole =define= function we currently have is overly specified.  Instead of
+constructing an in-memory AST, we could perform syntax highlighting, as HTML,
+as terminal colors, however LSPs do it: there are a lot of options.
+
+The case I'm interested in tackling directly is turning [[LON data]
+[@br.lon:lon]] directly into Lua tables, without bothering to pass through an
+abstract syntax tree.  This would only be attractive if we could generate it
+from the same specification which creates a Node, otherwise, since we need (at
+least want) the Node version, it would be more expedient to generate a table
+from that.
+
+To make this usefully general, instead of metatables we would pass in *action
+rules*, such that recognition of each category would call a function with a
+useful signature.  This is most probably the same parameters we pass to
+=make_ast_node=, along with an additional table parameter, since this can be
+made to suffice for all accumulation.
+
+We can most likely just return this table when the call to the parser is
+completed, since we would be remiss to not allow for =pre= and =post=
+functions, and could thereby extract, concatenate, or otherwise manipulate the
+resulting data.

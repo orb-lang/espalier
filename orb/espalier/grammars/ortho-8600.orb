@@ -2,7 +2,7 @@
 
 
 Let's start with the EBNF for a date, straight from
-[[iso][]]:
+[[iso][httk://]]:
 
 #!ebnf
 (* Base definitions *)
