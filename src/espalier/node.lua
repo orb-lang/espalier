@@ -22,7 +22,7 @@ local s = require "status:status" ()
 local a = require "anterm:anterm"
 local c_bw = require "singletons/color" . no_color
 local core = require "core:core"
-local Phrase = require "singletons/phrase"
+--local Phrase = require "singletons/phrase"
 local dot = require "espalier/dot"
 
 
@@ -165,7 +165,7 @@ end
 
 function Node.strLine(node, c)
    c = c or c_bw
-   local phrase = Phrase ""
+   local phrase =  ""
    phrase = phrase .. node:strTag(c)
    if node[1] then
       phrase = phrase .. " " .. node:strExtra(c) .. "   "
@@ -190,7 +190,7 @@ end
 function Node.toString(node, depth, c)
    depth = depth or 0
    local line =  node:strLine(c)
-   local phrase = Phrase ""
+   local phrase = ""
    if tostring(line) ~= "" then
       phrase = phrase .. ("  "):rep(depth)
       phrase = phrase .. line
