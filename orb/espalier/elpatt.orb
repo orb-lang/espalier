@@ -107,10 +107,19 @@ end
 local Ru = makerange
 
 
-return { R = Ru,
-      Csp = Csp,
-      anyP = anyP,
-      match = lpeg.match,
-      split = split,
-      spanner = spanner }
+local newL = { Csp = Csp,
+               anyP = anyP,
+               match = lpeg.match,
+               split = split,
+               spanner = spanner }
+
+-- add Lpeg
+for k, v in pairs(lpeg) do
+   newL[k] = v
+end
+
+-- shim makerange as R
+newL.R = makerange
+
+return newL
 #/lua
