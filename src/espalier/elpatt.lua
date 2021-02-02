@@ -104,14 +104,29 @@ end
 
 
 
-local Ru = makerange
+
+
+
+
+
+
+
+
+local function M(tab)
+   local rule
+   for k in pairs(tab) do
+      rule = rule and rule + P(k) or P(k)
+   end
+   return rule / tab
+end
+
 
 
 local newL = { Csp = Csp,
                anyP = anyP,
-               match = lpeg.match,
                split = split,
-               spanner = spanner }
+               spanner = spanner,
+               M = M }
 
 -- add Lpeg
 for k, v in pairs(lpeg) do
