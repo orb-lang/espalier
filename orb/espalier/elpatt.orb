@@ -101,17 +101,32 @@ local I = lpeg.Cp()
 local function  anyP(p)
      return lpeg.P{ I * p * I + 1 * lpeg.V(1) }
 end
+#/lua
 
 
+*** M : Capture map
 
-local Ru = makerange
+Creates a pattern matching any of the keys of a provided table
+(patternized with P()), and producing as a capture the corresponding value.
+The order in which the keys are matched is the enumeration order
+of the table, i.e. undefined, so they should be mutually exclusive.
 
+#!lua
+local function M(tab)
+   local rule
+   for k in pairs(tab) do
+      rule = rule and rule + P(k) or P(k)
+   end
+   return rule / tab
+end
+#/lua
 
+#!lua
 local newL = { Csp = Csp,
                anyP = anyP,
-               match = lpeg.match,
                split = split,
-               spanner = spanner }
+               spanner = spanner,
+               M = M }
 
 -- add Lpeg
 for k, v in pairs(lpeg) do
