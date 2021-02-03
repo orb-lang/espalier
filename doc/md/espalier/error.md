@@ -6,7 +6,7 @@ Rather than throwing errors, we prefer to add them to the parse tree in some
 cases\.
 
 Optionally, we can include a pattern which, if the parse were to be correct,
-would succeed\. So a `( ])` type error could be "fail to close \(" and =P"\)"\.
+would succeed\. So a `( ])` type error could be "fail to close \(" and `P")"`\.
 
 ### includes \#nw
 
