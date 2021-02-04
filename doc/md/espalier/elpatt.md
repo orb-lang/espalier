@@ -2,6 +2,7 @@
 
 ```lua
 local lpeg = require "lpeg"
+local P = lpeg.P
 
 local function makerange(first, second)
    local patts = {}
@@ -106,9 +107,9 @@ end
 
 ### M : Capture map
 
-Creates a pattern matching any of the keys of a provided tablepatternized with P\(\)\), and producing as a capture the corresponding value\.
-The
-\( order in which the keys are matched is the enumeration order
+Creates a pattern matching any of the keys of a provided table
+\(patternized with P\(\)\), and producing as a capture the corresponding value\.
+The order in which the keys are matched is the enumeration order
 of the table, i\.e\. undefined, so they should be mutually exclusive\.
 
 ```lua

@@ -2,6 +2,7 @@
 
 
 local lpeg = require "lpeg"
+local P = lpeg.P
 
 local function makerange(first, second)
    local patts = {}
