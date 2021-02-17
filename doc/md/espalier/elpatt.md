@@ -122,12 +122,33 @@ local function M(tab)
 end
 ```
 
+
+### gsub\(str, patt, repl\)
+
+Analogous to `string.gsub`, but using an Lpeg pattern for the search\.
+If no replacement string is provided, it is assumed that the pattern
+already contains the replacements \(by using `M`, =/\-, etc\. internally\)\.
+Inspired by an example in the Lpeg docs\.
+
+```lua
+local Cs = assert(lpeg.Cs)
+local function gsub(str, patt, repl)
+   patt = P(patt)
+   if repl then
+      patt = patt / repl
+   end
+   patt = Cs((patt + 1)^0)
+   return patt:match(str)
+end
+```
+
 ```lua
 local newL = { Csp = Csp,
                anyP = anyP,
                split = split,
                spanner = spanner,
-               M = M }
+               M = M,
+               gsub = gsub }
 
 -- add Lpeg
 for k, v in pairs(lpeg) do
