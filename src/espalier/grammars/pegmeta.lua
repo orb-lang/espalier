@@ -38,8 +38,17 @@ local s = require "status:status" ()
 
 
 local ok, lex = pcall(require, "helm:helm/lex")
+<<<<<<< HEAD
 if not ok then
    lex = function(repr, window, c) return tostring(repr) end
+||||||| 7530c89
+if not ok then
+   lex = function(repr) return tostring(repr) end
+=======
+-- if not ok then
+if true then
+   lex = function(repr) return tostring(repr) end
+>>>>>>> 2020-12-23_RELEASE_BRANCH
 else
    local lua_thor = lex.lua_thor
    lex = function(repr, window, c)
