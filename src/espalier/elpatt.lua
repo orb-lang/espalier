@@ -123,11 +123,32 @@ end
 
 
 
+
+
+
+
+
+
+
+
+local Cs = assert(lpeg.Cs)
+local function gsub(str, patt, repl)
+   patt = P(patt)
+   if repl then
+      patt = patt / repl
+   end
+   patt = Cs((patt + 1)^0)
+   return patt:match(str)
+end
+
+
+
 local newL = { Csp = Csp,
                anyP = anyP,
                split = split,
                spanner = spanner,
-               M = M }
+               M = M,
+               gsub = gsub }
 
 -- add Lpeg
 for k, v in pairs(lpeg) do
