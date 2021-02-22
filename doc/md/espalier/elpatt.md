@@ -1,4 +1,8 @@
-# extended PEG module
+# Extended LPEG Patterns
+
+
+  A module which extends `lpeg`, as a drop\-in replacement with a superset of
+the existing semantics\.
 
 
 #### imports
@@ -14,7 +18,6 @@ local P, R, S, V = assert(lpeg.P),
                    assert(lpeg.V)
 ```
 
-
 We start by copying over everything from lpeg\.
 
 ```lua
@@ -27,7 +30,7 @@ end
 
 ## Custom pattern constructions
 
-These are functions similar to the builtin `P`, `R`, `S` etc, and return
+  These are functions similar to the builtin `P`, `R`, `S` etc, and return
 patterns that can be further composed\.
 
 Some of these are also taken from the `lpeg` tutorial\.
@@ -36,6 +39,7 @@ Some of these are also taken from the `lpeg` tutorial\.
 #### anywhere\(patt\)
 
 Converts a pattern so it will match anywhere in a string\.
+
 Captures the matched portion and the position at which it starts and ends
 in the subject string\.
 
@@ -54,14 +58,16 @@ end
 
 Matches `patt` repeated between `n` and `m` times, inclusive\.
 
-If `m` is omitted, matches exactly `n` repetitions\. \(This is more useful
-than "`n`\-or\-more", since there is already the syntax `patt ^ n` for that\.\)
+If `m` is omitted, matches exactly `n` repetitions \(This is more useful than`n`\-or\-more", since there is already the syntax `patt ^ n` for that\)\.
 
-`n == 0` results in degenerate cases, which are equivalent to
-existing `lpeg` constructs\. We support this anyway for completeness'
-sake when constructing grammars dynamically\.
+"
+`n == 0` results in degenerate cases, which are equivalent to existing
+`lpeg` constructs\. We support this anyway for completeness' sake when
+constructing grammars dynamically\.
+
 
 -  `m == nil` or `m == 0`\-> `-patt`
+
 
 -  `m ~= nil` \-> `patt ^ -m`
 
@@ -100,21 +106,21 @@ elpatt.rep = rep
 
 #### elpatt\.M\(tab\) : Capture map
 
-Creates a pattern matching any of the keys of a provided table,
-and producing as a capture the corresponding value\.
+  Creates a pattern matching any of the keys of a provided table, and
+producing as a capture the corresponding value\.
 
-The order in which the keys are matched is the enumeration order
-of the table, i\.e\. undefined, so they should be mutually exclusive\.
+The order in which the keys are matched is the enumeration order of the table,
+i\.e\. undefined, so they should be mutually exclusive\.
 
-The keys must be simple strings, and are matched exactly\. We could
-allow them to be arbitrary patterns, but it is unclear what the semantics
-of this should be, so it seems better to keep this function simple\.
+The keys must be simple strings, and are matched exactly\.  We could allow them
+to be arbitrary patterns, but it is unclear what the semantics of this should
+be, so it seems better to keep this function simple\.
 
 ```lua
 function elpatt.M(tab)
    local rule
    for k in pairs(tab) do
-      assert(type(k) == "string", "Keys passed to M() must be strings")
+      assert(type(k) == 'string', "Keys passed to M() must be strings")
       rule = rule and rule + P(k) or P(k)
    end
    return rule / tab
@@ -124,19 +130,19 @@ end
 
 ### Unicode\-aware components
 
-`lpeg`, like Lua, is by default is not Unicode\-aware\. `R` and `S` in particular
-have undesirable behavior if their arguments contain Unicode characters, so we
-wrap them to check for Unicode and use a different implementation in that case\.
+  `lpeg`, like Lua, is by default is not Unicode\-aware\.  `R` and `S` in
+particular have undesirable behavior if their arguments contain Unicode
+characters, so we wrap them to check for Unicode and use a different
+implementation in that case\.
 
-In all cases, invalid UTF\-8 in the arguments is an immediate error\.
-Invalid UTF\-8 encountered in the subject string is simply not matched\.
+In all cases, invalid UTF\-8 in the arguments is an immediate error\.  Invalid
+UTF\-8 encountered in the subject string is simply not matched\.
 
 
 #### Patterns for Unicode codepoints and strings
 
-We pre\-declare a pattern that matches a single Unicode codepointincluding an ASCII character, they **are** part of Unicode after all\.\.\.\),
-and
-\( one that matches an entire \(valid\) string\.
+  We pre\-declare a pattern that matches a single UTF\-8 codepoint \(including an
+ASCII character\), and one that matches an entire \(valid\) string\.
 
 We also declare one that detects an ASCII\-only string, for determining when
 to fall back to the original `lpeg` function below\. Note that we can't use
@@ -154,6 +160,8 @@ local ascii_str = R"\x00\x7f"^0 * -1
 
 
 #### elpatt\.R\(ranges\.\.\.\)
+
+UTF\-8 compatible version of the range pattern\.
 
 ```lua
 local codepoint = assert(require "lua-utf8" . codepoint)
@@ -178,19 +186,23 @@ local function R_unicode(...)
          insert(utf_ranges, { codepoint(range[1]), codepoint(range[2]) })
       end
    end
-   local answer = R(unpack(ascii_ranges))
+   local answer;
+   if #ascii_ranges > 0 then
+      answer = R(unpack(ascii_ranges))
+   end
    if #utf_ranges ~= 0 then
-      answer = answer + P(function(subject, pos)
-         local char = C(utf8_char):match(subject, pos)
-         if not char then return false end
-         local code = codepoint(char)
-         for _, range in ipairs(utf_ranges) do
-            if inbounds(code, range[1], range[2]) then
-               return pos + #char
-            end
-         end
-         return false
-      end)
+      local utf_answer =  P(function(subject, pos)
+           local char = C(utf8_char):match(subject, pos)
+           if not char then return false end
+           local code = codepoint(char)
+           for _, range in ipairs(utf_ranges) do
+              if inbounds(code, range[1], range[2]) then
+                 return pos + #char
+              end
+           end
+           return false
+        end)
+      answer = answer and answer + utf_answer or utf_answer
    end
    return answer
 end
@@ -200,6 +212,8 @@ elpatt.R = R_unicode
 
 
 #### elpatt\.S\(chars\)
+
+UTF\-8 compatible version of the set pattern\.
 
 ```lua
 local concat, insert = assert(table.concat), assert(table.insert)
@@ -213,17 +227,17 @@ local function S_unicode(chars)
    end
    chars = utf8_str:match(chars)
    assert(chars, "bad argument #1 to 'S' (invalid utf-8)")
-   local patt = P(false)
+   local patt;
    local ascii_chars = {}
    for _, char in ipairs(chars) do
       if #char == 1 then
          insert(ascii_chars, char)
       else
-         patt = P(char) + patt
+         patt = patt and P(char) + patt or P(char)
       end
    end
    if #ascii_chars > 0 then
-      patt = S(concat(ascii_chars)) + patt
+      patt = patt and S(concat(ascii_chars)) + patt or S(concat(ascii_chars))
    end
    return patt
 end

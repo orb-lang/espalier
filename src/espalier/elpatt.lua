@@ -4,6 +4,10 @@
 
 
 
+
+
+
+
 local lpeg = require "lpeg"
 local C, Cmt, Ct = assert(lpeg.C),
                    assert(lpeg.Ct),
@@ -12,7 +16,6 @@ local P, R, S, V = assert(lpeg.P),
                    assert(lpeg.R),
                    assert(lpeg.S),
                    assert(lpeg.V)
-
 
 
 
@@ -42,11 +45,14 @@ end
 
 
 
+
 local I = lpeg.Cp()
 
 function elpatt.anywhere(p)
      return P{ I * C(p) * I + 1 * V(1) }
 end
+
+
 
 
 
@@ -112,7 +118,7 @@ elpatt.rep = rep
 function elpatt.M(tab)
    local rule
    for k in pairs(tab) do
-      assert(type(k) == "string", "Keys passed to M() must be strings")
+      assert(type(k) == 'string', "Keys passed to M() must be strings")
       rule = rule and rule + P(k) or P(k)
    end
    return rule / tab
@@ -154,6 +160,8 @@ local ascii_str = R"\x00\x7f"^0 * -1
 
 
 
+
+
 local codepoint = assert(require "lua-utf8" . codepoint)
 local inbounds = assert(require "core:math" . inbounds)
 local insert = assert(table.insert)
@@ -176,24 +184,30 @@ local function R_unicode(...)
          insert(utf_ranges, { codepoint(range[1]), codepoint(range[2]) })
       end
    end
-   local answer = R(unpack(ascii_ranges))
+   local answer;
+   if #ascii_ranges > 0 then
+      answer = R(unpack(ascii_ranges))
+   end
    if #utf_ranges ~= 0 then
-      answer = answer + P(function(subject, pos)
-         local char = C(utf8_char):match(subject, pos)
-         if not char then return false end
-         local code = codepoint(char)
-         for _, range in ipairs(utf_ranges) do
-            if inbounds(code, range[1], range[2]) then
-               return pos + #char
-            end
-         end
-         return false
-      end)
+      local utf_answer =  P(function(subject, pos)
+           local char = C(utf8_char):match(subject, pos)
+           if not char then return false end
+           local code = codepoint(char)
+           for _, range in ipairs(utf_ranges) do
+              if inbounds(code, range[1], range[2]) then
+                 return pos + #char
+              end
+           end
+           return false
+        end)
+      answer = answer and answer + utf_answer or utf_answer
    end
    return answer
 end
 
 elpatt.R = R_unicode
+
+
 
 
 
@@ -211,17 +225,17 @@ local function S_unicode(chars)
    end
    chars = utf8_str:match(chars)
    assert(chars, "bad argument #1 to 'S' (invalid utf-8)")
-   local patt = P(false)
+   local patt;
    local ascii_chars = {}
    for _, char in ipairs(chars) do
       if #char == 1 then
          insert(ascii_chars, char)
       else
-         patt = P(char) + patt
+         patt = patt and P(char) + patt or P(char)
       end
    end
    if #ascii_chars > 0 then
-      patt = S(concat(ascii_chars)) + patt
+      patt = patt and S(concat(ascii_chars)) + patt or S(concat(ascii_chars))
    end
    return patt
 end
