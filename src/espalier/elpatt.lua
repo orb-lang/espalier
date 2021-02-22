@@ -1,89 +1,34 @@
 
 
 
+
+
+
 local lpeg = require "lpeg"
-local P = lpeg.P
-
-local function makerange(first, second)
-   local patts = {}
-   local patt  = {}
-   if (second) then
-      if (string.len(first) == string.len(second)) then
-         for i = 1, string.len(first) do
-            patts[i] = lpeg.R(string.sub(first,i,i)..string.sub(second,i,i))
-         end
-         patt = patts[1]
-         for i = 2, string.len(first) do
-            patt = patt + patts[i]
-         end
-         return patt
-      else
-         error("Ranges must be of equal byte width")
-         return {}
-      end
-   else
-      return lpeg.R(first)
-   end
-end
+local C, Cmt, Ct = assert(lpeg.C),
+                   assert(lpeg.Ct),
+                   assert(lpeg.Ct)
+local P, R, S, V = assert(lpeg.P),
+                   assert(lpeg.R),
+                   assert(lpeg.S),
+                   assert(lpeg.V)
 
 
-local function num_bytes(str)
---returns the number of bytes in the next character in str
-   local c = str:byte(1)
-   if c >= 0x00 and c <= 0x7F then
-      return 1
-   elseif c >= 0xC2 and c <= 0xDF then
-      return 2
-   elseif c >= 0xE0 and c <= 0xEF then
-      return 3
-   elseif c >= 0xF0 and c <= 0xF4 then
-      return 4
-   end
-end
 
-local function Su (str)
---[[
-   --convert a 'set' pattern to uniquely match the characters
-   --in the range.
-   local catch = {}
-   local i = 0
-   for i = 1, #str do
-      catch[i]
-   end
-   --]]
-end
 
-local function spanner(first, last, str, root)
-   local vals = {}
-   vals.span = true
-   vals.val = string.sub(str, first, last - 1)
-   vals.first = first
-   vals.last = last - 1
-   if vals.last >= vals.first then
-      return vals
-   end
-   -- If a capture contains nothing, we don't want a node for it
-   return nil
-end
 
-local function Csp (patt)
-   return lpeg.Cp()
-      * lpeg.Cmt(patt, function() return true end)
-      * lpeg.Cp()
-      * lpeg.Carg(1)
-      * lpeg.Carg(2) / spanner
+
+local elpatt = {}
+for k, v in pairs(lpeg) do
+   elpatt[k] = v
 end
 
 
 
 
 
-local function split (s, sep)
-  sep = lpeg.P(sep)
-  local elem = lpeg.C((1 - sep)^0)
-  local p = lpeg.Ct(elem * (sep * elem)^0)   -- make a table capture
-  return lpeg.match(p, s)
-end
+
+
 
 
 
@@ -99,8 +44,8 @@ end
 
 local I = lpeg.Cp()
 
-local function  anyP(p)
-     return lpeg.P{ I * p * I + 1 * lpeg.V(1) }
+function elpatt.anywhere(p)
+     return P{ I * C(p) * I + 1 * V(1) }
 end
 
 
@@ -113,9 +58,61 @@ end
 
 
 
-local function M(tab)
+
+
+
+
+
+
+local function rep(patt, n, m)
+   patt = P(patt)
+   assert(n, "missing argument #2 to 'rep' (n is required)")
+   assert(n >= 0, "bad argument #2 to 'rep' (n cannot be negative)")
+   assert(not m or m >= n, "bad argument #3 to 'rep' (m must be >= n)")
+   -- m == n is equivalent to omitting m altogether, easiest to
+   -- take care of this up front
+   if m == n then
+      m = nil
+   end
+   if n == 0 then
+      if m then
+         return patt ^ -m
+      else
+         return -patt
+      end
+   else
+      local answer = patt
+      for i = 1, n - 1 do
+         answer = answer * patt
+      end
+      if m then
+         answer = answer * patt^(n - m)
+      end
+      return answer
+   end
+end
+
+elpatt.rep = rep
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function elpatt.M(tab)
    local rule
    for k in pairs(tab) do
+      assert(type(k) == "string", "Keys passed to M() must be strings")
       rule = rule and rule + P(k) or P(k)
    end
    return rule / tab
@@ -131,8 +128,159 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+local utf8_cont = R"\x80\xbf"
+local utf8_char = R"\x00\x7f" +
+                  R"\xc2\xdf" * utf8_cont +
+                  R"\xe0\xef" * rep(utf8_cont, 2) +
+                  R"\xf0\xf4" * rep(utf8_cont, 3)
+local utf8_str  = Ct(C(utf8_char)^0) * -1
+local ascii_str = R"\x00\x7f"^0 * -1
+
+
+
+
+
+
+local codepoint = assert(require "lua-utf8" . codepoint)
+local inbounds = assert(require "core:math" . inbounds)
+local insert = assert(table.insert)
+local assertfmt = assert(require "core:fn" . assertfmt)
+
+local function R_unicode(...)
+   local args = pack(...)
+   local ascii_ranges, utf_ranges = {}, {}
+   for i, range in ipairs(args) do
+      if ascii_str:match(range) then
+         -- Throw this error here while we still know which argument this was
+         assertfmt(#range == 2,
+            "bad argument #%d to 'R' (range must have two characters)", i)
+         insert(ascii_ranges, range)
+      else
+         range = utf8_str:match(range)
+         assertfmt(range, "bad argument #%d to 'R' (invalid utf-8)", i)
+         assertfmt(#range == 2,
+            "bad argument #%d to 'R' (range must have two characters)", i)
+         insert(utf_ranges, { codepoint(range[1]), codepoint(range[2]) })
+      end
+   end
+   local answer = R(unpack(ascii_ranges))
+   if #utf_ranges ~= 0 then
+      answer = answer + P(function(subject, pos)
+         local char = C(utf8_char):match(subject, pos)
+         if not char then return false end
+         local code = codepoint(char)
+         for _, range in ipairs(utf_ranges) do
+            if inbounds(code, range[1], range[2]) then
+               return pos + #char
+            end
+         end
+         return false
+      end)
+   end
+   return answer
+end
+
+elpatt.R = R_unicode
+
+
+
+
+
+
+local concat, insert = assert(table.concat), assert(table.insert)
+
+local function S_unicode(chars)
+   -- We *could* skip this early-out and we'd still return an identical
+   -- pattern, since we separate out the ASCII characters below,
+   -- but let's keep the degenerate case clear and fast
+   if ascii_str:match(chars) then
+      return S(chars)
+   end
+   chars = utf8_str:match(chars)
+   assert(chars, "bad argument #1 to 'S' (invalid utf-8)")
+   local patt = P(false)
+   local ascii_chars = {}
+   for _, char in ipairs(chars) do
+      if #char == 1 then
+         insert(ascii_chars, char)
+      else
+         patt = P(char) + patt
+      end
+   end
+   if #ascii_chars > 0 then
+      patt = S(concat(ascii_chars)) + patt
+   end
+   return patt
+end
+
+elpatt.S = S_unicode
+
+
+
+
+
+
+
+
+
+
+
+
+
+function elpatt.U(n, m)
+   n = n or 1
+   return rep(utf8_char, n, m)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function elpatt.split(str, sep)
+  sep = P(sep)
+  local elem = C((1 - sep)^0)
+  local patt = Ct(elem * (sep * elem)^0)   -- make a table capture
+  return patt:match(str)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Cs = assert(lpeg.Cs)
-local function gsub(str, patt, repl)
+function elpatt.gsub(str, patt, repl)
    patt = P(patt)
    if repl then
       patt = patt / repl
@@ -143,20 +291,6 @@ end
 
 
 
-local newL = { Csp = Csp,
-               anyP = anyP,
-               split = split,
-               spanner = spanner,
-               M = M,
-               gsub = gsub }
 
--- add Lpeg
-for k, v in pairs(lpeg) do
-   newL[k] = v
-end
-
--- shim makerange as R
-newL.R = makerange
-
-return newL
+return elpatt
 

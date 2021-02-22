@@ -1,0 +1,245 @@
+return {
+  {
+    {
+      line = "M = assert(require \"espalier:elpatt\" . M)",
+      ordinal = 1,
+      results = {
+        n = 0
+      } --[[table: 0x0518f5e0]],
+      status = "ignore",
+      time = "2021-02-22T19:25:04.558",
+      title = ""
+    } --[[table: 0x0518ebb0]],
+    {
+      line = "M{\n   a = \"foo\",\n   b = \"bar\"\n}:match(\"a\")",
+      ordinal = 2,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2foo"
+        } --[[table: 0x0518ff08]]
+      } --[[table: 0x0518ffa8]],
+      status = "accept",
+      time = "2021-02-22T19:25:14.022",
+      title = ""
+    } --[[table: 0x0518a408]],
+    {
+      line = "M{\n   a = \"foo\",\n   b = \"bar\"\n}:match(\"b\")",
+      ordinal = 3,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2bar"
+        } --[[table: 0x05190a58]]
+      } --[[table: 0x05190af8]],
+      status = "accept",
+      time = "2021-02-22T19:25:20.964",
+      title = ""
+    } --[[table: 0x05190060]],
+    {
+      line = "M{\n   a = \"foo\",\n   b = \"bar\"\n}:match(\"c\")",
+      ordinal = 4,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x05191428]]
+      } --[[table: 0x051914c8]],
+      status = "accept",
+      time = "2021-02-22T19:25:26.659",
+      title = ""
+    } --[[table: 0x0518f680]],
+    {
+      line = "M{\n   ab = \"foo\",\n   cd = \"bar\"\n}:match(\"a\")",
+      ordinal = 5,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x05191dc0]]
+      } --[[table: 0x05191e60]],
+      status = "accept",
+      time = "2021-02-22T19:26:00.452",
+      title = ""
+    } --[[table: 0x05191580]],
+    {
+      line = "M{\n   ab = \"foo\",\n   cd = \"bar\"\n}:match(\"ab\")",
+      ordinal = 6,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2foo"
+        } --[[table: 0x05192788]]
+      } --[[table: 0x05192828]],
+      status = "accept",
+      time = "2021-02-22T19:26:02.667",
+      title = ""
+    } --[[table: 0x05190bb0]],
+    {
+      line = "M{ [2] = \"foo\" }",
+      ordinal = 7,
+      results = {
+        n = 0
+      } --[[table: 0x05192fc0]],
+      status = "ignore",
+      time = "2021-02-22T19:32:04.939",
+      title = ""
+    } --[[table: 0x051928e0]],
+    accepted = true,
+    session_title = "elpatt-M"
+  } --[[table: 0x0518a0e8]],
+  {
+    {
+      line = "rep = assert(require \"espalier:elpatt\" . rep)",
+      ordinal = 1,
+      results = {
+        n = 0
+      } --[[table: 0x05193c48]],
+      status = "ignore",
+      time = "2021-02-22T19:37:51.099",
+      title = ""
+    } --[[table: 0x05193550]],
+    {
+      line = "L = require \"lpeg\"",
+      ordinal = 2,
+      results = {
+        n = 0
+      } --[[table: 0x051943e8]],
+      status = "ignore",
+      time = "2021-02-22T19:38:05.948",
+      title = ""
+    } --[[table: 0x0518ab28]],
+    {
+      line = "P, S = L.P, L.S",
+      ordinal = 3,
+      results = {
+        n = 0
+      } --[[table: 0x05194b60]],
+      status = "ignore",
+      time = "2021-02-22T19:38:13.875",
+      title = ""
+    } --[[table: 0x05194488]],
+    {
+      line = "rep(\"a\", 0):match(\"b\")",
+      ordinal = 4,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0021"
+        } --[[table: 0x051954a8]]
+      } --[[table: 0x05195548]],
+      status = "accept",
+      time = "2021-02-22T19:39:00.602",
+      title = "Degenerate cases: negation, match"
+    } --[[table: 0x05193ce8]],
+    {
+      line = "rep(\"a\", 0):match(\"a\")",
+      ordinal = 5,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x05195e70]]
+      } --[[table: 0x05195f10]],
+      status = "accept",
+      time = "2021-02-22T19:39:04.529",
+      title = "Degenerate cases: negation, no match"
+    } --[[table: 0x05195600]],
+    {
+      line = "rep(\"a\", 0, 1):match(\"a\")",
+      ordinal = 6,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0022"
+        } --[[table: 0x05196898]]
+      } --[[table: 0x05196938]],
+      status = "accept",
+      time = "2021-02-22T19:39:11.906",
+      title = "Degenerate cases: Up-to-m, match once"
+    } --[[table: 0x05194c00]],
+    {
+      line = "rep(\"a\", 0, 1):match(\"b\")",
+      ordinal = 7,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0021"
+        } --[[table: 0x05197270]]
+      } --[[table: 0x05197310]],
+      status = "accept",
+      time = "2021-02-22T19:39:14.113",
+      title = "Degenerate cases: up-to-m, match 0 times"
+    } --[[table: 0x051969f0]],
+    {
+      line = "rep(S\"ab\", 2, 4):match(\"a\")",
+      ordinal = 8,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x05197c30]]
+      } --[[table: 0x05197cd0]],
+      status = "accept",
+      time = "2021-02-22T19:41:31.816",
+      title = "Not enough matches"
+    } --[[table: 0x051973c8]],
+    {
+      line = "rep(S\"ab\", 2, 4):match(\"ab\")",
+      ordinal = 9,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x05198618]]
+      } --[[table: 0x051986b8]],
+      status = "accept",
+      time = "2021-02-22T19:41:33.474",
+      title = "Low end of range"
+    } --[[table: 0x05197d88]],
+    {
+      line = "rep(S\"ab\", 2, 4):match(\"abba\")",
+      ordinal = 10,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0025"
+        } --[[table: 0x05199050]]
+      } --[[table: 0x051990f0]],
+      status = "accept",
+      time = "2021-02-22T19:41:36.394",
+      title = "High end of range"
+    } --[[table: 0x05195fc8]],
+    {
+      line = "rep(S\"ab\", 2, 4):match(\"abbaab\")",
+      ordinal = 11,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0025"
+        } --[[table: 0x051908a0]]
+      } --[[table: 0x05199de8]],
+      status = "accept",
+      time = "2021-02-22T19:41:41.016",
+      title = "More input available"
+    } --[[table: 0x051991a8]],
+    {
+      line = "rep(S\"ab\", 2, 4):match(\"abbc\")",
+      ordinal = 12,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0024"
+        } --[[table: 0x0519a740]]
+      } --[[table: 0x0519a7e0]],
+      status = "accept",
+      time = "2021-02-22T19:41:45.112",
+      title = "Non-matching char after somewhere in the middle of what is allowed"
+    } --[[table: 0x05199e80]],
+    accepted = true,
+    session_title = "elpatt-rep"
+  } --[[table: 0x0518a808]],
+  bundle_type = "session",
+  project = "espalier",
+  version = 1
+} --[[table: 0x051892c8]]
