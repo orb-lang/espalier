@@ -1,0 +1,610 @@
+return {
+  {
+    {
+      line = "S = assert(require \"espalier:elpatt\" . S)",
+      ordinal = 1,
+      results = {
+        n = 0
+      } --[[table: 0x07f42c28]],
+      status = "ignore",
+      time = "2021-02-18T18:57:12.565",
+      title = ""
+    } --[[table: 0x07ff2400]],
+    {
+      line = "S\"a\":match(\"a\")",
+      ordinal = 2,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0022"
+        } --[[table: 0x081452c0]]
+      } --[[table: 0x08145d98]],
+      status = "accept",
+      time = "2021-02-18T18:57:55.093",
+      title = "Basic ascii match"
+    } --[[table: 0x08144f50]],
+    {
+      line = "S\"a\":match(\"b\")",
+      ordinal = 3,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x07ff17f0]]
+      } --[[table: 0x07ff1870]],
+      status = "accept",
+      time = "2021-02-18T18:58:14.132",
+      title = "Basic ascii non-match"
+    } --[[table: 0x08145e30]],
+    {
+      line = "S\"a\":match(\"á\")",
+      ordinal = 4,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x080efd58]]
+      } --[[table: 0x080efdf8]],
+      status = "accept",
+      time = "2021-02-18T18:58:31.652",
+      title = "ascii does not match unicode"
+    } --[[table: 0x08144ee8]],
+    {
+      line = "S\"á\":match(\"á\")",
+      ordinal = 5,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x08158a20]]
+      } --[[table: 0x08158ac0]],
+      status = "accept",
+      time = "2021-02-18T18:58:41.651",
+      title = "2-byte UTF-8 exact match"
+    } --[[table: 0x080efeb0]],
+    {
+      line = "S\"á⇒\":match(\"á\")",
+      ordinal = 6,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x0813d678]]
+      } --[[table: 0x0813d718]],
+      status = "accept",
+      time = "2021-02-18T18:58:56.340",
+      title = "2-byte/3-byte matching 2-byte"
+    } --[[table: 0x08158c30]],
+    {
+      line = "S\"á⇒\":match(\"⇒\")",
+      ordinal = 7,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0024"
+        } --[[table: 0x080ec708]]
+      } --[[table: 0x080ec7a8]],
+      status = "accept",
+      time = "2021-02-18T18:58:59.660",
+      title = "2-byte/3-byte matching 3-byte"
+    } --[[table: 0x0813d7d0]],
+    {
+      line = "S\"á⇒\":match(\"⟹\")",
+      ordinal = 8,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x07fb4000]]
+      } --[[table: 0x07fb4080]],
+      status = "accept",
+      time = "2021-02-18T18:59:12.844",
+      title = "Unicode non-match"
+    } --[[table: 0x080ec860]],
+    {
+      line = "S\"á⇒\":match(\"\\xe2\")",
+      ordinal = 9,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x080b7a58]]
+      } --[[table: 0x080b7ad8]],
+      status = "accept",
+      time = "2021-02-18T19:06:17.364",
+      title = "Unicode doesn't match a single byte out of one of the characters"
+    } --[[table: 0x07fb4138]],
+    {
+      line = "S\"\\xe2\"",
+      ordinal = 10,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2espalier/elpatt:195: bad argument #1 to 'S' (invalid utf-8)\\nstack traceback:\\n\\t[C]: in function 'error'\\n\\tespalier/elpatt:195: in function <espalier/elpatt:186>\\n\\t[C]: in function 'xpcall'\\n\\tvaliant:valiant:182: in function 'eval'\\n\\tvaliant:session:112: in function 'evalSessionById'\\n\\tvaliant:session:167: in function 'evalProjectByDir'\\n\\tvaliant:session:286: in function 'updateSessions'\\n\\tvaliant:session:790: in function 'session'\\n\\t[string \"src/load.\"]:500: in function <[string \"src/load.\"]:498>\\n\\t[string \"src/load.\"]:573: in main chunk"
+        } --[[table: 0x0818d1a0]]
+      } --[[table: 0x0818d240]],
+      status = "accept",
+      time = "2021-02-18T19:06:39.242",
+      title = "Invalid unicode raises an error"
+    } --[[table: 0x080b7c88]],
+    {
+      line = "S\"aá\":match(\"a\")",
+      ordinal = 11,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0022"
+        } --[[table: 0x0818bc70]]
+      } --[[table: 0x0818bd10]],
+      status = "accept",
+      time = "2021-02-18T19:07:15.731",
+      title = "Mixed ascii/unicode matching ascii"
+    } --[[table: 0x0818d2f8]],
+    {
+      line = "S\"a⇒\":match(\"⇒\")",
+      ordinal = 12,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0024"
+        } --[[table: 0x0818ca40]]
+      } --[[table: 0x0818cae0]],
+      status = "accept",
+      time = "2021-02-18T19:19:34.576",
+      title = "Mixed ascii/unicode matching unicode"
+    } --[[table: 0x0818bdc8]],
+    accepted = true,
+    session_title = "elpatt-S"
+  } --[[table: 0x07fccc30]],
+  {
+    {
+      line = "R = assert(require \"espalier:elpatt\" . R)",
+      ordinal = 1,
+      results = {
+        n = 0
+      } --[[table: 0x07fb4fa0]],
+      status = "ignore",
+      time = "2021-02-18T19:24:48.463",
+      title = ""
+    } --[[table: 0x080a9b00]],
+    {
+      line = "R\"ac\":match(\"a\")",
+      ordinal = 2,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0022"
+        } --[[table: 0x080f88c8]]
+      } --[[table: 0x080f8968]],
+      status = "accept",
+      time = "2021-02-18T19:24:48.463",
+      title = "Basic ascii match"
+    } --[[table: 0x07f82400]],
+    {
+      line = "R\"àâ\":match(\"á\")",
+      ordinal = 3,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x080ae270]]
+      } --[[table: 0x080ae310]],
+      status = "accept",
+      time = "2021-02-19T18:39:04.314",
+      title = "Basic unicode match"
+    } --[[table: 0x080f8a20]],
+    {
+      line = "R\"ba\":match(\"a\")",
+      ordinal = 4,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x080d5178]]
+      } --[[table: 0x080d5218]],
+      status = "accept",
+      time = "2021-02-19T18:36:52.078",
+      title = "Empty ascii range (start > end)"
+    } --[[table: 0x080ae430]],
+    {
+      line = "R\"âà\":match(\"á\")",
+      ordinal = 5,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x08142d08]]
+      } --[[table: 0x08142da8]],
+      status = "accept",
+      time = "2021-02-19T18:37:30.311",
+      title = "Empty Unicode range"
+    } --[[table: 0x080d52d0]],
+    {
+      line = "R\"~á\":match(\"à\")",
+      ordinal = 6,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x080c36d0]]
+      } --[[table: 0x080c3770]],
+      status = "accept",
+      time = "2021-02-19T18:39:39.862",
+      title = "Range starts in ascii ends in unicode matching unicode"
+    } --[[table: 0x08142f18]],
+    {
+      line = "R\"~á\":match(\"â\")",
+      ordinal = 7,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x07f6a280]]
+      } --[[table: 0x07f6a320]],
+      status = "accept",
+      time = "2021-02-19T18:39:47.422",
+      title = "ascii -> unicode but no match"
+    } --[[table: 0x080c3828]],
+    {
+      line = "R\"\\xc0\\xd6\"",
+      ordinal = 8,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2espalier/elpatt:167: bad argument #1 to 'R' (invalid utf-8)\\nstack traceback:\\n\\t[C]: in function 'error'\\n\\tcore:_base:39: in function 'assertfmt'\\n\\tespalier/elpatt:167: in function <espalier/elpatt:156>\\n\\t[C]: in function 'xpcall'\\n\\tvaliant:valiant:182: in function 'eval'\\n\\tvaliant:session:112: in function 'evalSessionById'\\n\\tvaliant:session:167: in function 'evalProjectByDir'\\n\\tvaliant:session:286: in function 'updateSessions'\\n\\tvaliant:session:790: in function 'session'\\n\\t[string \"src/load.\"]:500: in function <[string \"src/load.\"]:498>\\n\\t[string \"src/load.\"]:573: in main chunk"
+        } --[[table: 0x080b2a30]]
+      } --[[table: 0x080b2ad0]],
+      status = "accept",
+      time = "2021-02-19T18:54:05.184",
+      title = "Error constructing range with invalid unicode"
+    } --[[table: 0x07f6a3d8]],
+    {
+      line = "C = assert(require \"lpeg\" . C)",
+      ordinal = 9,
+      results = {
+        n = 0
+      } --[[table: 0x07f892a0]],
+      status = "ignore",
+      time = "2021-02-18T19:39:09.083",
+      title = ""
+    } --[[table: 0x080b3d10]],
+    {
+      line = "C(R\"ac\"):match(\"ac\")",
+      ordinal = 10,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2a"
+        } --[[table: 0x080bfe20]]
+      } --[[table: 0x080bfec0]],
+      status = "accept",
+      time = "2021-02-18T19:39:21.778",
+      title = "Capture behavior"
+    } --[[table: 0x07f89438]],
+    {
+      line = "C(R\"ac\"^0):match(\"ac\")",
+      ordinal = 11,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2ac"
+        } --[[table: 0x080c01b8]]
+      } --[[table: 0x07fb3ae8]],
+      status = "accept",
+      time = "2021-02-18T19:39:27.474",
+      title = "Capture behavior when repeated"
+    } --[[table: 0x080bff78]],
+    {
+      line = "utf8 = require \"lua-utf8\"",
+      ordinal = 12,
+      results = {
+        n = 0
+      } --[[table: 0x08108778]],
+      status = "ignore",
+      time = "2021-02-19T18:46:16.164",
+      title = ""
+    } --[[table: 0x07fb3ba0]],
+    {
+      line = "two_to_three = R(utf8.char(0x7F0) .. utf8.char(0x806))",
+      ordinal = 13,
+      results = {
+        n = 0
+      } --[[table: 0x08145750]],
+      status = "ignore",
+      time = "2021-02-19T18:47:02.635",
+      title = "Range spanning 2 -> 3-byte boundary..."
+    } --[[table: 0x07f7ec58]],
+    {
+      line = "two_to_three:match(utf8.char(0x7EF))",
+      ordinal = 14,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x0817a940]]
+      } --[[table: 0x0817a9c0]],
+      status = "accept",
+      time = "2021-02-19T18:47:19.939",
+      title = "...no match, value < range start"
+    } --[[table: 0x081457f0]],
+    {
+      line = "two_to_three:match(utf8.char(0x7F5))",
+      ordinal = 15,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x0817ac78]]
+      } --[[table: 0x07f7c080]],
+      status = "accept",
+      time = "2021-02-19T18:47:25.307",
+      title = "...match of 2-byte char"
+    } --[[table: 0x0817aa40]],
+    {
+      line = "two_to_three:match(utf8.char(0x802))",
+      ordinal = 16,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0024"
+        } --[[table: 0x08168598]]
+      } --[[table: 0x08168638]],
+      status = "accept",
+      time = "2021-02-19T18:47:30.522",
+      title = "...match of 3-byte char"
+    } --[[table: 0x0817ae80]],
+    {
+      line = "two_to_three:match(utf8.char(0x807))",
+      ordinal = 17,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x080d11d8]]
+      } --[[table: 0x080d1278]],
+      status = "accept",
+      time = "2021-02-19T18:47:33.051",
+      title = "...no match, value > range end"
+    } --[[table: 0x081686f0]],
+    {
+      line = "R(\"az\", \"AZ\"):match(\"q\")",
+      ordinal = 18,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0022"
+        } --[[table: 0x07fe5408]]
+      } --[[table: 0x07fe5488]],
+      status = "accept",
+      time = "2021-02-22T19:08:43.825",
+      title = "Basic ascii multi-range match"
+    } --[[table: 0x080d14a8]],
+    {
+      line = "R(\"az\", \"àâ\"):match(\"q\")",
+      ordinal = 19,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0022"
+        } --[[table: 0x07fe5790]]
+      } --[[table: 0x0800e048]],
+      status = "accept",
+      time = "2021-02-22T19:09:09.735",
+      title = "Mixed ascii/unicode multi range matching ascii"
+    } --[[table: 0x07fe5540]],
+    {
+      line = "R(\"az\", \"àâ\"):match(\"á\")",
+      ordinal = 20,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x081758d0]]
+      } --[[table: 0x08175970]],
+      status = "accept",
+      time = "2021-02-22T19:09:14.128",
+      title = "Misc ascii/unicode multi range matching unicode"
+    } --[[table: 0x07fe5958]],
+    {
+      line = "R(\"èê\", \"àâ\"):match(\"é\")",
+      ordinal = 21,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x07fcbcc0]]
+      } --[[table: 0x07fcbd60]],
+      status = "accept",
+      time = "2021-02-22T19:10:17.832",
+      title = "All-Unicode multi-range"
+    } --[[table: 0x08175a28]],
+    {
+      line = "R(\"abc\")",
+      ordinal = 22,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2espalier/elpatt:162: bad argument #1 to 'R' (range must have two characters)\\nstack traceback:\\n\\t[C]: in function 'error'\\n\\tcore:_base:39: in function 'assertfmt'\\n\\tespalier/elpatt:162: in function <espalier/elpatt:156>\\n\\t[C]: in function 'xpcall'\\n\\tvaliant:valiant:182: in function 'eval'\\n\\tvaliant:session:112: in function 'evalSessionById'\\n\\tvaliant:session:167: in function 'evalProjectByDir'\\n\\tvaliant:session:286: in function 'updateSessions'\\n\\tvaliant:session:790: in function 'session'\\n\\t[string \"src/load.\"]:500: in function <[string \"src/load.\"]:498>\\n\\t[string \"src/load.\"]:573: in main chunk"
+        } --[[table: 0x07fcc050]]
+      } --[[table: 0x080f3e60]],
+      status = "accept",
+      time = "2021-02-22T19:15:15.191",
+      title = "Three-char ascii range"
+    } --[[table: 0x07fcbe18]],
+    {
+      line = "R(\"àáâ\")",
+      ordinal = 23,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2espalier/elpatt:168: bad argument #1 to 'R' (range must have two characters)\\nstack traceback:\\n\\t[C]: in function 'error'\\n\\tcore:_base:39: in function 'assertfmt'\\n\\tespalier/elpatt:168: in function <espalier/elpatt:156>\\n\\t[C]: in function 'xpcall'\\n\\tvaliant:valiant:182: in function 'eval'\\n\\tvaliant:session:112: in function 'evalSessionById'\\n\\tvaliant:session:167: in function 'evalProjectByDir'\\n\\tvaliant:session:286: in function 'updateSessions'\\n\\tvaliant:session:790: in function 'session'\\n\\t[string \"src/load.\"]:500: in function <[string \"src/load.\"]:498>\\n\\t[string \"src/load.\"]:573: in main chunk"
+        } --[[table: 0x0815f5b0]]
+      } --[[table: 0x07f8df50]],
+      status = "accept",
+      time = "2021-02-22T19:15:24.702",
+      title = "Three-char unicode range"
+    } --[[table: 0x080f3f18]],
+    {
+      line = "R(\"àâ\", \"abc\")",
+      ordinal = 24,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2espalier/elpatt:162: bad argument #2 to 'R' (range must have two characters)\\nstack traceback:\\n\\t[C]: in function 'error'\\n\\tcore:_base:39: in function 'assertfmt'\\n\\tespalier/elpatt:162: in function <espalier/elpatt:156>\\n\\t[C]: in function 'xpcall'\\n\\tvaliant:valiant:182: in function 'eval'\\n\\tvaliant:session:112: in function 'evalSessionById'\\n\\tvaliant:session:167: in function 'evalProjectByDir'\\n\\tvaliant:session:286: in function 'updateSessions'\\n\\tvaliant:session:790: in function 'session'\\n\\t[string \"src/load.\"]:500: in function <[string \"src/load.\"]:498>\\n\\t[string \"src/load.\"]:573: in main chunk"
+        } --[[table: 0x07f8f800]]
+      } --[[table: 0x08100f68]],
+      status = "accept",
+      time = "2021-02-22T19:15:41.792",
+      title = "Three-char ascii range as second arg"
+    } --[[table: 0x07f8f5b8]],
+    {
+      line = "R(\"az\", \"àáâ\")",
+      ordinal = 25,
+      results = {
+        n = 1,
+        repr = {
+          "\1sw\2espalier/elpatt:168: bad argument #2 to 'R' (range must have two characters)\\nstack traceback:\\n\\t[C]: in function 'error'\\n\\tcore:_base:39: in function 'assertfmt'\\n\\tespalier/elpatt:168: in function <espalier/elpatt:156>\\n\\t[C]: in function 'xpcall'\\n\\tvaliant:valiant:182: in function 'eval'\\n\\tvaliant:session:112: in function 'evalSessionById'\\n\\tvaliant:session:167: in function 'evalProjectByDir'\\n\\tvaliant:session:286: in function 'updateSessions'\\n\\tvaliant:session:790: in function 'session'\\n\\t[string \"src/load.\"]:500: in function <[string \"src/load.\"]:498>\\n\\t[string \"src/load.\"]:573: in main chunk"
+        } --[[table: 0x07f6f6b8]]
+      } --[[table: 0x07f6f758]],
+      status = "accept",
+      time = "2021-02-22T19:15:52.783",
+      title = "Three-char unicode range as second arg"
+    } --[[table: 0x08101020]],
+    accepted = true,
+    session_title = "elpatt-R"
+  } --[[table: 0x07fccdb0]],
+  {
+    {
+      line = "U = assert(require \"espalier:elpatt\" . U)",
+      ordinal = 1,
+      results = {
+        n = 0
+      } --[[table: 0x07ffe4d0]],
+      status = "ignore",
+      time = "2021-02-22T19:33:48.692",
+      title = ""
+    } --[[table: 0x080d5ab8]],
+    {
+      line = "U(1):match(\"a\")",
+      ordinal = 2,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0022"
+        } --[[table: 0x080d5e70]]
+      } --[[table: 0x07f7dc60]],
+      status = "accept",
+      time = "2021-02-22T19:33:57.515",
+      title = ""
+    } --[[table: 0x07ffe590]],
+    {
+      line = "U(1):match(\"à\")",
+      ordinal = 3,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x080cbc50]]
+      } --[[table: 0x080cbcf0]],
+      status = "accept",
+      time = "2021-02-22T19:34:01.923",
+      title = ""
+    } --[[table: 0x07f7dd18]],
+    {
+      line = "U(1):match(\"àâ\")",
+      ordinal = 4,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0023"
+        } --[[table: 0x080d6bd0]]
+      } --[[table: 0x080d6c70]],
+      status = "accept",
+      time = "2021-02-22T19:34:11.074",
+      title = ""
+    } --[[table: 0x080cbe20]],
+    {
+      line = "U(2):match(\"àâ\")",
+      ordinal = 5,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0025"
+        } --[[table: 0x080d6f28]]
+      } --[[table: 0x08156ed8]],
+      status = "accept",
+      time = "2021-02-22T19:34:14.219",
+      title = ""
+    } --[[table: 0x080d6d28]],
+    {
+      line = "U(2):match(\"à\")",
+      ordinal = 6,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x080a4858]]
+      } --[[table: 0x080a48f8]],
+      status = "accept",
+      time = "2021-02-22T19:34:17.297",
+      title = ""
+    } --[[table: 0x08147020]],
+    {
+      line = "U(2):match(\"\\xe2\")",
+      ordinal = 7,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x080a4bb0]]
+      } --[[table: 0x07fe9db0]],
+      status = "accept",
+      time = "2021-02-22T19:34:22.145",
+      title = ""
+    } --[[table: 0x080a49b0]],
+    {
+      line = "U(1):match(\"\\xe2\")",
+      ordinal = 8,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x07feea60]]
+      } --[[table: 0x07feeb00]],
+      status = "accept",
+      time = "2021-02-22T19:34:31.938",
+      title = ""
+    } --[[table: 0x07f67748]],
+    {
+      line = "U(1):match(\"\\xe1\\xba\")",
+      ordinal = 9,
+      results = {
+        n = 1,
+        repr = {
+          "\1z\2nil"
+        } --[[table: 0x07f72508]]
+      } --[[table: 0x07f72588]],
+      status = "accept",
+      time = "2021-02-22T19:35:17.972",
+      title = ""
+    } --[[table: 0x07feebb8]],
+    {
+      line = "U():match(\"a\")",
+      ordinal = 10,
+      results = {
+        n = 1,
+        repr = {
+          "\1n\0022"
+        } --[[table: 0x08003ef8]]
+      } --[[table: 0x08003f98]],
+      status = "accept",
+      time = "2021-02-22T19:53:58.767",
+      title = ""
+    } --[[table: 0x080d70c8]],
+    accepted = true,
+    session_title = "elpatt-U"
+  } --[[table: 0x080263d8]],
+  bundle_type = "session",
+  project = "espalier",
+  version = 1
+} --[[table: 0x07fb5858]]
