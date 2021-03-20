@@ -20,16 +20,6 @@ material upon which this is based.
 Don Phillipe has my thanks, and my fervent hope that he enjoys what follows.
 
 
-**** Aside to the Knuthian camp
-
-I have written a semi-literate boostrap.
-
-I make no apology for this.  Cleaning what follows into a literate order is
-a tractable problem.
-
-In the meantime, let us build a Grammar from parts.
-
-
 ** Parameters of the Grammar Function
 
 This function takes two parameters, namely:
@@ -100,13 +90,20 @@ given rule.  The value is either a table, or a function.
 If a table, this must inherit from Node via =:inherit(id)=.  These are simply
 assigned as the metatable for the node in question.
 
-If a function, that function itself must be a container for a Grammar; we
-provide the [[subgrammar][@:espalier/subgrammar]] module to construct a basic
-variety.
+If a function, that function will receive =(node, str)=; =node= will have =id=,
+=first=, =last=, and =str= parameters.  The =offset= parameter is usually 0,
+and represents what must be added to =first= and =last= to get an accurate
+value, in the event that the Grammar is parsing a substring of a larger string.
 
-The Grammar constructor returns a function, which has optional parameters
-for a =first= and =last=.  If provided, it will parse only over that slice of
-the string, with the indices correctly adjusted.
+Whatever the function returns is assigned a parent and inserted as a Node, so
+it should really be a table with a Node-descended metatable, or all manner of
+methods will fail to function.
+
+One useful function, which provides the motive for this construction, is a
+subgrammar. The Grammar constructor returns a function, which has optional
+parameters for a =first= and =last=.  If provided, it will parse only over
+that slice of the string, with the indices correctly adjusted.  Using this
+produces the  =offset= parameter which we saw above.
 
 So a subgrammar is called thus: =subgrammar(node, node:bounds())=, and the
 return value will be inserted as a sub-node.  Which is hopefully well-formed
@@ -175,6 +172,9 @@ local Node = require "espalier/node"
 I like the dedication shown in this style of import.
 
 It's the kind of thing I'd like to automate.
+
+We don't normally assert single variables in the global namespace, but this
+was included in the original epnf, and I saw no reason to remove it.
 
 
 **** asserts
@@ -502,7 +502,7 @@ Espalier has been a rousing success thus far.
 I continue to use the declarative PEG specification to expand Orb, with no
 regrets.
 
-The most important consequence of usingn a declarative specification has yet
+The most important consequence of using a declarative specification has yet
 to be realized, however.  Nor can we get there with the codebase written as it
 is.
 

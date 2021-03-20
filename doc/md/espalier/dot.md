@@ -12,10 +12,10 @@ This is an early piece of code, in need of overhaul
   - [ ]  Finish attaching str to all Nodes in Orb \(I'm looking at you,
       hashtag\)
 
+  - [ ]  Add some kind of comment or other boundary marker between ranks,
+      to make it easier to use with d3:
 
-
-
-
+      [nifty d3 dot magic](https://github.com/magjac/d3-graphviz)
 
 ```lua
 local t = {}

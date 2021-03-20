@@ -76,6 +76,16 @@ Node.isNode = Node
 
 
 
+Node.super = core.super
+
+
+
+
+
+
+
+
+
 
 
 
@@ -580,7 +590,6 @@ end
 
 
 
-
 function Node.selectFrom(node, pred, index)
    -- build up all the nodes that match
    local matches = {}
@@ -996,6 +1005,7 @@ end
 
 
 function Node.isValid(node)
+  assert(node.id, "node must have an id")
   assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
          .. node.id .. " " .. tostring(node))
   assert(node.first, "node must have first")
@@ -1005,7 +1015,9 @@ function Node.isValid(node)
   assert(node.str, "node must have str")
   assert(type(node.str) == "string"
          or node.str.isPhrase, "str must be string or phrase")
-  assert(node.parent and node.parent.isNode == Node, "node must have parent")
+  assert(getmetatable(node), "node must have a metatable: " .. node.id)
+  assert(node.parent and node.parent.isNode == Node,
+         "node must have parent: " .. node.id)
   assert(type(node:span()) == "string", "span() must yield string")
   return true
 end
@@ -1017,12 +1029,16 @@ end
 
 
 
-function Node.validate(node)
-  for twig in node:walk() do
-    twig:isValid()
-  end
-  return true
+local function _validate(node)
+   node:isValid()
+   for _, twig in ipairs(node) do
+      assert(twig.parent == node, "illegal parent " .. twig.parent.id
+             .. " should be a " .. node.id)
+      _validate(twig)
+   end
+   return true
 end
+Node.validate = _validate
 
 
 

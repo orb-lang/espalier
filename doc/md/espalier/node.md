@@ -71,6 +71,16 @@ orthogonality\.
 ## Methods
 
 
+### super
+
+We add the `super` mixin, which allows for inherited Nodes to call the a
+shadowed version of any method from further up the chain\.
+
+```lua
+Node.super = core.super
+```
+
+
 ### Node:bustCache\(\)
 
 The root Node class doesn't cache derived values but derived classes might\.
@@ -576,7 +586,6 @@ end
 ```
 
 
-
 #### Node:selectFrom\(pred, index\)
 
 Selects on the predicate, returning any matching Nodes for which `node.first`
@@ -1004,6 +1013,7 @@ Performs assertions on a single Node table\.
 
 ```lua
 function Node.isValid(node)
+  assert(node.id, "node must have an id")
   assert(node.isNode == Node, "isNode flag must be Node metatable, id: "
          .. node.id .. " " .. tostring(node))
   assert(node.first, "node must have first")
@@ -1013,7 +1023,9 @@ function Node.isValid(node)
   assert(node.str, "node must have str")
   assert(type(node.str) == "string"
          or node.str.isPhrase, "str must be string or phrase")
-  assert(node.parent and node.parent.isNode == Node, "node must have parent")
+  assert(getmetatable(node), "node must have a metatable: " .. node.id)
+  assert(node.parent and node.parent.isNode == Node,
+         "node must have parent: " .. node.id)
   assert(type(node:span()) == "string", "span() must yield string")
   return true
 end
@@ -1025,12 +1037,16 @@ end
 Runs Node:isValid\(\) on every Node in a tree\.
 
 ```lua
-function Node.validate(node)
-  for twig in node:walk() do
-    twig:isValid()
-  end
-  return true
+local function _validate(node)
+   node:isValid()
+   for _, twig in ipairs(node) do
+      assert(twig.parent == node, "illegal parent " .. twig.parent.id
+             .. " should be a " .. node.id)
+      _validate(twig)
+   end
+   return true
 end
+Node.validate = _validate
 
 ```
 
