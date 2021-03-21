@@ -503,28 +503,25 @@ end
 
 
 
-
-
-
-function Node.coro_select(node, pred)
-   local function qualifies(ast, pred)
-      if type(pred) == 'string' then
-         if type(ast) == 'table'
-          and ast.id and ast.id == pred then
-            return true
-         else
-            return false
-         end
-      elseif type(pred) == 'function' then
-         return pred(ast)
+local function _qualifies(ast, pred)
+   if type(pred) == 'string' then
+      if type(ast) == 'table'
+       and ast.id and ast.id == pred then
+         return true
       else
-         s:halt("cannot select on predicate of type " .. type(pred))
+         return false
       end
+   elseif type(pred) == 'function' then
+      return pred(ast)
+   else
+      s:halt("cannot select on predicate of type " .. type(pred))
    end
+end
 
+function Node.select(node, pred)
    local function traverse(ast)
       -- breadth first
-      if qualifies(ast, pred) then
+      if _qualifies(ast, pred) then
          yield(ast)
       end
       if type(ast) == 'table' and ast.isNode then
@@ -536,6 +533,8 @@ function Node.coro_select(node, pred)
 
    return wrap(function() traverse(node) end)
 end
+
+
 
 
 
@@ -562,7 +561,7 @@ local function qualifies(ast, pred)
 
 local remove = assert(table.remove)
 
-function Node.select(node, pred)
+function Node._select(node, pred)
    -- build up all the nodes that match
    local matches = {}
    local function traverse(ast)

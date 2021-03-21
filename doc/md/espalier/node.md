@@ -498,35 +498,32 @@ end
 We are frequently in search of a subset of Nodes:
 
 
-#### Node:coro\_select\(pred\)
+#### Node:select\(pred\)
 
   Takes the Node and walks it, yielding the Nodes which match the predicate\.
 `pred` is either a string, which matches to `id`, or a function, which takes
 a Node and returns true or false on some premise\.
 
-\#NB
-`coro_select` while we fix it\.
-
 ```lua
-function Node.coro_select(node, pred)
-   local function qualifies(ast, pred)
-      if type(pred) == 'string' then
-         if type(ast) == 'table'
-          and ast.id and ast.id == pred then
-            return true
-         else
-            return false
-         end
-      elseif type(pred) == 'function' then
-         return pred(ast)
+local function _qualifies(ast, pred)
+   if type(pred) == 'string' then
+      if type(ast) == 'table'
+       and ast.id and ast.id == pred then
+         return true
       else
-         s:halt("cannot select on predicate of type " .. type(pred))
+         return false
       end
+   elseif type(pred) == 'function' then
+      return pred(ast)
+   else
+      s:halt("cannot select on predicate of type " .. type(pred))
    end
+end
 
+function Node.select(node, pred)
    local function traverse(ast)
       -- breadth first
-      if qualifies(ast, pred) then
+      if _qualifies(ast, pred) then
          yield(ast)
       end
       if type(ast) == 'table' and ast.isNode then
@@ -541,10 +538,12 @@ end
 ```
 
 
-#### Node:select\(pred\)
+#### Node:\_select\(pred\)
 
 This version uses a closure instead of a coroutine, to get around a crashing
 problem we've been having in bridge\.
+
+Keeping it around in case LuaJIT starts randomly crashing on selects again\.
 
 ```lua
 local function qualifies(ast, pred)
@@ -564,7 +563,7 @@ local function qualifies(ast, pred)
 
 local remove = assert(table.remove)
 
-function Node.select(node, pred)
+function Node._select(node, pred)
    -- build up all the nodes that match
    local matches = {}
    local function traverse(ast)
