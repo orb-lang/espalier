@@ -618,6 +618,35 @@ end
 
 
 
+
+
+function Node.selectBack(node, pred)
+   -- reject any node after this
+   local boundary = node.first - 1
+   -- set up a function which moonwalks the tree
+   local function moonwalker(ast)
+      -- depth first, right to left, starting with peers of the node
+      for i = #ast, 1, -1 do
+         local suspect = ast[i]
+         -- don't check anything if ast[i].first >= boundary
+         if suspect.first < boundary then
+            -- candidate
+            moonwalker(suspect)
+         end
+      end
+      if ast.first < boundary and qualifies(ast, pred) then
+         yield(ast)
+      end
+   end
+   return wrap(function() return moonwalker(node:root()) end)
+end
+
+
+
+
+
+
+
 function Node.tokens(node)
   local function traverse(ast)
     for node in Node.walk(ast) do
