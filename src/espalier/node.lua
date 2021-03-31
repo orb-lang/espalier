@@ -590,22 +590,25 @@ end
 
 
 function Node.selectFrom(node, pred, index)
+   index = index or node.last
+   assert(type(index) == 'number', "index must be a number")
    -- build up all the nodes that match
    local matches = {}
+
    local function traverse(ast)
       -- depth-first, right to left
-      if type(ast) == 'table' and ast.isNode then
-         for i = #ast, 1, -1 do
-            if ast[i].last >= index then
-               traverse(ast[i])
-            end
-         end
+      for i = #ast, 1, -1 do
+        if ast[i].last >= index then
+            traverse(ast[i])
+        end
       end
       if ast.first > index and qualifies(ast, pred) then
          matches[#matches + 1] = ast
       end
    end
-   traverse(node)
+
+   traverse(node:root())
+
    return function()
       return remove(matches)
    end
@@ -622,23 +625,23 @@ end
 
 function Node.selectBack(node, pred)
    -- reject any node after this
-   local boundary = node.first - 1
+   local boundary = node.first
    -- set up a function which moonwalks the tree
-   local function moonwalker(ast)
+   local function moonwalk(ast)
       -- depth first, right to left, starting with peers of the node
       for i = #ast, 1, -1 do
          local suspect = ast[i]
          -- don't check anything if ast[i].first >= boundary
          if suspect.first < boundary then
             -- candidate
-            moonwalker(suspect)
+            moonwalk(suspect)
          end
       end
       if ast.first < boundary and qualifies(ast, pred) then
          yield(ast)
       end
    end
-   return wrap(function() return moonwalker(node:root()) end)
+   return wrap(function() return moonwalk(node:root()) end)
 end
 
 
