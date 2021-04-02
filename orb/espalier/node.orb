@@ -525,8 +525,8 @@ function Node.select(node, pred)
          yield(ast)
       end
       if type(ast) == 'table' and ast.isNode then
-         for _, v in ipairs(ast) do
-            traverse(v)
+         for i = 1, #ast do
+            traverse(ast[i])
          end
       end
    end
