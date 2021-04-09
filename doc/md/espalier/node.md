@@ -504,6 +504,10 @@ We are frequently in search of a subset of Nodes:
 `pred` is either a string, which matches to `id`, or a function, which takes
 a Node and returns true or false on some premise\.
 
+Stubbed out, because it can cause the interpreter to throw a spurious error\.
+
+Which is\.\.\. bad\.
+
 ```lua
 local function _qualifies(ast, pred)
    if type(pred) == 'string' then
@@ -543,7 +547,6 @@ end
 This version uses a closure instead of a coroutine, to get around a crashing
 problem we've been having in bridge\.
 
-Keeping it around in case LuaJIT starts randomly crashing on selects again\.
 
 ```lua
 local function qualifies(ast, pred)
@@ -563,7 +566,7 @@ local function qualifies(ast, pred)
 
 local remove = assert(table.remove)
 
-function Node._select(node, pred)
+function Node.select(node, pred)
    -- build up all the nodes that match
    local matches = {}
    local function traverse(ast)

@@ -503,36 +503,39 @@ end
 
 
 
-local function _qualifies(ast, pred)
-   if type(pred) == 'string' then
-      if type(ast) == 'table'
-       and ast.id and ast.id == pred then
-         return true
-      else
-         return false
-      end
-   elseif type(pred) == 'function' then
-      return pred(ast)
-   else
-      s:halt("cannot select on predicate of type " .. type(pred))
-   end
-end
 
-function Node.select(node, pred)
-   local function traverse(ast)
-      -- breadth first
-      if _qualifies(ast, pred) then
-         yield(ast)
-      end
-      if type(ast) == 'table' and ast.isNode then
-         for i = 1, #ast do
-            traverse(ast[i])
-         end
-      end
-   end
 
-   return wrap(function() traverse(node) end)
-end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -561,7 +564,7 @@ local function qualifies(ast, pred)
 
 local remove = assert(table.remove)
 
-function Node._select(node, pred)
+function Node.select(node, pred)
    -- build up all the nodes that match
    local matches = {}
    local function traverse(ast)
