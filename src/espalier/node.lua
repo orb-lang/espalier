@@ -547,6 +547,9 @@ end
 
 
 
+
+
+
 local function qualifies(ast, pred)
     if type(pred) == 'string' then
        if type(ast) == 'table'

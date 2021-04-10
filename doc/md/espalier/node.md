@@ -508,6 +508,9 @@ Stubbed out, because it can cause the interpreter to throw a spurious error\.
 
 Which is\.\.\. bad\.
 
+Note that we would prefer to use this one, because the closed\-over version
+walks the entire tree, which isn't always necessary\.
+
 ```lua
 local function _qualifies(ast, pred)
    if type(pred) == 'string' then
