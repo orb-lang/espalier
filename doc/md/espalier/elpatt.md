@@ -130,7 +130,17 @@ end
 
 #### elpatt\.Cnc\(name, value\) : Capture named constant
 
-  Simple shorthand for adding named constant values to a table capture\.
+  Captures a constant value as a named group, adding `name = value` to an
+enclosing table capture\. Always succeeds\. Useful in a structure like:
+
+```lua
+Ct(
+  ... * (
+    foo_patt * Cnc("type", "foo") +
+    bar_pat * Cnc("type", "bar")
+  )
+)
+```
 
 ```lua
 local Cc, Cg = assert(lpeg.Cc), assert(lpeg.Cg)
