@@ -128,6 +128,28 @@ end
 ```
 
 
+#### elpatt\.Cnc\(name, value\) : Capture named constant
+
+  Captures a constant value as a named group, adding `name = value` to an
+enclosing table capture\. Always succeeds\. Useful in a structure like:
+
+```lua
+Ct(
+  ... * (
+    foo_patt * Cnc("type", "foo") +
+    bar_pat * Cnc("type", "bar")
+  )
+)
+```
+
+```lua
+local Cc, Cg = assert(lpeg.Cc), assert(lpeg.Cg)
+function elpatt.Cnc(name, value)
+  return Cg(Cc(value), name)
+end
+```
+
+
 ### Unicode\-aware components
 
   `lpeg`, like Lua, is by default is not Unicode\-aware\.  `R` and `S` in
