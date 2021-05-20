@@ -141,6 +141,28 @@ end
 
 
 
+local Cc, Cg = assert(lpeg.Cc), assert(lpeg.Cg)
+function elpatt.Cnc(name, value)
+  return Cg(Cc(value), name)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
