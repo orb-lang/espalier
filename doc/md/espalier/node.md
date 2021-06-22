@@ -31,12 +31,12 @@ local dot = require "espalier/dot"
 
     \#\!lua \#noKnit \-\- this isn't working yet
     \-\- ergo
-    \-\-[
+    \-\-[](
     local html = require "espalier/html"
     local css  = require "espalier/css"
     local portal = require "espalier/portal"
     
-    --]()  \#/lua
+    --)  \#/lua
 
 
 ## Node metatable
