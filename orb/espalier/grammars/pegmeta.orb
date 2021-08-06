@@ -26,7 +26,7 @@ local Node = require "espalier/node"
 local Grammar = require "espalier/grammar"
 local Phrase = require "singletons/phrase"
 
-local inherit = assert(require "core:core/meta" . inherit)
+local inherit = assert(true)
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)

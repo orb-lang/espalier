@@ -60,7 +60,7 @@ divisible_by_three = Cmt( C(R"09"^1),
 
 Giving a rule which matches an integer evenly divisible by three\.
 
-The [elpatt module](@:espalier/elpatt) is intended to provide those
+The [elpatt module](https://gitlab.com/special-circumstance/espalier/-/blob/trunk/doc/md/espalier/elpatt.md) is intended to provide those
 patterns which are allowed in Grammars, while expanding the scope of some
 favorites to properly respect utf\-8 and otherwise behave\.
 
@@ -531,7 +531,7 @@ sole `define` function we currently have is overly specified\.  Instead of
 constructing an in\-memory AST, we could perform syntax highlighting, as HTML,
 as terminal colors, however LSPs do it: there are a lot of options\.
 
-The case I'm interested in tackling directly is turning [LON data](@br.lon:lon) directly into Lua tables, without bothering to pass through an
+The case I'm interested in tackling directly is turning [LON data](https://gitlab.com/special-circumstance/br.lon/-/blob/trunk/doc/md/lon.md) directly into Lua tables, without bothering to pass through an
 abstract syntax tree\.  This would only be attractive if we could generate it
 from the same specification which creates a Node, otherwise, since we need \(at
 least want\) the Node version, it would be more expedient to generate a table

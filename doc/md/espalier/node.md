@@ -35,8 +35,12 @@ local dot = require "espalier/dot"
     local html = require "espalier/html"
     local css  = require "espalier/css"
     local portal = require "espalier/portal"
+    --](
+    local html = require "espalier/html"
+    local css  = require "espalier/css"
+    local portal = require "espalier/portal"
     
-    --]()  \#/lua
+    --)  \#/lua
 
 
 ## Node metatable
