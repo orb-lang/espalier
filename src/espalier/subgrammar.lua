@@ -11,8 +11,13 @@
 
 
 local Node = require "espalier:espalier/node"
+local Peg = require "espalier:espalier/peg"
 
 local function subgrammar(grammar, meta, errstring)
+   if type(grammar) == 'string' then
+      -- try to coerce to Peg fn
+      grammar = Peg(grammar)
+   end
    meta = meta or Node
    return function (t)
       local match = grammar(t.str, t.first, t.last)
