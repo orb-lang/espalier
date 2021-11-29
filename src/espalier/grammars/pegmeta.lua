@@ -26,7 +26,6 @@ local Node = require "espalier/node"
 local Grammar = require "espalier/grammar"
 local Phrase = require "singletons/phrase"
 
-local inherit = assert(true)
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
@@ -370,6 +369,21 @@ end
 
 
 
+
+function Rules.ruleNamed(rules, name)
+   for rule in rules :select "rule" do
+      if rule:ruleName() == name then
+         return rule
+      end
+   end
+   return nil
+end
+
+
+
+
+
+
 local Rule = PegMetas : inherit "rule"
 
 local function _pattToString(patt)
@@ -381,13 +395,80 @@ local function _pattToString(patt)
    end
 end
 
+function Rule.ruleName(rule)
+   return _normalize(_pattToString(rule:select "pattern" ()))
+end
+
 function Rule.toLpeg(rule)
    local phrase = PegPhrase ""
-   local patt = _normalize(_pattToString(rule:select "pattern" ()))
+   local patt = rule:ruleName()
    phrase = phrase .. patt .. " = "
    return phrase .. rule:select "rhs" () : toLpeg ()
 end
 
+
+
+
+
+
+
+
+
+function Rule.toPegStr(rule)
+   local rules = rule:root()
+   local rule_name = rule:ruleName()
+
+   local name_rule = {}
+   local name_atoms = {}
+
+   for _rule in rules :select "rule" do
+      local _rule_name = _rule:ruleName()
+      local atoms = {}
+      name_rule[_rule_name] = _rule
+      name_atoms[_rule_name] = atoms
+      for atom in _rule :select "rhs" () :select "atom" do
+          insert(atoms, atom:span())
+      end
+   end
+   for k,v in pairs(name_rule) do name_rule[v] = k end
+
+   local peg_str = {}
+   local dupes = { rule = true }
+   -- add the start rule
+   insert(peg_str, rule:span())
+
+   local function _rulesFrom(atoms)
+      for _, atom in ipairs(atoms) do
+         local _rule = name_rule[atom]
+         if _rule and not dupes[_rule] then
+            insert(peg_str, _rule:span())
+            dupes[_rule] = true
+            _rulesFrom(name_atoms[atom])
+         end
+      end
+   end
+
+   _rulesFrom(name_atoms[rule_name])
+
+   return concat(peg_str, "\n")
+end
+
+
+
+
+
+
+
+
+
+
+
+local _Peg;
+
+function Rule.toPeg(rule)
+   _Peg = _Peg or require "espalier:espalier/peg"
+   return _Peg(rule:toPegStr())
+end
 
 
 
