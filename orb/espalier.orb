@@ -12,7 +12,6 @@ local Stator  = require "singletons/stator"
 local dot     = require "espalier/dot"
 local elpatt  = require "espalier/elpatt"
 local Node    = require "espalier/node"
--- local Spec    = require "espalier/spec"
 local Grammar = require "espalier/grammar"
 local Peg  = require "espalier/peg"
 
@@ -44,7 +43,6 @@ return { dot      = dot,
          node     = Node,
          lex      = lexemes,
          peg      = Peg,
- --        spec    = Spec,
          phrase   = Phrase,
          grammar  = Grammar,
          grammars = grammars,
