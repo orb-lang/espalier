@@ -372,7 +372,7 @@ end
 function Rules.allParsers(rules)
    local allGrammars = {}
    for rule in rules :select "rule" do
-      allGrammars[rule:ruleName()] = Grammar(rule:toPeg():toLpeg())
+      allGrammars[rule:ruleName()] = rule:toPeg():toGrammar()
    end
    return allGrammars
 end
@@ -385,7 +385,7 @@ end
 
 
 
-function Rules.ruleNamed(rules, name)
+function Rules.ruleOfName(rules, name)
    for rule in rules :select "rule" do
       if rule:ruleName() == name then
          return rule
@@ -429,11 +429,18 @@ end
 
 
 
+
+
+
+
+
 local _peg_str_memo = setmetatable({}, { __mode = 'kv' })
 
 function Rule.toPegStr(rule)
    local rules = rule:root()
    local rule_name = rule:ruleName()
+   local metas = rules.metas or {}
+   local new_metas = {metas[1], [rule_name] = metas[rule_name]}
 
    local name_rule, name_atoms = unpack(_peg_str_memo[rules] or {})
    if not name_rule then
@@ -445,7 +452,7 @@ function Rule.toPegStr(rule)
          name_rule[_rule_name] = _rule
          name_atoms[_rule_name] = atoms
          for atom in _rule :select "rhs" () :select "atom" do
-             insert(atoms, atom:span())
+             insert(atoms, (_normalize(atom:span())))
          end
       end
       -- and memoize it
@@ -460,6 +467,7 @@ function Rule.toPegStr(rule)
    local function _rulesFrom(atoms)
       for _, atom in ipairs(atoms) do
          local _rule = name_rule[atom]
+         new_metas[atom] = metas[atom]
          if _rule and not dupes[_rule] then
             insert(peg_str, _rule:span())
             dupes[_rule] = true
@@ -470,7 +478,10 @@ function Rule.toPegStr(rule)
 
    _rulesFrom(name_atoms[rule_name])
 
-   return concat(peg_str, "\n")
+   local function rfn() return concat(peg_str, "\n") end
+
+   return setmetatable({}, { __repr = rfn, __tostring = rfn }),
+          new_metas
 end
 
 
@@ -487,7 +498,8 @@ local _Peg;
 
 function Rule.toPeg(rule)
    _Peg = _Peg or require "espalier:espalier/peg"
-   return _Peg(rule:toPegStr())
+   local str, _M = rule:toPegStr()
+   return _Peg(tostring(str), _M)
 end
 
 

@@ -198,12 +198,13 @@ local PegGrammar = Grammar(pegylator, pegMetas)
 local function new(peg_str, metas, pre, post)
    local peg_node = PegGrammar(peg_str)
    if not peg_node then return nil end
-   local ok
+   local ok;
    ok, peg_node.parse, peg_node.grammar = pcall(Grammar,peg_node:toLpeg(),
                                               metas, pre, post)
    if not ok then
       peg_node.parse, peg_node.grammar = nil, nil
    end
+   peg_node.metas = metas
    return peg_node
 end
 #/lua
