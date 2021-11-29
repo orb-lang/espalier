@@ -365,6 +365,21 @@ end
 ```
 
 
+### Rules:allParsers\(\)
+
+This returns a map of every rule name to a parser which recognizes that rule\.
+
+```lua
+function Rules.allParsers(rules)
+   local allGrammars = {}
+   for rule in rules :select "rule" do
+      allGrammars[rule:ruleName()] = Grammar(rule:toPeg():toLpeg())
+   end
+   return allGrammars
+end
+```
+
+
 ### Rules:ruleNamed\(name\)
 
 Returns a rule of name `name`, if one exists\.
@@ -415,21 +430,27 @@ This returns a string which can be processed by Peg back into a parsing
 expression grammar, such that that grammar will parse the rule\.
 
 ```lua
+local _peg_str_memo = setmetatable({}, { __mode = 'kv' })
+
 function Rule.toPegStr(rule)
    local rules = rule:root()
    local rule_name = rule:ruleName()
 
-   local name_rule = {}
-   local name_atoms = {}
-
-   for _rule in rules :select "rule" do
-      local _rule_name = _rule:ruleName()
-      local atoms = {}
-      name_rule[_rule_name] = _rule
-      name_atoms[_rule_name] = atoms
-      for atom in _rule :select "rhs" () :select "atom" do
-          insert(atoms, atom:span())
+   local name_rule, name_atoms = unpack(_peg_str_memo[rules] or {})
+   if not name_rule then
+      -- make the rules map
+      name_rule, name_atoms = {}, {}
+      for _rule in rules :select "rule" do
+         local _rule_name = _rule:ruleName()
+         local atoms = {}
+         name_rule[_rule_name] = _rule
+         name_atoms[_rule_name] = atoms
+         for atom in _rule :select "rhs" () :select "atom" do
+             insert(atoms, atom:span())
+         end
       end
+      -- and memoize it
+      _peg_str_memo[rules] = pack(name_rule, name_atoms)
    end
 
    local peg_str = {}
