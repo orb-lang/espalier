@@ -431,7 +431,6 @@ function Rule.toPegStr(rule)
           insert(atoms, atom:span())
       end
    end
-   for k,v in pairs(name_rule) do name_rule[v] = k end
 
    local peg_str = {}
    local dupes = { rule = true }
