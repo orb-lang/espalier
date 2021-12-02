@@ -380,13 +380,13 @@ end
 ```
 
 
-### Rules:ruleOfName\(name\)
+### Rules:getRule\(name\)
 
 Returns a rule of name `name`, if one exists\.
 
 ```lua
 
-function Rules.ruleOfName(rules, name)
+function Rules.getRule(rules, name)
    for rule in rules :select "rule" do
       if rule:ruleName() == name then
          return rule

@@ -385,7 +385,7 @@ end
 
 
 
-function Rules.ruleOfName(rules, name)
+function Rules.getRule(rules, name)
    for rule in rules :select "rule" do
       if rule:ruleName() == name then
          return rule
