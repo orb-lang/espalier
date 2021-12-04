@@ -174,6 +174,19 @@ local Rules = PegMetas : inherit "rules"
 
 
 
+
+
+
+local function _normalize(str)
+   return str:gsub("%-", "%_")
+end
+
+
+
+
+
+
+
 function Rules.__call(rules, str, start, finish)
    if not rules.parse then
       rules.parse, rules.grammar = Grammar(rules:toLpeg())
@@ -237,16 +250,6 @@ end
 ]]
 }
 
-
-
-
-
-
-
-
-local function _normalize(str)
-   return str:gsub("%-", "%_")
-end
 
 
 
@@ -387,11 +390,22 @@ end
 
 function Rules.getRule(rules, name)
    for rule in rules :select "rule" do
-      if rule:ruleName() == name then
+      if rule:ruleName() == _normalize(name) then
          return rule
       end
    end
    return nil
+end
+
+
+
+
+
+
+function Rules.getGrammar(rules, name)
+   local _rule = rules:getRule(name)
+   if not _rule then return nil end
+   return _rule:toPeg()
 end
 
 

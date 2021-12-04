@@ -100,3 +100,66 @@ usual sort\.  Patterns are too general to make guarantees\.
 In the usual course of events it would be an additional Grammar's worth of
 rule which would be applied to the suspended parse, in the hope of continuing
 it further\.
+
+
+#### Application: parsing within Orb codeblocks
+
+This one is almost on easy mode\.
+
+I'll stick to Lua, but the same applies to many languages: the basic compiling
+unit is a chunk, and most codeblocks will be a valid chunk\.
+
+Some won't be, if, for my most common example, I cut up a long function and
+intersperse commentary\.
+
+So I can have a chunk\-first parsing strategy, which falls back on the full
+Lua parser, but one which can suspend parsing on EOL: a stream parser\.
+
+This will have the happy side effect of grouping the blocks composing a single
+function \(perhaps with front and back matter\) logically, which will come in
+handy when it's time to start hashing, parsing,transcluding, &c\.
+
+
+
+### Power Level Analysis
+
+This step is what lets us truly shine with automated error recovery\.
+
+The error recovery algorithm I want to emulate comes from Terrence Parr, but
+ANTLR uses a tokenizer, which is allowable as a preprocessing step to the PEG
+algorithm but which isn't a native concept to this style of grammar\.
+
+Fortunately, two\-step lexing and parsing is just equivalent to recognizing
+a regular language followed by a context\-free one\.  We can do the same basic
+sort of algorithm by identifying the conditions which apply to a given rule\.
+
+
+
+### Alternate Lead Rule Exclusion
+
+Rules which are of the form ` a <- b / c / d `, where `b`, `c`, and `d` all
+have leading rules which terminate in either disjoint literals, or proveably
+disjoint regulars, may be presumed to all fail, provided one of the rules
+has been entered\.
+
+Consequentially, if `a` itself must succeed for the parse to succeed, an entry
+into e\.g\. `c` which fails to reach its terminal is itself a failure of the
+parse, but one which we have detected while context is still preserved\.
+
+Put plainly: if we're parsing Lua and encounter an `if` keyword, we know we
+will find a `then` and an `end`, and if we don't, we have a failing `if`
+statement, which means we have a failing parse\.
+
+
+
+### Equivalence Folding
+
+There are a few cases where we can prove that a couple of rules are identical
+even if they're expressed differently\. One of these is a set vs\. a series of
+literal choices, the other is where two literals are adjacent \(which can
+happen because of rule expansion\), and our analyser will already read through
+situations where two intermediate rules resolve to the same base rule: a
+practical example is my Lua parser, which has a function call statement which
+is identical to a function call reached from an expression, except that other
+expressions aren't allowed in statement position\.
+

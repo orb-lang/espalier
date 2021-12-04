@@ -169,6 +169,19 @@ local Rules = PegMetas : inherit "rules"
 ```
 
 
+##### \_normalize
+
+  Causes any `-` in a pattern or atom to become `_`, allowing us to treat them
+as interchangeable\.  This is my crank compromise between ordinary string
+matching and creations such as Nim's symbol equivalence and unified call
+syntax\.
+
+```lua
+local function _normalize(str)
+   return str:gsub("%-", "%_")
+end
+```
+
 #### Rules\.\_\_call\(rules, str\)
 
 We allow the Peg root node to be callable as a Grammar\.
@@ -238,16 +251,6 @@ end
 }
 ```
 
-
-#### \_normalize
-
-Causes any `-` in a pattern or atom to become `_`\.
-
-```lua
-local function _normalize(str)
-   return str:gsub("%-", "%_")
-end
-```
 
 ```lua
 local insert = assert(table.insert)
@@ -388,11 +391,22 @@ Returns a rule of name `name`, if one exists\.
 
 function Rules.getRule(rules, name)
    for rule in rules :select "rule" do
-      if rule:ruleName() == name then
+      if rule:ruleName() == _normalize(name) then
          return rule
       end
    end
    return nil
+end
+```
+
+
+### Rules:getGrammar\(name\)
+
+```lua
+function Rules.getGrammar(rules, name)
+   local _rule = rules:getRule(name)
+   if not _rule then return nil end
+   return _rule:toPeg()
 end
 ```
 
