@@ -400,10 +400,13 @@ end
 ```
 
 
-### Rules:getGrammar\(name\)
+### Rules:subPeg\(name\)
+
+Returns the subset of the parsing expression grammar which will match the rule
+of `name`\.
 
 ```lua
-function Rules.getGrammar(rules, name)
+function Rules.subPeg(rules, name)
    local _rule = rules:getRule(name)
    if not _rule then return nil end
    return _rule:toPeg()

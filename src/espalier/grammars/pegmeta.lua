@@ -402,7 +402,10 @@ end
 
 
 
-function Rules.getGrammar(rules, name)
+
+
+
+function Rules.subPeg(rules, name)
    local _rule = rules:getRule(name)
    if not _rule then return nil end
    return _rule:toPeg()
