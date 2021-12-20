@@ -29,18 +29,11 @@ local dot = require "espalier/dot"
 
 - [ ] \#todo Planned expansions:
 
-    \#\!lua \#noKnit \-\- this isn't working yet
-    \-\- ergo
-    \-\-[
-    local html = require "espalier/html"
-    local css  = require "espalier/css"
-    local portal = require "espalier/portal"
-    --](
-    local html = require "espalier/html"
-    local css  = require "espalier/css"
-    local portal = require "espalier/portal"
-    
-    --)  \#/lua
+```lua
+local html = require "espalier/html"
+local css  = require "espalier/css"
+local portal = require "espalier/portal"
+```
 
 
 ## Node metatable
@@ -656,6 +649,51 @@ function Node.selectBack(node, pred)
    return wrap(function() return moonwalk(node:root()) end)
 end
 ```
+
+
+#### Node:hasParents\(\.\.\.\)
+
+Checks each parent up to root for all strings passed, returning `true` if any
+`.id` is equal to any\.
+
+```lua
+function Node.hasParents(node, ...)
+   if node.parent == node then return false end -- roots don't have parents.
+   local rents = {}
+   for i = 1, select('#', ...) do
+      rents[select(i, ...)] = true
+   end
+   local parent = node.parent
+   repeat
+      if rents[parent.id] then
+         return true
+      end
+      parent = parent.parent
+   until parent == parent.parent -- root
+
+   return false
+end
+```
+
+
+#### Node:rootDistance\(\)
+
+Returns the number of hops to root, which is `1`, not `0`, for root itself\.
+
+Awkward name avoids the easy shadowing of `depth` in specialized Node form\.
+
+```lua
+function Node.rootDistance(node)
+   if node == node.parent then return 1 end
+   local count, parent = 1, node.parent
+   repeat
+      count = count + 1
+      parent = parent.parent
+   until parent == parent.parent
+   return count
+end
+```
+
 
 #### Node\.tokens\(node\)
 

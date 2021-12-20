@@ -402,7 +402,7 @@ end
 *** Rules:subPeg(name)
 
 Returns the subset of the parsing expression grammar which will match the rule
-of =name=.
+of =name=
 
 #!lua
 function Rules.subPeg(rules, name)

@@ -1,8 +1,8 @@
 # PEG groups\(??\)
 
 
-I don't actually care, at all, if this is a group or not\. It, might be\. anyway
-
+  I don't actually care, at all, if this is a group or not\.  Yet\.  It, might
+be\.  anyway
 
 Point being we just got some rule extractions working such that you get a
 complete subparser in the bargain and I'm entirely rethinking how I assemble
@@ -10,6 +10,32 @@ complex grammars, Orb in particular, from components\.
 
 I've been doing this with strings, which kinda only works because if a rule
 is double\-defined the Grammar module does not care\.
+
+What follows is a fairly raw brain dump\.  Caveat lector\.
+
+
+## Subparser Extraction
+
+This relies on a simple equivalence: a PEG must have a start rule, and that
+rule must visit all subrules for those subrules to be counted as part of the
+grammar\.
+
+So if we take a single rule, and visit every rule mentioned by that rule's
+construction, and so on, skipping cycles, then concatenate the rules, we have
+a PEG which recognizes this rule\.
+
+
+### Proof
+
+That's where ACL2 comes in\!
+
+I'm not sure what the strategy is, but it should involve proving that
+walking a subtree created from a given rule tree visits identical nodes as
+walking the original PEG tree starting from that rule\.
+
+With a ParseIR reader, that's just list traversal and structural equivalence,
+and without structural list equivalence no symbolic Lisp mathematical engine
+can function\.
 
 
 ## Rule Equality

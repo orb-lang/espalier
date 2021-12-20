@@ -41,9 +41,6 @@ local dot = require "espalier/dot"
 
 
 
-
-
-
 local Node = {}
 Node.__index = Node
 Node.isNode = Node
@@ -649,6 +646,51 @@ function Node.selectBack(node, pred)
    end
    return wrap(function() return moonwalk(node:root()) end)
 end
+
+
+
+
+
+
+
+
+
+function Node.hasParents(node, ...)
+   if node.parent == node then return false end -- roots don't have parents.
+   local rents = {}
+   for i = 1, select('#', ...) do
+      rents[select(i, ...)] = true
+   end
+   local parent = node.parent
+   repeat
+      if rents[parent.id] then
+         return true
+      end
+      parent = parent.parent
+   until parent == parent.parent -- root
+
+   return false
+end
+
+
+
+
+
+
+
+
+
+
+function Node.rootDistance(node)
+   if node == node.parent then return 1 end
+   local count, parent = 1, node.parent
+   repeat
+      count = count + 1
+      parent = parent.parent
+   until parent == parent.parent
+   return count
+end
+
 
 
 
