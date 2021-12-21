@@ -16,7 +16,6 @@ case of taking a sketch and painting a picture\.
 
 Many difficult aspects of this algorithm are found directly in the source
 material upon which this is based\.
-
 Don Phillipe has my thanks, and my fervent hope that he enjoys what follows\.
 
 
@@ -333,7 +332,7 @@ Setup an environment where you can easily define lpeg grammars with lots of
 syntax sugar, compatible with the 5 series of Luas:
 
 ```lua
-local function define(func, g, e)
+local function nodemaker(func, g, e)
    g = g or {}
    if e == nil then
       e = VER == " 5.1" and getfenv(func) or _G
@@ -375,6 +374,12 @@ local function define(func, g, e)
    func( env )
    assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
    return g
+end
+```
+
+```lua
+local function define(func, g, e, definer)
+   return definer(func, g, e)
 end
 ```
 
@@ -457,7 +462,7 @@ local function new(grammar_template, metas, pre, post)
 
    local metas = metas or {}
    metas = refineMetas(metas)
-   local grammar = define(grammar_template, nil, metas)
+   local grammar = define(grammar_template, nil, metas, nodemaker)
 
    local function parse(str, start, finish)
       local sub_str, begin = str, 1

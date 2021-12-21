@@ -154,7 +154,6 @@
 
 
 
-
 local s = require "status:status" ()
 s.verbose = false
 s.angry   = false
@@ -332,7 +331,7 @@ local arg3_offset = L.Carg(3)
 
 
 
-local function define(func, g, e)
+local function nodemaker(func, g, e)
    g = g or {}
    if e == nil then
       e = VER == " 5.1" and getfenv(func) or _G
@@ -374,6 +373,12 @@ local function define(func, g, e)
    func( env )
    assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
    return g
+end
+
+
+
+local function define(func, g, e, definer)
+   return definer(func, g, e)
 end
 
 
@@ -456,7 +461,7 @@ local function new(grammar_template, metas, pre, post)
 
    local metas = metas or {}
    metas = refineMetas(metas)
-   local grammar = define(grammar_template, nil, metas)
+   local grammar = define(grammar_template, nil, metas, nodemaker)
 
    local function parse(str, start, finish)
       local sub_str, begin = str, 1
