@@ -69,3 +69,7 @@ local function recognizer(func, g, e)
 end
 end
 ```
+
+```lua
+return recognizer
+```

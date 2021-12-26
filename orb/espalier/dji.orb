@@ -16,3 +16,20 @@ Said so.
 -@
 
 P.S. These are not the djroids you're lookin for...
+
+
+*** dji(in, bottle)
+
+qed
+
+#!lua
+local function dji(In, bottle)
+   return function(str)
+      return In(bottle(str))
+   end
+end
+#/lua
+
+#!lua
+return dji
+#/lua

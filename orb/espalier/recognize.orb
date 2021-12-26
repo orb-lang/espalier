@@ -37,7 +37,7 @@ end
 
  The equivalent of what's now called "nodemaker" in Grammar
 
-#!lua
+#!lua #noKnit #payTheCompilerItsToken
 local setmeta = setmetatable
 
 local function recognizer(func, g, e)
@@ -68,4 +68,8 @@ local function recognizer(func, g, e)
    return g
 end
 end
+#/lua
+
+#!lua
+return recognizer
 #/lua
