@@ -43,6 +43,8 @@ end
 
 
 
+local curry, dji  = assert(require "core:core/fn" . curry),
+                    assert(require "espalier:dji")
 
 
 
@@ -52,24 +54,36 @@ end
 
 
 
+local setmeta = setmetatable
+
+local function recognizer(func, g, e)
+   g = g or {}
+   if e == nil then
+      e = VER == " 5.1" and getfenv(func) or _G
+   end
+   local env = {}
+   local env_index = {
+      START = function(name) g[1] = name end,
+      V = L.V,
+      P = L.P }
+
+    setmeta(env_index, { __index = e })
+    setmeta(env, {
+       __index = env_index,
+       __newindex = function( _, name, val )
+             g[ name ] = val
+       end })
+
+   -- call passed function with custom environment (5.1- and 5.2-style)
+   if VER == " 5.1" then
+      setfenv(func, env )
+   end
+   func( env )
+   assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
+   return g
+end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-return recognizer
+return curry(dji, recognizer)
 

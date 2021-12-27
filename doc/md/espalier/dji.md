@@ -18,14 +18,22 @@ Said so\.
 P\.S\. These are not the djroids you're lookin for\.\.\.
 
 
-### dji\(in, bottle\)
+## bottle
+
+  \.\.\.curry the dji recognizer?
+
+yeah ok but how about, a little dash in that curry?\!
+
+
+### dji\(in, \_bottle\)
 
 qed
 
 ```lua
-local function dji(In, bottle)
+local function dji(In, _bottle)
+   -- aka peh, the 'peh' load. heh. payload
    return function(str)
-      return In(bottle(str))
+      return In(_bottle(str))
    end
 end
 ```

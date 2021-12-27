@@ -33,6 +33,22 @@ end
 ```
 
 
+### import from core\.fn, curry, and from espalier, the dji combinator
+
+
+  A thank you to Haskell, the esteemed doctor Curry, whom I am sure would be
+dismayed by the programmer socks\.  If I may be allowed to venture that
+opinion\.
+
+Sometimes types don't have to be inferred\.
+
+```lua
+local curry, dji  = assert(require "core:core/fn" . curry),
+                    assert(require "espalier:dji")
+
+```
+
+
 ### Recognizer definition function
 
  The equivalent of what's now called "nodemaker" in Grammar
@@ -48,7 +64,6 @@ local function recognizer(func, g, e)
    local env = {}
    local env_index = {
       START = function(name) g[1] = name end,
-      end,
       V = L.V,
       P = L.P }
 
@@ -67,9 +82,8 @@ local function recognizer(func, g, e)
    assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
    return g
 end
-end
 ```
 
 ```lua
-return recognizer
+return curry(dji, recognizer)
 ```
