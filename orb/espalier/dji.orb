@@ -18,6 +18,130 @@ Said so.
 P.S. These are not the djroids you're lookin for...
 
 
+** ι Ο → Υ Φ → Ψ
+
+  Shall I explain further?
+
+Very well.  Trivial though it must be stated: we use the point free style.
+
+Sally Forth!
+
+
+*** ι aka י aka ʤ
+
+The combinator itself, *dji*, or *iota*, or *yoda*, or *yod*.
+
+Preferentially spelled =ʤ= in most contexts, iota itself being mercilessly
+overloaded, and yod invokes the spirit of bidirectionality, which is too much
+mojo for many systems to handle, including, I must red-facedly confess, the
+current iteration of the bridge.
+
+Thanks to LuaJIT, we can just... do that.
+
+
+*** Ο aka endjinn aka engine aka in-dji aka omicron, if you simply must
+
+The dji combinator takes two arguments, as a combinator must.
+
+The first is the /engine/, this is the lambda which takes action on the final
+argument (the /sentence/), *iff* the sentence passes the mold of the /bottle/,
+which is the second argument.
+
+
+**** Hey. Hey! Not just for horses! A Kay A ה!
+
+I did not so much forget as simply not mention until just now!
+
+So. Mentioned.
+
+
+*** Returning Υ aka ן or the Rod
+
+  This should not be confused with the =y= combinator, Vav (in the preferred
+form) is the memorizing combinator.  It learns to take structure and apply it
+to the latent form which dji has curried it to with the ingenium.
+
+This is in turn applied to the *bottle* combinator.
+
+
+*** Bottle, Φ, fie, fo, fum
+
+The /bottle/ is a *grammar*, the syntax of which is metasyntactically defined
+in terms of a particular form of grammar, as indeed it must be.
+
+Because the rigor of the underlying system derives from the separate proofs
+we can derive from the basic axioms of combination, we prefer the universe we
+find through a left-favouring deterministic choice principle for the *alt*
+combinator, =/=.
+
+This is of course no requirement, merely a simplifying assumption which we
+will use throughout the derivation of this combinator.  It happens to also be
+a requirement of the /djin/ underlying this specific implementation, which is
+no kind of coincidence.
+
+
+***  Which is the Qopf, Dummkopf
+
+Heh.  Dummkopf was the mild one on the playground, when we really wanted to
+get salty we'd bring out the Äselsheiss
+
+It's a weird game a getting raised in the Midwest I tell ya
+
+
+**** ק.
+
+Yeah.  The Qopf.
+
+Did I stutter. I did not.
+
+
+*** Returning Ψ, also known as the Parsel, or ף, or the Peh Load
+
+Hehehe get it. "Peh" load.
+
+Do you see what I did there
+
+Do you
+
+No look, closer.  I insist.  I simply must insist.
+
+Don't make this any more hawkward than it is already. Look. Closer.
+
+Payload. It's a
+
+Yeah. Psi Phi. I'm also pretty pleased about it
+
+
+** ʤ(inn: Injin) -> qoph : Qopf
+
+
+  There we go.  Comfy, like my favourite cardigan.
+
+Which is, no mames, made from a shaved yak.
+
+Long story there, would be a digression to tell it here, which is a caution.
+A pity, almost.
+
+In the current year, typing the search string 'cardigan' into your musical
+search engine of choice will produce a soundtrack appropriate to the raag.
+Which one might roughly translate as, mood.
+
+
+*** Implementation
+
+This being a proof of concept, the details of the implementation are somewhat
+specific to the task at hand.  We shall find these to be suitably abstracted
+as the programme continues, we fervently wish.
+
+
+
+#!lua
+local function ʤ(inn)
+
+end
+#/lua
+
+
 ** bottle
 
   ...curry the dji recognizer?
