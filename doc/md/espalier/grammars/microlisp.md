@@ -38,5 +38,5 @@ local micro_lisp_metas = { lisp = Node : inherit "lisp",
 ```
 
 ```lua
-return Peg(micro_lisp_peg) : toGrammar(micro_lisp_metas)
+return Peg(micro_lisp_peg, micro_lisp_metas)
 ```

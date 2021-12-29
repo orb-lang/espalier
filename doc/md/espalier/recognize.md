@@ -1,184 +1,36 @@
+# Recognize
 
 
+Takes the same sort of grammar\-defining function as the Grammar module,
+returning a recognizer over the same language\.
 
+This either replies with the amount of the string it was able to recognize, or
+`nil, err`; we'll define machinery to handle the `err` case later\.
 
 
+## First step
 
+I'm just going to copypasta jam it in there, so I can turn Pegs into this\.
 
+##### status
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```lua
 local s = require "status:status" ()
 s.verbose = false
 s.angry   = false
+```
 
 
+#### requires, contd\.
 
-
-
-
+```lua
 local L = require "lpeg"
 local compact = assert(require "core/table" . compact)
 local Node = require "espalier/node"
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
+```lua
+local L = require "lpeg"
 local assert = assert
 local string = assert(string)
 local sub = assert(string.sub)
@@ -195,148 +47,20 @@ if VER == " 5.1" then
    local setfenv = assert(setfenv)
    local getfenv = assert(getfenv)
 end
+```
 
+### Recognizer definition function
 
+ The equivalent of what's now called "nodemaker" in Grammar
 
+```lua
+local setmeta = setmetatable
 
-
-
-
-
-local function make_ast_node(id, first, t, last, str, metas, offset)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   t.first = first + offset
-   t.last  = last + offset - 1
-   t.str   = str
-   if metas[id] then
-      local meta = metas[id]
-      if type(meta) == "function" then
-        t.id = id
-        t = meta(t, offset)
-      else
-        t = setmeta(t, meta)
-      end
-      assert(t.id, "no id on Node")
-   else
-      t.id = id
-      setmeta(t, metas[1])
-   end
-
-   if not t.parent then
-      t.parent = t
-   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   local top, touched = #t, false
-   for i = 1, top do
-      local cap = t[i]
-      if type(cap) ~= "table" or not cap.isNode then
-         touched = true
-         t[i] = nil
-      else
-         cap.parent = t
-      end
-   end
-   if touched then
-      compact(t, top)
-   end
-
-
-
-
-
-
-
-
-
-   -- post conditions
-   assert(t.isNode, "failed isNode: " .. id)
-   assert(t.str)
-   assert(t.parent, "no parent on " .. t.id)
-   return t
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local Cp = L.Cp
-local Cc = L.Cc
-local Ct = L.Ct
-local arg1_str = L.Carg(1)
-local arg2_metas = L.Carg(2)
-local arg3_offset = L.Carg(3)
-
-
-
-
-
-
-local function nodemaker(func, g, e)
+local function recognizer(func, g, e)
    g = g or {}
    if e == nil then
       e = VER == " 5.1" and getfenv(func) or _G
    end
-   local suppressed = {}
    local env = {}
    local env_index = {
       START = function(name) g[1] = name end,
@@ -353,17 +77,7 @@ local function nodemaker(func, g, e)
     setmeta(env, {
        __index = env_index,
        __newindex = function( _, name, val )
-          if suppressed[ name ] then
              g[ name ] = val
-          else
-             g[ name ] = Cc(name)
-                       * Cp()
-                       * Ct(val)
-                       * Cp()
-                       * arg1_str
-                       * arg2_metas
-                       * arg3_offset / make_ast_node
-          end
        end })
 
    -- call passed function with custom environment (5.1- and 5.2-style)
@@ -374,20 +88,23 @@ local function nodemaker(func, g, e)
    assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
    return g
 end
+```
+
+And the rest of the copypasta:
 
 
-
-local function define(func, g, e, definer)
+```lua
+local function define(definer, func, g, e)
    return definer(func, g, e)
 end
+```
 
 
+### refineMetas\(metas\)
 
+Takes metatables, distributing defaults and denormalizations\.
 
-
-
-
-
+```lua
 local function refineMetas(metas)
   for id, meta in pairs(metas) do
     if id ~= 1 then
@@ -409,29 +126,29 @@ local function refineMetas(metas)
   end
   return metas
 end
+```
 
 
+## new
+
+Given a grammar\_template function and a set of metatables,
+yield a parsing function and the grammar as an `lpeg` pattern\.
 
 
+#### \_fromString\(g\_str\), \_toFunction\(maybe\_grammar\)
 
+Currently this is expecting pure Lua code; the structure of the module is
+such that we can't call the PEG grammar from `grammar.orb` due to the
+circular dependency thereby created\.
 
+\#Todo
+the module, since it would happen at run time, not load time\.  This might not
+be worthwhile, but it's worth thinking about at least\.
 
+This implies wrapping some porcelain around everything so that we can at least
+try to build the declarative form first\.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```lua
 local function _fromString(g_str)
    local maybe_lua, err = loadstring(g_str)
    if maybe_lua then
@@ -461,7 +178,7 @@ local function new(grammar_template, metas, pre, post)
 
    local metas = metas or {}
    metas = refineMetas(metas)
-   local grammar = define(grammar_template, nil, metas, nodemaker)
+   local grammar = define(recognizer, grammar_template, nil, metas)
 
    local function parse(str, start, finish)
       local sub_str, begin = str, 1
@@ -482,7 +199,7 @@ local function new(grammar_template, metas, pre, post)
       if match == nil then
          return nil
       elseif type(match) == 'number' then
-         return sub(sub_str, 1, match)
+         return match
       end
       if post then
         match = post(match)
@@ -493,8 +210,9 @@ local function new(grammar_template, metas, pre, post)
 
    return parse, grammar
 end
+```
 
-
-
+```lua
 return new
+```
 
