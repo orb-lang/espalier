@@ -13,6 +13,23 @@
 
 
 
+
+
+local s = require "status:status" ()
+s.verbose = false
+s.angry   = false
+
+
+
+
+
+
+local L = require "lpeg"
+local compact = assert(require "core/table" . compact)
+local Node = require "espalier/node"
+
+
+
 local L = require "lpeg"
 local assert = assert
 local string = assert(string)
@@ -47,6 +64,12 @@ local function recognizer(func, g, e)
    local env = {}
    local env_index = {
       START = function(name) g[1] = name end,
+      SUPPRESS = function(...)
+         suppressed = {}
+         for i = 1, select('#', ...) do
+            suppressed[select(i, ... )] = true
+         end
+      end,
       V = L.V,
       P = L.P }
 
@@ -176,7 +199,7 @@ local function new(grammar_template, metas, pre, post)
       if match == nil then
          return nil
       elseif type(match) == 'number' then
-         return sub(sub_str, 1, match)
+         return match
       end
       if post then
         match = post(match)
