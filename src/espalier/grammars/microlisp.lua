@@ -12,7 +12,6 @@ local Node = require "espalier/node"
 
 
 
-
 local micro_lisp_peg = [[
 lisp = _ ((atom)+ / list)
 list = pel _ (atom / list)* per _
@@ -30,7 +29,6 @@ number = float / integer
 ]]
 
 
-
 local micro_lisp_metas = { lisp = Node : inherit "lisp",
                            atom = Node : inherit "atom",
                            symbol = Node : inherit "symbol",
@@ -38,5 +36,5 @@ local micro_lisp_metas = { lisp = Node : inherit "lisp",
 
 
 
-return Peg(micro_lisp_peg) : toGrammar(micro_lisp_metas)
+return Peg(micro_lisp_peg, micro_lisp_metas)
 

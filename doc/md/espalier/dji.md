@@ -239,6 +239,57 @@ yeah ok but how about, a little dash in that curry?\!
 
 qed
 
+
+#### qoph\(In, template, metas\)
+
+```lua
+local function qoph(In, template, metas)
+      g = g or {}
+   if e == nil then
+      e = VER == " 5.1" and getfenv(func) or _G
+   end
+   local suppressed = {}
+   local env = {}
+   local env_index = {
+      START = function(name) g[1] = name end,
+      SUPPRESS = function(...)
+         suppressed = {}
+         for i = 1, select('#', ...) do
+            suppressed[select(i, ... )] = true
+         end
+      end,
+      V = L.V,
+      P = L.P }
+
+    setmeta(env_index, { __index = e })
+    setmeta(env, {
+       __index = env_index,
+       __newindex = function( _, name, val )
+          if suppressed[ name ] then
+             g[ name ] = val
+          else
+             g[ name ] = Cc(name)
+                       * Cp()
+                       * Ct(val)
+                       * Cp()
+                       * arg1_str
+                       * arg2_metas
+                       * arg3_offset / make_ast_node
+          end
+       end })
+
+   -- call passed function with custom environment (5.1- and 5.2-style)
+   if VER == " 5.1" then
+      setfenv(func, env )
+   end
+   func( env )
+   assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
+   return g
+
+end
+```
+
+
 ```lua
 local function dji(In, bottle)
    local template, = bottle.template, bottle.metas,

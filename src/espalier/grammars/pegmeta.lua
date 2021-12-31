@@ -22,8 +22,9 @@
 
 
 
-local Node = require "espalier/node"
-local Grammar = require "espalier/grammar"
+local Node = require "espalier:espalier/node"
+local Grammar = require "espalier:espalier/grammar"
+local Seer   = require "espalier:espalier/recognize"
 local Phrase = require "singletons/phrase"
 
 local insert, remove, concat = assert(table.insert),
@@ -363,6 +364,20 @@ function Rules.toGrammar(rules, metas, pre, post, extraLpeg, header)
    rule_str = header .. rule_str
    rules.parse, rules.grammar = Grammar(rule_str, metas, pre, post)
    return rules.parse
+end
+
+
+
+
+
+
+
+
+function Rules.toSeer(rules, metas)
+   metas = metas or {}
+   local rule_str = rules:toLpeg()
+   rules.see = Seer(rule_str, metas)
+   return rules.see
 end
 
 
