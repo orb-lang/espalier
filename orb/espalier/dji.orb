@@ -148,9 +148,74 @@ as the programme continues, we fervently wish.
 
 **** On the Parameters Which, Combined, Are Applied to the Hook
 
-The Ingenium returns the Rod, or Hook, which itself expects a
+  The Ingenium returns the Rod, or Hook, which itself expects a Bottle
+containing some Grammar.
+
+We first apply the Ingenium itself, which must perform certain actions
+preparatory to, and subsequent upon, the parsing itself.
+
+I'm not sure at what point we'll need this intermediate, so the first
+implementation may perform it internally, since it doesn't leave the environs
+of the Dji combinator.
 
 
+***** Fields of the Endjinn
+
+We should maybe stick with one spelling if we're ever to implement!
+
+All of these functions are called variadically within =dji=, taking common
+parameters.
+
+- #slots:
+
+  - define:  A function receiving both the Injinn and the Bottle, this
+             performs all necessary preparations, returning the Auditor.
+
+  - preparse:  A function which expects whatever class of input Peh expects.
+               The first argument is the =sentence=, canonically a string, and
+               the second and third must be optional offsets into the sentence.
+               Any additional parameters may be provided.
+
+               The environment (which is included with the Bottle, as should
+               not be surprising) is expected to include the verb =match=.
+
+  - postparse:  A function with the signature (match, sentence, start,
+                finish), performing any necessary post processing steps before
+                returning whatever outcome of =peh(sentence, start, finish)=
+                is derived from this ultimate operation of the ingenium.
+
+
+
+***** Fields of the Bottle
+
+
+- #slots:
+
+
+  - grammar:  A Parsing Expression Grammar, which may be latent as a string or
+              already parsed into a Node, as the case may be.
+
+              Presently these are expressed in the parsing expression grammar
+              grammar, but there is no barrier to the use of GGG as well other
+              than that posed by the number of hours in a given day.
+
+  - metas:  The /metis/ (μῆτις), those aspects given to the character of the
+            result by the engine of recognition.
+
+            In the implementation, this is a table in which =[1]= is assigned
+            as the base or generic metis, for any rules not specified further,
+            with others given as values for the key corresponding to the rule
+            name, =.id=.
+
+            These values may be tables, expected to be metatables inheriting
+            from Node, or else, if functions, they are to be themselves of
+            type Peh, that is: expecting =(sentence, start, finish)=, with a
+            global environment which provides =match= and the other
+            fundamental combinators and operations.
+
+            The exact set of which is to be specified, but is broadly what
+            we've been importing from =L=, with certain additions to be added
+            as a next step in espalier.
 
 
 
