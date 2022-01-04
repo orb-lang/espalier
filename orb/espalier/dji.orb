@@ -218,8 +218,6 @@ parameters.
             as a next step in espalier.
 
 
-
-
 *** refineMetas(metas)
 
 Takes metatables, distributing defaults and denormalizations.
@@ -247,6 +245,7 @@ local function refineMetas(metas)
   return metas
 end
 #/lua
+
 
 **** _fromString(g_str), _toFunction(maybe_grammar)
 
