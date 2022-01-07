@@ -10,7 +10,7 @@
 
 local yield = assert(coroutine.yield, "uses coroutines")
 local wrap = assert(coroutine.wrap)
-local sub, find = assert(string.sub, "uses string"), assert(string.find)
+--local sub, find = assert(string.sub, "uses string"), assert(string.find)
 local setmeta, getmeta = assert(setmetatable), assert(getmetatable)
 
 
@@ -155,10 +155,11 @@ end
 
 
 local function _truncate(str, base_color, c)
-   local phrase
+   local phrase;
+
    if #str > 56 then
        --  Truncate in the middle
-       local pre, post = sub(str, 1, 26), sub(str, -26, -1)
+       local pre, post = str:sub(1, 26), str:sub(-26, -1)
        phrase = base_color(pre)
                      .. c.bold("………") .. base_color(post)
    else
@@ -254,7 +255,7 @@ Node.__repr = __repr
 
 
 function Node.span(node)
-   return sub(node.str, node.first, node.last)
+   return node.str:sub(node.first, node.last)
 end
 
 

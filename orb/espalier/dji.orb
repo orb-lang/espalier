@@ -218,6 +218,21 @@ parameters.
             as a next step in espalier.
 
 
+** match
+
+This is an internal abstraction, which on the maths level probably represents
+the top combinator of the peg-derived ingenium.
+
+It is to be thought of as returning two values, one being success or failure
+as represented by either the amount of index consumed or =nil=.  The second
+value of the twain is =true= if this consumed all input successfully, =nil=
+if it did not but this is not necessarily an error, =false= if it is an
+error, and if so, there should be the option of a third value representing
+the error in some yet to be specified fashion.
+
+The implication is that a =nil= first value is only true if the input is =""=,
+and is otherwise =false= or =nil=.
+
 *** refineMetas(metas)
 
 Takes metatables, distributing defaults and denormalizations.

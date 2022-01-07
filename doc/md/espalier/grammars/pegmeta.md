@@ -75,7 +75,7 @@ local PegPhrase = Phrase : inherit ({__repr = lex})
 
 ```lua
 local nl_map = { rule = true }
-local function _toSexpr(peg)
+local function _toSexpr(peg, depth)
    depth = depth or 0
    local sexpr_line = { (" "):rep(depth), "(" } -- Phrase?
    local name = peg.name or peg.id
@@ -536,6 +536,17 @@ function Rule.toPeg(rule)
 end
 ```
 
+
+```lua
+function Rule.toSexpr(rule)
+   local phrase = "(rule " .. rule:ruleName()
+   for _, twig in ipairs(rule :select "rhs"()) do
+      phrase = phrase .. " " .. twig:toSexpr()
+   end
+   return phrase .. ")"
+end
+```
+
 #### lhs, pattern, hidden\_pattern
 
 These are all handled internally by Rule, so they don't require
@@ -830,6 +841,14 @@ function Atom.toLpeg(atom)
    local phrase = PegPhrase "V"
    phrase = phrase .. "\"" .. _normalize(atom:span()) .. "\""
    return phrase
+end
+```
+
+Atoms are called "symbols" in parseIR and are presented unquoted\.
+
+```lua
+function Atom.toSexpr(atom)
+   return "(symbol " .. _normalize(atom:span()) .. ")"
 end
 ```
 
