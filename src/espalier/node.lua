@@ -450,6 +450,22 @@ Node.root = _root
 
 
 
+
+
+
+
+function Node.next(node, pred)
+   assert(pred, ':next needs a predicate at the moment')
+   return node:select(pred)()
+end
+
+
+
+
+
+
+
+
 function Node.walkPost(node)
     local function traverse(ast)
         if not type(ast) == 'table' and ast.isNode then return nil end

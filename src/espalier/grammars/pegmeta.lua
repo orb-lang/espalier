@@ -26,7 +26,7 @@ local Node = require "espalier:espalier/node"
 local Grammar = require "espalier:espalier/grammar"
 local Seer   = require "espalier:espalier/recognize"
 local Phrase = require "singletons/phrase"
-
+local core = require "qor:core"
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
@@ -37,6 +37,7 @@ local s = require "status:status" ()
 
 
 
+local lines = assert(core.string.lines)
 local ok, lex = pcall(require, "helm:helm/lex")
 if not ok then
    lex = function(repr, window, c) return tostring(repr) end
@@ -47,7 +48,7 @@ else
             for i, tok in ipairs(toks) do
               toks[i] = tok:toString(c)
             end
-            return concat(toks)
+            return lines(concat(toks))
          end
 end
 
@@ -442,14 +443,25 @@ local function _pattToString(patt)
    end
 end
 
+
+
 function Rule.ruleName(rule)
    return _normalize(_pattToString(rule:select "pattern" ()))
 end
 
+
+
+local format = assert(string.format)
+
+function Rule.ruleString(rule)
+   return format("%q", rule:ruleName())
+end
+
+
+
 function Rule.toLpeg(rule)
-   local phrase = PegPhrase ""
-   local patt = rule:ruleName()
-   phrase = phrase .. patt .. " = "
+   local patt = rule:ruleString()
+   local phrase = "_ENV[" .. patt .. "] = "
    return phrase .. rule:select "rhs" () : toLpeg ()
 end
 

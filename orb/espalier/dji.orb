@@ -237,6 +237,9 @@ and is otherwise =false= or =nil=.
 
 Takes metatables, distributing defaults and denormalizations.
 
+This needs to be directed by the engine, and I need some hard thinking about
+what can serve as a common interface for plural ingenia.
+
 #!lua
 local function refineMetas(metas)
   for id, meta in pairs(metas) do

@@ -445,6 +445,22 @@ Node.root = _root
 #/lua
 
 
+**** Node:next(pred?), Node:prev(pred?)
+
+These rather essential primitives to add this late!
+
+Starting with the one I need most which is :next(pred), in the cheapest
+possible implementation in terms of thought and typing.
+
+
+#!lua
+function Node.next(node, pred)
+   assert(pred, ':next needs a predicate at the moment')
+   return node:select(pred)()
+end
+#/lua
+
+
 **** Node.walkPost
 
 Depth-first iterator, postfix
