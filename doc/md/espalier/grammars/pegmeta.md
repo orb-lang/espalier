@@ -84,7 +84,8 @@ The corresponding strings we will provide directly when we have them\.  When
 deducing them from other rules, this array will be useful:
 
 ```lua
-local POWER = {'literal', 'bounded', 'regular', 'recursive'}
+local POWER = {'literal', 'bounded', 'regular', 'recursive',
+                NaN = "NaN" }
 ```
 
 A reporting base implementation, always a good place to start, though here
@@ -92,7 +93,14 @@ there is probably a correct base behavior\.
 
 ```lua
 function Peg.powerLevel(peg)
-   return "NaN", "NYI:" .. peg.id
+   local pow = -1
+   for _, twig in ipairs(peg) do
+      local level = twig:powerLevel()
+      -- level up!
+      pow = (tonumber(level) > tonumber(pow)) and pow or level
+   end
+   pow = pow == -1 and "NaN" or pow
+   return pow, POWER[pow]
 end
 ```
 

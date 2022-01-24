@@ -84,7 +84,8 @@ local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1 , 2, 3
 
 
 
-local POWER = {'literal', 'bounded', 'regular', 'recursive'}
+local POWER = {'literal', 'bounded', 'regular', 'recursive',
+                NaN = "NaN" }
 
 
 
@@ -92,7 +93,14 @@ local POWER = {'literal', 'bounded', 'regular', 'recursive'}
 
 
 function Peg.powerLevel(peg)
-   return "NaN", "NYI:" .. peg.id
+   local pow = -1
+   for _, twig in ipairs(peg) do
+      local level = twig:powerLevel()
+      -- level up!
+      pow = (tonumber(level) > tonumber(pow)) and pow or level
+   end
+   pow = pow == -1 and "NaN" or pow
+   return pow, POWER[pow]
 end
 
 
