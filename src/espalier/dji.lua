@@ -374,7 +374,7 @@ end
 
 
 local function dji(In, bottle)
-   local template, = bottle.template, bottle.metas,
+   local template = bottle.template, bottle.metas,
                                      bottle.pre, bottle.post
    local function define(template, metas, pre, post)
    if type(template) ~= "function" then
@@ -382,7 +382,7 @@ local function dji(In, bottle)
       template = _toFunction(template)
    end
 
-   local metas = refineMetas(bottle.metas or {}
+   local metas = refineMetas(bottle.metas or {})
    local grammar = qoph(In, template, metas)
    local pre, post = bottle.pre, bottle.post
 

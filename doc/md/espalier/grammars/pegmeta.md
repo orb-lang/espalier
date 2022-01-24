@@ -62,6 +62,86 @@ Peg.id = "peg"
 ```
 
 
+###  Peg:powerLevel\(\)
+
+This needs specific implementation, to put it mildly\.
+
+
+#### Power level constants
+
+We return a number as the main value for a power level, followed by the name
+as a string\.
+
+`BOUNDED` could use explanation, this is anything in a regular family which
+has a **defined maximum extent**, a useful subset of regulars where reasoning
+about the state of the parse is concerned\.
+
+```lua
+local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1 , 2, 3
+```
+
+The corresponding strings we will provide directly when we have them\.  When
+deducing them from other rules, this array will be useful:
+
+```lua
+local POWER = {'literal', 'bounded', 'regular', 'recursive'}
+```
+
+A reporting base implementation, always a good place to start, though here
+there is probably a correct base behavior\.
+
+```lua
+function Peg.powerLevel(peg)
+   return "NaN", "NYI:" .. peg.id
+end
+```
+
+
+### Peg:powerMap\(\)
+
+A blunt instrument for exporting the power level analyses\.
+
+```lua
+function Peg.powerMap(peg, map)
+   map = map or {}
+   local this_map = {}
+   map[peg.id] = this_map
+   this_map[1], this_map[2] = peg:powerLevel()
+   local kids = {}
+   this_map[3] = kids
+   for i, twig in ipairs(peg) do
+      local kid_map = {}
+      kids[i] = kid_map
+      twig:powerMap(kid_map)
+   end
+   return map
+end
+```
+
+
+#### Power level basic methods
+
+All primitive combinators return based on category alone, we define those
+here:
+
+```lua
+local function _literal(combi)
+   return LITERAL, 'literal'
+end
+
+local function _bounded(combi)
+   return BOUNDED, 'bounded'
+end
+
+local function _regular(combi)
+   return REGULAR, 'regular'
+end
+```
+
+Recursive rules \(and those with cat, group, and ordered choice\) require
+knowledge about the subrules, which ultimately they derive from these three\.
+
+
 ### PegPhrase class
 
   We might want to decorate our phrases with various REPRy enhancements, so
@@ -680,6 +760,17 @@ end
 ```
 
 
+### Literal:powerLevel\(\)
+
+The most basic, almost tautological, building block for power level analysis\.
+
+```lua
+Literal.powerLevel = _literal
+```
+
+
+
+
 ### Set
 
 ```lua
@@ -688,6 +779,13 @@ local Set = PegMetas : inherit "set"
 function Set.toLpeg(set)
    return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
 end
+```
+
+
+#### Set:powerLevel\(\)
+
+```lua
+Set.powerLevel = _bounded
 ```
 
 
@@ -703,6 +801,10 @@ function Range.toLpeg(range)
    phrase = phrase .. range : select "range_start" () : span()
    return phrase .. range : select "range_end" () : span() .. "\" "
 end
+```
+
+```lua
+Range.powerLevel = _bounded
 ```
 
 
@@ -874,6 +976,10 @@ function Number.toLpeg(number)
    local phrase = PegPhrase "P("
    return phrase .. number:span() .. ")"
 end
+```
+
+```lua
+Number.powerLevel = _literal
 ```
 
 

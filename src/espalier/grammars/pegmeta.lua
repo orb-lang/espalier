@@ -68,6 +68,86 @@ Peg.id = "peg"
 
 
 
+
+
+
+
+
+
+
+
+
+local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1 , 2, 3
+
+
+
+
+
+
+local POWER = {'literal', 'bounded', 'regular', 'recursive'}
+
+
+
+
+
+
+function Peg.powerLevel(peg)
+   return "NaN", "NYI:" .. peg.id
+end
+
+
+
+
+
+
+
+
+function Peg.powerMap(peg, map)
+   map = map or {}
+   local this_map = {}
+   map[peg.id] = this_map
+   this_map[1], this_map[2] = peg:powerLevel()
+   local kids = {}
+   this_map[3] = kids
+   for i, twig in ipairs(peg) do
+      local kid_map = {}
+      kids[i] = kid_map
+      twig:powerMap(kid_map)
+   end
+   return map
+end
+
+
+
+
+
+
+
+
+
+local function _literal(combi)
+   return LITERAL, 'literal'
+end
+
+local function _bounded(combi)
+   return BOUNDED, 'bounded'
+end
+
+local function _regular(combi)
+   return REGULAR, 'regular'
+end
+
+
+
+
+
+
+
+
+
+
+
+
 local PegPhrase = Phrase : inherit ({__repr = lex})
 
 
@@ -682,11 +762,29 @@ end
 
 
 
+
+
+Literal.powerLevel = _literal
+
+
+
+
+
+
+
+
 local Set = PegMetas : inherit "set"
 
 function Set.toLpeg(set)
    return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
 end
+
+
+
+
+
+
+Set.powerLevel = _bounded
 
 
 
@@ -702,6 +800,10 @@ function Range.toLpeg(range)
    phrase = phrase .. range : select "range_start" () : span()
    return phrase .. range : select "range_end" () : span() .. "\" "
 end
+
+
+
+Range.powerLevel = _bounded
 
 
 
@@ -873,6 +975,10 @@ function Number.toLpeg(number)
    local phrase = PegPhrase "P("
    return phrase .. number:span() .. ")"
 end
+
+
+
+Number.powerLevel = _literal
 
 
 
