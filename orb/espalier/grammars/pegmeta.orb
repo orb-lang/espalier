@@ -104,17 +104,24 @@ A blunt instrument for exporting the power level analyses.
 #!lua
 function Peg.powerMap(peg, map)
    map = map or {}
+   local nyi_map = {}
    local this_map = {}
-   map[peg.id] = this_map
-   this_map[1], this_map[2] = peg:powerLevel()
-   local kids = {}
-   this_map[3] = kids
-   for i, twig in ipairs(peg) do
-      local kid_map = {}
-      kids[i] = kid_map
-      twig:powerMap(kid_map)
+   this_map[1], this_map[2], this_map[3] = peg.id, peg:powerLevel()
+   insert(map, this_map)
+   for _, twig in ipairs(peg) do
+      local kids, bad_kids =  twig:powerMap()
+      for __, v in ipairs(kids) do
+         if v[2] == 'NaN' then
+            insert(nyi_map, v)
+         else
+            insert(map, v)
+         end
+      end
+      for __, v in ipairs(bad_kids) do
+         insert(nyi_map, v)
+      end
    end
-   return map
+   return map, nyi_map
 end
 #/lua
 
