@@ -79,13 +79,16 @@ Peg.id = "peg"
 
 local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1 , 2, 3
 
+local NO_LEVEL = -1 -- comment and indentation type rules
+
 
 
 
 
 
 local POWER = {'literal', 'bounded', 'regular', 'recursive',
-                NaN = "NaN" }
+                NaN = "NaN",
+                [-1] = 'no_level' }
 
 
 
@@ -150,6 +153,10 @@ end
 
 local function _regular(combi)
    return REGULAR, 'regular'
+end
+
+local function _no_level(combi)
+   return NO_LEVEL, 'no_level'
 end
 
 
@@ -527,6 +534,39 @@ end
 
 
 
+
+
+
+local function _atomsIn(rule)
+   local atoms = {}
+   for _, part in ipairs(rule:select 'rhs'()) do
+      if part.id == 'atom' then
+         insert(atoms, part)
+      end
+   end
+   return atoms
+end
+
+function Rules.analyse(rules)
+   local analysis = {}
+   rules:root().analysis = analysis
+   local calls = {{}}
+   analysis.calls = calls
+   local start_rule = rules :select 'rule' ()
+   local start_name = start_rule:ruleName()
+   calls[1][start_name] = _atomsIn(start_rule)
+   calls[start_name]= calls[1][start_name]
+
+   return analysis
+end
+
+Rules.analyze = Rules.analyse -- i18nftw
+
+
+
+
+
+
 local Rule = PegMetas : inherit "rule"
 
 local function _pattToString(patt)
@@ -837,6 +877,10 @@ end
 
 
 
+Zero_or_more.powerLevel = _regular
+
+
+
 
 
 
@@ -852,6 +896,10 @@ end
 
 
 
+One_or_more.powerLevel = _regular
+
+
+
 
 
 
@@ -864,6 +912,10 @@ function Optional.toLpeg(optional)
    end
    return phrase .. "^-1"
 end
+
+
+
+
 
 
 
@@ -953,6 +1005,8 @@ function Comment.toLpeg(comment)
    return phrase .. comment:span():sub(2)
 end
 
+Comment.powerLevel = _no_level
+
 
 
 
@@ -978,6 +1032,15 @@ end
 function Atom.toSexpr(atom)
    return "(symbol " .. _normalize(atom:span()) .. ")"
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1013,6 +1076,8 @@ function Dent.strLine(dent)
    return ""
 end
 
+Dent.powerLevel = _no_level
+
 
 
 
@@ -1023,6 +1088,8 @@ local Whitespace = PegMetas : inherit "WS"
 function Whitespace.toLpeg(whitespace)
    return PegPhrase(whitespace:span())
 end
+
+Whitespace.powerLevel = _no_level
 
 
 

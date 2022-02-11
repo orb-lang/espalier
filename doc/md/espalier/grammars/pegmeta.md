@@ -78,6 +78,8 @@ about the state of the parse is concerned\.
 
 ```lua
 local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1 , 2, 3
+
+local NO_LEVEL = -1 -- comment and indentation type rules
 ```
 
 The corresponding strings we will provide directly when we have them\.  When
@@ -85,7 +87,8 @@ deducing them from other rules, this array will be useful:
 
 ```lua
 local POWER = {'literal', 'bounded', 'regular', 'recursive',
-                NaN = "NaN" }
+                NaN = "NaN",
+                [-1] = 'no_level' }
 ```
 
 A reporting base implementation, always a good place to start, though here
@@ -150,6 +153,10 @@ end
 
 local function _regular(combi)
    return REGULAR, 'regular'
+end
+
+local function _no_level(combi)
+   return NO_LEVEL, 'no_level'
 end
 ```
 
@@ -525,6 +532,39 @@ end
 ```
 
 
+### Rules:analyse\(\)
+
+  Perform recursive rule analysis, attaching the result as a `.analysis`
+field on the Peg \(parent/root\) Node, returning the result as well\.
+
+```lua
+local function _atomsIn(rule)
+   local atoms = {}
+   for _, part in ipairs(rule:select 'rhs'()) do
+      if part.id == 'atom' then
+         insert(atoms, part)
+      end
+   end
+   return atoms
+end
+
+function Rules.analyse(rules)
+   local analysis = {}
+   rules:root().analysis = analysis
+   local calls = {{}}
+   analysis.calls = calls
+   local start_rule = rules :select 'rule' ()
+   local start_name = start_rule:ruleName()
+   calls[1][start_name] = _atomsIn(start_rule)
+   calls[start_name]= calls[1][start_name]
+
+   return analysis
+end
+
+Rules.analyze = Rules.analyse -- i18nftw
+```
+
+
 ### Rule
 
 ```lua
@@ -837,6 +877,10 @@ function Zero_or_more.toLpeg(zero_or_more)
 end
 ```
 
+```lua
+Zero_or_more.powerLevel = _regular
+```
+
 
 ### One\_or\_more
 
@@ -850,6 +894,10 @@ function One_or_more.toLpeg(one_or_more)
    end
    return phrase .. "^1"
 end
+```
+
+```lua
+One_or_more.powerLevel = _regular
 ```
 
 
@@ -867,6 +915,8 @@ function Optional.toLpeg(optional)
 end
 ```
 
+I think this inherits power levels from its subrules?
+
 
 ### Repeated
 
@@ -875,6 +925,8 @@ implementation\.
 
 The simpler case is a numeric repeat: this simply matches the suffixed pattern
 an exact number of times\.
+
+\#Todo
 
 ```lua
 local Repeated = PegMetas : inherit "repeated"
@@ -953,6 +1005,8 @@ function Comment.toLpeg(comment)
    local phrase = PegPhrase "--"
    return phrase .. comment:span():sub(2)
 end
+
+Comment.powerLevel = _no_level
 ```
 
 
@@ -980,6 +1034,15 @@ function Atom.toSexpr(atom)
    return "(symbol " .. _normalize(atom:span()) .. ")"
 end
 ```
+
+
+### Atom:powerLevel\(\)
+
+This is the one where we have to defer in some fashion until we've resolved
+all, well, atomic references\.
+
+Calling symbols 'atoms' is doing me no favors here, I should fix it while it's
+still painful to just me :/
 
 
 ### Number
@@ -1013,6 +1076,8 @@ end
 function Dent.strLine(dent)
    return ""
 end
+
+Dent.powerLevel = _no_level
 ```
 
 
@@ -1024,6 +1089,8 @@ local Whitespace = PegMetas : inherit "WS"
 function Whitespace.toLpeg(whitespace)
    return PegPhrase(whitespace:span())
 end
+
+Whitespace.powerLevel = _no_level
 ```
 
 ```lua
