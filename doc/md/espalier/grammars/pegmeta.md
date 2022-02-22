@@ -77,7 +77,7 @@ has a **defined maximum extent**, a useful subset of regulars where reasoning
 about the state of the parse is concerned\.
 
 ```lua
-local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1 , 2, 3
+local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1, 2, 3
 
 local NO_LEVEL = -1 -- comment and indentation type rules
 ```
@@ -86,8 +86,8 @@ The corresponding strings we will provide directly when we have them\.  When
 deducing them from other rules, this array will be useful:
 
 ```lua
-local POWER = { 'literal', 'bounded', 'regular', 'recursive',
-                NaN = "NaN",
+local POWER = { 'bounded', 'regular', 'recursive',
+                [0] ='literal',
                 [-1] = 'no_level' }
 ```
 
@@ -96,13 +96,11 @@ there is probably a correct base behavior\.
 
 ```lua
 function Peg.powerLevel(peg)
-   local pow = -1
+   local pow = -2
    for _, twig in ipairs(peg) do
       local level = twig:powerLevel()
-      -- level up!
-      pow = (tonumber(level) > tonumber(pow)) and pow or level
+      pow = (tonumber(level) > tonumber(pow)) and level or pow
    end
-   pow = pow == -1 and "NaN" or pow
    return pow, POWER[pow]
 end
 ```
@@ -579,8 +577,15 @@ function Rules.analyse(rules)
          name_to_rule[name] = rule
       end
    end
+   local name_to_power = {}
+   analysis.powers = name_to_power
+   for name, symbols in pairs(name_to_symbols) do
+      if #symbols == 0 then
+         name_to_power[name] = name_to_rule[name]:powerLevel()
+      end
+   end
 
-   return analysis
+   return analysis.powers
 end
 
 Rules.analyze = Rules.analyse -- i18nftw
@@ -720,6 +725,19 @@ function Rule.toSexpr(rule)
    return phrase .. ")"
 end
 ```
+
+
+### Rule:powerLevel\(\)
+
+  The power level of a rule is the power level of the right hand side of the
+rule\.
+
+```lua
+function Rule.powerLevel(rule)
+   return rule :select 'rhs' () :powerLevel()
+end
+```
+
 
 #### lhs, pattern, hidden\_pattern
 
@@ -1015,6 +1033,13 @@ function Named.toLpeg(named)
       error("unexpected back reference, id " .. tostring(named[2].id))
    end
    return phrase
+end
+```
+
+
+```lua
+function Named.powerLevel(named)
+   return named[1]:powerLevel()
 end
 ```
 
