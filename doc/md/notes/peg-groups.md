@@ -176,6 +176,8 @@ Put plainly: if we're parsing Lua and encounter an `if` keyword, we know we
 will find a `then` and an `end`, and if we don't, we have a failing `if`
 statement, which means we have a failing parse\.
 
+[relevant link](https://news.ycombinator.com/item?id=20503245)
+
 
 
 ### Equivalence Folding

@@ -86,7 +86,7 @@ local NO_LEVEL = -1 -- comment and indentation type rules
 
 
 
-local POWER = {'literal', 'bounded', 'regular', 'recursive',
+local POWER = { 'literal', 'bounded', 'regular', 'recursive',
                 NaN = "NaN",
                 [-1] = 'no_level' }
 
@@ -282,7 +282,7 @@ local Rules = PegMetas : inherit "rules"
 
 
 local function _normalize(str)
-   return str:gsub("%-", "%_")
+   return (str:gsub("%-", "%_"))
 end
 
 
@@ -538,24 +538,23 @@ end
 
 
 local function _atomsIn(rule)
-   local atoms = {}
-   for _, part in ipairs(rule:select 'rhs'()) do
-      if part.id == 'atom' then
-         insert(atoms, part)
-      end
+   local atoms, names = {}, {}
+   for atom in rule :select 'rhs'() :select 'atom' do
+      insert(atoms, atom)
+      insert(names, _normalize(atom:span()))
    end
-   return atoms
+   return atoms, names
 end
 
 function Rules.analyse(rules)
    local analysis = {}
-   rules:root().analysis = analysis
-   local calls = {{}}
+   rules.analysis = analysis
+   local calls = {{}, {}}
    analysis.calls = calls
    local start_rule = rules :select 'rule' ()
    local start_name = start_rule:ruleName()
-   calls[1][start_name] = _atomsIn(start_rule)
-   calls[start_name]= calls[1][start_name]
+   local atoms_called, names_called = _atomsIn(start_rule)
+   calls[start_name]= names_called
 
    return analysis
 end
@@ -615,6 +614,8 @@ end
 
 local _peg_str_memo = setmetatable({}, { __mode = 'kv' })
 
+local lines = assert(core.string.lines)
+
 function Rule.toPegStr(rule)
    local rules = rule:root()
    local rule_name = rule:ruleName()
@@ -658,8 +659,11 @@ function Rule.toPegStr(rule)
    _rulesFrom(name_atoms[rule_name])
 
    local function rfn() return concat(peg_str, "\n") end
+   local function __repr()
+      return lines(rfn())
+   end
 
-   return setmetatable({}, { __repr = rfn, __tostring = rfn }),
+   return setmetatable({}, { __repr = __repr, __tostring = rfn }),
           new_metas
 end
 
