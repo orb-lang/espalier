@@ -26,7 +26,7 @@ local Node = require "espalier:espalier/node"
 local Grammar = require "espalier:espalier/grammar"
 local Seer   = require "espalier:espalier/recognize"
 local Phrase = require "singletons/phrase"
-local core = require "qor:core"
+local core = require "qor:core" -- #todo another qor
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
@@ -538,24 +538,47 @@ end
 field on the Rules Node, returning the result as well\.
 
 ```lua
+local compact = assert(core.table.compact)
+
 local function _atomsIn(rule)
-   local atoms, names = {}, {}
+   local names = {}
    for atom in rule :select 'rhs'() :select 'atom' do
-      insert(atoms, atom)
       insert(names, _normalize(atom:span()))
    end
-   return atoms, names
+   -- deduplicate
+   local seen, top = {}, #names
+   for i, sym in ipairs(names) do
+      if seen[sym] then
+         names[i] = nil
+      end
+      seen[sym] = true
+   end
+   compact(names, top)
+   return names
 end
 
 function Rules.analyse(rules)
    local analysis = {}
    rules.analysis = analysis
-   local calls = {{}, {}}
-   analysis.calls = calls
+   local name_to_symbols = {}
+   local name_to_rule = {}
+   analysis.symbols = name_to_symbols
+   analysis.rules = name_to_rule
+
    local start_rule = rules :select 'rule' ()
    local start_name = start_rule:ruleName()
-   local atoms_called, names_called = _atomsIn(start_rule)
-   calls[start_name]= names_called
+   local names_called = _atomsIn(start_rule)
+   name_to_symbols[start_name] = names_called
+   name_to_rule[start_name] = start_rule
+   name_to_rule[1] = start_rule
+   for rule in rules :select 'rule' do
+      if rule ~= start_rule then
+         local name = rule:ruleName()
+         local names_called = _atomsIn(rule)
+         name_to_symbols[name] = names_called
+         name_to_rule[name] = rule
+      end
+   end
 
    return analysis
 end
