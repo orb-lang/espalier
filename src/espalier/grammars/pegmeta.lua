@@ -87,8 +87,9 @@ local NO_LEVEL = -1 -- comment and indentation type rules
 
 
 local POWER = { 'bounded', 'regular', 'recursive',
-                [0] ='literal',
-                [-1] = 'no_level' }
+                [0] = 'literal',
+                [-1] = 'no_level',
+                NaN = 'NaN' }
 
 
 
@@ -96,10 +97,16 @@ local POWER = { 'bounded', 'regular', 'recursive',
 
 
 function Peg.powerLevel(peg)
-   local pow = -2
+   local pow, leaf = -2, true
    for _, twig in ipairs(peg) do
+      leaf = false
       local level = twig:powerLevel()
-      pow = (tonumber(level) > tonumber(pow)) and level or pow
+          -- unusual ordering floats nans up
+      pow = (tonumber(pow) > tonumber(level)) and pow or level
+   end
+   -- we need explicit values for all leaf nodes
+   if leaf then
+      return tonumber('NaN'), 'NaN'
    end
    return pow, POWER[pow]
 end
@@ -562,6 +569,7 @@ function Rules.analyse(rules)
    analysis.symbols = name_to_symbols
    analysis.rules = name_to_rule
 
+   -- map rules to the rules needed to match them
    local start_rule = rules :select 'rule' ()
    local start_name = start_rule:ruleName()
    local names_called = _atomsIn(start_rule)
@@ -578,6 +586,8 @@ function Rules.analyse(rules)
    end
    local name_to_power = {}
    analysis.powers = name_to_power
+
+   -- get power levels for base rules
    for name, symbols in pairs(name_to_symbols) do
       if #symbols == 0 then
          name_to_power[name] = name_to_rule[name]:powerLevel()
