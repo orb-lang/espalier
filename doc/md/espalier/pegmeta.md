@@ -62,106 +62,6 @@ Peg.id = "peg"
 ```
 
 
-###  Peg:powerLevel\(\)
-
-This needs specific implementation, to put it mildly\.
-
-
-#### Power level constants
-
-We return a number as the main value for a power level, followed by the name
-as a string\.
-
-`BOUNDED` could use explanation, this is anything in a regular family which
-has a **defined maximum extent**, a useful subset of regulars where reasoning
-about the state of the parse is concerned\.
-
-```lua
-local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1, 2, 3
-
-local NO_LEVEL = -1 -- comment and indentation type rules
-```
-
-The corresponding strings we will provide directly when we have them\.  When
-deducing them from other rules, this array will be useful:
-
-```lua
-local POWER = { 'bounded', 'regular', 'recursive',
-                [0] ='literal',
-                [-1] = 'no_level' }
-```
-
-A reporting base implementation, always a good place to start, though here
-there is probably a correct base behavior\.
-
-```lua
-function Peg.powerLevel(peg)
-   local pow = -2
-   for _, twig in ipairs(peg) do
-      local level = twig:powerLevel()
-      pow = (tonumber(level) > tonumber(pow)) and level or pow
-   end
-   return pow, POWER[pow]
-end
-```
-
-
-### Peg:powerMap\(\)
-
-A blunt instrument for exporting the power level analyses\.
-
-```lua
-function Peg.powerMap(peg, map)
-   map = map or {}
-   local nyi_map = {}
-   local this_map = {}
-   this_map[1], this_map[2], this_map[3] = peg.id, peg:powerLevel()
-   insert(map, this_map)
-   for _, twig in ipairs(peg) do
-      local kids, bad_kids =  twig:powerMap()
-      for __, v in ipairs(kids) do
-         if v[2] == 'NaN' then
-            insert(nyi_map, v)
-         else
-            insert(map, v)
-         end
-      end
-      for __, v in ipairs(bad_kids) do
-         insert(nyi_map, v)
-      end
-   end
-   return map, nyi_map
-end
-```
-
-
-#### Power level basic methods
-
-All primitive combinators return based on category alone, we define those
-here:
-
-```lua
-local function _literal(combi)
-   return LITERAL, 'literal'
-end
-
-local function _bounded(combi)
-   return BOUNDED, 'bounded'
-end
-
-local function _regular(combi)
-   return REGULAR, 'regular'
-end
-
-local function _no_level(combi)
-   return NO_LEVEL, 'no_level'
-end
-```
-
-Recursive rules \(and those with cat, group, and ordered choice\) require
-knowledge about the subrules, which ultimately they derive from these three\.
-
-
 ### PegPhrase class
 
   We might want to decorate our phrases with various REPRy enhancements, so
@@ -530,71 +430,6 @@ end
 ```
 
 
-### Rules:analyse\(\)
-
-  Perform recursive rule analysis, attaching the result as a `.analysis`
-field on the Rules Node, returning the result as well\.
-
-```lua
-local compact = assert(core.table.compact)
-
-local function _atomsIn(rule)
-   local names = {}
-   for atom in rule :select 'rhs'() :select 'atom' do
-      insert(names, _normalize(atom:span()))
-   end
-   -- deduplicate
-   local seen, top = {}, #names
-   for i, sym in ipairs(names) do
-      if seen[sym] then
-         names[i] = nil
-      end
-      seen[sym] = true
-   end
-   compact(names, top)
-   return names
-end
-
-function Rules.analyse(rules)
-   local analysis = {}
-   rules.analysis = analysis
-   local name_to_symbols = {}
-   local name_to_rule = {}
-   analysis.symbols = name_to_symbols
-   analysis.rules = name_to_rule
-
-   -- map rules to the rules needed to match them
-   local start_rule = rules :select 'rule' ()
-   local start_name = start_rule:ruleName()
-   local names_called = _atomsIn(start_rule)
-   name_to_symbols[start_name] = names_called
-   name_to_rule[start_name] = start_rule
-   name_to_rule[1] = start_rule
-   for rule in rules :select 'rule' do
-      if rule ~= start_rule then
-         local name = rule:ruleName()
-         local names_called = _atomsIn(rule)
-         name_to_symbols[name] = names_called
-         name_to_rule[name] = rule
-      end
-   end
-   local name_to_power = {}
-   analysis.powers = name_to_power
-
-   -- get power levels for base rules
-   for name, symbols in pairs(name_to_symbols) do
-      if #symbols == 0 then
-         name_to_power[name] = name_to_rule[name]:powerLevel()
-      end
-   end
-
-   return analysis.powers
-end
-
-Rules.analyze = Rules.analyse -- i18nftw
-```
-
-
 ### Rule
 
 ```lua
@@ -730,18 +565,6 @@ end
 ```
 
 
-### Rule:powerLevel\(\)
-
-  The power level of a rule is the power level of the right hand side of the
-rule\.
-
-```lua
-function Rule.powerLevel(rule)
-   return rule :select 'rhs' () :powerLevel()
-end
-```
-
-
 #### lhs, pattern, hidden\_pattern
 
 These are all handled internally by Rule, so they don't require
@@ -863,17 +686,6 @@ end
 ```
 
 
-### Literal:powerLevel\(\)
-
-The most basic, almost tautological, building block for power level analysis\.
-
-```lua
-Literal.powerLevel = _literal
-```
-
-
-
-
 ### Set
 
 ```lua
@@ -882,13 +694,6 @@ local Set = PegMetas : inherit "set"
 function Set.toLpeg(set)
    return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
 end
-```
-
-
-#### Set:powerLevel\(\)
-
-```lua
-Set.powerLevel = _bounded
 ```
 
 
@@ -906,11 +711,6 @@ function Range.toLpeg(range)
 end
 ```
 
-```lua
-Range.powerLevel = _bounded
-```
-
-
 ### Zero\_or\_more
 
 ```lua
@@ -923,10 +723,6 @@ function Zero_or_more.toLpeg(zero_or_more)
    end
    return phrase .. "^0"
 end
-```
-
-```lua
-Zero_or_more.powerLevel = _regular
 ```
 
 
@@ -944,10 +740,6 @@ function One_or_more.toLpeg(one_or_more)
 end
 ```
 
-```lua
-One_or_more.powerLevel = _regular
-```
-
 
 ### Optional
 
@@ -962,8 +754,6 @@ function Optional.toLpeg(optional)
    return phrase .. "^-1"
 end
 ```
-
-I think this inherits power levels from its subrules?
 
 
 ### Repeated
@@ -1040,13 +830,6 @@ end
 ```
 
 
-```lua
-function Named.powerLevel(named)
-   return named[1]:powerLevel()
-end
-```
-
-
 ### Comment
 
 ```lua
@@ -1060,8 +843,6 @@ function Comment.toLpeg(comment)
    local phrase = PegPhrase "--"
    return phrase .. comment:span():sub(2)
 end
-
-Comment.powerLevel = _no_level
 ```
 
 
@@ -1111,10 +892,6 @@ function Number.toLpeg(number)
 end
 ```
 
-```lua
-Number.powerLevel = _literal
-```
-
 
 ### Dent
 
@@ -1131,8 +908,6 @@ end
 function Dent.strLine(dent)
    return ""
 end
-
-Dent.powerLevel = _no_level
 ```
 
 
@@ -1144,8 +919,6 @@ local Whitespace = PegMetas : inherit "WS"
 function Whitespace.toLpeg(whitespace)
    return PegPhrase(whitespace:span())
 end
-
-Whitespace.powerLevel = _no_level
 ```
 
 ```lua

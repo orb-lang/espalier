@@ -68,106 +68,6 @@ Peg.id = "peg"
 
 
 
-
-
-
-
-
-
-
-
-
-local LITERAL, BOUNDED, REGULAR, RECURSIVE = 0, 1, 2, 3
-
-local NO_LEVEL = -1 -- comment and indentation type rules
-
-
-
-
-
-
-local POWER = { 'bounded', 'regular', 'recursive',
-                [0] ='literal',
-                [-1] = 'no_level' }
-
-
-
-
-
-
-function Peg.powerLevel(peg)
-   local pow = -2
-   for _, twig in ipairs(peg) do
-      local level = twig:powerLevel()
-      pow = (tonumber(level) > tonumber(pow)) and level or pow
-   end
-   return pow, POWER[pow]
-end
-
-
-
-
-
-
-
-
-function Peg.powerMap(peg, map)
-   map = map or {}
-   local nyi_map = {}
-   local this_map = {}
-   this_map[1], this_map[2], this_map[3] = peg.id, peg:powerLevel()
-   insert(map, this_map)
-   for _, twig in ipairs(peg) do
-      local kids, bad_kids =  twig:powerMap()
-      for __, v in ipairs(kids) do
-         if v[2] == 'NaN' then
-            insert(nyi_map, v)
-         else
-            insert(map, v)
-         end
-      end
-      for __, v in ipairs(bad_kids) do
-         insert(nyi_map, v)
-      end
-   end
-   return map, nyi_map
-end
-
-
-
-
-
-
-
-
-
-local function _literal(combi)
-   return LITERAL, 'literal'
-end
-
-local function _bounded(combi)
-   return BOUNDED, 'bounded'
-end
-
-local function _regular(combi)
-   return REGULAR, 'regular'
-end
-
-local function _no_level(combi)
-   return NO_LEVEL, 'no_level'
-end
-
-
-
-
-
-
-
-
-
-
-
-
 local PegPhrase = Phrase : inherit ({__repr = lex})
 
 
@@ -532,71 +432,6 @@ end
 
 
 
-
-
-
-local compact = assert(core.table.compact)
-
-local function _atomsIn(rule)
-   local names = {}
-   for atom in rule :select 'rhs'() :select 'atom' do
-      insert(names, _normalize(atom:span()))
-   end
-   -- deduplicate
-   local seen, top = {}, #names
-   for i, sym in ipairs(names) do
-      if seen[sym] then
-         names[i] = nil
-      end
-      seen[sym] = true
-   end
-   compact(names, top)
-   return names
-end
-
-function Rules.analyse(rules)
-   local analysis = {}
-   rules.analysis = analysis
-   local name_to_symbols = {}
-   local name_to_rule = {}
-   analysis.symbols = name_to_symbols
-   analysis.rules = name_to_rule
-
-   -- map rules to the rules needed to match them
-   local start_rule = rules :select 'rule' ()
-   local start_name = start_rule:ruleName()
-   local names_called = _atomsIn(start_rule)
-   name_to_symbols[start_name] = names_called
-   name_to_rule[start_name] = start_rule
-   name_to_rule[1] = start_rule
-   for rule in rules :select 'rule' do
-      if rule ~= start_rule then
-         local name = rule:ruleName()
-         local names_called = _atomsIn(rule)
-         name_to_symbols[name] = names_called
-         name_to_rule[name] = rule
-      end
-   end
-   local name_to_power = {}
-   analysis.powers = name_to_power
-
-   -- get power levels for base rules
-   for name, symbols in pairs(name_to_symbols) do
-      if #symbols == 0 then
-         name_to_power[name] = name_to_rule[name]:powerLevel()
-      end
-   end
-
-   return analysis.powers
-end
-
-Rules.analyze = Rules.analyse -- i18nftw
-
-
-
-
-
-
 local Rule = PegMetas : inherit "rule"
 
 local function _pattToString(patt)
@@ -735,18 +570,6 @@ end
 
 
 
-function Rule.powerLevel(rule)
-   return rule :select 'rhs' () :powerLevel()
-end
-
-
-
-
-
-
-
-
-
 
 
 
@@ -865,29 +688,11 @@ end
 
 
 
-
-
-Literal.powerLevel = _literal
-
-
-
-
-
-
-
-
 local Set = PegMetas : inherit "set"
 
 function Set.toLpeg(set)
    return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
 end
-
-
-
-
-
-
-Set.powerLevel = _bounded
 
 
 
@@ -906,11 +711,6 @@ end
 
 
 
-Range.powerLevel = _bounded
-
-
-
-
 
 
 local Zero_or_more = PegMetas : inherit "zero_or_more"
@@ -922,10 +722,6 @@ function Zero_or_more.toLpeg(zero_or_more)
    end
    return phrase .. "^0"
 end
-
-
-
-Zero_or_more.powerLevel = _regular
 
 
 
@@ -944,10 +740,6 @@ end
 
 
 
-One_or_more.powerLevel = _regular
-
-
-
 
 
 
@@ -960,8 +752,6 @@ function Optional.toLpeg(optional)
    end
    return phrase .. "^-1"
 end
-
-
 
 
 
@@ -1040,13 +830,6 @@ end
 
 
 
-function Named.powerLevel(named)
-   return named[1]:powerLevel()
-end
-
-
-
-
 
 
 local Comment = PegMetas : inherit "comment"
@@ -1059,8 +842,6 @@ function Comment.toLpeg(comment)
    local phrase = PegPhrase "--"
    return phrase .. comment:span():sub(2)
 end
-
-Comment.powerLevel = _no_level
 
 
 
@@ -1111,10 +892,6 @@ end
 
 
 
-Number.powerLevel = _literal
-
-
-
 
 
 
@@ -1131,8 +908,6 @@ function Dent.strLine(dent)
    return ""
 end
 
-Dent.powerLevel = _no_level
-
 
 
 
@@ -1143,8 +918,6 @@ local Whitespace = PegMetas : inherit "WS"
 function Whitespace.toLpeg(whitespace)
    return PegPhrase(whitespace:span())
 end
-
-Whitespace.powerLevel = _no_level
 
 
 
