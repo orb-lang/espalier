@@ -1,0 +1,7 @@
+# Peg Middleware
+
+Extensions of the Peg metatables\.
+
+```lua
+local Peg_M = require "espalier:espalier/pegmeta"
+```
