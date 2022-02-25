@@ -35,5 +35,18 @@ assert(Rules)
 
 
 
-return P_ENV
+
+
+
+
+
+local PegMiddle = {}
+
+for k, v in pairs(P_ENV) do
+   PegMiddle[v.id] = v
+end
+
+
+
+return PegMiddle
 
