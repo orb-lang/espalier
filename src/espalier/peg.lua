@@ -14,7 +14,7 @@
 
 local L = require "espalier/elpatt"
 local P, R, V = L.P, L.R, L.V
-local Grammar = require "espalier/grammar"
+local Grammar = require "espalier:espalier/grammar"
 local pegMetas = require "espalier:espalier/pegmeta"
 
 
