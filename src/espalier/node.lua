@@ -8,6 +8,15 @@
 
 
 
+
+
+
+
+
+
+
+
+
 local yield = assert(coroutine.yield, "uses coroutines")
 local wrap = assert(coroutine.wrap)
 --local sub, find = assert(string.sub, "uses string"), assert(string.find)
@@ -770,49 +779,13 @@ end
 
 
 
-local _nl_map = setmetatable({}, { __mode = 'kv' })
-local findall = assert(require "core:core/string".findall)
-
-local function _findPos(nl_map, target, start)
-   local line = start or 1
-   local cursor = 0
-   local col
-   while true do
-      if line > #nl_map then
-         -- technically two possibilities: node.last is after the
-         -- end of node.str, or it's on a final line with no newline.
-         -- the former would be quite exceptional, so we assume the latter
-         -- here.
-         -- so we need the old cursor back:
-         cursor = nl_map[line - 1][1] + 1
-         return line, target - cursor + 1
-      end
-      local next_nl = nl_map[line][1]
-      if target > next_nl then
-         -- advance
-         cursor = next_nl + 1
-         line = line + 1
-      else
-         return line, target - cursor + 1
-      end
-   end
-end
+local linepos = assert(require "qor:core" .string .linepos)
 
 function Node.linePos(node)
-   local nl_map
-   if _nl_map[node.str] then
-      nl_map = _nl_map[node.str]
-   else
-      nl_map = findall(node.str, "\n")
-      _nl_map[node.str] = nl_map
-   end
-   if not nl_map then
-      -- there are no newlines:
-      return 1, node.first, 1, node.last
-   end
-   -- otherwise find the offsets
-   local line_first, col_first = _findPos(nl_map, node.first)
-   local line_last, col_last = _findPos(nl_map, node.last, line_first)
+   -- unfortunately we return twice as much info as we normally need 'just
+   -- in case'
+   local line_first, col_first = linepos(node.str, node.first)
+   local line_last, col_last = linepos(node.str, node.last)
    return line_first, col_first, line_last, col_last
 end
 
