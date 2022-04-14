@@ -154,6 +154,8 @@
 
 
 
+
+
 local s = require "status:status" ()
 s.verbose = false
 s.angry   = false
@@ -292,7 +294,7 @@ local function make_ast_node(id, first, t, last, str, metas, offset)
 
    -- post conditions
    assert(t.isNode, "failed isNode: " .. id)
-   assert(t.str)
+   assert(t.str, "no string on node")
    assert(t.parent, "no parent on " .. t.id)
    return t
 end

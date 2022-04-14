@@ -59,7 +59,7 @@ divisible_by_three = Cmt( C(R"09"^1),
 
 Giving a rule which matches an integer evenly divisible by three\.
 
-The [elpatt module](NO default.domain IN MANIFESTespalier/MISSING_POST_PROJECTdoc/md/espalier/elpatt.md) is intended to provide those
+The [elpatt module](https://gitlab.com/special-circumstance/espalier/-/blob/trunk/doc/md/espalier/elpatt.md) is intended to provide those
 patterns which are allowed in Grammars, while expanding the scope of some
 favorites to properly respect utf\-8 and otherwise behave\.
 
@@ -89,10 +89,12 @@ given rule\.  The value is either a table, or a function\.
 If a table, this must inherit from Node via `:inherit(id)`\.  These are simply
 assigned as the metatable for the node in question\.
 
-If a function, that function will receive `(node, str)`; `node` will have `id`,
-`first`, `last`, and `str` parameters\.  The `offset` parameter is usually 0,
-and represents what must be added to `first` and `last` to get an accurate
-value, in the event that the Grammar is parsing a substring of a larger string\.
+If a function, that function will receive `(node, offset)`; `node` will have
+`id`, `first`, `last`, and `str` parameters, but no metatable\.
+
+The `offset` parameter is usually 0, and represents what must be added to
+`first` and `last` to get an accurate value, in the event that the Grammar is
+parsing a substring of a larger string\.
 
 Whatever the function returns is assigned a parent and inserted as a Node, so
 it should really be a table with a Node\-descended metatable, or all manner of
@@ -293,7 +295,7 @@ subgrammars\.
 ```lua
    -- post conditions
    assert(t.isNode, "failed isNode: " .. id)
-   assert(t.str)
+   assert(t.str, "no string on node")
    assert(t.parent, "no parent on " .. t.id)
    return t
 end
@@ -536,7 +538,7 @@ sole `define` function we currently have is overly specified\.  Instead of
 constructing an in\-memory AST, we could perform syntax highlighting, as HTML,
 as terminal colors, however LSPs do it: there are a lot of options\.
 
-The case I'm interested in tackling directly is turning [LON data](NO default.domain IN MANIFESTbr.lon/MISSING_POST_PROJECTdoc/md/lon.md) directly into Lua tables, without bothering to pass through an
+The case I'm interested in tackling directly is turning [LON data](https://gitlab.com/special-circumstance/br.lon/-/blob/trunk/doc/md/lon.md) directly into Lua tables, without bothering to pass through an
 abstract syntax tree\.  This would only be attractive if we could generate it
 from the same specification which creates a Node, otherwise, since we need \(at
 least want\) the Node version, it would be more expedient to generate a table
