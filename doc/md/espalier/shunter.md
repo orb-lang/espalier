@@ -24,8 +24,18 @@ group  ←  "(" _ expr _ ")"
 In fact we don't need the outer rule `expression`, which is there so we can
 apply this algorithm to the results\.
 
+This kind of algorithm can have problems with stack depth because of the
+right\-leaning recursion, but our backtick\-ignore unpacks the match table
+immediately, so we don't have that problem and end up with a nice flat list
+of matches in the categories `unop`, `binop`, `group`, and all the varieties
+of `value`, which is not itself a useful addition to a parse tree\.
+
 The issue with this sort of rule is that it ignores precedence and
 associativity\.  Those are qualities of the parse tree rather than the stream\.
+
+There are times when this is all the parse which you need, since it is valid
+for an **identical** set of strings as it would be rearranged by arity,
+precedence, and associativity\.
 
 It's certainly possible to build a PEG which results in the parse tree which
 the user requires, but this complicates the grammar considerably, due to
@@ -34,6 +44,10 @@ limitations on left recursion\.
 There are a number of strategies to approach this, but let me make a different
 argument: there is *nothing wrong whatsoever* with the rule given above, it
 is practically speaking ideal in terms of saying what it means\.
+
+If and when we want the proper tree structure, we can treat the PEG as a
+powerful and general *tokenizer*, and apply an algorithm which specializes in
+operators: Djikstra's Shunting Yard\.
 
 
 ## Implementation
@@ -54,6 +68,7 @@ It does this using the Shunting Yard Algorithm, hence the name\.
 ```lua
 local Node = require "espalier:espalier/node"
 local Set = require "qor:core/set"
+local Deque = require "deque:deque"
 ```
 
 
@@ -75,8 +90,9 @@ Generates our comparison function\.
 local function comparator(precedence, right_assoc)
    local function higher(op1, op2)
       local id1, id2 = op1.id, op2.id
-      if (prec[id1] > prec[id2])
-         or (prec[id1] == prec[id2] and not r_assoc[id2]) then
+      if (precedence[id1] > precedence[id2])
+         or (precedence[id1] == precedence[id2]
+             and not right_assoc[id2]) then
          return true
       else
          return false
@@ -192,13 +208,13 @@ end
 ```
 
 
-#### linker\(is\_operator\): \(out, expr\): Node
+#### linker\(is\_operator, unary\): \(out, expr\): Node
 
-  The upvalue for this generator is just `precedence` again, but here being
+  The upvalue `is_operator` is just `precedence` again, but here being
 used to test for operators\.
 
 ```lua
-local function linker(is_operator, Twig)
+local function linker(is_operator, unary, Twig)
    local function link(out, expr)
       local stack = Stack()
       for elem in out:popAll() do
@@ -242,18 +258,31 @@ We'll circle back and make more metatables later\.
 ```lua
 local function new(cfg)
    local precedence = assert(cfg.precedence)
-   local right_assoc = assert(cfg.right_assoc)
-   local unary = assert(cfg.unary)
-   local grouped = assert(cfg.grouped)
+   local right_assoc = Set(assert(cfg.right_assoc))
+   local unary = Set(assert(cfg.unary))
+   local grouped = Set(assert(cfg.grouped))
+   -- Set up the metatable
+   local _Twig = cfg[1]
+   local id = cfg[2]
+   local Twig;
+   if _Twig and id then
+      Twig = _Twig :inherit(id)
+   elseif _Twig then
+      Twig = Twig
+   else
+      Twig = Node
+   end
+
    local higher = comparator(precedence, right_assoc)
-   local Twig = cfg[1] or Node
-   local link = linker(precedence, Twig)
+
+   local link = linker(precedence, unary, Twig)
    local shunt = shunter(precedence, unary, grouped, higher, link)
 
    local function Expression(expr)
       local out = shunt(expr)
       local new = link(out, expr)
       return setmetatable({ new,
+                            id  = id or expr.id,
                             str = expr.str,
                             first = expr.first,
                             last = expr.last }, Twig)

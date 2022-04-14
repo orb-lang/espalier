@@ -52,8 +52,23 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Node = require "espalier:espalier/node"
 local Set = require "qor:core/set"
+local Deque = require "deque:deque"
 
 
 
@@ -75,8 +90,9 @@ local Set = require "qor:core/set"
 local function comparator(precedence, right_assoc)
    local function higher(op1, op2)
       local id1, id2 = op1.id, op2.id
-      if (prec[id1] > prec[id2])
-         or (prec[id1] == prec[id2] and not r_assoc[id2]) then
+      if (precedence[id1] > precedence[id2])
+         or (precedence[id1] == precedence[id2]
+             and not right_assoc[id2]) then
          return true
       else
          return false
@@ -198,7 +214,7 @@ end
 
 
 
-local function linker(is_operator, Twig)
+local function linker(is_operator, unary, Twig)
    local function link(out, expr)
       local stack = Stack()
       for elem in out:popAll() do
@@ -242,18 +258,31 @@ end
 
 local function new(cfg)
    local precedence = assert(cfg.precedence)
-   local right_assoc = assert(cfg.right_assoc)
-   local unary = assert(cfg.unary)
-   local grouped = assert(cfg.grouped)
+   local right_assoc = Set(assert(cfg.right_assoc))
+   local unary = Set(assert(cfg.unary))
+   local grouped = Set(assert(cfg.grouped))
+   -- Set up the metatable
+   local _Twig = cfg[1]
+   local id = cfg[2]
+   local Twig;
+   if _Twig and id then
+      Twig = _Twig :inherit(id)
+   elseif _Twig then
+      Twig = Twig
+   else
+      Twig = Node
+   end
+
    local higher = comparator(precedence, right_assoc)
-   local Twig = cfg[1] or Node
-   local link = linker(precedence, Twig)
+
+   local link = linker(precedence, unary, Twig)
    local shunt = shunter(precedence, unary, grouped, higher, link)
 
    local function Expression(expr)
       local out = shunt(expr)
       local new = link(out, expr)
       return setmetatable({ new,
+                            id  = id or expr.id,
                             str = expr.str,
                             first = expr.first,
                             last = expr.last }, Twig)
