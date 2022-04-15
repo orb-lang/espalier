@@ -109,19 +109,28 @@ elpatt.rep = rep
   Creates a pattern matching any of the keys of a provided table, and
 producing as a capture the corresponding value\.
 
-The order in which the keys are matched is the enumeration order of the table,
-i\.e\. undefined, so they should be mutually exclusive\.
+We sort the keys and apply them in reverse collation order; this means a
+longer key matches before a substring, so `{ f = "an f", foo = "a foo"}`
+will be able to match both keys\.
 
 The keys must be simple strings, and are matched exactly\.  We could allow them
 to be arbitrary patterns, but it is unclear what the semantics of this should
 be, so it seems better to keep this function simple\.
 
 ```lua
+local sort = assert(table.sort)
+
 function elpatt.M(tab)
-   local rule
+   local keys = {}
    for k in pairs(tab) do
       assert(type(k) == 'string', "Keys passed to M() must be strings")
-      rule = rule and rule + P(k) or P(k)
+      keys[#keys + 1] = k
+   end
+   --sort(keys)
+   local rule = P(keys[#keys])
+   for i = #keys - 1, 1, - 1 do
+      local k = keys[i]
+      rule = rule + P(k)
    end
    return rule / tab
 end

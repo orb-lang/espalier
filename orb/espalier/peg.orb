@@ -174,7 +174,6 @@ local function pegylator(_ENV)
    lt_reference    = symbol
 
    number_repeat =  some_num_c
-   named_repeat  =  symbol
 
    comment  =  P";" * comment_c
 

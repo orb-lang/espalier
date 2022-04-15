@@ -139,8 +139,6 @@ end
 
 
 
-
-
 local a = require "anterm:anterm"
 function Peg.toLpeg(peg)
    local phrase = PegPhrase ""
@@ -212,7 +210,8 @@ end
 
 
 local _PREFACE = PegPhrase ([[
-local L = assert(require "lpeg")
+local L = assert(require "espalier:espalier/elpatt")
+--local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
 local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
 ]])
@@ -691,7 +690,7 @@ end
 local Set = PegMetas : inherit "set"
 
 function Set.toLpeg(set)
-   return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
+   return PegPhrase("S\"".. set:span():sub(2,-2) .. "\"")
 end
 
 

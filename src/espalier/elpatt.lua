@@ -115,11 +115,20 @@ elpatt.rep = rep
 
 
 
+
+local sort = assert(table.sort)
+
 function elpatt.M(tab)
-   local rule
+   local keys = {}
    for k in pairs(tab) do
       assert(type(k) == 'string', "Keys passed to M() must be strings")
-      rule = rule and rule + P(k) or P(k)
+      keys[#keys + 1] = k
+   end
+   --sort(keys)
+   local rule = P(keys[#keys])
+   for i = #keys - 1, 1, - 1 do
+      local k = keys[i]
+      rule = rule + P(k)
    end
    return rule / tab
 end

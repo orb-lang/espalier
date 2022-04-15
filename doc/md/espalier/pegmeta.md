@@ -136,9 +136,7 @@ end
 
 ## Peg\.toLpeg\(peg\)
 
-This needs to be implemented by each subclass, individually, so we produce a
-base method that highlights the span in red\.  This makes it stick out, and
-will produce an error if we attempt to compile it\.
+A base pass\-through implementation\.
 
 ```lua
 local a = require "anterm:anterm"
@@ -212,7 +210,8 @@ final `end`, to inject rules which aren't expressible using the subset of
 
 ```lua
 local _PREFACE = PegPhrase ([[
-local L = assert(require "lpeg")
+local L = assert(require "espalier:espalier/elpatt")
+--local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
 local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
 ]])
@@ -692,7 +691,7 @@ end
 local Set = PegMetas : inherit "set"
 
 function Set.toLpeg(set)
-   return PegPhrase "S\"" .. set:span():sub(2,-2) .. "\""
+   return PegPhrase("S\"".. set:span():sub(2,-2) .. "\"")
 end
 ```
 
