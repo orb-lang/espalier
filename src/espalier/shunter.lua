@@ -214,13 +214,15 @@ end
 
 
 
-local function linker(is_operator, unary, Twig)
+local function linker(is_operator, unary, Metas)
    local function link(out, expr)
       local stack = Stack()
       for elem in out:popAll() do
          if is_operator[elem.id] then
-            local child = setmetatable({ id = elem.id, str = expr.str }, Twig)
-            if unary[elem.id] then
+            local id = elem.id
+            local child = setmetatable({ id = id,
+                                         str = expr.str }, Metas[id])
+            if unary[id] then
                child[1] = stack:pop()
                child.first, child.last = elem.first, child[1].last
             else
@@ -256,39 +258,50 @@ end
 
 
 
+
 local function new(cfg)
    local precedence = assert(cfg.precedence)
    local right_assoc = Set(assert(cfg.right_assoc))
    local unary = Set(assert(cfg.unary))
    local grouped = Set(assert(cfg.grouped))
-   -- Set up the metatable
+
+   -- Set up the metatables
    local _Twig = cfg[1]
    local id = cfg[2]
-   local Twig;
-   if _Twig and id then
-      Twig = _Twig :inherit(id)
-   elseif _Twig then
-      Twig = Twig
+   local Twig, Expr;
+   if id then
+      Expr = _Twig :inherit(id)
+   else
+      Expr = _Twig
+   end
+   if _Twig then
+      Twig = _Twig
    else
       Twig = Node
    end
 
+   local Metas = {}
+   for id in pairs(precedence) do
+      Metas[id] = Twig:inherit(id)
+   end
+
    local higher = comparator(precedence, right_assoc)
 
-   local link = linker(precedence, unary, Twig)
+   local link = linker(precedence, unary, Metas)
    local shunt = shunter(precedence, unary, grouped, higher, link)
 
    local function Expression(expr)
       local out = shunt(expr)
-      local new = link(out, expr)
-      return setmetatable({ new,
-                            id  = id or expr.id,
-                            str = expr.str,
-                            first = expr.first,
-                            last = expr.last }, Twig)
+      local expr = { link(out, expr),
+                     id    = id or expr.id,
+                     str   = expr.str,
+                     first = expr.first,
+                     last  = expr.last }
+
+      return setmetatable(expr, Expr)
    end
 
-   return Expression
+   return Expression, Metas
 end
 
 
