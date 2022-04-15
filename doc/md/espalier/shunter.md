@@ -225,10 +225,12 @@ local function linker(is_operator, unary, Metas)
             if unary[id] then
                child[1] = stack:pop()
                child.first, child.last = elem.first, child[1].last
+               child[1].parent = child
             else
                local right, left = stack:pop(2)
                child[1], child[2] = assert(left),
                                     assert(right)
+               right.parent, left.parent = child, child
                child.first, child.last = left.first, right.last
             end
             stack:push(child)
@@ -294,7 +296,7 @@ local function new(cfg)
    local function Expression(expr)
       local out = shunt(expr)
       local expr = { link(out, expr),
-                     id    = id or expr.id,
+                     id    = expr.id,
                      str   = expr.str,
                      first = expr.first,
                      last  = expr.last }

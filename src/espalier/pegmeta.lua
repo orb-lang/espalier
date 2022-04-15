@@ -210,8 +210,8 @@ end
 
 
 local _PREFACE = PegPhrase ([[
-local L = assert(require "espalier:espalier/elpatt")
---local L = assert(require "lpeg")
+--local L = assert(require "espalier:espalier/elpatt")
+local L = assert(require "lpeg")
 local P, V, S, R = L.P, L.V, L.S, L.R
 local C, Cg, Cb, Cmt = L.C, L.Cg, L.Cb, L.Cmt
 ]])
