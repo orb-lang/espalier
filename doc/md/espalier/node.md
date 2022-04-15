@@ -494,6 +494,24 @@ end
 ```
 
 
+#### Node:walkBreadth\(\)
+
+```lua
+function Node.walkBreadth(node)
+   local function traverse(ast)
+      for i = 1, #ast do
+         yield(ast[i])
+      end
+      for j= 1, #ast do
+         traverse(ast[j])
+      end
+   end
+
+   return wrap(function() traverse(node) end)
+end
+```
+
+
 #### Node\.walk
 
 Presearch iterator\.  This is the default\.
@@ -1116,7 +1134,6 @@ local function _validate(node)
    return true
 end
 Node.validate = _validate
-
 ```
 
 
