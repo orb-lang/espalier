@@ -153,28 +153,15 @@ end
 
 
 
-local function shunter(precedence, unary, grouped, higher, link)
+local function shunter(precedence, unary, higher, link)
 
    local function shunt(expr)
       local stack = Stack()
       local out   = Deque()
-      for i, elem in ipairs(expr) do
+      for _, elem in ipairs(expr) do
          -- operations have precedence, values and groups don't
          local prec = precedence[elem.id]
-         if not prec then
-            if grouped[elem.id] then
-               -- recurse
-               local _out = shunt(elem)
-               local top = #elem
-               elem[1] = link(_out, elem)
-               for i = 2, top do
-                  elem[i] = nil
-               end
-               out:push(elem)
-            else
-               out:push(elem)
-            end
-         else
+         if precedence[elem.id] then
             local shunting = true
             while shunting do
                if #stack == 0 or unary[elem.id] then
@@ -190,6 +177,8 @@ local function shunter(precedence, unary, grouped, higher, link)
                   end
                end
             end
+         else
+            out:push(elem)
          end
       end
       while #stack > 0 do
@@ -261,11 +250,24 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function new(cfg)
    local precedence = assert(cfg.precedence)
    local right_assoc = Set(assert(cfg.right_assoc))
    local unary = Set(assert(cfg.unary))
-   local grouped = Set(assert(cfg.grouped))
 
    -- Set up the metatables
    local _Twig = cfg[1]
@@ -290,17 +292,21 @@ local function new(cfg)
    local higher = comparator(precedence, right_assoc)
 
    local link = linker(precedence, unary, Metas)
-   local shunt = shunter(precedence, unary, grouped, higher, link)
+   local shunt = shunter(precedence, unary, higher, link)
 
    local function Expression(expr)
+      -- no need to shunt #expr == 1
+      if #expr == 1 then
+         return setmetatable(expr, Expr)
+      end
       local out = shunt(expr)
-      local expr = { link(out, expr),
-                     id    = expr.id,
-                     str   = expr.str,
-                     first = expr.first,
-                     last  = expr.last }
+      local _expr = { link(out, expr),
+                id    = expr.id,
+                str   = expr.str,
+                first = expr.first,
+                last  = expr.last }
 
-      return setmetatable(expr, Expr)
+      return setmetatable(_expr, Expr)
    end
 
    return Expression, Metas
