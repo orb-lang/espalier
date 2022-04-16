@@ -77,16 +77,6 @@ orthogonality\.
 ## Methods
 
 
-### super
-
-We add the `super` mixin, which allows for inherited Nodes to call the a
-shadowed version of any method from further up the chain\.
-
-```lua
-Node.super = core.super
-```
-
-
 ### Node:bustCache\(\)
 
 The root Node class doesn't cache derived values but derived classes might\.
@@ -136,7 +126,7 @@ Returns a string which prints the id and first\-last range of the Node\.
 `c` is a color table, defaulting to no color\.
 
 ```lua
-function  Node.strTag(node, c)
+function Node.strTag(node, c)
    c = c or c_bw
    return c.bold(node.id) .. "    "
       .. c.number(node.first) .. "-" .. c.number(node.last)
@@ -463,6 +453,12 @@ These rather essential primitives to add this late\!
 Starting with the one I need most which is :next\(pred\), in the cheapest
 possible implementation in terms of thought and typing\.
 
+Currently these have misleading semantics: they should return the next
+predicate match, no excuses, and instead they select in the subframe\.
+
+The plan is to replace all uses of `:next` with `:take`, which will implement
+the same \(useful\!\) semantic \(but optimally\), and then rewrite these\.
+
 
 ```lua
 function Node.next(node, pred)
@@ -470,7 +466,6 @@ function Node.next(node, pred)
    return node:select(pred)()
 end
 ```
-
 
 #### Node\.walkPost
 
@@ -494,20 +489,25 @@ end
 ```
 
 
-#### Node:walkBreadth\(\)
+#### Node:walkBreadth\(\) \-> \( \): Node, integer, index
+
+  Returns a breadth\-first iterator, recursively returning all child Nodes, the
+stack depth, and the index against the parent yielding this Node\.
+
+This doesn't return the Node itself\.
 
 ```lua
 function Node.walkBreadth(node)
-   local function traverse(ast)
+   local function traverse(ast, depth)
       for i = 1, #ast do
-         yield(ast[i])
+         yield(ast[i], depth, i)
       end
       for j= 1, #ast do
-         traverse(ast[j])
+         traverse(ast[j], depth + 1)
       end
    end
 
-   return wrap(function() traverse(node) end)
+   return wrap(function() traverse(node, 1) end)
 end
 ```
 
@@ -629,6 +629,27 @@ function Node.select(node, pred)
       return remove(matches)
    end
 end
+```
+
+
+### Node:take\(pred\)
+
+Returns only the first match for the predicate within the Node, not including
+the Node itself\.
+
+```lua
+local function _take(node, pred)
+   for _, twig in ipairs(node) do
+      local took = _take(twig, pred)
+      if took then return took end
+   end
+   if qualifies(node, pred) then
+      return node
+   end
+   return nil
+end
+
+Node.take = _take
 ```
 
 

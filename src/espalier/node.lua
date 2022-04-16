@@ -82,16 +82,6 @@ Node.isNode = Node
 
 
 
-Node.super = core.super
-
-
-
-
-
-
-
-
-
 
 
 
@@ -135,7 +125,7 @@ end
 
 
 
-function  Node.strTag(node, c)
+function Node.strTag(node, c)
    c = c or c_bw
    return c.bold(node.id) .. "    "
       .. c.number(node.first) .. "-" .. c.number(node.last)
@@ -463,11 +453,16 @@ Node.root = _root
 
 
 
+
+
+
+
+
+
 function Node.next(node, pred)
    assert(pred, ':next needs a predicate at the moment')
    return node:select(pred)()
 end
-
 
 
 
@@ -495,17 +490,22 @@ end
 
 
 
+
+
+
+
+
 function Node.walkBreadth(node)
-   local function traverse(ast)
+   local function traverse(ast, depth)
       for i = 1, #ast do
-         yield(ast[i])
+         yield(ast[i], depth, i)
       end
       for j= 1, #ast do
-         traverse(ast[j])
+         traverse(ast[j], depth + 1)
       end
    end
 
-   return wrap(function() traverse(node) end)
+   return wrap(function() traverse(node, 1) end)
 end
 
 
@@ -627,6 +627,27 @@ function Node.select(node, pred)
       return remove(matches)
    end
 end
+
+
+
+
+
+
+
+
+
+local function _take(node, pred)
+   for _, twig in ipairs(node) do
+      local took = _take(twig, pred)
+      if took then return took end
+   end
+   if qualifies(node, pred) then
+      return node
+   end
+   return nil
+end
+
+Node.take = _take
 
 
 
