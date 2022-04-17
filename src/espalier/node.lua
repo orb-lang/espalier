@@ -194,23 +194,22 @@ end
 
 
 
-function Node.toString(node, depth, c)
+function Node.toString(node, depth, c, limit)
    depth = depth or 0
+   if limit and depth >= limit then
+      return ""
+   end
    local line =  node:strLine(c)
    local phrase = ""
    if tostring(line) ~= "" then
       phrase = phrase .. ("  "):rep(depth)
       phrase = phrase .. line
    end
-   ---[[
-   if node[1] then
-      for _,v in ipairs(node) do
-         if (v.isNode) then
-            phrase = phrase .. v:toString(depth + 1, c)
-         end
+   for _, twig in ipairs(node) do
+      if (twig.isNode) then
+         phrase = phrase .. twig:toString(depth + 1, c, limit)
       end
    end
-   --]]
    return phrase
 end
 
@@ -637,12 +636,14 @@ end
 
 
 local function _take(node, pred)
-   for _, twig in ipairs(node) do
-      local took = _take(twig, pred)
-      if took then return took end
-   end
    if qualifies(node, pred) then
       return node
+   end
+   for _, twig in ipairs(node) do
+      local took = _take(twig, pred)
+      if took then
+         return took
+      end
    end
    return nil
 end
@@ -1121,8 +1122,7 @@ function Node.isValid(node)
   assert(node.last, "node must have last")
   assert(type(node.last) == "number", "node.last must be of type number")
   assert(node.str, "node must have str")
-  assert(type(node.str) == "string"
-         or node.str.isPhrase, "str must be string or phrase")
+  assert(type(node.str) == "string",  "str must be string or phrase")
   assert(getmetatable(node), "node must have a metatable: " .. node.id)
   assert(node.parent and node.parent.isNode == Node,
          "node must have parent: " .. node.id)
