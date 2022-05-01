@@ -189,8 +189,14 @@ local function pegylator(_ENV)
 end
 ```
 
+The no\-knit tag is the poor man's ifdef\!
+
 ```lua
 local PegGrammar = Grammar(pegylator, pegMetas)
+```
+
+```lua
+local PegGrammar = require "espalier:vav"
 ```
 
 ```lua
