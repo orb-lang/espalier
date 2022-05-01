@@ -24,6 +24,13 @@ combinators in the familiar operator\-overloaded form\.
 #### Imports
 
 ```lua
+local core = require "qor:core"
+local cluster = require "cluster:cluster"
+local table = core.table
+```
+
+
+```lua
 local L = require "espalier/elpatt"
 local P, R, V = L.P, L.R, L.V
 local Grammar = require "espalier:espalier/grammar"
@@ -201,8 +208,20 @@ local function Vav(_ENV)
 end
 ```
 
+
+### Metis \(Qualia coming\)
+
+Making a clean break here with a deep clone of everything from `pegmeta`\.
+
 ```lua
-local PegGrammar = Grammar(Vav, pegMetas)
+local deepclone = assert(table.deepclone)
+
+local Metis = deepclone(pegMetas)
+```
+
+
+```lua
+local PegGrammar = Grammar(Vav, Metis)
 ```
 
 ```lua

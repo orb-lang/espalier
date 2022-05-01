@@ -24,6 +24,13 @@
 
 
 
+local core = require "qor:core"
+local cluster = require "cluster:cluster"
+local table = core.table
+
+
+
+
 local L = require "espalier/elpatt"
 local P, R, V = L.P, L.R, L.V
 local Grammar = require "espalier:espalier/grammar"
@@ -202,7 +209,19 @@ end
 
 
 
-local PegGrammar = Grammar(Vav, pegMetas)
+
+
+
+
+
+local deepclone = assert(table.deepclone)
+
+local Metis = deepclone(pegMetas)
+
+
+
+
+local PegGrammar = Grammar(Vav, Metis)
 
 
 
