@@ -1,6 +1,30 @@
 # ortho 8600: date format
 
 
+`ortho` standard **8600** defines a useful subset of date strings\.
+
+Specifically, it has never heard of a timezone, and doesn't want to\.
+
+
+### 8600?
+
+There is a familiar proprietary standard, which might be a superset of this
+`ortho` standard\.
+
+**8600** is **8601** rounded off to two significant figures, resulting in two
+decimal orders of magnitude less complexity\.
+
+While this significantly underestimates the pain which timezones bring to the
+humble munger of dates, it is at least in the ballpark\.
+
+
+### Implemented Specification\.
+
+This needs to be gutted and rewritten and I bet it won't even take long\.
+
+
+#### EBNF
+
 Let's start with the EBNF for a date, straight from
 [iso](httk://):
 

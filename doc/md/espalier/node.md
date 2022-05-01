@@ -1130,7 +1130,7 @@ function Node.isValid(node)
   assert(node.last, "node must have last")
   assert(type(node.last) == "number", "node.last must be of type number")
   assert(node.str, "node must have str")
-  assert(type(node.str) == "string",  "str must be string or phrase")
+  assert(type(node.str) == "string",  "str must be string")
   assert(getmetatable(node), "node must have a metatable: " .. node.id)
   assert(node.parent and node.parent.isNode == Node,
          "node must have parent: " .. node.id)

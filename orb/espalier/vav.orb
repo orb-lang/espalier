@@ -1,0 +1,19 @@
+* Vav
+
+
+  Vav is an unbound collection of PEG rules, which may constitute a proper
+Grammar.
+
+
+** Rationale
+
+  The various operations and rearrangements which I propose to perform on
+PEGs is unrelated, in terms of implementation, to the use of that PEG through
+binding it to some engine.
+
+This is largely a matter of breaking the existing architecture down into its
+constituent parts.
+
+#!lua
+return {}
+#/lua

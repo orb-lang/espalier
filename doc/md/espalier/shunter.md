@@ -314,7 +314,7 @@ local function new(cfg)
       return setmetatable(_expr, Expr)
    end
 
-   return Expression, Metas
+   return Expression, Metas, Expr
 end
 ```
 
