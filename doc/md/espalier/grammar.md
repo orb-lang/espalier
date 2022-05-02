@@ -440,7 +440,7 @@ local function _fromString(g_str)
    if maybe_lua then
       return maybe_lua()
    else
-      s : halt ("cannot make function:\n" .. err)
+      s : halt ("cannot make function:\n" .. err .. "\n" .. g_str)
    end
 end
 

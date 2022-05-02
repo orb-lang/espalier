@@ -9,8 +9,13 @@ rules  <-  _ rule+ (-1 / Error)
 
 rule  <-  lhs rhs
 
-lhs  <-  pattern _ into _
+lhs  <-  (suppressed / rule-name) _ into _
 rhs  <-  form _
+
+
+suppressed  <-  "`" rule-name "`"
+ rule-name  <-  symbol
+    `into`  <-  ":=" / "<-" / "←" / "="
 
     `form`  <-  element _ elements*
  `element`  <-  !lhs (simple / compound)
@@ -20,7 +25,7 @@ choice  <- "/" _ form
    cat  <- _ form
 
 `compound` <- group / enclosed
-`simple <-  repeated
+`simple` <-  repeated
          /  matched
          /  prefixed
          /  suffixed
@@ -37,21 +42,41 @@ choice  <- "/" _ form
       name  <-  symbol
     number  <-  EOS / integer
 
+       literal  <-  single-string / double-string
+           set  <-  "{" (!("}" / "\n") 1)* "}"
+         range  <-  "[" range-start "-" range-end "]"
+
+`single-string`  ←  "'" ("\\" "'" / "\\" 1 / (!"'" !"\n" 1))* "'"
+`double-string`  ←  '"' ('\\' '"' / "\\" 1 / (!'"' !"\n" 1))* '"'
+
+range-start  <-  codepoint
+  range-end  <-  codepoint
+  codepoint  ←  [\x00-\x7f]
+             /  [\xc2-\xdf] [\x80-\xbf]
+             /  [\xe0-\xef] [\x80-\xbf] [\x80-\xbf]
+             /  [\xf0-\xf4] [\x80-\xbf] [\x80-\xbf] [\x80-\xbf]
+
+
        slice  <-  integer-range / integer
 match-suffix  <-  "@" ; whitespace is not allowed. should it be?
-                  ( named-match
+                  ( reference
                   / back-refer
                   / eq-refer
                   / gte-refer
                   / gt-refer
-                  / lfe-refer
+                  / lte-refer
                   / lt-refer )
 
          not  <-  "!" _ allow-prefix
          and  <-  "&" _ allow-prefix
-zero-or-more  <-  allow-sufix _ "*"
+zero-or-more  <-  allow-suffix _ "*"
  one-or-more  <-  allow-suffix _ "+"
     optional  <-  allow-suffix _ "?"
+
+`allow-repeat`  <-  prefixed / suffixed / jawn
+`allow-prefix`  <-  suffixed / jawn
+`allow-suffix`  <-  prefixed / jawn
+        `jawn`  <-  compound / name / number
 
 `symbol`  <-  (([A-Z] / [a-z]) ([A-Z]/[a-z] / {-_})+) / "_"
 
@@ -65,6 +90,7 @@ gte-refer  <-  "(>=" reference ")"
 gt-refer  <-  "(>" reference ")"
 lte-refer  <-  "(<=" reference ")"
 lt-refer  <-  "(<" reference ")"
+reference  <-  symbol
 
 
       `_`  <-  (comment / dent / { \t\r})*

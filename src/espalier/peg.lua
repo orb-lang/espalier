@@ -191,12 +191,7 @@ end
 
 
 
-
-
-
-
-
-local PegGrammar = require "espalier:vav"
+local PegGrammar = Grammar(pegylator, pegMetas)
 
 
 
