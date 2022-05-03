@@ -17,15 +17,19 @@ constituent parts\.
 
 ### pegpeg
 
+A fresh, cleaner implementation of the PEG grammar extension we use in
+Espalier\.
+
+Interpreted by the old engine \(like everything else\!\)\.\. for now\.k
+
 ```lua
 local pegpeg = require "espalier:peg/pegpeg"
 ```
 
+### Metis
 
-
-### Metis \(Qualia coming\)
-
-Making a clean break here with a deep clone of everything from `pegmeta`\.
+Vav takes over as, well, the Vav combinator, for now we can focus on
+middleware for our nice tight new IR
 
 ```lua
 local Metis = require "espalier:peg/metis"

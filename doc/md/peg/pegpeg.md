@@ -48,9 +48,12 @@ suppressed  ←  "`" rule-name "`"
 `single-string`  ←  "'" ("\\" "'" / "\\" utf8 / (!"'" !"\n" utf8))* "'"
 `double-string`  ←  '"' ('\\' '"' / "\\" utf8 / (!'"' !"\n" utf8))* '"'
 
-range-start  ←  codepoint
-  range-end  ←  codepoint
-  codepoint  ←   utf8
+ range-start  ←  escaped / codepoint
+   range-end  ←  escaped / codepoint
+     escaped  ←  hex-escape / "\\" codepoint
+`hex-escape`  ←  "\\" {Xx} higit higit
+     `higit`  ←  [0-9] / [A-F] / [a-f]
+   codepoint  ←   utf8
 
 
        slice  ←  integer-range / integer
@@ -74,7 +77,9 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
 `allow-suffix`  ←  prefixed / jawn
         `jawn`  ←  compound / name / number
 
-      `symbol`  ←  (([A-Z] / [a-z]) ([A-Z]/[a-z] / {-_})+) / "_"
+      `symbol`  ←  letter (letter / [0-9] /  {-_})+
+                /  "_"
+      `letter`  ←  [A-Z] / [a-z]
 
            EOS  ←  "-1"
  integer-range  ←  integer ".." integer
@@ -90,9 +95,8 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
 
 
       `_`  ←  (comment / dent / { \t\r})*
-`comment`  ←  ";" (!"\n" utf8)
+`comment`  ←  ";" (!"\n" utf8)*
    `dent`  ←  "\n" { \t}*
-
 
     `utf8`  ←  [\x00-\x7f]
             /  [\xc2-\xdf] [\x80-\xbf]
