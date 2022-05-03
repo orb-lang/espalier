@@ -110,29 +110,33 @@ function M.rules.collectRules(rules)
    end
    local dupe, surplus = {}, {}
    local ruleMap = {} -- token => node
-   local ruleSet = Set {}
    for rule in rules :select 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
-      ruleSet[token] = true
       if ruleMap[token] then
          -- lpeg uses the *last* rule defined so we do likewise
          insert(dupe, ruleMap[token])
       end
       ruleMap[token] = rule
       if not nameSet[token] then
-         insert(surplus, rule)
+         -- while it is valid to refer to the top rule, it is not noteworthy
+         -- when a grammar does not.
+         -- rules[1] is kind of sloppy but we're just going in the order of
+         -- inspiration...
+         if not (rule == rules[1]) then
+            insert(surplus, rule)
+         end
       end
    end
    local missing = {}
    for name in pairs(nameSet) do
-      if not ruleSet[name] then
+      if not ruleMap[name] then
          insert(missing, name)
       end
    end
-   return { --references = references,
+   return { references = references,
             nameSet = nameSet,
             dupe = dupe,
-            ruleSet = ruleSet,
+            ruleMap = ruleMap,
             surplus = surplus,
             missing = missing, }
 end
