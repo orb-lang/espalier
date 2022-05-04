@@ -300,16 +300,16 @@ we get w\. it\.
 ```lua
 local getset = assert(table.getset)
 
-function M.rules.collectRules(rules)
+function Syn.rules.collectRules(rules)
    local references, nameSet = {}, Set {}
-   for name in rules :select 'name' do
+   for name in rules :filter 'name' do
       local token = normalize(name:span())
       insert(references, name)
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
    local ruleMap = {} -- token => node
-   for rule in rules :select 'rule' do
+   for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
       if ruleMap[token] then
          -- lpeg uses the *last* rule defined so we do likewise
