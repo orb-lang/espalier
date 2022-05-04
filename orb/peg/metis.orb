@@ -16,9 +16,8 @@ Qoph because this *is* determinate of codegen methodology.
 #!lua
 local Node = require "espalier:espalier/node"
 local Grammar = require "espalier:espalier/grammar"
-local Seer   = require "espalier:espalier/recognize"
-local Phrase = require "singletons/phrase"
 local core = require "qor:core" -- #todo another qor
+local cluster = require "cluster:cluster"
 local table = core.table
 local Set = core.set
 local insert, remove, concat = assert(table.insert),
@@ -87,11 +86,211 @@ local M = setmetatable({Twig}, {__index = __index})
 
 *** Rules
 
-This is where we set up the information graph for a given Vav
+This is where we set up the information graph for a given Vav.
+
+
+*** Scry Synth Copypasta
+
+This really is one distinct thing but yeah.
+
+
+**** builder(_new, synth, node, i)
+
+#!lua
+local new, Syndex, SynM = cluster.order()
+
+local function builder(_new, synth, node, i)
+   synth.up = i
+   synth.o = node.first
+   synth.node = node
+   synth.line, synth.col = node:linePos()
+   -- this is just for reading purposes, remove
+   synth.class = _new.class
+   return synth
+end
+cluster.construct(new, builder)
+
+#/lua
+
+
+***** Synth __lens (knocked out)
+
+#!lua #noKnit
+local Syn_repr = require "repr:lens" (_lens)
+
+SynM.__repr = Syn_repr
+#/lua
+
+
+
+*** Synth Metamaker
+
+We do this a couple of ways...
+
+First we inherit from =new= if we haven't seen the class aka node =.id=:
+
+#!lua
+local newSes, metaSes =  {}, {}
+
+local function makeGenus(class)
+   local _new, Class, Class_M = cluster.genus(new)
+   cluster.extendbuilder(_new, true)
+   newSes[class] = _new
+   metaSes[class] = Class
+   Class.class = class
+   for quality, set in pairs(Q) do
+      if set[class] then
+         Class[quality] = true
+      end
+   end
+   return _new, Class, Class_M -- we ignore the metatable. until we dont'.
+end
+
+local function newSynth(node, i)
+   local class = node.id
+   local _new, Class = newSes[class]
+   if not _new then
+      _new, Class = makeGenus(class)
+   end
+   return _new(node, i)
+end
+#/lua
+
+
+Second we have a metamaker, letting us say =Syn.class.whatever= and get the
+correct index table (Cassette).
+
+#!lua
+local function Syn_index(Syn, class)
+   local meta, _ = metaSes[class]
+   if not meta then
+      _, meta = makeGenus(class)
+      Syn[class] = meta
+   end
+   return meta
+end
+
+local Syn = setmetatable({Syndex}, {__index = Syn_index })
+#/lua
+
+
+*** Base Synth methods
+
+#!lua
+local walk = require "gadget:walk"
+local filter, reduce = assert(walk.filter), assert(walk.reduce)
+local classfilter = {}
+
+local function filterer(class)
+   local F = classfilter[class]
+   if not F then
+      classfilter[class] = function(node)
+                        return node.class == class
+                     end
+      F = classfilter[class]
+   end
+   return F
+end
+
+function _filter(synth, pred)
+   if type(pred) == 'string' then
+      return filter(synth, filterer(pred))
+   else
+      return filter(synth, pred)
+   end
+end
+Syndex.filter = _filter
+
+function Syndex.take(synth, pred)
+   for syn in _filter(synth, pred) do
+      return syn
+   end
+end
+
+function Syndex.reduce(synth, pred)
+   if type(pred) == 'string' then
+      return reduce(synth, filterer(pred))
+   else
+      return reduce(synth, pred)
+   end
+end
+#/lua
+
+
+#!lua
+function Syndex.span(synth)
+   return synth.node:span()
+end
+#/lua
+
+
+#!lua
+function Syndex.nameOf(synth)
+   return synth.name or synth.class
+end
+#/lua
+
+
+Not using these:
+
+#!lua
+function Syndex.shed(syn)
+   if #syn > 1 then
+      error "can't shed a node with several children"
+   elseif #syn == 0 then
+      error "can't shed a leaf node"
+   end
+   assert(syn.parent[syn.up] == syn, "parent missing child")
+   syn.parent[syn.up] = syn[1]
+   syn[1].parent = syn.parent
+   syn[1].up = syn.up
+end
+#/lua
+
+#!lua
+function Syndex.left(syn)
+   return syn.parent[syn.up + 1]
+end
+
+function Syndex.right(syn)
+   return syn.parent[syn.up - 1]
+end
+#/lua
+
+Might actually want 'left' and 'right' for something a little more useful?
+
+
+**** 'Syndex' base for analysis and synthesis
+
+Is just pass, probably these should be promoted to errors because synthesis
+and analysis should be exhaustive... maybe? This is my best guess.
+
+#!lua
+Syndex.synthesize = cluster.ur.pass
+Syndex.analyze = cluster.ur.pass
+#/lua
+
+
+**** _synth(node)
+
+Let's get this out of the way real quick.
+
+#!lua
+local function _synth(node, parent_synth, i)
+   local synth = newSynth(node, i)
+   synth.parent = parent_synth or synth
+   for i, twig in ipairs(node) do
+      synth[i] = _synth(twig, synth, i)
+   end
+   return synth
+end
+#/lua
 
 #!lua
 function M.rules.synthesize(rules)
    rules.start = rules :take 'rule'
+   rules.synth = _synth(rules)
+   return rules.synth
 end
 #/lua
 
