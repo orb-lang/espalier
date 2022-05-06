@@ -116,9 +116,19 @@ cluster.construct(new, builder)
 
 
 
+local suppress = Set {
+   'parent',
+   --'line',
+   'o',
+   'col',
+   'up',
+   'node',
+}
+local _lens = { hide_key = suppress,
+                depth = 6 }
+local Syn_repr = require "repr:lens" (_lens)
 
-
-
+SynM.__repr = Syn_repr
 
 
 
@@ -298,17 +308,37 @@ end
 
 
 
-local getset = assert(table.getset)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function Syn.rules.collectRules(rules)
-   local references, nameSet = {}, Set {}
+   local nameSet = Set {}
    for name in rules :filter 'name' do
       local token = normalize(name:span())
-      insert(references, name)
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
    local ruleMap = {} -- token => node
+   local ruleCalls = {} -- token => {name*}
    for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
       if ruleMap[token] then
@@ -325,6 +355,13 @@ function Syn.rules.collectRules(rules)
             insert(surplus, rule)
          end
       end
+      -- build call graph
+      local calls = {}
+      ruleCalls[token] = calls
+      for name in rule :filter 'name' do
+         local tok = normalize(name:span())
+         insert(calls, tok)
+      end
    end
    local missing = {}
    for name in pairs(nameSet) do
@@ -332,10 +369,10 @@ function Syn.rules.collectRules(rules)
          insert(missing, name)
       end
    end
-   return { references = references,
-            nameSet = nameSet,
-            dupe = dupe,
+   return { nameSet = nameSet,
             ruleMap = ruleMap,
+            ruleCalls = ruleCalls,
+            dupe = dupe,
             surplus = surplus,
             missing = missing, }
 end

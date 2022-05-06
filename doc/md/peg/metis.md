@@ -113,9 +113,19 @@ cluster.construct(new, builder)
 ```
 
 
-##### Synth \_\_lens \(knocked out\)
+##### Synth lens
 
 ```lua
+local suppress = Set {
+   'parent',
+   --'line',
+   'o',
+   'col',
+   'up',
+   'node',
+}
+local _lens = { hide_key = suppress,
+                depth = 6 }
 local Syn_repr = require "repr:lens" (_lens)
 
 SynM.__repr = Syn_repr
@@ -294,21 +304,42 @@ function M.rules.synthesize(rules)
 end
 ```
 
+
+### rules:collectRules\(\)
+
 Time for a big ol' info dump\!  May as well grab All The Formats and see where
 we get w\. it\.
 
-```lua
-local getset = assert(table.getset)
 
+- returns a map of the following:
+
+  - nameSet:  The set of every name in normalized token form\.
+
+  - ruleMap:  A map from the rule name \(token\) to the rule itself\.
+
+  - dupe:  An array of any rule synth which has been duplicated later, this
+      reflects the semantics of lpeg which overwrites a `V"rule"`
+      definition if it sees a second one\.
+
+  - surplus:  An array of any rule which isn't referenced by name on the
+      right hand side\.
+
+  - missing:  Any rule referenced by name which isn't defined in the grammar\.
+
+  - ruleCalls:  A map of the token for a rule to an array of every named rule
+      it calls\. This overwrites duplicate rules, which don't
+      interest me very much except as something we lint and prune\.
+
+```lua
 function Syn.rules.collectRules(rules)
-   local references, nameSet = {}, Set {}
+   local nameSet = Set {}
    for name in rules :filter 'name' do
       local token = normalize(name:span())
-      insert(references, name)
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
    local ruleMap = {} -- token => node
+   local ruleCalls = {} -- token => {name*}
    for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
       if ruleMap[token] then
@@ -325,6 +356,13 @@ function Syn.rules.collectRules(rules)
             insert(surplus, rule)
          end
       end
+      -- build call graph
+      local calls = {}
+      ruleCalls[token] = calls
+      for name in rule :filter 'name' do
+         local tok = normalize(name:span())
+         insert(calls, tok)
+      end
    end
    local missing = {}
    for name in pairs(nameSet) do
@@ -332,10 +370,10 @@ function Syn.rules.collectRules(rules)
          insert(missing, name)
       end
    end
-   return { references = references,
-            nameSet = nameSet,
-            dupe = dupe,
+   return { nameSet = nameSet,
             ruleMap = ruleMap,
+            ruleCalls = ruleCalls,
+            dupe = dupe,
             surplus = surplus,
             missing = missing, }
 end
