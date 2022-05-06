@@ -386,14 +386,12 @@ end
 
 
 local clone1 = assert(table.clone1)
-local function _relax(ruleCalls)
+local function _relax(ruleCalls, callSet)
    local base_rules = Set()
-   local call_sets = {}
    for name, calls in pairs(ruleCalls) do
       if #calls == 0 then
          base_rules[name] = true
-      else
-         call_sets[name] = Set(clone1(calls))
+         callSet[name] = nil
       end
    end
    local rule_order = {base_rules}
@@ -403,7 +401,7 @@ local function _relax(ruleCalls)
       local relaxing, trip = true, 1
       while relaxing do
          trip = trip + 1
-         for name, calls in pairs(call_sets) do
+         for name, calls in pairs(callSet) do
             local based = true
             for call in pairs(calls) do
                if not all_rules[call] then
@@ -412,24 +410,25 @@ local function _relax(ruleCalls)
             end
             if based then
                next_rules[name] = true
-               call_sets[name] = nil
+               callSet[name] = nil
             end
          end
-         insert(rule_order, next_rules)
-         all_rules = all_rules + next_rules
-         next_rules = Set()
          if #next_rules == 0 then
-            remove(rule_order)
             relaxing = false
+         else
+            insert(rule_order, next_rules)
+            all_rules = all_rules + next_rules
+            next_rules = Set()
          end
+
          if trip > TRIP_AT then
             relaxing = false
-            --error "512 attempts to relax rule order, something is off"
+            error "512 attempts to relax rule order, something is off"
          end
       end
    end
    relax()
-   return rule_order
+   return rule_order, callSet
 end
 
 
@@ -447,8 +446,8 @@ end
 function Syn.rules.analyze(rules)
    local collection = rules:collectRules()
    rules.collection = collection
-   local callGraph = _relax(collection.ruleCalls)
-   return callGraph
+   local callGraph, remaining = _relax(collection.ruleCalls, rules:callSet())
+   return callGraph, remaining
 end
 
 
