@@ -379,9 +379,67 @@ function Syn.rules.collectRules(rules)
 end
 ```
 
-```lua
-function M.rules.analyze(rules)
+#### \_relax\(ruleCalls\)
 
+We begin with normalized names and arrays containing their named rules\.
+
+We end with a collection of sets\.
+
+```lua
+local clone1 = assert(table.clone1)
+local function _relax(ruleCalls)
+   local base_rules = Set()
+   local call_sets = {}
+   for name, calls in pairs(ruleCalls) do
+      if #calls == 0 then
+         base_rules[name] = true
+      else
+         call_sets[name] = Set(clone1(calls))
+      end
+   end
+   local rule_order = {base_rules}
+   local all_rules, next_rules = base_rules, Set()
+   local TRIP_AT = 512
+   local function relax()
+      local relaxing, trip = true, 1
+      while relaxing do
+         trip = trip + 1
+         for name, calls in pairs(call_sets) do
+            local based = true
+            for call in pairs(calls) do
+               if not all_rules[call] then
+                  based = false
+               end
+            end
+            if based then
+               next_rules[name] = true
+               call_sets[name] = nil
+            end
+         end
+         insert(rule_order, next_rules)
+         all_rules = all_rules + next_rules
+         next_rules = Set()
+         if #next_rules == 0 then
+            remove(rule_order)
+            relaxing = false
+         end
+         if trip > TRIP_AT then
+            relaxing = false
+            --error "512 attempts to relax rule order, something is off"
+         end
+      end
+   end
+   relax()
+   return rule_order
+end
+```
+
+```lua
+function Syn.rules.analyze(rules)
+   local collection = rules:collectRules()
+   rules.collection = collection
+   local callGraph = _relax(collection.ruleCalls)
+   return callGraph
 end
 ```
 
