@@ -434,11 +434,28 @@ end
 
 
 
+local function _callSet(ruleCalls)
+   local callSet = {}
+   for name, calls in pairs(ruleCalls) do
+      callSet[name] = Set(clone1(calls))
+   end
+   return callSet
+end
+
+
+
 function Syn.rules.analyze(rules)
    local collection = rules:collectRules()
    rules.collection = collection
    local callGraph = _relax(collection.ruleCalls)
    return callGraph
+end
+
+
+
+function Syn.rules.callSet(rules)
+   local collection = rules.collection or rules:collectRules()
+   return _callSet(collection.ruleCalls)
 end
 
 
