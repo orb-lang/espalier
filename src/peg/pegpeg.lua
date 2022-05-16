@@ -104,7 +104,6 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
             /  [\xf0-\xf4] [\x80-\xbf] [\x80-\xbf] [\x80-\xbf]
 
      Error  ←  1+
-       slonk ←  integer-range / integer
 ]]
 
 
