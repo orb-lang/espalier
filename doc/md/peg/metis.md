@@ -19,6 +19,7 @@ local core = require "qor:core" -- #todo another qor
 local cluster = require "cluster:cluster"
 local table = core.table
 local Set = core.set
+local Deque = require "deque:deque"
 local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
@@ -543,37 +544,43 @@ local function graphCalls(rules)
    --  the regulars collected, we turn to the recursives and roll 'em up
    local recursive = assert(collection.recursive)
    local recurSets = {}
-   -- order shouldn't matter here
+   -- make a full recurrence graph for one set
    local function oneGraph(name, callSet)
-      local nameSet = callSet + {}
-      -- first level is easy
+      local recurSet = callSet + {}
+      -- start with known subsets
       for elem in pairs(callSet) do
-         local elemSet = regSets[elem]
-                         or recurSets[elem]
-                         or setFor(ruleCalls[elem])
-         nameSet = nameSet + elemSet
+         local subSet = regSets[elem] or recurSets[elem]
+         if subSet then
+            recurSet = recurSet + subSet
+         end
       end
-      -- now we have to exhaust the search
-      local nextSet;
-      repeat
-         nextSet = nil
-         for elem in pairs(nameSet) do
-            if not nameSet[elem] then
-               nextSet = regSets[elem]
-                         or recurSets[elem]
-                         or setFor(ruleCalls[elem])
+      -- run a queue until we're out of names
+      local shuttle = Deque()
+      for elem in pairs(recurSet) do
+         shuttle:push(elem)
+      end
+      repeat -- actually shouldn't need the repeat but adelante
+         for elem in shuttle:popAll() do
+            for _, name in ipairs(ruleCalls[elem]) do
+               if not recurSet[name] then
+                  shuttle:push(name)
+                  recurSet[name] = true
+               end
             end
          end
-         if nextSet then
-            nameSet = nameSet + nextSet
-         end
-      until not nextSet
-      recurSets[name] = nameSet
+      until #shuttle == 0
+
+      recurSets[name] = recurSet
    end
+
    for name, callSet in pairs(recursive) do
       oneGraph(name, callSet)
    end
-   return regSets, recurSets
+   local allCalls = clone1(regSets)
+   for name, set in pairs(recurSets) do
+      allCalls[name] = set
+   end
+   return regSets, recurSets, allCalls
 end
 ```
 
@@ -587,8 +594,10 @@ function Syn.rules.analyze(rules)
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
-   local regSets, recurSets = graphCalls(rules)
-   return recurSets
+   local regSets, recurSets, calls = graphCalls(rules)
+   collection.calls = calls
+   -- do we need the intermediates for anything?
+   return calls
 end
 ```
 
