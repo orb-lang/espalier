@@ -425,6 +425,7 @@ function Syn.rules.collectRules(rules)
          insert(missing, name)
       end
    end
+   -- #improve should dupe, surplus, missing be sets?
    return { nameSet = nameSet,
             ruleMap = ruleMap,
             ruleCalls = ruleCalls,
@@ -498,15 +499,57 @@ end
 
 
 
+
+
+
+local function graphCalls(rules)
+   local collection = assert(rules.collection)
+   local ruleCalls, ruleMap = assert(collection.ruleCalls),
+                               assert(collection.ruleMap)
+   local regulars = assert(collection.regulars)
+
+   -- go through each layer and build the full dependency tree for regular
+   -- rules
+   local regSets = {}
+   -- first set of rules have no named subrules
+   local depSet = regulars[1]
+   for name in pairs(depSet) do
+      ruleMap[name].final = true
+      regSets[name] = Set {}
+   end
+   -- second tier has only the already-summoned direct calls
+   depSet = regulars[2]
+   for name in pairs(depSet) do
+      regSets[name] = Set(clone1(ruleCalls[name]))
+   end
+   -- the rest is set arithmetic
+   for i = 3, #regulars do
+      depSet = regulars[i]
+      for name in pairs(depSet) do
+         local callSet = Set(clone1(ruleCalls[name]))
+         for _, called in ipairs(ruleCalls[name]) do
+            callSet = callSet + regSets[called]
+         end
+         regSets[name] = callSet
+      end
+   end
+   return regSets
+end
+
+
+
 function Syn.rules.analyze(rules)
    local collection = rules:collectRules()
    rules.collection = collection
    local regulars, recursive = partition(collection.ruleCalls, rules:callSet())
    local ruleMap = assert(collection.ruleMap)
+   collection.regulars, collection.recursive = regulars, recursive
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
-   return ruleMap
+   local callSets = graphCalls(rules)
+   collection.callSets = callSets
+   return callSets
 end
 
 
