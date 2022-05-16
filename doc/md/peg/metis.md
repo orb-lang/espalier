@@ -3,13 +3,12 @@
 The metatables responsible for building the Vav combinator\.
 
 
-### Pasta
+### Synth Nodes
 
-We birth this as just plain ol' pegmeta\.
+This is officially a pattern since we do the same thing with Scry\.
 
-The difference shall be that this performs all steps prior to binding to a
-Qoph because this **is** determinate of codegen methodology\.
-
+Here it is particularly important because we expect to do a lot of rewriting
+of terms based on underlying strings which will not be identical\.
 
 #### imports
 
@@ -132,6 +131,58 @@ SynM.__repr = Syn_repr
 ```
 
 
+### Synth Equality
+
+We say a synth is equal to another if:
+
+
+- A leaf node has the same class and string value
+
+
+- A branch node the same class and has all children equal by this rule
+
+Note that we have an opportunity to provide memoized equality here by pointing
+between branch nodes already proven equal, either manually as 'cut' points or
+just as part of the equality operation\.
+
+```lua
+function SynM.__eq(syn1, syn2)
+   -- different classes or unequal lengths always neq
+   if (syn1.class ~= syn2.class)
+      or (#syn1 ~= #syn2) then
+         return false
+   end
+   -- two tokens?
+   if (#syn1 == 0) and (#syn2 == 0) then
+      -- same length?
+      if syn1:stride() ~= syn2:stride() then
+         return false
+      end
+      local str1, str2 = syn1.node.str, syn2.node.str
+      local o1, o2 = syn1.o, syn2.o
+      local same = true
+      for i = 0, syn1:stride() - 1 do
+         local b1, b2 = byte(str1, i + o1), byte(str2, i + o2)
+         if b1 ~= b2 then
+            same = false
+            break
+         end
+      end
+      return same
+   end
+   -- two leaves with the same number of children
+   local same = true
+   for i = 1, #syn1 do
+      if not syn1[i] == syn2[i] then
+         same = false
+         break
+      end
+   end
+   return same
+end
+```
+
+
 
 ### Synth Metamaker
 
@@ -230,6 +281,13 @@ end
 ```lua
 function Syndex.span(synth)
    return synth.node:span()
+end
+```
+
+
+```lua
+function Syndex.stride(synth)
+   return node.last - node.first + 1
 end
 ```
 
@@ -379,15 +437,13 @@ function Syn.rules.collectRules(rules)
 end
 ```
 
-#### \_relax\(ruleCalls\)
+#### partition\(ruleCalls\)
 
-We begin with normalized names and arrays containing their named rules\.
+This partitions the rules into regular and recursive\.
 
-We end with a collection of sets\.
 
 ```lua
-local clone1 = assert(table.clone1)
-local function _relax(ruleCalls, callSet)
+local function partition(ruleCalls, callSet)
    local base_rules = Set()
    for name, calls in pairs(ruleCalls) do
       if #calls == 0 then
@@ -395,45 +451,46 @@ local function _relax(ruleCalls, callSet)
          callSet[name] = nil
       end
    end
+
    local rule_order = {base_rules}
    local all_rules, next_rules = base_rules, Set()
    local TRIP_AT = 512
-   local function relax()
-      local relaxing, trip = true, 1
-      while relaxing do
-         trip = trip + 1
-         for name, calls in pairs(callSet) do
-            local based = true
-            for call in pairs(calls) do
-               if not all_rules[call] then
-                  based = false
-               end
-            end
-            if based then
-               next_rules[name] = true
-               callSet[name] = nil
+   local relaxing, trip = true, 1
+   while relaxing do
+      trip = trip + 1
+      for name, calls in pairs(callSet) do
+         local based = true
+         for call in pairs(calls) do
+            if not all_rules[call] then
+               based = false
             end
          end
-         if #next_rules == 0 then
-            relaxing = false
-         else
-            insert(rule_order, next_rules)
-            all_rules = all_rules + next_rules
-            next_rules = Set()
-         end
-
-         if trip > TRIP_AT then
-            relaxing = false
-            error "512 attempts to relax rule order, something is off"
+         if based then
+            next_rules[name] = true
+            callSet[name] = nil
          end
       end
+      if #next_rules == 0 then
+         relaxing = false
+      else
+         insert(rule_order, next_rules)
+         all_rules = all_rules + next_rules
+         next_rules = Set()
+      end
+
+      if trip > TRIP_AT then
+         relaxing = false
+         error "512 attempts to relax rule order, something is off"
+      end
    end
-   relax()
+
    return rule_order, callSet
 end
 ```
 
 ```lua
+local clone1 = assert(table.clone1)
+
 local function _callSet(ruleCalls)
    local callSet = {}
    for name, calls in pairs(ruleCalls) do
@@ -447,8 +504,12 @@ end
 function Syn.rules.analyze(rules)
    local collection = rules:collectRules()
    rules.collection = collection
-   local callGraph, remaining = _relax(collection.ruleCalls, rules:callSet())
-   return callGraph, remaining
+   local regulars, recursive = partition(collection.ruleCalls, rules:callSet())
+   local ruleMap = assert(collection.ruleMap)
+   for name in pairs(recursive) do
+      ruleMap[name].recursive = true
+   end
+   return ruleMap
 end
 ```
 
@@ -461,6 +522,8 @@ end
 
 
 ## Analysis
+
+
 
 
 ### What is a 'rule'

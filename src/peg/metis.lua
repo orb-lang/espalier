@@ -13,7 +13,6 @@
 
 
 
-
 local Node = require "espalier:espalier/node"
 local Grammar = require "espalier:espalier/grammar"
 local core = require "qor:core" -- #todo another qor
@@ -140,6 +139,56 @@ SynM.__repr = Syn_repr
 
 
 
+
+
+
+
+
+function SynM.__eq(syn1, syn2)
+   -- different classes or unequal lengths always neq
+   if (syn1.class ~= syn2.class)
+      or (#syn1 ~= #syn2) then
+         return false
+   end
+   -- two tokens?
+   if (#syn1 == 0) and (#syn2 == 0) then
+      -- same length?
+      if syn1:stride() ~= syn2:stride() then
+         return false
+      end
+      local str1, str2 = syn1.node.str, syn2.node.str
+      local o1, o2 = syn1.o, syn2.o
+      local same = true
+      for i = 0, syn1:stride() - 1 do
+         local b1, b2 = byte(str1, i + o1), byte(str2, i + o2)
+         if b1 ~= b2 then
+            same = false
+            break
+         end
+      end
+      return same
+   end
+   -- two leaves with the same number of children
+   local same = true
+   for i = 1, #syn1 do
+      if not syn1[i] == syn2[i] then
+         same = false
+         break
+      end
+   end
+   return same
+end
+
+
+
+
+
+
+
+
+
+
+
 local newSes, metaSes =  {}, {}
 
 local function makeGenus(class)
@@ -230,6 +279,13 @@ end
 
 function Syndex.span(synth)
    return synth.node:span()
+end
+
+
+
+
+function Syndex.stride(synth)
+   return node.last - node.first + 1
 end
 
 
@@ -384,9 +440,7 @@ end
 
 
 
-
-local clone1 = assert(table.clone1)
-local function _relax(ruleCalls, callSet)
+local function partition(ruleCalls, callSet)
    local base_rules = Set()
    for name, calls in pairs(ruleCalls) do
       if #calls == 0 then
@@ -394,44 +448,45 @@ local function _relax(ruleCalls, callSet)
          callSet[name] = nil
       end
    end
+
    local rule_order = {base_rules}
    local all_rules, next_rules = base_rules, Set()
    local TRIP_AT = 512
-   local function relax()
-      local relaxing, trip = true, 1
-      while relaxing do
-         trip = trip + 1
-         for name, calls in pairs(callSet) do
-            local based = true
-            for call in pairs(calls) do
-               if not all_rules[call] then
-                  based = false
-               end
-            end
-            if based then
-               next_rules[name] = true
-               callSet[name] = nil
+   local relaxing, trip = true, 1
+   while relaxing do
+      trip = trip + 1
+      for name, calls in pairs(callSet) do
+         local based = true
+         for call in pairs(calls) do
+            if not all_rules[call] then
+               based = false
             end
          end
-         if #next_rules == 0 then
-            relaxing = false
-         else
-            insert(rule_order, next_rules)
-            all_rules = all_rules + next_rules
-            next_rules = Set()
-         end
-
-         if trip > TRIP_AT then
-            relaxing = false
-            error "512 attempts to relax rule order, something is off"
+         if based then
+            next_rules[name] = true
+            callSet[name] = nil
          end
       end
+      if #next_rules == 0 then
+         relaxing = false
+      else
+         insert(rule_order, next_rules)
+         all_rules = all_rules + next_rules
+         next_rules = Set()
+      end
+
+      if trip > TRIP_AT then
+         relaxing = false
+         error "512 attempts to relax rule order, something is off"
+      end
    end
-   relax()
+
    return rule_order, callSet
 end
 
 
+
+local clone1 = assert(table.clone1)
 
 local function _callSet(ruleCalls)
    local callSet = {}
@@ -446,8 +501,12 @@ end
 function Syn.rules.analyze(rules)
    local collection = rules:collectRules()
    rules.collection = collection
-   local callGraph, remaining = _relax(collection.ruleCalls, rules:callSet())
-   return callGraph, remaining
+   local regulars, recursive = partition(collection.ruleCalls, rules:callSet())
+   local ruleMap = assert(collection.ruleMap)
+   for name in pairs(recursive) do
+      ruleMap[name].recursive = true
+   end
+   return ruleMap
 end
 
 
@@ -456,6 +515,8 @@ function Syn.rules.callSet(rules)
    local collection = rules.collection or rules:collectRules()
    return _callSet(collection.ruleCalls)
 end
+
+
 
 
 
