@@ -683,5 +683,35 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Syn.rules.constrain(rules)
+   -- now what lol
+   -- well, we have the 'tiers' for the regulars, so we can start with zero
+   -- dep and accumulate wisdom.
+   local collection = assert(rules.collection)
+   local ruleMap, regulars = collection.ruleMap, collection.regulars
+   local workSet = regulars[1]
+   for elem in pairs(workSet) do
+      local rule = ruleMap[elem]
+   end
+end
+
+
+
+
 return M
 

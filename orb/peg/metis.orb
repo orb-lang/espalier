@@ -664,6 +664,19 @@ suppressed rules, it may in fact ignore rule structure completely if it is,
 say, a validator.
 
 
+*** Two lenses
+
+In fact there are two useful ways to massage the given structure, thanks to
+the use of hidden rules.
+
+One of these is 'ghost' rules, where every pattern is treated as a rule
+whether named or not, and unrolling all the hidden rules to give an engine
+which only has rule names which can show up in the final parse.
+
+I know that the ghost approach will be useful, I'll ignore the other one for
+now.
+
+
 **** lock rules
 
 A rule is a lock if, once the containing rule has succeeded against this rule,
@@ -680,6 +693,23 @@ locks is easier than reducing the *lock* partof the rule to ={Kk}=.
 **** gate rules
 
 A rule is a gate if it must be passed for the containing rule to succeed.
+
+
+*** rules:constrain()
+
+#!lua
+function Syn.rules.constrain(rules)
+   -- now what lol
+   -- well, we have the 'tiers' for the regulars, so we can start with zero
+   -- dep and accumulate wisdom.
+   local collection = assert(rules.collection)
+   local ruleMap, regulars = collection.ruleMap, collection.regulars
+   local workSet = regulars[1]
+   for elem in pairs(workSet) do
+      local rule = ruleMap[elem]
+   end
+end
+#/lua
 
 
 #!lua
