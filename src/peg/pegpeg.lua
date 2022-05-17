@@ -10,18 +10,17 @@ local pegpeg = [[
       rule  ←  lhs rhs
 
        lhs  ←  (suppressed / rule-name) _ into _
-       rhs  ←  form _
+       rhs  ←  form+ _
 
 suppressed  ←  "`" rule-name "`"
  rule-name  ←  symbol
     `into`  ←  ":=" / "←" / "<-" / "="
 
-    `form`  ←  element+
- `element`  ←  !lhs (binop / simple / compound) _
+   `form`  ←  !lhs (binop / simple / compound) _
    `binop`  ←  choice / cat
 
-    choice  ←  (cat / simple / compound) _ "/" _ form
-       cat  ←  (simple / compound) _ form
+    choice  ←  (cat / simple / compound) _ "/" _ form+
+       cat  ←  (simple / compound) _ form+
 
    `simple` ←  repeated
             /  matched
@@ -32,7 +31,7 @@ suppressed  ←  "`" rule-name "`"
 
  `compound` ← group / enclosed
 
-    `group` ← "(" _ form _ ")"
+    `group` ← "(" _ form+ _ ")"
  `enclosed` ←  literal / set / range
 
 `repeated`  ←  allow-repeat _ "%" slice
