@@ -13,6 +13,24 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local Node = require "espalier:espalier/node"
 local Grammar = require "espalier:espalier/grammar"
 local core = require "qor:core" -- #todo another qor
@@ -24,6 +42,7 @@ local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
 local s = require "status:status" ()
+
 
 
 
@@ -189,7 +208,6 @@ end
 
 
 
-
 local newSes, metaSes =  {}, {}
 
 local function makeGenus(class)
@@ -220,7 +238,6 @@ end
 
 
 
-
 local function Syn_index(Syn, class)
    local meta, _ = metaSes[class]
    if not meta then
@@ -231,6 +248,9 @@ local function Syn_index(Syn, class)
 end
 
 local Syn = setmetatable({Syndex}, {__index = Syn_index })
+
+
+
 
 
 
@@ -252,9 +272,18 @@ local function filterer(class)
    return F
 end
 
+local curry = assert(core.fn.curry)
+
+local function setfilter(set, node)
+   return set[node.class]
+end
+
 function _filter(synth, pred)
    if type(pred) == 'string' then
       return filter(synth, filterer(pred))
+   elseif type(pred) == 'table' then
+      -- presume a Set
+      return filter(synth, curry(pred))
    else
       return filter(synth, pred)
    end
@@ -297,21 +326,6 @@ function Syndex.nameOf(synth)
 end
 
 
-
-
-
-
-function Syndex.shed(syn)
-   if #syn > 1 then
-      error "can't shed a node with several children"
-   elseif #syn == 0 then
-      error "can't shed a leaf node"
-   end
-   assert(syn.parent[syn.up] == syn, "parent missing child")
-   syn.parent[syn.up] = syn[1]
-   syn[1].parent = syn.parent
-   syn[1].up = syn.up
-end
 
 
 
@@ -387,6 +401,18 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 function Syn.rules.collectRules(rules)
    local nameSet = Set {}
    for name in rules :filter 'name' do
@@ -394,10 +420,12 @@ function Syn.rules.collectRules(rules)
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
-   local ruleMap = {} -- token => node
+   local ruleMap = {}   -- token => node
    local ruleCalls = {} -- token => {name*}
+   local ruleSet = Set {}   -- #{rule_name}
    for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
+      ruleSet[token] = true
       if ruleMap[token] then
          -- lpeg uses the *last* rule defined so we do likewise
          insert(dupe, ruleMap[token])
@@ -430,10 +458,15 @@ function Syn.rules.collectRules(rules)
    return { nameSet = nameSet,
             ruleMap = ruleMap,
             ruleCalls = ruleCalls,
+            ruleSet = ruleSet,
             dupe = dupe,
             surplus = surplus,
             missing = missing, }
 end
+
+
+
+
 
 
 
@@ -503,6 +536,10 @@ end
 
 
 
+
+
+
+
 local function setFor(tab)
    return Set(clone1(tab))
 end
@@ -556,16 +593,14 @@ local function graphCalls(rules)
       for elem in pairs(recurSet) do
          shuttle:push(elem)
       end
-      repeat -- actually shouldn't need the repeat but adelante
-         for elem in shuttle:popAll() do
-            for _, name in ipairs(ruleCalls[elem]) do
-               if not recurSet[name] then
-                  shuttle:push(name)
-                  recurSet[name] = true
-               end
+      for elem in shuttle:popAll() do
+         for _, name in ipairs(ruleCalls[elem]) do
+            if not recurSet[name] then
+               shuttle:push(name)
+               recurSet[name] = true
             end
          end
-      until #shuttle == 0
+      end
 
       recurSets[name] = recurSet
    end
@@ -593,8 +628,15 @@ function Syn.rules.analyze(rules)
    end
    local regSets, recurSets, calls = graphCalls(rules)
    collection.calls = calls
+   -- sometimes we want to know what a given rule /can't/ see
+   local ruleSet = collection.ruleSet
+   local blind = {}
+   for name, callSet in pairs(calls) do
+      blind[name] = ruleSet - callSet
+   end
+   collection.blind = blind
    -- do we need the intermediates for anything?
-   return calls
+   return blind, calls
 end
 
 

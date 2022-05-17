@@ -1,6 +1,16 @@
 * Metis
 
-The metatables responsible for building the Vav combinator.
+   The system responsible for building, analyzing, and manipulating input into
+the Vav combinator.
+
+
+** Design
+
+We receive a Grammar in a dialect of PEG, the Vav combinator takes it and
+combines it in various ways, this is linked to a Qopf via Dji, producing a
+Peh, something which takes a string and outputs a result.
+
+Analysis and various rule transformations are performed by this module.
 
 
 *** Synth Nodes
@@ -9,6 +19,14 @@ This is officially a pattern since we do the same thing with Scry.
 
 Here it is particularly important because we expect to do a lot of rewriting
 of terms based on underlying strings which will not be identical.
+
+
+** M
+
+The 'machinery' for this sort of pattern will end up in cluster eventually.
+
+Here we set it all up by hand for the second time.
+
 
 **** imports
 
@@ -25,6 +43,7 @@ local insert, remove, concat = assert(table.insert),
                                assert(table.concat)
 local s = require "status:status" ()
 #/lua
+
 
 ***** normalize
 
@@ -182,7 +201,6 @@ end
 #/lua
 
 
-
 *** Synth Metamaker
 
 We do this a couple of ways...
@@ -216,7 +234,6 @@ local function newSynth(node, i)
 end
 #/lua
 
-
 Second we have a metamaker, letting us say =Syn.class.whatever= and get the
 correct index table (Cassette).
 
@@ -236,6 +253,9 @@ local Syn = setmetatable({Syndex}, {__index = Syn_index })
 
 *** Base Synth methods
 
+The goal with clades is to allow these sorts of methods to be composable
+without any visitor BS, once again we're handrolling here.
+
 #!lua
 local walk = require "gadget:walk"
 local filter, reduce = assert(walk.filter), assert(walk.reduce)
@@ -252,9 +272,18 @@ local function filterer(class)
    return F
 end
 
+local curry = assert(core.fn.curry)
+
+local function setfilter(set, node)
+   return set[node.class]
+end
+
 function _filter(synth, pred)
    if type(pred) == 'string' then
       return filter(synth, filterer(pred))
+   elseif type(pred) == 'table' then
+      -- presume a Set
+      return filter(synth, curry(pred))
    else
       return filter(synth, pred)
    end
@@ -297,22 +326,7 @@ function Syndex.nameOf(synth)
 end
 #/lua
 
-
-Not using these:
-
-#!lua
-function Syndex.shed(syn)
-   if #syn > 1 then
-      error "can't shed a node with several children"
-   elseif #syn == 0 then
-      error "can't shed a leaf node"
-   end
-   assert(syn.parent[syn.up] == syn, "parent missing child")
-   syn.parent[syn.up] = syn[1]
-   syn[1].parent = syn.parent
-   syn[1].up = syn.up
-end
-#/lua
+While these may be useful, they are as yet unused:
 
 #!lua
 function Syndex.left(syn)
@@ -362,6 +376,14 @@ end
 #/lua
 
 
+** Data gathering
+
+We're just going to be greedy and get our hands on any static relationships
+we can, and use them later.
+
+Broken up into several chunks for clarity.
+
+
 *** rules:collectRules()
 
 Time for a big ol' info dump!  May as well grab All The Formats and see where
@@ -373,6 +395,12 @@ we get w. it.
 
   - ruleMap:  A map from the rule name (token) to the rule itself.
 
+  - ruleCalls:  A map of the token for a rule to an array of the name of each
+                rule it calls. This overwrites duplicate rules, which don't
+                interest me very much except as something we lint and prune.
+
+  - ruleSet:  A set containing the name of all defined rules.
+
   - dupe:  An array of any rule synth which has been duplicated later, this
            reflects the semantics of lpeg which overwrites a =V"rule"=
            definition if it sees a second one.
@@ -382,9 +410,7 @@ we get w. it.
 
   - missing:  Any rule referenced by name which isn't defined in the grammar.
 
-  - ruleCalls:  A map of the token for a rule to an array of the name of each
-                rule it calls. This overwrites duplicate rules, which don't
-                interest me very much except as something we lint and prune.
+
 
 #!lua
 function Syn.rules.collectRules(rules)
@@ -394,10 +420,12 @@ function Syn.rules.collectRules(rules)
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
-   local ruleMap = {} -- token => node
+   local ruleMap = {}   -- token => node
    local ruleCalls = {} -- token => {name*}
+   local ruleSet = Set {}   -- #{rule_name}
    for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
+      ruleSet[token] = true
       if ruleMap[token] then
          -- lpeg uses the *last* rule defined so we do likewise
          insert(dupe, ruleMap[token])
@@ -430,15 +458,20 @@ function Syn.rules.collectRules(rules)
    return { nameSet = nameSet,
             ruleMap = ruleMap,
             ruleCalls = ruleCalls,
+            ruleSet = ruleSet,
             dupe = dupe,
             surplus = surplus,
             missing = missing, }
 end
 #/lua
 
+
 **** partition(ruleCalls)
 
 This partitions the rules into regular and recursive.
+
+'Regular' here is not 100% identical to 'regular language' due to references
+and lookahead, but it's suitably close.
 
 
 #!lua
@@ -499,8 +532,12 @@ local function _callSet(ruleCalls)
 end
 #/lua
 
-We know these rules aren't recursive so we can obtain their dependencies
-without cycle checking.
+
+**** graphCalls(rules)
+
+  Now that we've obtained all the terminal rules, we can use a bit of set
+addition and a queue to obtain the full rule set seen by any other given
+rule.
 
 #!lua
 local function setFor(tab)
@@ -556,16 +593,14 @@ local function graphCalls(rules)
       for elem in pairs(recurSet) do
          shuttle:push(elem)
       end
-      repeat -- actually shouldn't need the repeat but adelante
-         for elem in shuttle:popAll() do
-            for _, name in ipairs(ruleCalls[elem]) do
-               if not recurSet[name] then
-                  shuttle:push(name)
-                  recurSet[name] = true
-               end
+      for elem in shuttle:popAll() do
+         for _, name in ipairs(ruleCalls[elem]) do
+            if not recurSet[name] then
+               shuttle:push(name)
+               recurSet[name] = true
             end
          end
-      until #shuttle == 0
+      end
 
       recurSets[name] = recurSet
    end
@@ -593,8 +628,15 @@ function Syn.rules.analyze(rules)
    end
    local regSets, recurSets, calls = graphCalls(rules)
    collection.calls = calls
+   -- sometimes we want to know what a given rule /can't/ see
+   local ruleSet = collection.ruleSet
+   local blind = {}
+   for name, callSet in pairs(calls) do
+      blind[name] = ruleSet - callSet
+   end
+   collection.blind = blind
    -- do we need the intermediates for anything?
-   return calls
+   return blind, calls
 end
 #/lua
 
