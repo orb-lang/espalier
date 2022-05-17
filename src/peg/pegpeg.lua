@@ -14,14 +14,14 @@ local pegpeg = [[
 
 suppressed  ←  "`" rule-name "`"
  rule-name  ←  symbol
-    `into`  ←  ":=" / "←" / "←" / "="
+    `into`  ←  ":=" / "←" / "<-" / "="
 
-    `form`  ←  element _ elements*
- `element`  ←  !lhs (simple / compound)
-`elements`  ←  (choice / cat) _
+    `form`  ←  element+
+ `element`  ←  !lhs (binop / simple / compound) _
+   `binop`  ←  choice / cat
 
-    choice  ←  "/" _ form
-       cat  ←  _ form
+    choice  ←  (cat / simple / compound) _ "/" _ form
+       cat  ←  (simple / compound) _ form
 
    `simple` ←  repeated
             /  matched
@@ -29,6 +29,7 @@ suppressed  ←  "`" rule-name "`"
             /  suffixed
             /  name
             /  number
+
  `compound` ← group / enclosed
 
     `group` ← "(" _ form _ ")"
@@ -77,7 +78,7 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
 `allow-suffix`  ←  prefixed / jawn
         `jawn`  ←  compound / name / number
 
-      `symbol`  ←  letter (letter / [0-9] /  {-_})+
+      `symbol`  ←  letter (letter / [0-9] /  {-_})*
                 /  "_"
       `letter`  ←  [A-Z] / [a-z]
 
