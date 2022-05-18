@@ -78,6 +78,18 @@ local Q = {}
 
 
 
+Q.optional = Set {'choice', 'zero_or_more', 'optional'}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -111,17 +123,13 @@ local M = setmetatable({Twig}, {__index = __index})
 
 
 
-
-
-
-
-
 local new, Syndex, SynM = cluster.order()
 
 local function builder(_new, synth, node, i)
    synth.up = i
    synth.o = node.first
    synth.node = node
+   node.synth = synth
    synth.line, synth.col = node:linePos()
    -- this is just for reading purposes, remove
    synth.class = _new.class
@@ -198,6 +206,7 @@ function SynM.__eq(syn1, syn2)
    end
    return same
 end
+
 
 
 
@@ -455,13 +464,13 @@ function Syn.rules.collectRules(rules)
       end
    end
    -- #improve should dupe, surplus, missing be sets?
-   return { nameSet = nameSet,
-            ruleMap = ruleMap,
-            ruleCalls = ruleCalls,
-            ruleSet = ruleSet,
-            dupe = dupe,
-            surplus = surplus,
-            missing = missing, }
+   return { nameSet   =  nameSet,
+            ruleMap   =  ruleMap,
+            ruleCalls =  ruleCalls,
+            ruleSet   =  ruleSet,
+            dupe      =  dupe,
+            surplus   =  surplus,
+            missing   =  missing, }
 end
 
 
@@ -635,7 +644,7 @@ function Syn.rules.analyze(rules)
       blind[name] = ruleSet - callSet
    end
    collection.blind = blind
-   -- do we need the intermediates for anything?
+   rules:constrain()
    return blind, calls
 end
 
@@ -704,9 +713,15 @@ function Syn.rules.constrain(rules)
    -- dep and accumulate wisdom.
    local collection = assert(rules.collection)
    local ruleMap, regulars = collection.ruleMap, collection.regulars
-   local workSet = regulars[1]
-   for elem in pairs(workSet) do
-      local rule = ruleMap[elem]
+   for _, workSet in ipairs(regulars) do
+      for elem in pairs(workSet) do
+         -- get the guts out
+         local rhs = assert(ruleMap[elem] :take 'rhs' . synth)
+         local body = rhs[1]
+         if body.maybe then
+            rhs.maybe = true
+         end
+      end
    end
 end
 

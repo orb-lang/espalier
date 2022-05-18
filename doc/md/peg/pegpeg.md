@@ -16,11 +16,20 @@ suppressed  ←  "`" rule-name "`"
  rule-name  ←  symbol
     `into`  ←  ":=" / "←" / "<-" / "="
 
-   `form`  ←  !lhs (binop / simple / compound) _
-   `binop`  ←  choice / cat
+    `form`  ←  !lhs (binop / element) _
+ `element`  ←  simple / compound
+   `binop`  ←  cats
 
-    choice  ←  (cat / simple / compound) _ "/" _ form+
-       cat  ←  (simple / compound) _ form+
+   `cats` <-  cat
+           /  choices _
+
+       cat  ←  choices _ choices
+
+   `choices` <- choice
+             /  element _
+
+    choice  ←  element _ "/" _ element
+
 
    `simple` ←  repeated
             /  matched
@@ -31,7 +40,7 @@ suppressed  ←  "`" rule-name "`"
 
  `compound` ← group / enclosed
 
-    `group` ← "(" _ form+ _ ")"
+      group ← "(" _ form+ ")"
  `enclosed` ←  literal / set / range
 
 `repeated`  ←  allow-repeat _ "%" slice
@@ -48,12 +57,12 @@ suppressed  ←  "`" rule-name "`"
 `single-string`  ←  "'" ("\\" "'" / "\\" utf8 / (!"'" !"\n" utf8))* "'"
 `double-string`  ←  '"' ('\\' '"' / "\\" utf8 / (!'"' !"\n" utf8))* '"'
 
- range-start  ←  escaped / codepoint
-   range-end  ←  escaped / codepoint
-     escaped  ←  hex-escape / "\\" codepoint
-`hex-escape`  ←  "\\" {Xx} higit higit
-     `higit`  ←  [0-9] / [A-F] / [a-f]
-   codepoint  ←   utf8
+    range-start  ←  escaped / codepoint
+      range-end  ←  escaped / codepoint
+        escaped  ←  hex-escape / "\\" codepoint
+   `hex-escape`  ←  "\\" {Xx} higit higit
+        `higit`  ←  [0-9] / [A-F] / [a-f]
+      codepoint  ←   utf8
 
 
        slice  ←  integer-range / integer
@@ -93,7 +102,6 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
       lt-refer  ←  "(<" reference ")"
      reference  ←  symbol
 
-
       `_`  ←  (comment / dent / { \t\r})*
 `comment`  ←  ";" (!"\n" utf8)*
    `dent`  ←  "\n" { \t}*
@@ -104,7 +112,9 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
             /  [\xf0-\xf4] [\x80-\xbf] [\x80-\xbf] [\x80-\xbf]
 
      Error  ←  1+
-       slonk ←  integer-range / integer
+
+      ; slonk is an orphan rule, not long for this world...
+      slonk ←  integer-range / integer
 ```
 
 ```lua
