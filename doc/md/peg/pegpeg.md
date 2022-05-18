@@ -18,17 +18,19 @@ suppressed  ←  "`" rule-name "`"
 
     `form`  ←  !lhs (binop / element) _
  `element`  ←  simple / compound
-   `binop`  ←  cats
-
-   `cats` <-  cat
-           /  choices _
-
-       cat  ←  choices _ choices
+   `binop`  ←  choices
 
    `choices` <- choice
-             /  element _
+             /  cats _
 
-    choice  ←  element _ "/" _ element
+    choice  ←  cats (_ "/" _ cats)+
+
+   `cats` <-  cat
+           /  element _
+
+       cat  ←  element (_ element)+
+
+
 
 
    `simple` ←  repeated
