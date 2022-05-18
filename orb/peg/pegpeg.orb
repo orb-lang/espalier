@@ -16,22 +16,15 @@ suppressed  ←  "`" rule-name "`"
  rule-name  ←  symbol
     `into`  ←  ":=" / "←" / "<-" / "="
 
-    `form`  ←  !lhs (binop / element) _
- `element`  ←  simple / compound
-   `binop`  ←  choices
+    `form`  ←  binop / element _
+ `element`  ←  (simple / compound) !(_ into)
 
-   `choices` <- choice
-             /  cats _
-
+   `binop`  ←  choice
+            /  cats _
     choice  ←  cats (_ "/" _ cats)+
-
-   `cats` <-  cat
-           /  element _
-
+    `cats`  ←  cat
+            /  element _
        cat  ←  element (_ element)+
-
-
-
 
    `simple` ←  repeated
             /  matched
