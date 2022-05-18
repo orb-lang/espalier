@@ -35,8 +35,8 @@ suppressed  ←  "`" rule-name "`"
 
  `compound` ← group / enclosed
 
-      group ← "(" _ form+ ")"
- `enclosed` ←  literal / set / range
+   `group`  ←  "(" _ form+ ")"
+`enclosed`  ←  literal / set / range
 
 `repeated`  ←  allow-repeat _ "%" slice
  `matched`  ←  allow-repeat _ match-suffix
