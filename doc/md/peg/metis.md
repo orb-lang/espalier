@@ -78,7 +78,14 @@ Note there is one type of repeat rule `name%0..5` which is also optional but
 we must detect this\.
 
 ```lua
-Q.optional = Set {'choice', 'zero_or_more', 'optional'}
+Q.maybe = Set {'zero_or_more', 'optional'}
+```
+
+
+#### Q\.compound
+
+```lua
+Q.compound = Set {'cat', 'choice'}
 ```
 
 
@@ -405,7 +412,7 @@ we get w\. it\.
 
   - nameSet:  The set of every name in normalized token form\.
 
-  - ruleMap:  A map from the rule name \(token\) to the rule itself\.
+  - ruleMap:  A map from the rule name \(token\) to the synthesized rule\.
 
   - ruleCalls:  A map of the token for a rule to an array of the name of each
       rule it calls\. This overwrites duplicate rules, which don't
@@ -432,7 +439,7 @@ function Syn.rules.collectRules(rules)
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
-   local ruleMap = {}   -- token => node
+   local ruleMap = {}   -- token => synth
    local ruleCalls = {} -- token => {name*}
    local ruleSet = Set {}   -- #{rule_name}
    for rule in rules :filter 'rule' do
@@ -485,6 +492,11 @@ This partitions the rules into regular and recursive\.
 'Regular' here is not 100% identical to 'regular language' due to references
 and lookahead, but it's suitably close\.
 
+\#improve
+it as an accumulator i\.e\. `set = set + newSet` is generally wasteful and
+we can drop some allocation pressure by iteration and setting to true\.  This
+is another case where I'm curious if the JIT would sink the allocations, but
+there's no chance these functions would actually go hot\.
 
 ```lua
 local function partition(ruleCalls, callSet)
@@ -532,6 +544,12 @@ local function partition(ruleCalls, callSet)
 end
 ```
 
+
+### Syn\.rules\.callSet\(rules\)
+
+This just makes Sets non\-destructively out of arrays of rule names, and
+might not have to be non\-destructive, but is\.
+
 ```lua
 local clone1 = assert(table.clone1)
 
@@ -544,12 +562,23 @@ local function _callSet(ruleCalls)
 end
 ```
 
+```lua
+function Syn.rules.callSet(rules)
+   local collection = rules.collection or rules:collectRules()
+   return _callSet(collection.ruleCalls)
+end
+```
+
 
 #### graphCalls\(rules\)
 
-  Now that we've obtained all the terminal rules, we can use a bit of set
+  Now that we've obtained all the terminal rules, we can use more set
 addition and a queue to obtain the full rule set seen by any other given
 rule\.
+
+This returns a map of names to a Set of every rule which can be visited from
+that rule name\.  It actually return the two halves \(terminal and regular\) as
+well as the union, but it most likely doesn't have to\.
 
 ```lua
 local function setFor(tab)
@@ -587,9 +616,11 @@ local function graphCalls(rules)
          regSets[name] = callSet
       end
    end
+
    --  the regulars collected, we turn to the recursives and roll 'em up
    local recursive = assert(collection.recursive)
    local recurSets = {}
+
    -- make a full recurrence graph for one set
    local function oneGraph(name, callSet)
       local recurSet = callSet + {}
@@ -652,41 +683,58 @@ function Syn.rules.analyze(rules)
 end
 ```
 
-```lua
-function Syn.rules.callSet(rules)
-   local collection = rules.collection or rules:collectRules()
-   return _callSet(collection.ruleCalls)
-end
-```
 
 
 ## Analysis
 
+  This algorithm is almost entirely about adding flags to rules as we discover
+things about them, then using that knowledge in a surprising number of ways\.
 
 
+### Ghost Rules
 
-### What is a 'rule'
+We have three sorts of rules here: shown, hidden, and ghost\.
 
-One of the first things we do is 'reify' the rule structure by assigning
-names to any rule which doesn't have one\.  So a rule is any pattern which
-recognizes some area of a string in some context\.
+Shown and hidden rules are straightfoward enough, a ghost rule is any rule we
+make out of an un\-named fragment of another rule\.
 
-The product of Dji may or may not be in a position to work with phantom or
-suppressed rules, it may in fact ignore rule structure completely if it is,
-say, a validator\.
+Most of the time we're concerned with named rules and just call those rules\. A
+fragment of grammar without a name we call a pattern, a ghost rule is
+something we \(intend to\) *make* out of our patterns for use in Dji\.
+
+At some point we'll have synthetic rules as well, and won't that be fun\.
 
 
-### Two lenses
+### Control Flow Analysis
 
-In fact there are two useful ways to massage the given structure, thanks to
-the use of hidden rules\.
+  We are discovering what requirements a given pattern imposes on the rest of
+the Grammar, so we can use this strategically\.
 
-One of these is 'ghost' rules, where every pattern is treated as a rule
-whether named or not, and unrolling all the hidden rules to give an engine
-which only has rule names which can show up in the final parse\.
+The simplest part is synthesizing what is *mandatory*, each atomic pattern
+either is or isn't, and this composes, that composition being our main target
+of interest\.
 
-I know that the ghost approach will be useful, I'll ignore the other one for
-now\.
+
+### Locks
+
+One pattern we're looking for is any concatenation of \(at least\) two
+elements where the first and the last are both mandatory\.
+
+We know of such a pattern, that once we've passed the first of those elements,
+we must pass the final one as well, or abandon the pattern entirely\.
+
+We call such a rule `.locked`, the first element is a lock and the last is a
+gate\.
+
+Since left\-recursion is forbidden in PEGs \(Roberto Ierusalimschy says that
+it's semantically unclear what it would even mean, although there are a
+plethora of papers which disagree\), our task is quite a bit easier if we
+presume that the grammar is well\-formed\.
+
+In fact we shouldn't presume this, we should detect left recursion rather than
+throwing it at LPEG and seeing if it sticks, but this part of the code will
+make that assumption since we can reject lefta recursion earlier in the
+pipeline\.
 
 
 #### lock rules
@@ -709,6 +757,8 @@ A rule is a gate if it must be passed for the containing rule to succeed\.
 
 ### rules:constrain\(\)
 
+So let's see what wisdom we might derive\.
+
 ```lua
 function Syn.rules.constrain(rules)
    -- now what lol
@@ -719,13 +769,74 @@ function Syn.rules.constrain(rules)
    for _, workSet in ipairs(regulars) do
       for elem in pairs(workSet) do
          -- get the guts out
-         local rhs = assert(ruleMap[elem] :take 'rhs' . synth)
+         local rule = assert(ruleMap[elem])
+         local rhs = assert(rule :take 'rhs')
          local body = rhs[1]
+         -- mayb we move this to the end
          if body.maybe then
             rhs.maybe = true
+         elseif body.compound then
+            body:sumConstraints()
+            if body.locked then
+               rule.locked = true
+            end
+
+         else -- Everything else is singular
+
          end
       end
    end
+end
+```
+
+```lua
+function Syn.cat.sumConstraints(cat)
+   local locked = false
+   for i, sub in ipairs(cat) do
+      if sub.compound then
+         sub:sumConstraints()
+      end
+      if not sub.maybe then
+         if not locked then
+            sub.lock = true
+            locked = true
+         end
+         if i == #cat then
+            sub.gate = true
+            locked = true
+         end
+      end
+   end
+   -- we may have missed a gate
+   if locked and (not cat[#cat].gate) then
+      for i = #cat-1, 1, -1 do
+         if not cat[i].maybe then
+            cat[i].gate = true
+            break
+         end
+      end
+   end
+   if locked then
+      cat.locked = true
+   end
+end
+```
+
+```lua
+function Syn.choice.sumConstraints(choice)
+   local maybe, locked = false, true
+   for _, sub in ipairs(choice) do
+      if sub.compound then
+         sub:sumConstraints()
+      end
+      if sub.maybe then
+         maybe = true
+      end
+      if not sub.locked then
+         locked = false
+      end
+   end
+   choice.maybe, choice.locked = maybe, locked
 end
 ```
 

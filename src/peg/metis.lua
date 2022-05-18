@@ -78,7 +78,14 @@ local Q = {}
 
 
 
-Q.optional = Set {'choice', 'zero_or_more', 'optional'}
+Q.maybe = Set {'zero_or_more', 'optional'}
+
+
+
+
+
+
+Q.compound = Set {'cat', 'choice'}
 
 
 
@@ -429,7 +436,7 @@ function Syn.rules.collectRules(rules)
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
-   local ruleMap = {}   -- token => node
+   local ruleMap = {}   -- token => synth
    local ruleCalls = {} -- token => {name*}
    local ruleSet = Set {}   -- #{rule_name}
    for rule in rules :filter 'rule' do
@@ -472,6 +479,11 @@ function Syn.rules.collectRules(rules)
             surplus   =  surplus,
             missing   =  missing, }
 end
+
+
+
+
+
 
 
 
@@ -530,6 +542,12 @@ end
 
 
 
+
+
+
+
+
+
 local clone1 = assert(table.clone1)
 
 local function _callSet(ruleCalls)
@@ -539,6 +557,17 @@ local function _callSet(ruleCalls)
    end
    return callSet
 end
+
+
+
+function Syn.rules.callSet(rules)
+   local collection = rules.collection or rules:collectRules()
+   return _callSet(collection.ruleCalls)
+end
+
+
+
+
 
 
 
@@ -584,9 +613,11 @@ local function graphCalls(rules)
          regSets[name] = callSet
       end
    end
+
    --  the regulars collected, we turn to the recursives and roll 'em up
    local recursive = assert(collection.recursive)
    local recurSets = {}
+
    -- make a full recurrence graph for one set
    local function oneGraph(name, callSet)
       local recurSet = callSet + {}
@@ -650,10 +681,29 @@ end
 
 
 
-function Syn.rules.callSet(rules)
-   local collection = rules.collection or rules:collectRules()
-   return _callSet(collection.ruleCalls)
-end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -716,13 +766,74 @@ function Syn.rules.constrain(rules)
    for _, workSet in ipairs(regulars) do
       for elem in pairs(workSet) do
          -- get the guts out
-         local rhs = assert(ruleMap[elem] :take 'rhs' . synth)
+         local rule = assert(ruleMap[elem])
+         local rhs = assert(rule :take 'rhs')
          local body = rhs[1]
+         -- mayb we move this to the end
          if body.maybe then
             rhs.maybe = true
+         elseif body.compound then
+            body:sumConstraints()
+            if body.locked then
+               rule.locked = true
+            end
+
+         else -- Everything else is singular
+
          end
       end
    end
+end
+
+
+
+function Syn.cat.sumConstraints(cat)
+   local locked = false
+   for i, sub in ipairs(cat) do
+      if sub.compound then
+         sub:sumConstraints()
+      end
+      if not sub.maybe then
+         if not locked then
+            sub.lock = true
+            locked = true
+         end
+         if i == #cat then
+            sub.gate = true
+            locked = true
+         end
+      end
+   end
+   -- we may have missed a gate
+   if locked and (not cat[#cat].gate) then
+      for i = #cat-1, 1, -1 do
+         if not cat[i].maybe then
+            cat[i].gate = true
+            break
+         end
+      end
+   end
+   if locked then
+      cat.locked = true
+   end
+end
+
+
+
+function Syn.choice.sumConstraints(choice)
+   local maybe, locked = false, true
+   for _, sub in ipairs(choice) do
+      if sub.compound then
+         sub:sumConstraints()
+      end
+      if sub.maybe then
+         maybe = true
+      end
+      if not sub.locked then
+         locked = false
+      end
+   end
+   choice.maybe, choice.locked = maybe, locked
 end
 
 
