@@ -5,22 +5,26 @@
 PEG engine, which we will after all be using\.
 
 ```peg
+
+      `peg`  ←  rules / anon
+
      rules  ←  _ rule+ (-1 / Error)
+      anon  ←  _ form+ (-1 / Error)
 
       rule  ←  lhs rhs
+    `form`  ←  binop / element _
 
        lhs  ←  (suppressed / rule-name) _ into _
-       rhs  ←  form+ _
-
-suppressed  ←  "`" rule-name "`"
- rule-name  ←  symbol
-    `into`  ←  ":=" / "←" / "<-" / "="
-
-    `form`  ←  binop / element _
- `element`  ←  (simple / compound) !(_ into)
+       rhs  ←  form+
 
    `binop`  ←  choice
             /  cats _
+ `element`  ←  (simple / compound) !(_ into)
+
+suppressed  ←  "`" rule-name "`"
+ rule-name  ←  symbol
+    `into`  ←  ":=" / "←" / "<-" / "="''
+
     choice  ←  cats (_ "/" _ cats)+
     `cats`  ←  cat
             /  element _
@@ -107,9 +111,6 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
             /  [\xf0-\xf4] [\x80-\xbf] [\x80-\xbf] [\x80-\xbf]
 
      Error  ←  1+
-
-      ; slonk is an orphan rule, not long for this world...
-      slonk ←  integer-range / integer
 ```
 
 ```lua

@@ -31,6 +31,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 local Node = require "espalier:espalier/node"
 local Grammar = require "espalier:espalier/grammar"
 local core = require "qor:core" -- #todo another qor
@@ -94,6 +104,15 @@ Q.compound = Set {'cat', 'choice'}
 
 
 
+Q.terminal = Set {'literal', 'set', 'range', 'number'}
+
+
+
+
+
+
+
+
 
 
 
@@ -143,6 +162,7 @@ local function builder(_new, synth, node, i)
    return synth
 end
 cluster.construct(new, builder)
+
 
 
 
@@ -429,10 +449,14 @@ end
 
 
 
+
+
+
 function Syn.rules.collectRules(rules)
    local nameSet = Set {}
    for name in rules :filter 'name' do
       local token = normalize(name:span())
+      name.token = token
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
@@ -441,6 +465,7 @@ function Syn.rules.collectRules(rules)
    local ruleSet = Set {}   -- #{rule_name}
    for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
+      rule.token = token
       ruleSet[token] = true
       if ruleMap[token] then
          -- lpeg uses the *last* rule defined so we do likewise
@@ -757,12 +782,51 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function copyFlags(synA, synB)
+   for k, v in pairs(synA) do
+      if type(v) == 'boolean' then
+         synB[k] = v
+      end
+   end
+end
+
+
+
 function Syn.rules.constrain(rules)
    -- now what lol
    -- well, we have the 'tiers' for the regulars, so we can start with zero
    -- dep and accumulate wisdom.
    local collection = assert(rules.collection)
    local ruleMap, regulars = collection.ruleMap, collection.regulars
+   -- this is merely for tracking purposes
+   local constraints = {} -- name => synth
    for _, workSet in ipairs(regulars) do
       for elem in pairs(workSet) do
          -- get the guts out
@@ -772,26 +836,34 @@ function Syn.rules.constrain(rules)
          -- mayb we move this to the end
          if body.maybe then
             rhs.maybe = true
-         elseif body.compound then
-            body:sumConstraints()
+         end
+         if body.compound then
+            body:sumConstraints(constraints)
             if body.locked then
                rule.locked = true
             end
-
-         else -- Everything else is singular
-
          end
+         if body.class == 'name' then
+            copyFlags(ruleMap[body.token], body)
+         end
+
+      constraints[elem] = rule
       end
    end
 end
 
 
 
-function Syn.cat.sumConstraints(cat)
+
+
+
+function Syn.cat.sumConstraints(cat, constraints)
    local locked = false
    for i, sub in ipairs(cat) do
       if sub.compound then
-         sub:sumConstraints()
+         sub:sumConstraints(constraints)
+      else
+         sub:constrain(constraints)
       end
       if not sub.maybe then
          if not locked then
@@ -820,11 +892,11 @@ end
 
 
 
-function Syn.choice.sumConstraints(choice)
+function Syn.choice.sumConstraints(choice, constraints)
    local maybe, locked = false, true
    for _, sub in ipairs(choice) do
       if sub.compound then
-         sub:sumConstraints()
+         sub:sumConstraints(constraints)
       end
       if sub.maybe then
          maybe = true
@@ -834,6 +906,16 @@ function Syn.choice.sumConstraints(choice)
       end
    end
    choice.maybe, choice.locked = maybe, locked
+end
+
+
+
+
+
+
+
+function SynM.__add(grammar, rule)
+
 end
 
 

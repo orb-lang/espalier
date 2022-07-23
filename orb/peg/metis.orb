@@ -13,6 +13,16 @@ Peh, something which takes a string and outputs a result.
 Analysis and various rule transformations are performed by this module.
 
 
+*** Taming The Beast
+
+  This does maybe ten percent of what it will do, and the file is pushing a
+thousand lines.
+
+At some point I'll take a time out and write =cluster.clade=, which we can
+use to break out various capabilities into their own files, and recombine them
+into synth metatables which do All The Things.
+
+
 *** Synth Nodes
 
 This is officially a pattern since we do the same thing with Scry.
@@ -89,6 +99,15 @@ Q.compound = Set {'cat', 'choice'}
 #/lua
 
 
+**** Q.terminal
+
+Rules which produce cursor movement in and of themselves.
+
+#!lua
+Q.terminal = Set {'literal', 'set', 'range', 'number'}
+#/lua
+
+
 *** Metabuilder
 
   This pattern goes into its own module eventually/soon/as part of what I'm
@@ -145,6 +164,7 @@ end
 cluster.construct(new, builder)
 
 #/lua
+
 
 
 ***** Synth lens
@@ -405,6 +425,9 @@ Broken up into several chunks for clarity.
 Time for a big ol' info dump!  May as well grab All The Formats and see where
 we get w. it.
 
+This builds up a large collection of relational information, while decorating
+rules and names with tokens representing their normalized value.
+
 - returns a map of the following:
 
   - nameSet:  The set of every name in normalized token form.
@@ -433,6 +456,7 @@ function Syn.rules.collectRules(rules)
    local nameSet = Set {}
    for name in rules :filter 'name' do
       local token = normalize(name:span())
+      name.token = token
       nameSet[token] = true
    end
    local dupe, surplus = {}, {}
@@ -441,6 +465,7 @@ function Syn.rules.collectRules(rules)
    local ruleSet = Set {}   -- #{rule_name}
    for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
+      rule.token = token
       ruleSet[token] = true
       if ruleMap[token] then
          -- lpeg uses the *last* rule defined so we do likewise
@@ -752,9 +777,46 @@ locks is easier than reducing the *lock* partof the rule to ={Kk}=.
 A rule is a gate if it must be passed for the containing rule to succeed.
 
 
+***** starting_fails_rule
+
+This is an important subcondition for us to look for, the case where a rule
+is made up of choices and if one of the choices is *started* but not finished
+then the entire rule will fail.
+
+This will be the case *if*: the subrule is /locked/, and the /lock/ of the
+subrule is incompatible with the first mandatory match of any subsequent
+subrule in the choice.
+
+An example where this will apply is statements in Lua, many of which begin
+with a unique keyword which serves as a lock.  Once an ="if"= has been
+correctly parsed in the right location, no other statement rule can succeed,
+so a failure of the =if= rule fails the statement rule.
+
+=statement= is itself mandatory, and this gets us to error escape analysis.
+
+Conceptually, negative lookahead has a similar function, but we don't need a
+separate flag for it because =not= is the only condition which triggers it.
+Negative lookahead we could call "success fails rule", while =and= gives us
+two causes for a failure where we otherwise have only one.
+
+Positive lookahead isn't as interesting, although it gives us a head start on
+error recovery, which is nice.  It does have this interesting 'pseudomatch'
+quality but it will be tricky to extract that in a useful way.
+
+
 *** rules:constrain()
 
 So let's see what wisdom we might derive.
+
+#!lua
+local function copyFlags(synA, synB)
+   for k, v in pairs(synA) do
+      if type(v) == 'boolean' then
+         synB[k] = v
+      end
+   end
+end
+#/lua
 
 #!lua
 function Syn.rules.constrain(rules)
@@ -763,6 +825,8 @@ function Syn.rules.constrain(rules)
    -- dep and accumulate wisdom.
    local collection = assert(rules.collection)
    local ruleMap, regulars = collection.ruleMap, collection.regulars
+   -- this is merely for tracking purposes
+   local constraints = {} -- name => synth
    for _, workSet in ipairs(regulars) do
       for elem in pairs(workSet) do
          -- get the guts out
@@ -772,26 +836,34 @@ function Syn.rules.constrain(rules)
          -- mayb we move this to the end
          if body.maybe then
             rhs.maybe = true
-         elseif body.compound then
-            body:sumConstraints()
+         end
+         if body.compound then
+            body:sumConstraints(constraints)
             if body.locked then
                rule.locked = true
             end
-
-         else -- Everything else is singular
-
          end
+         if body.class == 'name' then
+            copyFlags(ruleMap[body.token], body)
+         end
+
+      constraints[elem] = rule
       end
    end
 end
 #/lua
 
+
+**** Compound constraints
+
 #!lua
-function Syn.cat.sumConstraints(cat)
+function Syn.cat.sumConstraints(cat, constraints)
    local locked = false
    for i, sub in ipairs(cat) do
       if sub.compound then
-         sub:sumConstraints()
+         sub:sumConstraints(constraints)
+      else
+         sub:constrain(constraints)
       end
       if not sub.maybe then
          if not locked then
@@ -820,11 +892,11 @@ end
 #/lua
 
 #!lua
-function Syn.choice.sumConstraints(choice)
+function Syn.choice.sumConstraints(choice, constraints)
    local maybe, locked = false, true
    for _, sub in ipairs(choice) do
       if sub.compound then
-         sub:sumConstraints()
+         sub:sumConstraints(constraints)
       end
       if sub.maybe then
          maybe = true
@@ -834,6 +906,16 @@ function Syn.choice.sumConstraints(choice)
       end
    end
    choice.maybe, choice.locked = maybe, locked
+end
+#/lua
+
+
+
+*** Arithmetic
+
+#!lua
+function SynM.__add(grammar, rule)
+
 end
 #/lua
 

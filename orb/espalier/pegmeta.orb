@@ -694,6 +694,20 @@ function Set.toLpeg(set)
 end
 #/lua
 
+Should look like this:
+
+#!lua #noKnit
+local Set = PegMetas : inherit "set"
+
+function Set.toLpeg(set)
+   local inner = set:span():sub(2, -2):gsub('"', '\\"')
+   return PegPhrase("S\"".. set:span():sub(2,-2) .. "\"")
+end
+#/lua
+
+But this breaks compatibility and I don't have the patience to look and see
+if I've got =\"= in sets at the moment.
+
 
 **** Range
 
