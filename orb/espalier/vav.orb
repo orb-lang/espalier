@@ -19,7 +19,7 @@ constituent parts.
 
 This is an example of qoph, not vav, and yet.
 
-#!lua
+#!lua #noKnit
 ---
 -- Adds hooks to a grammar to print debugging information
 --

@@ -28,7 +28,7 @@ suppressed  ←  "`" rule-name "`"
     choice  ←  cats (_ "/" _ cats)+
     `cats`  ←  cat
             /  element _
-       cat  ←  element (_ element)+
+       cat  ←  element _ (element _)+
 
    `simple` ←  repeated
             /  matched
