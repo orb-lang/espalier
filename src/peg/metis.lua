@@ -819,6 +819,66 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Syn.rules.Constrain(rules)
+   local collection;
+   if rules.collection then
+      collection = rules.collection
+   else
+      rules:analyze()
+      collection = assert(rules.collection)
+   end
+
+   for rule in rules :filter 'rule' do
+      rule:Constrain()
+   end
+
+   -- lift up regulars
+
+   -- say sensible things about recursives
+end
+
+
+
+function Syn.rule.Constrain(rule)
+   local rhs = assert(rule :take 'rhs')
+   local body = rhs[1]
+   if body.maybe then
+      rhs.maybe = true
+   end
+   if body.compound then
+      body:sumConstraints(constraints)
+      if body.locked then
+         rule.locked = true
+      end
+   end
+end
+
+
+
+
 local function copyFlags(synA, synB)
    for k, v in pairs(synA) do
       if type(v) == 'boolean' then
@@ -867,6 +927,7 @@ function Syn.rules.constrain(rules)
       constraints[elem] = rule
       end
    end
+   rules.constraints = constraints
 end
 
 

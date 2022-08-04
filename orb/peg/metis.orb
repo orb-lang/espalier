@@ -818,6 +818,66 @@ quality but it will be tricky to extract that in a useful way.
 
 So let's see what wisdom we might derive.
 
+
+*** Rethinking it
+
+This first pass tries to handle the recursive nature of the grammar by dealing
+with all regulars first.
+
+It makes more sense to just handle every rule and deal with cycles at the
+very end.
+
+So let's do this in passes.
+
+- Step 1:  Walk the whole synth and establish basis for constraints, including
+           all atomic constraints.
+
+- Step 2:  Go rulewise and connect references to constraints.
+
+- Step 3:  Hoist all non-recursive constraints and derive accordingly.
+
+
+**** rules:Constrain()
+
+We'll drop caps once this has taken over.
+
+#!lua
+function Syn.rules.Constrain(rules)
+   local collection;
+   if rules.collection then
+      collection = rules.collection
+   else
+      rules:analyze()
+      collection = assert(rules.collection)
+   end
+
+   for rule in rules :filter 'rule' do
+      rule:Constrain()
+   end
+
+   -- lift up regulars
+
+   -- say sensible things about recursives
+end
+#/lua
+
+#!lua
+function Syn.rule.Constrain(rule)
+   local rhs = assert(rule :take 'rhs')
+   local body = rhs[1]
+   if body.maybe then
+      rhs.maybe = true
+   end
+   if body.compound then
+      body:sumConstraints(constraints)
+      if body.locked then
+         rule.locked = true
+      end
+   end
+end
+#/lua
+
+
 #!lua
 local function copyFlags(synA, synB)
    for k, v in pairs(synA) do
@@ -867,6 +927,7 @@ function Syn.rules.constrain(rules)
       constraints[elem] = rule
       end
    end
+   rules.constraints = constraints
 end
 #/lua
 
