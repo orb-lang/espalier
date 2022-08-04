@@ -159,6 +159,9 @@ local function builder(_new, synth, node, i)
    synth.line, synth.col = node:linePos()
    -- this is just for reading purposes, remove
    synth.class = _new.class
+   if Q.terminal[synth.class] then
+      synth.token = node:span()
+   end
    return synth
 end
 
@@ -460,12 +463,16 @@ rules and names with tokens representing their normalized value\.
 
 ```lua
 function Syn.rules.collectRules(rules)
-   local nameSet = Set {}
+   local nameSet, nameMap = Set {}, {}
    for name in rules :filter 'name' do
       local token = normalize(name:span())
       name.token = token
       nameSet[token] = true
+      local refs = nameMap[token] or {}
+      insert(refs, name)
+      nameMap[token] = refs
    end
+
    local dupe, surplus = {}, {}
    local ruleMap = {}   -- token => synth
    local ruleCalls = {} -- token => {name*}
@@ -504,6 +511,7 @@ function Syn.rules.collectRules(rules)
    end
    -- #improve should dupe, surplus, missing be sets?
    return { nameSet   =  nameSet,
+            nameMap   =  nameMap,
             ruleMap   =  ruleMap,
             ruleCalls =  ruleCalls,
             ruleSet   =  ruleSet,
@@ -705,14 +713,6 @@ function Syn.rules.analyze(rules)
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
-   local nameMap = {}
-   for name in rules :filter 'name' do
-       local tok = name.token
-       local refs = nameMap[tok] or {}
-       insert(refs, name)
-       nameMap[tok] = refs
-   end
-   coll.nameMap = nameMap
    coll.regulars, coll.recursive = regulars, recursive
    coll.calls = graphCalls(rules)
 
@@ -879,19 +879,19 @@ function Syn.rules.Constrain(rules)
          coll.nameQ:push(name)
          ruleMap[name]:Constrain(coll)
       end
-      for name_str in pairs(tier) do
-         for _, name in ipairs(nameMap[name_str]) do
+      for name_str in pairs(tier) do              -- orphan references
+         for _, name in ipairs(nameMap[name_str] or {}) do
             name:Constrain(coll)
          end
       end
    end
 
-   for name in rules :filter 'name' do
-      name:Constrain(coll)
-   end
-
    for rule in rules :filter 'rule' do
       rule:Constrain(coll)
+   end
+
+   for name in rules :filter 'name' do
+      name:Constrain(coll)
    end
 
    -- lift up regulars
@@ -929,7 +929,6 @@ function Syn.name.Constrain(name, coll)
       name.locked = rule.locked
       name.constrained = true
       name.unconstrained = nil
-      name.annotated = true
    else
       name.unconstrained = true
    end
@@ -941,8 +940,9 @@ end
 
 ```lua
 function Syn.cat.sumConstraints(cat, coll)
-   local locked = false
+   local locked;
    local gate;
+   local idx;
    for i, sub in ipairs(cat) do
       if sub.compound then
          sub:sumConstraints(coll)
@@ -954,6 +954,7 @@ function Syn.cat.sumConstraints(cat, coll)
          end
       end
       if sub.locked or (not sub.maybe) then
+         idx = i
          gate = sub
       end
       if (not sub.maybe) then
@@ -972,6 +973,11 @@ function Syn.cat.sumConstraints(cat, coll)
          gate.lock = nil
       else
          gate.gate = true
+         for i = idx-1, 1, -1 do
+            local sub = cat[i]
+            if not sub.terminal then break end
+            sub.gate = true
+         end
       end
    end
 
@@ -984,20 +990,34 @@ end
 
 ```lua
 function Syn.choice.sumConstraints(choice, coll)
-   local maybe, locked = false, true
+   local maybe = nil
    for _, sub in ipairs(choice) do
       if sub.compound then
          sub:sumConstraints(coll)
       end
       if sub.maybe then
          maybe = true
-      end
-      if not sub.locked then
-         locked = false
+         -- for future expansion: this has to be the last rule
+         -- to be meaningful under ordered choice
       end
    end
-   choice.maybe, choice.locked = maybe, locked
+   choice.maybe = maybe
    choice.constrained = true
+end
+```
+
+
+##### Catching optional repeates
+
+```lua
+function Syn.repeated.Constrain(repeated, coll)
+   local range = repeated :take 'integer_range'
+   if not range then return end
+   local start = tonumber(range[1])
+   if start == 0 then
+      repeated.maybe = true
+   end
+   repeated.constrained = true
 end
 ```
 

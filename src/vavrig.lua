@@ -2,7 +2,7 @@
 
 
 local Vav = require "espalier:vav"
-local mlisp = require "espalier:espalier/grammars/microlisp".str
+local mlisp = require "scry:lua-peg"
 
 return Vav(mlisp)
 

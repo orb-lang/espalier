@@ -42,8 +42,8 @@ suppressed  ←  "`" rule-name "`"
    `group`  ←  "(" _ form+ ")"
 `enclosed`  ←  literal / set / range
 
-`repeated`  ←  allow-repeat _ "%" slice
- `matched`  ←  allow-repeat _ match-suffix
+  repeated  ←  allow-repeat _ "%" slice
+   matched  ←  allow-repeat _ match-suffix
 `prefixed`  ←  not / and
 `suffixed`  ←  zero-or-more / one-or-more / optional
       name  ←  symbol
