@@ -161,8 +161,8 @@ local function builder(_new, synth, node, i)
    synth.class = _new.class
    return synth
 end
-cluster.construct(new, builder)
 
+cluster.construct(new, builder)
 
 
 
@@ -183,6 +183,8 @@ local _lens = { hide_key = suppress,
 local Syn_repr = require "repr:lens" (_lens)
 
 SynM.__repr = Syn_repr
+
+
 
 
 
@@ -372,7 +374,6 @@ end
 function Syndex.right(syn)
    return syn.parent[syn.up - 1]
 end
-
 
 
 
@@ -809,6 +810,15 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
 local function copyFlags(synA, synB)
    for k, v in pairs(synA) do
       if type(v) == 'boolean' then
@@ -823,7 +833,14 @@ function Syn.rules.constrain(rules)
    -- now what lol
    -- well, we have the 'tiers' for the regulars, so we can start with zero
    -- dep and accumulate wisdom.
-   local collection = assert(rules.collection)
+   local collection
+   if rules.collection then
+      collection = rules.collection
+   else
+      rules:analyze()
+      collection = assert(rules.collection)
+   end
+
    local ruleMap, regulars = collection.ruleMap, collection.regulars
    -- this is merely for tracking purposes
    local constraints = {} -- name => synth
@@ -863,7 +880,11 @@ function Syn.cat.sumConstraints(cat, constraints)
       if sub.compound then
          sub:sumConstraints(constraints)
       else
-         sub:constrain(constraints)
+         if sub.constrain then
+            sub:constrain(constraints)
+         else
+            sub.unconstrained = true
+         end
       end
       if not sub.maybe then
          if not locked then
@@ -907,6 +928,23 @@ function Syn.choice.sumConstraints(choice, constraints)
    end
    choice.maybe, choice.locked = maybe, locked
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -4,9 +4,9 @@ This is a helm control surface, nothing more.
 
 #!lua
 local sqlite_bits = require "espalier:espalier/grammars/sqlite"
-local vav = require "espalier:vav"
+local Vav = require "espalier:vav"
 #/lua
 
 #!lua
-return {bits = sqlite_bits, vav = vav}
+return Vav(sqlite_bits)
 #/lua

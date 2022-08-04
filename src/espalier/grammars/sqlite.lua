@@ -13,6 +13,8 @@
 
 
 
+
+
 local caseless_letters = [[
 `A`  ←  {Aa}
 `B`  ←  {Bb}
@@ -109,47 +111,87 @@ local terminal_rule = [[
 
 
 
+local kwset = {"ABORT", "ADD", "AFTER", "ALL", "ALTER", "ANALYZE", "AND",
+"AS", "ASC", "ATTACH", "AUTOINCREMENT", "BEFORE", "BEGIN", "BETWEEN", "BY",
+"CASCADE","CASE","CAST","CHECK","COLLATE","COLUMN","COMMIT","CONFLICT",
+"CONSTRAINT","CREATE","CROSS","CURRENT_DATE","CURRENT_TIME",
+"CURRENT_TIMESTAMP","DATABASE","DEFAULT","DEFERRED","DEFERRABLE",
+"DELETE","DESC","DETACH","DISTINCT","DROP","END","EACH","ELSE","ESCAPE",
+"EXCEPT","EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FOR","FOREIGN","FROM",
+"FULL","GLOB","GROUP","HAVING","IF","IGNORE","IMMEDIATE","IN","INDEX",
+"INITIALLY","INNER","INSERT","INSTEAD","INTERSECT","INTO","IS",
+"ISNULL","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH","NATURAL","NOT",
+"NOTNULL","NULL","OF","OFFSET","ON","OR","ORDER","OUTER","PLAN","PRAGMA",
+"PRIMARY","QUERY","RAISE","REFERENCES","REGEXP","REINDEX","RENAME","REPLACE",
+"RESTRICT","RIGHT","ROLLBACK","ROW","SELECT","SET","TABLE","TEMP","TEMPORARY",
+"THEN","TO","TRANSACTION","TRIGGER","UNION","UNIQUE","UPDATE","USING",
+"VACUUM","VALUES","VIEW","VIRTUAL","WHEN","WHERE"}
+
+-- I insist on justifying the arrows, so we make padding:
+local longest = 0
+for _, kw in ipairs(kwset) do
+   longest = #kw > longest and #kw or longest
+end
+
+-- make the rules
+local char, byte = assert(string.char), assert(string.byte)
+local insert, concat = assert(table.insert), assert(table.concat)
+
+local poggers = {}
+
+for i, keyword in ipairs(kwset) do
+   local pad = (" "):rep(longest - #keyword + 3)
+   local rule = {pad, keyword, "  ←  "}
+   for i = 1, #keyword do
+      local chomp = char(byte(keyword,i))
+      if chomp == "_" then
+         -- wrap this one as a literal
+         insert(rule, '"_"')
+      else
+         insert(rule, chomp)
+      end
+      insert(rule, " ")
+   end
+   insert(rule, "t _")
+   poggers[i] = concat(rule)
+end
+
+-- now the keyword rule
+
+local head     =   " keyword  ←  (  "
+local div_pad  = "\n             /  "
+local div = " / "
+local WID = 78
+
+local wide = #head
+
+local champ = {head}
+local footer = " ) _ t\n"
+
+local no_div = true
+for i, kw in ipairs(kwset) do
+   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
+   if next_w <= WID then
+      if no_div then
+         no_div = false
+      else
+        insert(champ, div)
+        wide = wide + #div
+      end
+   else
+      insert(champ, div_pad)
+      wide = #div_pad - 1 -- because the newline isn't width
+   end
+   insert(champ, kw)
+   wide = wide + #kw
+end
+
+insert(champ, footer)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- print the rules
+-- print(concat(poggers, "\n"))
+print(concat(champ))
 
 
 
@@ -272,6 +314,29 @@ local keyword_rules = [[
                 WHEN  ←  W H E N t _
                WHERE  ←  W H E R E t _
 ]]
+
+
+
+local keyword_rule = [[
+ keyword  ←  (  ABORT / ADD / AFTER / ALL / ALTER / ANALYZE / AND / AS / ASC
+             /  ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN / BY
+             /  CASCADE / CASE / CAST / CHECK / COLLATE / COLUMN / COMMIT
+             /  CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
+             /  CURRENT_TIME / CURRENT_TIMESTAMP / DATABASE / DEFAULT
+             /  DEFERRED / DEFERRABLE / DELETE / DESC / DETACH / DISTINCT
+             /  DROP / END / EACH / ELSE / ESCAPE / EXCEPT / EXCLUSIVE
+             /  EXISTS / EXPLAIN / FAIL / FOR / FOREIGN / FROM / FULL / GLOB
+             /  GROUP / HAVING / IF / IGNORE / IMMEDIATE / IN / INDEX
+             /  INITIALLY / INNER / INSERT / INSTEAD / INTERSECT / INTO / IS
+             /  ISNULL / JOIN / KEY / LEFT / LIKE / LIMIT / MATCH / NATURAL
+             /  NOT / NOTNULL / NULL / OF / OFFSET / ON / OR / ORDER / OUTER
+             /  PLAN / PRAGMA / PRIMARY / QUERY / RAISE / REFERENCES / REGEXP
+             /  REINDEX / RENAME / REPLACE / RESTRICT / RIGHT / ROLLBACK / ROW
+             /  SELECT / SET / TABLE / TEMP / TEMPORARY / THEN / TO
+             /  TRANSACTION / TRIGGER / UNION / UNIQUE / UPDATE / USING
+             /  VACUUM / VALUES / VIEW / VIRTUAL / WHEN / WHERE ) _ t
+]]
+
 
 
 

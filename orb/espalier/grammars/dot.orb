@@ -4,6 +4,16 @@ Turns out there's a [[grammar][https://graphviz.gitlab.io/_pages/doc/info/lang.h
 
 So
 
+Let's do it!
+
+#!peg @dot_peg #asLua
+dot <- "strict" _ ("graph" / "digraph") _ ID _ "{" _ statements _ "}"
+
+_ <- { \t\r\n}*
+#/peg
+
+
+
 #!lua
 local Node    =  require "espalier/node"
 local Grammar =  require "espalier/grammar"

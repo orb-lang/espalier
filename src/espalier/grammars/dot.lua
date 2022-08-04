@@ -5,6 +5,16 @@
 
 
 
+
+local dot_peg = [[
+dot <- "strict" _ ("graph" / "digraph") _ ID _ "{" _ statements _ "}"
+
+_ <- { \t\r\n}*
+]]
+
+
+
+
 local Node    =  require "espalier/node"
 local Grammar =  require "espalier/grammar"
 local L       =  require "espalier/elpatt"

@@ -6,10 +6,12 @@ We start [[here][https://www.sqlite.org/draft/tokenreq.html]].
 This is the first time I've written the lexer first in a PEG.  I'm suspecting
 that I'll like it.
 
+oh hey https://github.com/AlecStrong/sqlite-bnf/blob/grammar-kit/sqlite.bnf
+
 
 ** Case Insensitive Letters
 
-SQL bEiNg WhAt It iS, we need a rule =A= which matches both ASCII forms.
+SQL bEiNg WhAt It iS, we need a rule =A= etc which matches both ASCII forms.
 
 No one would call this pretty, but it is correct and legible.
 
@@ -95,9 +97,20 @@ like so.
 The letter rules were easy to write with multiple cursors, the keywords we
 will generate programmatically.
 
+It would be interesting to do this programmatically, but (although this
+doesn't matter for our purposes, really), the strings must be sorted such that
+any prefixed-matched strings are checked in order of length.
+
+In our algorithm, hitting CURRENT_TIME will produce a brief cache miss, as the
+terminal rule =t= is checked and fails, which immediately raises the
+production CURRENT_TIMESTAMP
+
+To make the keywords, we need to turn e.g. =AND= into =AND  ←  A N D t=, which
+we do like so. We can reuse them, as is,
+
 The #noKnit tag is the poor man's ifdef!
 
-#!lua #noKnit
+#!lua #~noKnit
 local kwset = {"ABORT", "ADD", "AFTER", "ALL", "ALTER", "ANALYZE", "AND",
 "AS", "ASC", "ATTACH", "AUTOINCREMENT", "BEFORE", "BEGIN", "BETWEEN", "BY",
 "CASCADE","CASE","CAST","CHECK","COLLATE","COLUMN","COMMIT","CONFLICT",
@@ -113,12 +126,7 @@ local kwset = {"ABORT", "ADD", "AFTER", "ALL", "ALTER", "ANALYZE", "AND",
 "RESTRICT","RIGHT","ROLLBACK","ROW","SELECT","SET","TABLE","TEMP","TEMPORARY",
 "THEN","TO","TRANSACTION","TRIGGER","UNION","UNIQUE","UPDATE","USING",
 "VACUUM","VALUES","VIEW","VIRTUAL","WHEN","WHERE"}
-#/lua
 
-To make the keywords, we need to turn e.g. =AND= into =AND  ←  A N D t=, which
-we do like so.
-
-#!lua #noKnit
 -- I insist on justifying the arrows, so we make padding:
 local longest = 0
 for _, kw in ipairs(kwset) do
@@ -148,8 +156,42 @@ for i, keyword in ipairs(kwset) do
    poggers[i] = concat(rule)
 end
 
+-- now the keyword rule
+
+local head     =   " keyword  ←  (  "
+local div_pad  = "\n             /  "
+local div = " / "
+local WID = 78
+
+local wide = #head
+
+local champ = {head}
+local footer = " ) _ t\n"
+
+local no_div = true
+for i, kw in ipairs(kwset) do
+   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
+   if next_w <= WID then
+      if no_div then
+         no_div = false
+      else
+        insert(champ, div)
+        wide = wide + #div
+      end
+   else
+      insert(champ, div_pad)
+      wide = #div_pad - 1 -- because the newline isn't width
+   end
+   insert(champ, kw)
+   wide = wide + #kw
+end
+
+insert(champ, footer)
+
+
 -- print the rules
-print(concat(poggers, "\n"))
+-- print(concat(poggers, "\n"))
+print(concat(champ))
 #/lua
 
 Which we can run anytime we want, to generate the following:
@@ -273,11 +315,34 @@ Which we can run anytime we want, to generate the following:
                WHERE  ←  W H E R E t _
 #/peg
 
+With these powers combined:
+
+#!peg @keyword_rule #asLua
+ keyword  ←  (  ABORT / ADD / AFTER / ALL / ALTER / ANALYZE / AND / AS / ASC
+             /  ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN / BY
+             /  CASCADE / CASE / CAST / CHECK / COLLATE / COLUMN / COMMIT
+             /  CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
+             /  CURRENT_TIME / CURRENT_TIMESTAMP / DATABASE / DEFAULT
+             /  DEFERRED / DEFERRABLE / DELETE / DESC / DETACH / DISTINCT
+             /  DROP / END / EACH / ELSE / ESCAPE / EXCEPT / EXCLUSIVE
+             /  EXISTS / EXPLAIN / FAIL / FOR / FOREIGN / FROM / FULL / GLOB
+             /  GROUP / HAVING / IF / IGNORE / IMMEDIATE / IN / INDEX
+             /  INITIALLY / INNER / INSERT / INSTEAD / INTERSECT / INTO / IS
+             /  ISNULL / JOIN / KEY / LEFT / LIKE / LIMIT / MATCH / NATURAL
+             /  NOT / NOTNULL / NULL / OF / OFFSET / ON / OR / ORDER / OUTER
+             /  PLAN / PRAGMA / PRIMARY / QUERY / RAISE / REFERENCES / REGEXP
+             /  REINDEX / RENAME / REPLACE / RESTRICT / RIGHT / ROLLBACK / ROW
+             /  SELECT / SET / TABLE / TEMP / TEMPORARY / THEN / TO
+             /  TRANSACTION / TRIGGER / UNION / UNIQUE / UPDATE / USING
+             /  VACUUM / VALUES / VIEW / VIRTUAL / WHEN / WHERE ) _ t
+#/peg
+
 Which lets us refer to these without trailing whitespace. The keyword token
 carries around that whitespace but the span is the =.id= so we will never care
 about that.
 
-Now, Orb is supposed to do this for us, without the print statement.
+Now, Orb is supposed to do this sort of routine codegen task for us, without
+the print statement.
 
 Squad goals.
 

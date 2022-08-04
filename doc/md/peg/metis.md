@@ -31,7 +31,7 @@ Here it is particularly important because we expect to do a lot of rewriting
 of terms based on underlying strings which will not be identical\.
 
 
-## M
+## Metis
 
 The 'machinery' for this sort of pattern will end up in cluster eventually\.
 
@@ -161,8 +161,8 @@ local function builder(_new, synth, node, i)
    synth.class = _new.class
    return synth
 end
-cluster.construct(new, builder)
 
+cluster.construct(new, builder)
 ```
 
 
@@ -199,6 +199,8 @@ We say a synth is equal to another if:
 Note that we have an opportunity to provide memoized equality here by pointing
 between branch nodes already proven equal, either manually as 'cut' points or
 just as part of the equality operation\.
+
+The win might be to cut on compounds\.\.\.
 
 ```lua
 function SynM.__eq(syn1, syn2)
@@ -381,8 +383,7 @@ Might actually want 'left' and 'right' for something a little more useful?
 
 #### 'Syndex' base for analysis and synthesis
 
-Is just pass, probably these should be promoted to errors because synthesis
-and analysis should be exhaustive\.\.\. maybe? This is my best guess\.
+Is just pass, we can add a tagger if we need to track down missing cases\.
 
 ```lua
 Syndex.synthesize = cluster.ur.pass
@@ -520,8 +521,8 @@ and lookahead, but it's suitably close\.
 \#improve
 it as an accumulator i\.e\. `set = set + newSet` is generally wasteful and
 we can drop some allocation pressure by iteration and setting to true\.  This
-is another case where I'm curious if the JIT would sink the allocations, but
-there's no chance these functions would actually go hot\.
+would call for profiling, and is only worth considering because programmatic
+generation of fairly complex grammar is on the horizon\.
 
 ```lua
 local function partition(ruleCalls, callSet)
@@ -572,8 +573,8 @@ end
 
 ### Syn\.rules\.callSet\(rules\)
 
-This just makes Sets non\-destructively out of arrays of rule names, and
-might not have to be non\-destructive, but is\.
+This makes Sets non\-destructively out of arrays of rule names, which might not
+have to be non\-destructive, but comes with no disadvantages at this point\.
 
 ```lua
 local clone1 = assert(table.clone1)
@@ -730,6 +731,15 @@ something we \(intend to\) *make* out of our patterns for use in Dji\.
 At some point we'll have synthetic rules as well, and won't that be fun\.
 
 
+#### rules:expandRules
+
+This will create and where possible deduplicate literal rules\.
+
+We'll use an obvious naming convention with leading underscores, which are
+invalid rule names in the grammar *and this is one of the good reasons*\.
+
+
+
 ### Control Flow Analysis
 
   We are discovering what requirements a given pattern imposes on the rest of
@@ -826,7 +836,14 @@ function Syn.rules.constrain(rules)
    -- now what lol
    -- well, we have the 'tiers' for the regulars, so we can start with zero
    -- dep and accumulate wisdom.
-   local collection = assert(rules.collection)
+   local collection
+   if rules.collection then
+      collection = rules.collection
+   else
+      rules:analyze()
+      collection = assert(rules.collection)
+   end
+
    local ruleMap, regulars = collection.ruleMap, collection.regulars
    -- this is merely for tracking purposes
    local constraints = {} -- name => synth
@@ -866,7 +883,11 @@ function Syn.cat.sumConstraints(cat, constraints)
       if sub.compound then
          sub:sumConstraints(constraints)
       else
-         sub:constrain(constraints)
+         if sub.constrain then
+            sub:constrain(constraints)
+         else
+            sub.unconstrained = true
+         end
       end
       if not sub.maybe then
          if not locked then
@@ -911,6 +932,23 @@ function Syn.choice.sumConstraints(choice, constraints)
    choice.maybe, choice.locked = maybe, locked
 end
 ```
+
+
+### Rule Ordering and Grouping
+
+We want this for formatting and a bunch of other good reasons\.
+
+The algorithm:
+
+Start rule is its own group\.
+
+First block is everything mentioned in the start rule, in order\.
+
+Second block is everything mentioned in the first block, and so on\.
+
+This is for a **normal form**, not necessarily how we pretty\-print, which can be
+more intelligent about putting things like whitespace at the end where they
+belong\.
 
 
 
