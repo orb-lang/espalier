@@ -172,7 +172,7 @@ cluster.construct(new, builder)
 
 local suppress = Set {
    'parent',
-   --'line',
+   'line',
    'o',
    'col',
    'up',
@@ -678,36 +678,34 @@ local function graphCalls(rules)
    for name, set in pairs(recurSets) do
       allCalls[name] = set
    end
-   return regSets, recurSets, allCalls
+   return allCalls, regSets, recurSets
 end
+
+
+
+
+
 
 
 
 function Syn.rules.analyze(rules)
-   local collection = rules:collectRules()
-   rules.collection = collection
-   local regulars, recursive = partition(collection.ruleCalls, rules:callSet())
-   local ruleMap = assert(collection.ruleMap)
-   collection.regulars, collection.recursive = regulars, recursive
+   rules.collection = rules:collectRules()
+   local coll = assert(rules.collection)
+
+   local regulars, recursive = partition(coll.ruleCalls, rules:callSet())
+   local ruleMap = assert(coll.ruleMap)
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
-   local regSets, recurSets, calls = graphCalls(rules)
-   collection.calls = calls
-   --[[ sometimes we want to know what a given rule /can't/ see
-   local ruleSet = collection.ruleSet
-   local blind = {}
-   for name, callSet in pairs(calls) do
-      blind[name] = ruleSet - callSet
-   end
-   collection.blind = blind --]]
-   for rule in rules:filter 'rule' do
-      rhs = rule :take 'rhs'
-      if #rhs == 1 and rhs[1].maybe then rule.maybe = true end
-   end
+
+   coll.regulars, coll.recursive = regulars, recursive
+   coll.calls = graphCalls(rules)
+
    rules:Constrain()
-   return blind, calls
 end
+
+
+
 
 
 
@@ -854,11 +852,16 @@ function Syn.rules.Constrain(rules)
       rules:analyze()
       collection = assert(rules.collection)
    end
-   local ruleCalls, ruleMap = collection.ruleCalls, collection.ruleMap
-   for name, callnames in pairs(ruleCalls) do
-      if #callnames == 0 then
+
+   local regulars, ruleMap = collection.ruleCalls, collection.ruleMap
+   for _, tier in ipairs(regulars) do
+      for name in pairs(tier) do
          ruleMap[name]:Constrain(collection)
       end
+   end
+
+   for name in rules :filter 'name' do
+      name:Constrain(collection)
    end
 
    for rule in rules :filter 'rule' do
@@ -899,6 +902,7 @@ function Syn.name.Constrain(name, collection)
       name.maybe = rule.maybe
       name.locked = rule.locked
       name.constrained = true
+      name.unconstrained = nil
       name.annotated = true
    else
       name.unconstrained = true
@@ -915,7 +919,7 @@ function Syn.cat.sumConstraints(cat, collection)
    local gate;
    for i, sub in ipairs(cat) do
       if sub.compound then
-         sub:sumConstraints()
+         sub:sumConstraints(collection)
       else
          if sub.Constrain then
             sub:Constrain(collection)
@@ -926,8 +930,9 @@ function Syn.cat.sumConstraints(cat, collection)
       if sub.locked or (not sub.maybe) then
          gate = sub
       end
-      if not sub.maybe then
+      if (not sub.maybe) then
          if not locked then
+            assert(not sub.maybe)
             sub.lock = true
             locked = true
          end
