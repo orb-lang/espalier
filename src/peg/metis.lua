@@ -173,13 +173,16 @@ cluster.construct(new, builder)
 local suppress = Set {
    'parent',
    'line',
+   -- this field isn't used but I think it will be
+   'final',
+   'constrained',
    'o',
    'col',
    'up',
    'node',
 }
 local _lens = { hide_key = suppress,
-                depth = 6 }
+                depth = 10 }
 local Syn_repr = require "repr:lens" (_lens)
 
 SynM.__repr = Syn_repr
@@ -617,7 +620,9 @@ local function graphCalls(rules)
    -- go through each layer and build the full dependency tree for regular
    -- rules
    local regSets = {}
+
    -- first set of rules have no named subrules
+   -- which we call 'final'
    local depSet = regulars[1]
    for name in pairs(depSet) do
       ruleMap[name].final = true
@@ -697,7 +702,14 @@ function Syn.rules.analyze(rules)
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
-
+   local nameMap = {}
+   for name in rules :filter 'name' do
+       local tok = name.token
+       local refs = nameMap[tok] or {}
+       insert(refs, name)
+       nameMap[tok] = refs
+   end
+   coll.nameMap = nameMap
    coll.regulars, coll.recursive = regulars, recursive
    coll.calls = graphCalls(rules)
 
@@ -845,27 +857,35 @@ end
 
 
 function Syn.rules.Constrain(rules)
-   local collection;
+   local coll;
    if rules.collection then
-      collection = rules.collection
+      coll = rules.collection
    else
       rules:analyze()
-      collection = assert(rules.collection)
+      coll = assert(rules.collection)
    end
 
-   local regulars, ruleMap = collection.ruleCalls, collection.ruleMap
+   local regulars, ruleMap = coll.regulars, coll.ruleMap
+   local nameMap = coll.nameMap
+   coll.nameQ = Deque()
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
-         ruleMap[name]:Constrain(collection)
+         coll.nameQ:push(name)
+         ruleMap[name]:Constrain(coll)
+      end
+      for name_str in pairs(tier) do
+         for _, name in ipairs(nameMap[name_str]) do
+            name:Constrain(coll)
+         end
       end
    end
 
    for name in rules :filter 'name' do
-      name:Constrain(collection)
+      name:Constrain(coll)
    end
 
    for rule in rules :filter 'rule' do
-      rule:Constrain(collection)
+      rule:Constrain(coll)
    end
 
    -- lift up regulars
@@ -875,7 +895,7 @@ end
 
 
 
-function Syn.rule.Constrain(rule, collection)
+function Syn.rule.Constrain(rule, coll)
    local rhs = assert(rule :take 'rhs')
    local body = rhs[1]
    if body.maybe then
@@ -883,7 +903,7 @@ function Syn.rule.Constrain(rule, collection)
       rule.maybe = true
    end
    if body.compound then
-      body:sumConstraints(collection)
+      body:sumConstraints(coll)
       if body.locked then
          rule.locked = true
       end
@@ -893,9 +913,9 @@ end
 
 
 
-function Syn.name.Constrain(name, collection)
+function Syn.name.Constrain(name, coll)
    local tok = assert(name.token)
-   local rule = assert(collection.ruleMap[tok])
+   local rule = assert(coll.ruleMap[tok])
    if rule.constrained then
       name.final = rule.final
       name.terminal = rule.terminal
@@ -914,15 +934,15 @@ end
 
 
 
-function Syn.cat.sumConstraints(cat, collection)
+function Syn.cat.sumConstraints(cat, coll)
    local locked = false
    local gate;
    for i, sub in ipairs(cat) do
       if sub.compound then
-         sub:sumConstraints(collection)
+         sub:sumConstraints(coll)
       else
          if sub.Constrain then
-            sub:Constrain(collection)
+            sub:Constrain(coll)
          else
             sub.unconstrained = true
          end
@@ -933,6 +953,7 @@ function Syn.cat.sumConstraints(cat, collection)
       if (not sub.maybe) then
          if not locked then
             assert(not sub.maybe)
+            if sub.token == "_" then sub.seriously = "wtf: " .. tostring(sub.maybe) end
             sub.lock = true
             locked = true
          end
@@ -940,7 +961,12 @@ function Syn.cat.sumConstraints(cat, collection)
    end
 
    if gate then
-      gate.gate = true
+      if gate.lock then
+         gate.gate_lock = true
+         gate.lock = nil
+      else
+         gate.gate = true
+      end
    end
 
    if locked then
@@ -951,11 +977,11 @@ end
 
 
 
-function Syn.choice.sumConstraints(choice, collection)
+function Syn.choice.sumConstraints(choice, coll)
    local maybe, locked = false, true
    for _, sub in ipairs(choice) do
       if sub.compound then
-         sub:sumConstraints(collection)
+         sub:sumConstraints(coll)
       end
       if sub.maybe then
          maybe = true
