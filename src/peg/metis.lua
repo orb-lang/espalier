@@ -694,14 +694,18 @@ function Syn.rules.analyze(rules)
    end
    local regSets, recurSets, calls = graphCalls(rules)
    collection.calls = calls
-   -- sometimes we want to know what a given rule /can't/ see
+   --[[ sometimes we want to know what a given rule /can't/ see
    local ruleSet = collection.ruleSet
    local blind = {}
    for name, callSet in pairs(calls) do
       blind[name] = ruleSet - callSet
    end
-   collection.blind = blind
-   rules:constrain()
+   collection.blind = blind --]]
+   for rule in rules:filter 'rule' do
+      rhs = rule :take 'rhs'
+      if #rhs == 1 and rhs[1].maybe then rule.maybe = true end
+   end
+   rules:Constrain()
    return blind, calls
 end
 
@@ -850,9 +854,15 @@ function Syn.rules.Constrain(rules)
       rules:analyze()
       collection = assert(rules.collection)
    end
+   local ruleCalls, ruleMap = collection.ruleCalls, collection.ruleMap
+   for name, callnames in pairs(ruleCalls) do
+      if #callnames == 0 then
+         ruleMap[name]:Constrain(collection)
+      end
+   end
 
    for rule in rules :filter 'rule' do
-      rule:Constrain()
+      rule:Constrain(collection)
    end
 
    -- lift up regulars
@@ -862,72 +872,37 @@ end
 
 
 
-function Syn.rule.Constrain(rule)
+function Syn.rule.Constrain(rule, collection)
    local rhs = assert(rule :take 'rhs')
    local body = rhs[1]
    if body.maybe then
       rhs.maybe = true
+      rule.maybe = true
    end
    if body.compound then
-      body:sumConstraints(constraints)
+      body:sumConstraints(collection)
       if body.locked then
          rule.locked = true
       end
    end
+   rule.constrained = true
 end
 
 
 
-
-local function copyFlags(synA, synB)
-   for k, v in pairs(synA) do
-      if type(v) == 'boolean' then
-         synB[k] = v
-      end
-   end
-end
-
-
-
-function Syn.rules.constrain(rules)
-   -- now what lol
-   -- well, we have the 'tiers' for the regulars, so we can start with zero
-   -- dep and accumulate wisdom.
-   local collection
-   if rules.collection then
-      collection = rules.collection
+function Syn.name.Constrain(name, collection)
+   local tok = assert(name.token)
+   local rule = assert(collection.ruleMap[tok])
+   if rule.constrained then
+      name.final = rule.final
+      name.terminal = rule.terminal
+      name.maybe = rule.maybe
+      name.locked = rule.locked
+      name.constrained = true
+      name.annotated = true
    else
-      rules:analyze()
-      collection = assert(rules.collection)
+      name.unconstrained = true
    end
-
-   local ruleMap, regulars = collection.ruleMap, collection.regulars
-   -- this is merely for tracking purposes
-   local constraints = {} -- name => synth
-   for _, workSet in ipairs(regulars) do
-      for elem in pairs(workSet) do
-         -- get the guts out
-         local rule = assert(ruleMap[elem])
-         local rhs = assert(rule :take 'rhs')
-         local body = rhs[1]
-         -- mayb we move this to the end
-         if body.maybe then
-            rhs.maybe = true
-         end
-         if body.compound then
-            body:sumConstraints(constraints)
-            if body.locked then
-               rule.locked = true
-            end
-         end
-         if body.class == 'name' then
-            copyFlags(ruleMap[body.token], body)
-         end
-
-      constraints[elem] = rule
-      end
-   end
-   rules.constraints = constraints
 end
 
 
@@ -935,50 +910,47 @@ end
 
 
 
-function Syn.cat.sumConstraints(cat, constraints)
+function Syn.cat.sumConstraints(cat, collection)
    local locked = false
+   local gate;
    for i, sub in ipairs(cat) do
       if sub.compound then
-         sub:sumConstraints(constraints)
+         sub:sumConstraints()
       else
-         if sub.constrain then
-            sub:constrain(constraints)
+         if sub.Constrain then
+            sub:Constrain(collection)
          else
             sub.unconstrained = true
          end
+      end
+      if sub.locked or (not sub.maybe) then
+         gate = sub
       end
       if not sub.maybe then
          if not locked then
             sub.lock = true
             locked = true
          end
-         if i == #cat then
-            sub.gate = true
-            locked = true
-         end
       end
    end
-   -- we may have missed a gate
-   if locked and (not cat[#cat].gate) then
-      for i = #cat-1, 1, -1 do
-         if not cat[i].maybe then
-            cat[i].gate = true
-            break
-         end
-      end
+
+   if gate then
+      gate.gate = true
    end
+
    if locked then
       cat.locked = true
    end
+   cat.constrained = true
 end
 
 
 
-function Syn.choice.sumConstraints(choice, constraints)
+function Syn.choice.sumConstraints(choice, collection)
    local maybe, locked = false, true
    for _, sub in ipairs(choice) do
       if sub.compound then
-         sub:sumConstraints(constraints)
+         sub:sumConstraints(collection)
       end
       if sub.maybe then
          maybe = true
@@ -988,6 +960,7 @@ function Syn.choice.sumConstraints(choice, constraints)
       end
    end
    choice.maybe, choice.locked = maybe, locked
+   choice.constrained = true
 end
 
 
