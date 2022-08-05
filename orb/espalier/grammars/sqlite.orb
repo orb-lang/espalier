@@ -443,7 +443,7 @@ type-name <- (affinity _)+ fluff?
 affinity <- name ; we can capture the same affinities SQLite uses here
 
 ; it's not fluff obviously but wtf even is this? it's a compatibility thing
-fluff <- "("_ signed-number _")"_
+`fluff` <- "("_ signed-number _")"_
         / "("_ signed-number _","_ signed-number _")"_
 
 

@@ -12,6 +12,10 @@ Peh, something which takes a string and outputs a result\.
 
 Analysis and various rule transformations are performed by this module\.
 
+This is a multi\-pass system with no attempt at optimization whatsoever\. The
+intention is that, as grammars change infrequently once stable, the results
+of these computations will be cached as various useful programs\.
+
 
 ### Taming The Beast
 
@@ -443,6 +447,9 @@ rules and names with tokens representing their normalized value\.
 
   - nameSet:  The set of every name in normalized token form\.
 
+  - nameMap:  The tokens of nameSet mapped to an array of all occurance in the
+      grammar\.
+
   - ruleMap:  A map from the rule name \(token\) to the synthesized rule\.
 
   - ruleCalls:  A map of the token for a rule to an array of the name of each
@@ -451,8 +458,8 @@ rules and names with tokens representing their normalized value\.
 
   - ruleSet:  A set containing the name of all defined rules\.
 
-  - dupe:  An array of any rule synth which has been duplicated later, this
-      reflects the semantics of lpeg which overwrites a `V"rule"`
+  - dupe:  An array of any rule synth which has been duplicated later\.  The
+      tools follow the semantics of lpeg, which overwrites a `V"rule"`
       definition if it sees a second one\.
 
   - surplus:  An array of any rule which isn't referenced by name on the
@@ -749,6 +756,34 @@ This will create and where possible deduplicate literal rules\.
 
 We'll use an obvious naming convention with leading underscores, which are
 invalid rule names in the grammar *and this is one of the good reasons*\.
+
+
+### rules:makeDummies\(\)
+
+Does nothing if `.missing` is empty, otherwise makes dummies of missing rules\.
+
+The dummy rule just matches the string of the missing rule name, which is
+exactly what we want\.
+
+```lua
+function Syn.rules.makeDummies(rules)
+   if not rules.collection then
+      return nil, 'no analysis has been performed'
+   end
+   local missing = rules.collection.missing
+   if (not missing) or #missing == 0 then
+      return nil, 'no rules are missing'
+   end
+   local dummy_str = {}
+   for _, name in ipairs(missing) do
+      local rule = "`" .. name .. "`  <-  DUMMY-" .. name .. "\n"
+                   .. "DUMMY-" .. name .. "  <-  " .. '"' .. name .. '"\n'
+      insert(dummy_str, rule)
+   end
+
+   return rules.node.pegparser(concat(dummy_str))
+end
+```
 
 
 

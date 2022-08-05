@@ -49,6 +49,7 @@ local VavPeg = require "espalier:peg" (pegpeg, Metis) . parse
 
 local function Vav(peg_string)
    local rules = VavPeg(peg_string)
+   rules.pegparser = VavPeg
    -- we'll have checks here
 
    return rules :synthesize()

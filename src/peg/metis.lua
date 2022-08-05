@@ -41,6 +41,10 @@
 
 
 
+
+
+
+
 local Node = require "espalier:espalier/node"
 local Grammar = require "espalier:espalier/grammar"
 local core = require "qor:core" -- #todo another qor
@@ -460,6 +464,9 @@ end
 
 
 
+
+
+
 function Syn.rules.collectRules(rules)
    local nameSet, nameMap = Set {}, {}
    for name in rules :filter 'name' do
@@ -745,6 +752,34 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+function Syn.rules.makeDummies(rules)
+   if not rules.collection then
+      return nil, 'no analysis has been performed'
+   end
+   local missing = rules.collection.missing
+   if (not missing) or #missing == 0 then
+      return nil, 'no rules are missing'
+   end
+   local dummy_str = {}
+   for _, name in ipairs(missing) do
+      local rule = "`" .. name .. "`  <-  DUMMY-" .. name .. "\n"
+                   .. "DUMMY-" .. name .. "  <-  " .. '"' .. name .. '"\n'
+      insert(dummy_str, rule)
+   end
+
+   return rules.node.pegparser(concat(dummy_str))
+end
 
 
 
