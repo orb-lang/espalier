@@ -14,8 +14,7 @@ local Node = require "espalier/node"
 
 local micro_lisp_peg = [[
 lisp = _ ((atom)+ / list)
-list = ;leading comment
-       pel _ (atom / list)* per _
+list = pel _ (atom / list)* per _
 atom = _(number / symbol)_
 symbol = _(alpha / other) (alpha / digit / other)*_
 number = float / integer

@@ -8,5 +8,5 @@ local Vav = require "espalier:vav"
 
 
 
-return Vav(sqlite_bits)
+return Vav(sqlite_bits[1])
 

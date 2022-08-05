@@ -141,7 +141,7 @@ local M = setmetatable({Twig}, {__index = __index})
 ```
 
 
-### Rules
+## Rules
 
 This is where we set up the information graph for a given Vav\.
 
@@ -169,8 +169,9 @@ cluster.construct(new, builder)
 ```
 
 
-
 ##### Synth lens
+
+Keeps printable data in the synth manageable\.
 
 ```lua
 local suppress = Set {

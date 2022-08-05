@@ -111,87 +111,135 @@ local terminal_rule = [[
 
 
 
-local kwset = {"ABORT", "ADD", "AFTER", "ALL", "ALTER", "ANALYZE", "AND",
-"AS", "ASC", "ATTACH", "AUTOINCREMENT", "BEFORE", "BEGIN", "BETWEEN", "BY",
-"CASCADE","CASE","CAST","CHECK","COLLATE","COLUMN","COMMIT","CONFLICT",
-"CONSTRAINT","CREATE","CROSS","CURRENT_DATE","CURRENT_TIME",
-"CURRENT_TIMESTAMP","DATABASE","DEFAULT","DEFERRED","DEFERRABLE",
-"DELETE","DESC","DETACH","DISTINCT","DROP","END","EACH","ELSE","ESCAPE",
-"EXCEPT","EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FOR","FOREIGN","FROM",
-"FULL","GLOB","GROUP","HAVING","IF","IGNORE","IMMEDIATE","IN","INDEX",
-"INITIALLY","INNER","INSERT","INSTEAD","INTERSECT","INTO","IS",
-"ISNULL","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH","NATURAL","NOT",
-"NOTNULL","NULL","OF","OFFSET","ON","OR","ORDER","OUTER","PLAN","PRAGMA",
-"PRIMARY","QUERY","RAISE","REFERENCES","REGEXP","REINDEX","RENAME","REPLACE",
-"RESTRICT","RIGHT","ROLLBACK","ROW","SELECT","SET","TABLE","TEMP","TEMPORARY",
-"THEN","TO","TRANSACTION","TRIGGER","UNION","UNIQUE","UPDATE","USING",
-"VACUUM","VALUES","VIEW","VIRTUAL","WHEN","WHERE"}
-
--- I insist on justifying the arrows, so we make padding:
-local longest = 0
-for _, kw in ipairs(kwset) do
-   longest = #kw > longest and #kw or longest
-end
-
--- make the rules
-local char, byte = assert(string.char), assert(string.byte)
-local insert, concat = assert(table.insert), assert(table.concat)
-
-local poggers = {}
-
-for i, keyword in ipairs(kwset) do
-   local pad = (" "):rep(longest - #keyword + 3)
-   local rule = {pad, keyword, "  ←  "}
-   for i = 1, #keyword do
-      local chomp = char(byte(keyword,i))
-      if chomp == "_" then
-         -- wrap this one as a literal
-         insert(rule, '"_"')
-      else
-         insert(rule, chomp)
-      end
-      insert(rule, " ")
-   end
-   insert(rule, "t _")
-   poggers[i] = concat(rule)
-end
-
--- now the keyword rule
-
-local head     =   " keyword  ←  (  "
-local div_pad  = "\n             /  "
-local div = " / "
-local WID = 78
-
-local wide = #head
-
-local champ = {head}
-local footer = " ) _ t\n"
-
-local no_div = true
-for i, kw in ipairs(kwset) do
-   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
-   if next_w <= WID then
-      if no_div then
-         no_div = false
-      else
-        insert(champ, div)
-        wide = wide + #div
-      end
-   else
-      insert(champ, div_pad)
-      wide = #div_pad - 1 -- because the newline isn't width
-   end
-   insert(champ, kw)
-   wide = wide + #kw
-end
-
-insert(champ, footer)
 
 
--- print the rules
--- print(concat(poggers, "\n"))
-print(concat(champ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -202,10 +250,11 @@ local keyword_rules = [[
                AFTER  ←  A F T E R t _
                  ALL  ←  A L L t _
                ALTER  ←  A L T E R t _
+              ALWAYS  ←  A L W A Y S t _
              ANALYZE  ←  A N A L Y Z E t _
                  AND  ←  A N D t _
-                  AS  ←  A S t _
                  ASC  ←  A S C t _
+                  AS  ←  A S t _
               ATTACH  ←  A T T A C H t _
        AUTOINCREMENT  ←  A U T O I N C R E M E N T t _
               BEFORE  ←  B E F O R E t _
@@ -224,37 +273,37 @@ local keyword_rules = [[
               CREATE  ←  C R E A T E t _
                CROSS  ←  C R O S S t _
         CURRENT_DATE  ←  C U R R E N T "_" D A T E t _
-        CURRENT_TIME  ←  C U R R E N T "_" T I M E t _
    CURRENT_TIMESTAMP  ←  C U R R E N T "_" T I M E S T A M P t _
+        CURRENT_TIME  ←  C U R R E N T "_" T I M E t _
             DATABASE  ←  D A T A B A S E t _
              DEFAULT  ←  D E F A U L T t _
-            DEFERRED  ←  D E F E R R E D t _
           DEFERRABLE  ←  D E F E R R A B L E t _
+            DEFERRED  ←  D E F E R R E D t _
               DELETE  ←  D E L E T E t _
                 DESC  ←  D E S C t _
               DETACH  ←  D E T A C H t _
             DISTINCT  ←  D I S T I N C T t _
                 DROP  ←  D R O P t _
-                 END  ←  E N D t _
                 EACH  ←  E A C H t _
                 ELSE  ←  E L S E t _
+                 END  ←  E N D t _
               ESCAPE  ←  E S C A P E t _
               EXCEPT  ←  E X C E P T t _
            EXCLUSIVE  ←  E X C L U S I V E t _
               EXISTS  ←  E X I S T S t _
              EXPLAIN  ←  E X P L A I N t _
                 FAIL  ←  F A I L t _
-                 FOR  ←  F O R t _
              FOREIGN  ←  F O R E I G N t _
+                 FOR  ←  F O R t _
                 FROM  ←  F R O M t _
                 FULL  ←  F U L L t _
+           GENERATED  ←  G E N E R A T E D t _
                 GLOB  ←  G L O B t _
                GROUP  ←  G R O U P t _
               HAVING  ←  H A V I N G t _
                   IF  ←  I F t _
               IGNORE  ←  I G N O R E t _
            IMMEDIATE  ←  I M M E D I A T E t _
-                  IN  ←  I N t _
                INDEX  ←  I N D E X t _
            INITIALLY  ←  I N I T I A L L Y t _
                INNER  ←  I N N E R t _
@@ -262,8 +311,9 @@ local keyword_rules = [[
              INSTEAD  ←  I N S T E A D t _
            INTERSECT  ←  I N T E R S E C T t _
                 INTO  ←  I N T O t _
-                  IS  ←  I S t _
+                  IN  ←  I N t _
               ISNULL  ←  I S N U L L t _
+                  IS  ←  I S t _
                 JOIN  ←  J O I N t _
                  KEY  ←  K E Y t _
                 LEFT  ←  L E F T t _
@@ -271,14 +321,14 @@ local keyword_rules = [[
                LIMIT  ←  L I M I T t _
                MATCH  ←  M A T C H t _
              NATURAL  ←  N A T U R A L t _
-                 NOT  ←  N O T t _
              NOTNULL  ←  N O T N U L L t _
+                 NOT  ←  N O T t _
                 NULL  ←  N U L L t _
                   OF  ←  O F t _
               OFFSET  ←  O F F S E T t _
                   ON  ←  O N t _
-                  OR  ←  O R t _
                ORDER  ←  O R D E R t _
+                  OR  ←  O R t _
                OUTER  ←  O U T E R t _
                 PLAN  ←  P L A N t _
               PRAGMA  ←  P R A G M A t _
@@ -289,16 +339,19 @@ local keyword_rules = [[
               REGEXP  ←  R E G E X P t _
              REINDEX  ←  R E I N D E X t _
               RENAME  ←  R E N A M E t _
+               RIGHT  ←  R I G H T t _
              REPLACE  ←  R E P L A C E t _
             RESTRICT  ←  R E S T R I C T t _
-               RIGHT  ←  R I G H T t _
             ROLLBACK  ←  R O L L B A C K t _
+               ROWID  ←  R O W I D t _
                  ROW  ←  R O W t _
-              SELECT  ←  S E L E C T t _
                  SET  ←  S E T t _
+              SELECT  ←  S E L E C T t _
+              STORED  ←  S T O R E D t _
+              STRICT  ←  S T R I C T t _
                TABLE  ←  T A B L E t _
-                TEMP  ←  T E M P t _
            TEMPORARY  ←  T E M P O R A R Y t _
+                TEMP  ←  T E M P t _
                 THEN  ←  T H E N t _
                   TO  ←  T O t _
          TRANSACTION  ←  T R A N S A C T I O N t _
@@ -312,29 +365,31 @@ local keyword_rules = [[
                 VIEW  ←  V I E W t _
              VIRTUAL  ←  V I R T U A L t _
                 WHEN  ←  W H E N t _
+             WITHOUT  ←  W I T H O U T t _
                WHERE  ←  W H E R E t _
 ]]
 
 
 
 local keyword_rule = [[
- keyword  ←  (  ABORT / ADD / AFTER / ALL / ALTER / ANALYZE / AND / AS / ASC
-             /  ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN / BY
-             /  CASCADE / CASE / CAST / CHECK / COLLATE / COLUMN / COMMIT
+ keyword  ←  (  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
+             /  ASC / AS / ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN
+             /  BY / CASCADE / CASE / CAST / CHECK / COLLATE / COLUMN / COMMIT
              /  CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
-             /  CURRENT_TIME / CURRENT_TIMESTAMP / DATABASE / DEFAULT
-             /  DEFERRED / DEFERRABLE / DELETE / DESC / DETACH / DISTINCT
-             /  DROP / END / EACH / ELSE / ESCAPE / EXCEPT / EXCLUSIVE
-             /  EXISTS / EXPLAIN / FAIL / FOR / FOREIGN / FROM / FULL / GLOB
-             /  GROUP / HAVING / IF / IGNORE / IMMEDIATE / IN / INDEX
-             /  INITIALLY / INNER / INSERT / INSTEAD / INTERSECT / INTO / IS
-             /  ISNULL / JOIN / KEY / LEFT / LIKE / LIMIT / MATCH / NATURAL
-             /  NOT / NOTNULL / NULL / OF / OFFSET / ON / OR / ORDER / OUTER
-             /  PLAN / PRAGMA / PRIMARY / QUERY / RAISE / REFERENCES / REGEXP
-             /  REINDEX / RENAME / REPLACE / RESTRICT / RIGHT / ROLLBACK / ROW
-             /  SELECT / SET / TABLE / TEMP / TEMPORARY / THEN / TO
-             /  TRANSACTION / TRIGGER / UNION / UNIQUE / UPDATE / USING
-             /  VACUUM / VALUES / VIEW / VIRTUAL / WHEN / WHERE ) _ t
+             /  CURRENT_TIMESTAMP / CURRENT_TIME / DATABASE / DEFAULT
+             /  DEFERRABLE / DEFERRED / DELETE / DESC / DETACH / DISTINCT
+             /  DROP / EACH / ELSE / END / ESCAPE / EXCEPT / EXCLUSIVE
+             /  EXISTS / EXPLAIN / FAIL / FOREIGN / FOR / FROM / FULL
+             /  GENERATED / GLOB / GROUP / HAVING / IF / IGNORE / IMMEDIATE
+             /  INDEX / INITIALLY / INNER / INSERT / INSTEAD / INTERSECT
+             /  INTO / IN / ISNULL / IS / JOIN / KEY / LEFT / LIKE / LIMIT
+             /  MATCH / NATURAL / NOTNULL / NOT / NULL / OF / OFFSET / ON
+             /  ORDER / OR / OUTER / PLAN / PRAGMA / PRIMARY / QUERY / RAISE
+             /  REFERENCES / REGEXP / REINDEX / RENAME / RIGHT / REPLACE
+             /  RESTRICT / ROLLBACK / ROWID / ROW / SET / SELECT / STORED
+             /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
+             /  TRIGGER / UNION / UNIQUE / UPDATE / USING / VACUUM / VALUES
+             /  VIEW / VIRTUAL / WHEN / WITHOUT / WHERE ) _ t
 ]]
 
 
@@ -418,9 +473,23 @@ table-options <- (WITHOUT ROWID / STRICT) _","_
 
 
 
+local sql_statement = [[
+sql <- (sql-statement _";"_)+
+
+; this is a long one which we fill in systematically
+sql-statement <- create-table / alter-table
+]]
+
+
+
+
+
+
+
 
 
 local sqlite_blocks = {
+   sql_statement,
    caseless_letters,
    whitespace_rules,
    terminal_rule,
@@ -432,5 +501,5 @@ local sqlite_blocks = {
 
 
 
-return sqlite_blocks
+return {table.concat(sqlite_blocks, "\n\n"), blocks = sqlite_blocks}
 

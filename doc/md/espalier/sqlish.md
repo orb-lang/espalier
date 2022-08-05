@@ -8,5 +8,5 @@ local Vav = require "espalier:vav"
 ```
 
 ```lua
-return Vav(sqlite_bits)
+return Vav(sqlite_bits[1])
 ```
