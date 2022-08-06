@@ -477,7 +477,9 @@ local sql_statement = [[
 sql <- (sql-statement _";"_)+
 
 ; this is a long one which we fill in systematically
-sql-statement <- create-table / alter-table
+sql-statement <- explain? ( create-table
+                          / alter-table )
+explain <- EXPLAIN (QUERY PLAN)?
 ]]
 
 

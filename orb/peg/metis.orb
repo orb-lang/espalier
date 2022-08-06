@@ -681,7 +681,7 @@ local function graphCalls(rules)
          shuttle:push(elem)
       end
       for elem in shuttle:popAll() do
-         for _, name in ipairs(ruleCalls[elem]) do
+         for _, name in ipairs(ruleCalls[elem] or {}) do
             if not recurSet[name] then
                shuttle:push(name)
                recurSet[name] = true
