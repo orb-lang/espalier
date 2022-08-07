@@ -418,8 +418,12 @@ end
 
 function M.rules.synthesize(rules)
    rules.start = rules :take 'rule'
-   rules.synth = _synth(rules)
-   return rules.synth
+
+   local synth = _synth(rules)
+   synth.pegparse = assert(rules.pegparse)
+   synth.peg_str = rules.peg_str
+   rules.synth = synth --- don't... use this at all
+   return synth
 end
 
 
@@ -467,8 +471,28 @@ end
 
 
 
+
+
+
+
+local function nonempty(tab)
+   if #tab > 0 then
+      return tab
+   else
+      return nil
+   end
+end
+
+
+
+
 function Syn.rules.collectRules(rules)
-   local nameSet, nameMap = Set {}, {}
+   -- our containers:
+   local nameSet, nameMap = Set {}, {} -- #{token*}, token => {name*}
+   local dupe, surplus, missing = {}, {}, {} -- {rule*}, {rule*}, {token*}
+   local ruleMap = {}   -- token => synth
+   local ruleCalls = {} -- token => {name*}
+   local ruleSet = Set {}   -- #{rule_name}
    for name in rules :filter 'name' do
       local token = normalize(name:span())
       name.token = token
@@ -478,25 +502,23 @@ function Syn.rules.collectRules(rules)
       nameMap[token] = refs
    end
 
-   local dupe, surplus = {}, {}
-   local ruleMap = {}   -- token => synth
-   local ruleCalls = {} -- token => {name*}
-   local ruleSet = Set {}   -- #{rule_name}
    for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
       rule.token = token
       ruleSet[token] = true
       if ruleMap[token] then
          -- lpeg uses the *last* rule defined so we do likewise
+         ruleMap[token].duplicate = true
          insert(dupe, ruleMap[token])
       end
       ruleMap[token] = rule
       if not nameSet[token] then
          -- while it is valid to refer to the top rule, it is not noteworthy
          -- when a grammar does not.
-         -- rules[1] is kind of sloppy but we're just going in the order of
-         -- inspiration...
-         if not (rule == rules[1]) then
+         -- rules which are not findable from the start rule aren't part of
+         -- the grammar, and are therefore surplus
+         if not (rule == rules.start) then
+            rule.surplus = true
             insert(surplus, rule)
          end
       end
@@ -508,21 +530,19 @@ function Syn.rules.collectRules(rules)
          insert(calls, tok)
       end
    end
-   local missing = {}
    for name in pairs(nameSet) do
       if not ruleMap[name] then
          insert(missing, name)
       end
    end
-   -- #improve should dupe, surplus, missing be sets?
    return { nameSet   =  nameSet,
             nameMap   =  nameMap,
             ruleMap   =  ruleMap,
             ruleCalls =  ruleCalls,
             ruleSet   =  ruleSet,
-            dupe      =  dupe,
-            surplus   =  surplus,
-            missing   =  missing, }
+            dupe      =  nonempty(dupe),
+            surplus   =  nonempty(surplus),
+            missing   =  nonempty(missing), }
 end
 
 
@@ -720,8 +740,31 @@ function Syn.rules.analyze(rules)
    end
    coll.regulars, coll.recursive = regulars, recursive
    coll.calls = graphCalls(rules)
+   if coll.missing then
+      rules:makeDummies()
+   end
 
-   rules:Constrain()
+   rules:constrain()
+end
+
+
+
+
+
+
+
+
+
+function Syn.rules.anomalies(rules)
+   local coll = rules.collection
+   if not coll then return nil, "collectRules first" end
+   if not (coll.missing or coll.surplus or coll.dupes) then
+      return nil
+   else
+      return { missing = coll.missing,
+               surplus = coll.surplus,
+               dupes   = coll.dupes }
+   end
 end
 
 
@@ -762,6 +805,13 @@ end
 
 
 
+local find, gsub = string.find, string.gsub
+
+local function dumbRule(name, pad, patt)
+   return  "`" .. name .. "`  <-  DUMMY-" .. name .. "\n"
+           .. "DUMMY-" .. name .. "  <-  " .. pad
+           .. patt .. pad .. "\n"
+end
 
 function Syn.rules.makeDummies(rules)
    if not rules.collection then
@@ -771,14 +821,37 @@ function Syn.rules.makeDummies(rules)
    if (not missing) or #missing == 0 then
       return nil, 'no rules are missing'
    end
-   local dummy_str = {}
-   for _, name in ipairs(missing) do
-      local rule = "`" .. name .. "`  <-  DUMMY-" .. name .. "\n"
-                   .. "DUMMY-" .. name .. "  <-  " .. '"' .. name .. '"\n'
-      insert(dummy_str, rule)
+   local dummy_str, pad = {"\n\n"}, " "
+   if rules.collection.ruleMap['_'] then
+      pad = " _ "
    end
+   for _, name in ipairs(missing) do
+      local patt;
+      if find(name, "_") then
+         patt = '"' .. (gsub(name, "_", '" {-_} "') .. '"')
+      else
+         patt = '"' .. name .. '"'
+      end
+      insert(dummy_str, dumbRule(name, pad, patt))
+   end
+   rules.dummy_str = concat(dummy_str)
+   return rules.pegparse(rules.dummy_str)
+end
 
-   return rules.node.pegparser(concat(dummy_str))
+
+
+local Peg = require "espalier:espalier/peg"
+
+function Syn.rules.dummyParser(rules)
+   if not rules.collection then
+      rules:collectRules()
+   end
+   if not rules.collection.missing then
+      return nil, "no dummy rules"
+   end
+   rules:makeDummies()
+   local with_dummy = rules.peg_str .. rules.dummy_str
+   return Peg(with_dummy):toGrammar()
 end
 
 
@@ -892,13 +965,16 @@ end
 
 
 
-function Syn.rules.Constrain(rules)
+function Syn.rules.constrain(rules)
    local coll;
    if rules.collection then
       coll = rules.collection
    else
       rules:analyze()
       coll = assert(rules.collection)
+   end
+   if rules:anomalies() then
+      return nil, "can't constrain imperfect grammar (yet)", rules:anomalies()
    end
 
    local regulars, ruleMap = coll.regulars, coll.ruleMap
@@ -907,21 +983,21 @@ function Syn.rules.Constrain(rules)
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
          coll.nameQ:push(name)
-         ruleMap[name]:Constrain(coll)
+         ruleMap[name]:constrain(coll)
       end
       for name_str in pairs(tier) do              -- orphan references
          for _, name in ipairs(nameMap[name_str] or {}) do
-            name:Constrain(coll)
+            name:constrain(coll)
          end
       end
    end
 
    for rule in rules :filter 'rule' do
-      rule:Constrain(coll)
+      rule:constrain(coll)
    end
 
    for name in rules :filter 'name' do
-      name:Constrain(coll)
+      name:constrain(coll)
    end
 
    -- lift up regulars
@@ -931,7 +1007,7 @@ end
 
 
 
-function Syn.rule.Constrain(rule, coll)
+function Syn.rule.constrain(rule, coll)
    local rhs = assert(rule :take 'rhs')
    local body = rhs[1]
    if body.maybe then
@@ -949,7 +1025,7 @@ end
 
 
 
-function Syn.name.Constrain(name, coll)
+function Syn.name.constrain(name, coll)
    local tok = assert(name.token)
    local rule = assert(coll.ruleMap[tok])
    if rule.constrained then
@@ -977,8 +1053,8 @@ function Syn.cat.sumConstraints(cat, coll)
       if sub.compound then
          sub:sumConstraints(coll)
       else
-         if sub.Constrain then
-            sub:Constrain(coll)
+         if sub.constrain then
+            sub:constrain(coll)
          else
             sub.unconstrained = true
          end
@@ -1040,7 +1116,7 @@ end
 
 
 
-function Syn.repeated.Constrain(repeated, coll)
+function Syn.repeated.constrain(repeated, coll)
    local range = repeated :take 'integer_range'
    if not range then return end
    local start = tonumber(range[1])

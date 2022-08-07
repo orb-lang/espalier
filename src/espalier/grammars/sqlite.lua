@@ -417,7 +417,7 @@ local create_table = [[
 create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
                 (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
                 ; add AS select... later!
-                "(" _ column-def _ ("," _ column-def _)* _
+                "(" _ column-def _ ("," _ column-def _)* ")" _
                 table-options*
 
 schema-name  ←  identifier
