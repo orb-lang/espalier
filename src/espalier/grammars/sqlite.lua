@@ -77,145 +77,145 @@ local caseless_letters = [[
 
 
 
--- first thing we do is sort these and print that
-
-local kwset = {"ABORT","ADD","AFTER","ALL","ALTER","ALWAYS","ANALYZE","AND",
-   "ASC","AS","ATTACH","AUTOINCREMENT","BEFORE","BEGIN","BETWEEN","BY",
-   "CASCADE","CASE","CAST","CHECK","COLLATE","COLUMN","COMMIT","CONFLICT",
-   "CONSTRAINT","CREATE","CROSS","CURRENT_DATE","CURRENT_TIMESTAMP",
-   "CURRENT_TIME","DATABASE","DEFAULT","DEFERRABLE","DEFERRED","DELETE",
-   "DESC","DETACH","DISTINCT","DROP","EACH","ELSE","END","ESCAPE","EXCEPT",
-   "EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FOREIGN","FOR","FROM","FULL",
-   "GENERATED","GLOB","GROUP","HAVING","IF","IGNORE","IMMEDIATE","INDEX",
-   "INITIALLY","INNER","INSERT","INSTEAD","INTERSECT","INTO","IN","ISNULL",
-   "IS","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH","NATURAL","NOTNULL","NOT",
-   "NULL","OF","OFFSET","ON","ORDER","OR","OUTER","PLAN","PRAGMA","PRIMARY",
-   "QUERY","RAISE","REFERENCES","REGEXP","REINDEX","RENAME","RIGHT","REPLACE",
-   "RESTRICT","ROLLBACK","ROWID","ROW","SET","SELECT","STORED","STRICT",
-   "TABLE","TEMPORARY","TEMP","THEN","TO","TRANSACTION","TRIGGER","UNION",
-   "UNIQUE","UPDATE","USING","VACUUM","VALUES","VIEW","VIRTUAL","WHEN",
-   "WITHOUT","WHERE",}
-
--- sort function being:
-local char, byte, sub = assert(string.char),
-                        assert(string.byte),
-                        assert(string.sub)
-
-local function pegsort(left, right)
-   local a, b = byte(left, 1), byte(right, 1)
-   if a < b then return true
-   elseif a > b then return false
-   else
-      local longer, shorter;
-      if #left > #right then
-         longer, shorter = left, right
-      else
-         longer, shorter = right, left
-      end
-      local sublong = sub(longer, 1, #shorter)
-      if sublong == shorter then
-         return longer == left
-      else
-         return left < right
-      end
-   end
-end
-
-table.sort(kwset, pegsort)
 
 
--- I insist on justifying the arrows, so we make padding:
-local longest = 0
-for _, kw in ipairs(kwset) do
-   longest = #kw > longest and #kw or longest
-end
-
--- make the rules
-local insert, concat = assert(table.insert), assert(table.concat)
-
-local poggers = {}
-
-for i, keyword in ipairs(kwset) do
-   local pad = (" "):rep(longest - #keyword + 3)
-   local rule = {pad, keyword, "  ←  "}
-   for i = 1, #keyword do
-      local chomp = char(byte(keyword,i))
-      if chomp == "_" then
-         -- wrap this one as a literal
-         insert(rule, '"_"')
-      else
-         insert(rule, chomp)
-      end
-      insert(rule, " ")
-   end
-   insert(rule, "t _")
-   poggers[i] = concat(rule)
-end
-
--- now the keyword rule
-
-local head     =   " keyword  ←  ((  "
-local div_pad  = "\n             /  "
-local div = " / "
-local WID = 78
-
-local wide = #head
-
-local champ = {head}
-local footer = " )) _ t\n"
-
-local no_div = true
--- awful hack to work around bad original parser!
-local count = 0
-for i, kw in ipairs(kwset) do
-   count = count + 1
-   local div = div
-   if count == 20 then
-      div = ") / ("
-      count = 1
-   end
-   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
-   if next_w <= WID then
-      if no_div then
-         no_div = false
-      else
-        insert(champ, div)
-        wide = wide + #div
-      end
-   else
-      insert(champ, div_pad)
-      wide = #div_pad - 1 -- because the newline isn't width
-   end
-   insert(champ, kw)
-   wide = wide + #kw
-end
-
-insert(champ, footer)
 
 
--- last but not least! let's pretty print kwargs:
-
-local kw_pr = {"local kwset = {"}
-local wide = #kw_pr[1]
-for i, kw in ipairs(kwset) do
-    local tok = '"' .. kw .. '",'
-    local next_w = wide + #tok
-    if next_w <= WID then
-      insert(kw_pr, tok)
-      wide = next_w
-   else
-      insert(kw_pr, "\n   ")
-      insert(kw_pr, tok)
-      wide = #tok + 3
-   end
-end
-insert(kw_pr, "}\n\n")
 
 
--- print the rules
-print(concat(poggers, "\n"))
-print(concat(champ))
-print(concat(kw_pr))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -347,6 +347,9 @@ local keyword_rules = [[
 
 
 
+
+
+
 local keyword_rule = [[
  keyword  ←  ((  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
              /  ASC / AS / ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN
@@ -365,7 +368,7 @@ local keyword_rule = [[
              /  RESTRICT / RIGHT / ROWID / ROW / SELECT / SET / STORED
              /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
              /  TRIGGER / UNION / UNIQUE / UPDATE) / (USING / VACUUM / VALUES
-             /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT )) _ t
+             /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT ))
 ]]
 
 
@@ -385,11 +388,11 @@ local keyword_rule = [[
 
 
 local name_rules = [[
-name <- quoted / (!keyword bare-name)
+name <- quoted / keyword / bare-name
 
-  `bare-name` <- lead-char follow-char*
-  `lead-char` <- [\x80-\xff] / [A-Z] / [a-z] / "_"
-`follow-char` <- lead-char / [0-9]
+  bare-name   <- lead-char follow-char*
+  lead-char <- [\x80-\xff] / [A-Z] / [a-z] / "_"
+follow-char <- lead-char / [0-9]
      `quoted` <- '"' quote-name  '"'
    quote-name <- (!'"' 1)+
 ]]
@@ -486,7 +489,7 @@ table-options <- (WITHOUT ROWID / STRICT) _","_
 
 
 local sql_statement = [[
-sql <- (sql-statement _";"_)+ / keyword :;
+sql <- (sql-statement _";"_)+
 
 ; this is a long one which we fill in systematically
 sql-statement <- explain? ( create-table
@@ -522,7 +525,8 @@ local whitespace_rules = [[
 
 
 local terminal_rule = [[
-`t`  ←  &(glyph / WS)
+`t`  ←  &(glyph / WS / -1)
+`glyph`  ← {()[]!:#@!%^&*\"\'\\<>,./?|} / "{" / "}"
 ]]
 
 

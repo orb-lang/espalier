@@ -496,6 +496,7 @@ function Syn.rules.collectRules(rules)
    local ruleMap = {}   -- token => synth
    local ruleCalls = {} -- token => {name*}
    local ruleSet = Set {}   -- #{rule_name}
+
    for name in rules :filter 'name' do
       local token = normalize(name:span())
       name.token = token
@@ -504,6 +505,8 @@ function Syn.rules.collectRules(rules)
       insert(refs, name)
       nameMap[token] = refs
    end
+
+   local start_rule = rules :take 'rule'
 
    for rule in rules :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
@@ -520,7 +523,7 @@ function Syn.rules.collectRules(rules)
          -- when a grammar does not.
          -- rules which are not findable from the start rule aren't part of
          -- the grammar, and are therefore surplus
-         if not (rule == rules.start) then
+         if rule ~= start_rule then
             rule.surplus = true
             insert(surplus, rule)
          end
@@ -668,7 +671,7 @@ local function graphCalls(rules)
       regSets[name] = Set {}
    end
    -- second tier has only the already-summoned direct calls
-   depSet = regulars[2]
+   depSet = regulars[2] or {}
    for name in pairs(depSet) do
       regSets[name] = setFor(ruleCalls[name])
    end

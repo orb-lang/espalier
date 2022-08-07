@@ -162,7 +162,7 @@ local WID = 78
 local wide = #head
 
 local champ = {head}
-local footer = " )) _ t\n"
+local footer = " )) t\n"
 
 local no_div = true
 -- awful hack to work around bad original parser!
@@ -345,7 +345,10 @@ Which we can run anytime we want, to generate the following:
                WHERE  ←  W H E R E t _
 ```
 
-With these powers combined:
+With these powers combined, we have a keyword rule\.
+
+It doesn't have to look this hideous but the legacy PEG parser has
+left\-leaning choice\.
 
 ```peg
  keyword  ←  ((  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
@@ -365,7 +368,7 @@ With these powers combined:
              /  RESTRICT / RIGHT / ROWID / ROW / SELECT / SET / STORED
              /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
              /  TRIGGER / UNION / UNIQUE / UPDATE) / (USING / VACUUM / VALUES
-             /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT )) _ t
+             /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT ))
 ```
 
 Which lets us refer to these without trailing whitespace\. The keyword token
@@ -385,11 +388,11 @@ thanks stack https://stackoverflow\.com/questions/3373234/what\-sqlite\-column\-
 https://sqlite\.org/src/file?name=src/tokenize\.c&ci=trunk
 
 ```peg
-name <- quoted / (!keyword bare-name)
+name <- quoted / keyword / bare-name
 
-  `bare-name` <- lead-char follow-char*
-  `lead-char` <- [\x80-\xff] / [A-Z] / [a-z] / "_"
-`follow-char` <- lead-char / [0-9]
+  bare-name   <- lead-char follow-char*
+  lead-char <- [\x80-\xff] / [A-Z] / [a-z] / "_"
+follow-char <- lead-char / [0-9]
      `quoted` <- '"' quote-name  '"'
    quote-name <- (!'"' 1)+
 ```
@@ -484,7 +487,7 @@ We're handing this off to Vav but it does need to have a leading start rule,
 so let's sketch that real quick:
 
 ```peg
-sql <- (sql-statement _";"_)+ / keyword :;
+sql <- (sql-statement _";"_)+
 
 ; this is a long one which we fill in systematically
 sql-statement <- explain? ( create-table
@@ -520,7 +523,8 @@ The class of bytes which terminates a keyword, allowing `not` to be
 distinguished from `note`\.
 
 ```peg
-`t`  ←  &(glyph / WS)
+`t`  ←  &(glyph / WS / -1)
+`glyph`  ← {()[]!:#@!%^&*\"\'\\<>,./?|} / "{" / "}"
 ```
 
 
