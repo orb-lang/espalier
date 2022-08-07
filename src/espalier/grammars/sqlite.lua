@@ -54,22 +54,9 @@ local caseless_letters = [[
 
 
 
-local whitespace_rules = [[
-; we do the usual optional and not-optional
-`_`  ←  ws*
-`ws`  ←  (comment / dent / WS)+
 
-; tracking indentation can be useful
-`dent`  ←  "\n" (!"\n" WS)*
 
-; we want a one-byte whitespace-only
-; why \f and not \v? don't know!
-`WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
 
-`comment`  ←  line-comment / block-comment
-`line-comment`  ←  "--" (!"\n" 1)*
-`block-comment`  ←  "/*" (!"*/" 1)* ("*/" / -1)
-]]
 
 
 
@@ -77,9 +64,6 @@ local whitespace_rules = [[
 
 
 
-local terminal_rule = [[
-`t`  ←  &(glyph / WS)
-]]
 
 
 
@@ -93,153 +77,145 @@ local terminal_rule = [[
 
 
 
+-- first thing we do is sort these and print that
 
+local kwset = {"ABORT","ADD","AFTER","ALL","ALTER","ALWAYS","ANALYZE","AND",
+   "ASC","AS","ATTACH","AUTOINCREMENT","BEFORE","BEGIN","BETWEEN","BY",
+   "CASCADE","CASE","CAST","CHECK","COLLATE","COLUMN","COMMIT","CONFLICT",
+   "CONSTRAINT","CREATE","CROSS","CURRENT_DATE","CURRENT_TIMESTAMP",
+   "CURRENT_TIME","DATABASE","DEFAULT","DEFERRABLE","DEFERRED","DELETE",
+   "DESC","DETACH","DISTINCT","DROP","EACH","ELSE","END","ESCAPE","EXCEPT",
+   "EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FOREIGN","FOR","FROM","FULL",
+   "GENERATED","GLOB","GROUP","HAVING","IF","IGNORE","IMMEDIATE","INDEX",
+   "INITIALLY","INNER","INSERT","INSTEAD","INTERSECT","INTO","IN","ISNULL",
+   "IS","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH","NATURAL","NOTNULL","NOT",
+   "NULL","OF","OFFSET","ON","ORDER","OR","OUTER","PLAN","PRAGMA","PRIMARY",
+   "QUERY","RAISE","REFERENCES","REGEXP","REINDEX","RENAME","RIGHT","REPLACE",
+   "RESTRICT","ROLLBACK","ROWID","ROW","SET","SELECT","STORED","STRICT",
+   "TABLE","TEMPORARY","TEMP","THEN","TO","TRANSACTION","TRIGGER","UNION",
+   "UNIQUE","UPDATE","USING","VACUUM","VALUES","VIEW","VIRTUAL","WHEN",
+   "WITHOUT","WHERE",}
 
+-- sort function being:
+local char, byte, sub = assert(string.char),
+                        assert(string.byte),
+                        assert(string.sub)
 
+local function pegsort(left, right)
+   local a, b = byte(left, 1), byte(right, 1)
+   if a < b then return true
+   elseif a > b then return false
+   else
+      local longer, shorter;
+      if #left > #right then
+         longer, shorter = left, right
+      else
+         longer, shorter = right, left
+      end
+      local sublong = sub(longer, 1, #shorter)
+      if sublong == shorter then
+         return longer == left
+      else
+         return left < right
+      end
+   end
+end
 
+table.sort(kwset, pegsort)
 
 
+-- I insist on justifying the arrows, so we make padding:
+local longest = 0
+for _, kw in ipairs(kwset) do
+   longest = #kw > longest and #kw or longest
+end
 
+-- make the rules
+local insert, concat = assert(table.insert), assert(table.concat)
 
+local poggers = {}
 
+for i, keyword in ipairs(kwset) do
+   local pad = (" "):rep(longest - #keyword + 3)
+   local rule = {pad, keyword, "  ←  "}
+   for i = 1, #keyword do
+      local chomp = char(byte(keyword,i))
+      if chomp == "_" then
+         -- wrap this one as a literal
+         insert(rule, '"_"')
+      else
+         insert(rule, chomp)
+      end
+      insert(rule, " ")
+   end
+   insert(rule, "t _")
+   poggers[i] = concat(rule)
+end
 
+-- now the keyword rule
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+local head     =   " keyword  ←  ((  "
+local div_pad  = "\n             /  "
+local div = " / "
+local WID = 78
+
+local wide = #head
+
+local champ = {head}
+local footer = " )) _ t\n"
+
+local no_div = true
+-- awful hack to work around bad original parser!
+local count = 0
+for i, kw in ipairs(kwset) do
+   count = count + 1
+   local div = div
+   if count == 20 then
+      div = ") / ("
+      count = 1
+   end
+   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
+   if next_w <= WID then
+      if no_div then
+         no_div = false
+      else
+        insert(champ, div)
+        wide = wide + #div
+      end
+   else
+      insert(champ, div_pad)
+      wide = #div_pad - 1 -- because the newline isn't width
+   end
+   insert(champ, kw)
+   wide = wide + #kw
+end
+
+insert(champ, footer)
+
+
+-- last but not least! let's pretty print kwargs:
+
+local kw_pr = {"local kwset = {"}
+local wide = #kw_pr[1]
+for i, kw in ipairs(kwset) do
+    local tok = '"' .. kw .. '",'
+    local next_w = wide + #tok
+    if next_w <= WID then
+      insert(kw_pr, tok)
+      wide = next_w
+   else
+      insert(kw_pr, "\n   ")
+      insert(kw_pr, tok)
+      wide = #tok + 3
+   end
+end
+insert(kw_pr, "}\n\n")
+
+
+-- print the rules
+print(concat(poggers, "\n"))
+print(concat(champ))
+print(concat(kw_pr))
 
 
 
@@ -372,24 +348,24 @@ local keyword_rules = [[
 
 
 local keyword_rule = [[
- keyword  ←  (  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
+ keyword  ←  ((  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
              /  ASC / AS / ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN
-             /  BY / CASCADE / CASE / CAST / CHECK / COLLATE / COLUMN / COMMIT
-             /  CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
+             /  BY / CASCADE / CASE / CAST) / (CHECK / COLLATE / COLUMN
+             /  COMMIT / CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
              /  CURRENT_TIMESTAMP / CURRENT_TIME / DATABASE / DEFAULT
              /  DEFERRABLE / DEFERRED / DELETE / DESC / DETACH / DISTINCT
              /  DROP / EACH / ELSE / END / ESCAPE / EXCEPT / EXCLUSIVE
              /  EXISTS / EXPLAIN / FAIL / FOREIGN / FOR / FROM / FULL
-             /  GENERATED / GLOB / GROUP / HAVING / IF / IGNORE / IMMEDIATE
+             /  GENERATED / GLOB / GROUP / HAVING / IF) / (IGNORE / IMMEDIATE
              /  INDEX / INITIALLY / INNER / INSERT / INSTEAD / INTERSECT
              /  INTO / IN / ISNULL / IS / JOIN / KEY / LEFT / LIKE / LIMIT
-             /  MATCH / NATURAL / NOTNULL / NOT / NULL / OF / OFFSET / ON
+             /  MATCH / NATURAL) / (NOTNULL / NOT / NULL / OFFSET / OF / ON
              /  ORDER / OR / OUTER / PLAN / PRAGMA / PRIMARY / QUERY / RAISE
-             /  REFERENCES / REGEXP / REINDEX / RENAME / RIGHT / REPLACE
-             /  RESTRICT / ROLLBACK / ROWID / ROW / SET / SELECT / STORED
+             /  REFERENCES / REGEXP / REINDEX / RENAME / REPLACE) / (ROLLBACK
+             /  RESTRICT / RIGHT / ROWID / ROW / SELECT / SET / STORED
              /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
-             /  TRIGGER / UNION / UNIQUE / UPDATE / USING / VACUUM / VALUES
-             /  VIEW / VIRTUAL / WHEN / WITHOUT / WHERE ) _ t
+             /  TRIGGER / UNION / UNIQUE / UPDATE) / (USING / VACUUM / VALUES
+             /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT )) _ t
 ]]
 
 
@@ -400,6 +376,23 @@ local keyword_rule = [[
 
 
 
+
+
+
+
+
+
+
+
+local name_rules = [[
+name <- quoted / (!keyword bare-name)
+
+  `bare-name` <- lead-char follow-char*
+  `lead-char` <- [\x80-\xff] / [A-Z] / [a-z] / "_"
+`follow-char` <- lead-char / [0-9]
+     `quoted` <- '"' quote-name  '"'
+   quote-name <- (!'"' 1)+
+]]
 
 
 
@@ -420,8 +413,8 @@ create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
                 "(" _ column-def _ ("," _ column-def _)* ")" _
                 table-options*
 
-schema-name  ←  identifier
-table-name  ←  identifier
+schema-name  ←  name
+ table-name  ←  name
 ]]
 
 
@@ -429,18 +422,37 @@ table-name  ←  identifier
 
 
 
-
-
-
-
-
-
 local column_def = [[
-column-def  ←  column-name _ (type-name _)? (column-constraint _)*
+ column-def  ←  column-name _ (type-name _)? (column-constraint _)*
+column-name  ←  name
 
 type-name <- (affinity _)+ fluff?
 
-affinity <- name ; we can capture the same affinities SQLite uses here
+`affinity` <-  blob-column
+           /  integer-column
+           /  text-column
+           /  real-column
+           /  numeric-column
+
+blob-column <- B L O B !follow-char
+
+integer-column <- (!int-affin lead-char)?
+                  (!int-affin follow-char)*
+                  int-affin follow-char*
+`int-affin` <- I N T
+
+text-column <- (!text-affin lead-char)?
+                  (!text-affin follow-char)*
+                  text-affin follow-char*
+`text-affin` <- C H A R / C L O B / T E X T
+
+real-column <- (!real-affin lead-char)?
+                  (!real-affin follow-char)*
+                  real-affin follow-char*
+`real-affin` <- R E A L / F L O A / D O U B
+
+numeric-column <- name
+
 
 ; it's not fluff obviously but wtf even is this? it's a compatibility thing
 `fluff` <- "("_ signed-number _")"_
@@ -474,12 +486,43 @@ table-options <- (WITHOUT ROWID / STRICT) _","_
 
 
 local sql_statement = [[
-sql <- (sql-statement _";"_)+
+sql <- (sql-statement _";"_)+ / keyword :;
 
 ; this is a long one which we fill in systematically
 sql-statement <- explain? ( create-table
                           / alter-table )
 explain <- EXPLAIN (QUERY PLAN)?
+]]
+
+
+
+
+
+local whitespace_rules = [[
+; we do the usual optional and not-optional
+`_`  ←  ws*
+`ws`  ←  (comment / dent / WS)+
+
+; tracking indentation can be useful
+`dent`  ←  "\n" (!"\n" WS)*
+
+; we want a one-byte whitespace-only
+; why \f and not \v? don't know!
+`WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
+
+`comment`  ←  line-comment / block-comment
+`line-comment`  ←  "--" (!"\n" 1)*
+`block-comment`  ←  "/*" (!"*/" 1)* ("*/" / -1)
+]]
+
+
+
+
+
+
+
+local terminal_rule = [[
+`t`  ←  &(glyph / WS)
 ]]
 
 
@@ -495,7 +538,9 @@ local sqlite_blocks = {
    caseless_letters,
    whitespace_rules,
    terminal_rule,
+   name_rules,
    keyword_rules,
+   keyword_rule,
    create_table,
    column_def,
    table_options,

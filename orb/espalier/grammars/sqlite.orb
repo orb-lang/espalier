@@ -50,38 +50,6 @@ No one would call this pretty, but it is correct and legible.
 Incomplete but serviceable.
 
 
-*** Whitespace
-
-Adding a =dent= rule costs nothing and helps when it helps.
-
-#!peg @whitespace_rules #asLua
-; we do the usual optional and not-optional
-`_`  ←  ws*
-`ws`  ←  (comment / dent / WS)+
-
-; tracking indentation can be useful
-`dent`  ←  "\n" (!"\n" WS)*
-
-; we want a one-byte whitespace-only
-; why \f and not \v? don't know!
-`WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
-
-`comment`  ←  line-comment / block-comment
-`line-comment`  ←  "--" (!"\n" 1)*
-`block-comment`  ←  "/*" (!"*/" 1)* ("*/" / -1)
-#/peg
-
-
-*** terminal class
-
-The class of bytes which terminates a keyword, allowing =not= to be
-distinguished from =note=.
-
-#!peg @terminal_rule #asLua
-`t`  ←  &(glyph / WS)
-#/peg
-
-
 *** Keywords
 
 We'll give them all Capital letters.
@@ -108,7 +76,7 @@ we do like so. We can reuse them, as is,
 
 The #noKnit tag is the poor man's ifdef!
 
-#!lua #noKnit
+#!lua
 -- first thing we do is sort these and print that
 
 local kwset = {"ABORT","ADD","AFTER","ALL","ALTER","ALWAYS","ANALYZE","AND",
@@ -186,7 +154,7 @@ end
 
 -- now the keyword rule
 
-local head     =   " keyword  ←  (  "
+local head     =   " keyword  ←  ((  "
 local div_pad  = "\n             /  "
 local div = " / "
 local WID = 78
@@ -194,10 +162,18 @@ local WID = 78
 local wide = #head
 
 local champ = {head}
-local footer = " ) _ t\n"
+local footer = " )) _ t\n"
 
 local no_div = true
+-- awful hack to work around bad original parser!
+local count = 0
 for i, kw in ipairs(kwset) do
+   count = count + 1
+   local div = div
+   if count == 20 then
+      div = ") / ("
+      count = 1
+   end
    local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
    if next_w <= WID then
       if no_div then
@@ -372,24 +348,24 @@ Which we can run anytime we want, to generate the following:
 With these powers combined:
 
 #!peg @keyword_rule #asLua
- keyword  ←  (  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
+ keyword  ←  ((  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
              /  ASC / AS / ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN
-             /  BY / CASCADE / CASE / CAST / CHECK / COLLATE / COLUMN / COMMIT
-             /  CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
+             /  BY / CASCADE / CASE / CAST) / (CHECK / COLLATE / COLUMN
+             /  COMMIT / CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
              /  CURRENT_TIMESTAMP / CURRENT_TIME / DATABASE / DEFAULT
              /  DEFERRABLE / DEFERRED / DELETE / DESC / DETACH / DISTINCT
              /  DROP / EACH / ELSE / END / ESCAPE / EXCEPT / EXCLUSIVE
              /  EXISTS / EXPLAIN / FAIL / FOREIGN / FOR / FROM / FULL
-             /  GENERATED / GLOB / GROUP / HAVING / IF / IGNORE / IMMEDIATE
+             /  GENERATED / GLOB / GROUP / HAVING / IF) / (IGNORE / IMMEDIATE
              /  INDEX / INITIALLY / INNER / INSERT / INSTEAD / INTERSECT
              /  INTO / IN / ISNULL / IS / JOIN / KEY / LEFT / LIKE / LIMIT
-             /  MATCH / NATURAL / NOTNULL / NOT / NULL / OF / OFFSET / ON
+             /  MATCH / NATURAL) / (NOTNULL / NOT / NULL / OFFSET / OF / ON
              /  ORDER / OR / OUTER / PLAN / PRAGMA / PRIMARY / QUERY / RAISE
-             /  REFERENCES / REGEXP / REINDEX / RENAME / RIGHT / REPLACE
-             /  RESTRICT / ROLLBACK / ROWID / ROW / SET / SELECT / STORED
+             /  REFERENCES / REGEXP / REINDEX / RENAME / REPLACE) / (ROLLBACK
+             /  RESTRICT / RIGHT / ROWID / ROW / SELECT / SET / STORED
              /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
-             /  TRIGGER / UNION / UNIQUE / UPDATE / USING / VACUUM / VALUES
-             /  VIEW / VIRTUAL / WHEN / WITHOUT / WHERE ) _ t
+             /  TRIGGER / UNION / UNIQUE / UPDATE) / (USING / VACUUM / VALUES
+             /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT )) _ t
 #/peg
 
 Which lets us refer to these without trailing whitespace. The keyword token
@@ -400,6 +376,23 @@ Now, Orb is supposed to do this sort of routine codegen task for us, without
 the print statement.
 
 Squad goals.
+
+
+*** name
+
+thanks stack https://stackoverflow.com/questions/3373234/what-sqlite-column-name-can-be-cannot-be
+
+https://sqlite.org/src/file?name=src/tokenize.c&ci=trunk
+
+#!peg @name_rules #asLua
+name <- quoted / (!keyword bare-name)
+
+  `bare-name` <- lead-char follow-char*
+  `lead-char` <- [\x80-\xff] / [A-Z] / [a-z] / "_"
+`follow-char` <- lead-char / [0-9]
+     `quoted` <- '"' quote-name  '"'
+   quote-name <- (!'"' 1)+
+#/peg
 
 
 *** create-table
@@ -420,15 +413,9 @@ create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
                 "(" _ column-def _ ("," _ column-def _)* ")" _
                 table-options*
 
-schema-name  ←  identifier
-table-name  ←  identifier
+schema-name  ←  name
+ table-name  ←  name
 #/peg
-
-Because our definition of keywords ends in =t=, we can follow the spec for
-keyword order.  Though I'll confess, I write so many PEGs that looking at it
-makes me nervous!
-
-Maybe lexers are Good, Actually?
 
 
 **** column_def
@@ -436,11 +423,36 @@ Maybe lexers are Good, Actually?
 [[We continue][https://www.sqlite.org/syntax/column-constraint.html]]
 
 #!peg @column_def #asLua
-column-def  ←  column-name _ (type-name _)? (column-constraint _)*
+ column-def  ←  column-name _ (type-name _)? (column-constraint _)*
+column-name  ←  name
 
 type-name <- (affinity _)+ fluff?
 
-affinity <- name ; we can capture the same affinities SQLite uses here
+`affinity` <-  blob-column
+           /  integer-column
+           /  text-column
+           /  real-column
+           /  numeric-column
+
+blob-column <- B L O B !follow-char
+
+integer-column <- (!int-affin lead-char)?
+                  (!int-affin follow-char)*
+                  int-affin follow-char*
+`int-affin` <- I N T
+
+text-column <- (!text-affin lead-char)?
+                  (!text-affin follow-char)*
+                  text-affin follow-char*
+`text-affin` <- C H A R / C L O B / T E X T
+
+real-column <- (!real-affin lead-char)?
+                  (!real-affin follow-char)*
+                  real-affin follow-char*
+`real-affin` <- R E A L / F L O A / D O U B
+
+numeric-column <- name
+
 
 ; it's not fluff obviously but wtf even is this? it's a compatibility thing
 `fluff` <- "("_ signed-number _")"_
@@ -474,12 +486,43 @@ We're handing this off to Vav but it does need to have a leading start rule,
 so let's sketch that real quick:
 
 #!peg @sql_statement #asLua
-sql <- (sql-statement _";"_)+
+sql <- (sql-statement _";"_)+ / keyword :;
 
 ; this is a long one which we fill in systematically
 sql-statement <- explain? ( create-table
                           / alter-table )
 explain <- EXPLAIN (QUERY PLAN)?
+#/peg
+
+*** Whitespace
+
+Adding a =dent= rule costs nothing and helps when it helps.
+
+#!peg @whitespace_rules #asLua
+; we do the usual optional and not-optional
+`_`  ←  ws*
+`ws`  ←  (comment / dent / WS)+
+
+; tracking indentation can be useful
+`dent`  ←  "\n" (!"\n" WS)*
+
+; we want a one-byte whitespace-only
+; why \f and not \v? don't know!
+`WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
+
+`comment`  ←  line-comment / block-comment
+`line-comment`  ←  "--" (!"\n" 1)*
+`block-comment`  ←  "/*" (!"*/" 1)* ("*/" / -1)
+#/peg
+
+
+*** terminal class
+
+The class of bytes which terminates a keyword, allowing =not= to be
+distinguished from =note=.
+
+#!peg @terminal_rule #asLua
+`t`  ←  &(glyph / WS)
 #/peg
 
 
@@ -495,7 +538,9 @@ local sqlite_blocks = {
    caseless_letters,
    whitespace_rules,
    terminal_rule,
+   name_rules,
    keyword_rules,
+   keyword_rule,
    create_table,
    column_def,
    table_options,
