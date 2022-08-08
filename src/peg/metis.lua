@@ -56,6 +56,7 @@ local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
 local s = require "status:status" ()
+s.verbose = true
 
 
 
@@ -420,6 +421,7 @@ function M.rules.synthesize(rules)
    rules.start = rules :take 'rule'
 
    local synth = _synth(rules)
+   s:verb("synthesized %S", synth.class)
    synth.pegparse = assert(rules.pegparse)
    synth.peg_str = rules.peg_str
    rules.synth = synth --- don't... use this at all
