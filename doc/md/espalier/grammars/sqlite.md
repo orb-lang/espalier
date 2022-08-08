@@ -1,224 +1,219 @@
 # SQL\(ite\) PEG
 
 
-We start [here](https://www.sqlite.org/draft/tokenreq.html)\.
-
-This is the first time I've written the lexer first in a PEG\.  I'm suspecting
-that I'll like it\.
-
-oh hey https://github\.com/AlecStrong/sqlite\-bnf/blob/grammar\-kit/sqlite\.bnf
+  A Parsing Expression Grammar for the SQLite dialect of Structured Query
+Language\.
 
 
-## Case Insensitive Letters
+### SQLite start rule
 
-SQL bEiNg WhAt It iS, we need a rule `A` etc which matches both ASCII forms\.
-
-No one would call this pretty, but it is correct and legible\.
+  A collection of one or more SQL statements, separated by a semicolon\.  The
+end of the file is considered a valid semicolon\.
 
 ```peg
-`A`  ←  {Aa}
-`B`  ←  {Bb}
-`C`  ←  {Cc}
-`D`  ←  {Dd}
-`E`  ←  {Ee}
-`F`  ←  {Ff}
-`G`  ←  {Gg}
-`H`  ←  {Hh}
-`I`  ←  {Ii}
-`J`  ←  {Ji}
-`K`  ←  {Kk}
-`L`  ←  {Ll}
-`M`  ←  {Mm}
-`N`  ←  {Nn}
-`O`  ←  {Oo}
-`P`  ←  {Pp}
-`Q`  ←  {Qq}
-`R`  ←  {Rr}
-`S`  ←  {Ss}
-`T`  ←  {Tt}
-`U`  ←  {Uu}
-`V`  ←  {Vv}
-`W`  ←  {Ww}
-`X`  ←  {Xx}
-`Y`  ←  {Yy}
-`Z`  ←  {Zz}
+          sql  ←  (sql-statement _ semi _)+
+
+sql-statement  ←  explain? ( alter-table
+                           / analyze
+                           / attach
+                           / begin
+                           / commit
+                           / create-index
+                           / create-table
+                           / create-trigger
+                           / create-view
+                           / create-virtual-table
+                           / delete
+                           / detach
+                           / drop
+                           / insert
+                           / pragma
+                           / reindex
+                           / release
+                           / rollback
+                           / savepoint
+                           / select
+                           / update
+                           / vacuum )
+       `semi`  ←  ";" / -1
+
+explain  ←  EXPLAIN (QUERY PLAN)?
+```
+
+We'll dive straight in with `create-table` and build out from there\.
+
+
+### create\-table
+
+I found dropping the `-state`, `-stmt`, `-statement` clarifying in the Lua
+grammar, so we do likewise here\.
+
+Espalier PEGs are emphatically case sensitive\.
+
+Another [straightfoward translation](https://www.sqlite.org/syntax/create-table-stmt.html) from the docs\.
+
+```peg
+create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
+                 (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
+                 ; add AS select... later!
+                 "(" _ column-def
+                 ("," _ column-def)*
+                 "," _ column-constraint* ")" _
+                table-options*
+
+  schema-name  ←  name
+   table-name  ←  name
+table-options  ←  t-opt ("," _  t-opt)*
+      `t-opt`  ←  (WITHOUT ROWID / STRICT)
 ```
 
 
-## Token Categories
+#### column\_def
 
-Incomplete but serviceable\.
+  [We continue](https://www.sqlite.org/syntax/column-constraint.html) with a
+fun one, getting the affinities out at parse\-time can't hurt, yeah?
+
+```peg
+ column-def  ←  column-name _ (type-name)? (column-constraint _)*
+column-name  ←  name
+
+  type-name  ←  (affinity _) fluff?
+
+    `affinity`  ←  blob-column
+                /  integer-column
+                /  text-column
+                /  real-column
+                /  numeric-column
+
+   blob-column  ←  B L O B !follow-char
+
+integer-column  ←  (!integer-word id _)* integer-word (_ id)*
+`integer-word`  ←  (!int-affin lead-char)?
+                   (!int-affin follow-char)*
+                   int-affin follow-char*
+   `int-affin`  ←  I N T
+
+   text-column  ←  (!text-word id _)* text-word (_ id)*
+   `text-word`  ←  (!text-affin lead-char)?
+                   (!text-affin follow-char)*
+                   text-affin follow-char*
+  `text-affin`  ←  C H A R / C L O B / T E X T
+
+   real-column  ←  (!real-word id _)* real-word (_ id)*
+   `real-word`  ←  (!real-affin lead-char)?
+                   (!real-affin follow-char)*
+                   real-affin follow-char*
+  `real-affin`  ←  R E A L / F L O A / D O U B
+
+numeric-column  ←  name
+
+; these have no actual semantic value in SQLite
+`fluff`  ←  "("_ signed-number _")"_
+         /  "("_ signed-number _","_ signed-number _")"_
+```
+
+
+#### Column and Table Constraints
+
+```peg
+column-constraint  ←  CONSTRAINT name _
+                   /  PRIMARY KEY (ASC / DESC)? conflict-clause AUTOINCREMENT?
+                   /  NOT NULL conflict-clause
+                   /  UNIQUE conflict-clause
+                   /  CHECK group-expr
+                   /  DEFAULT (group-expr / literal-value _ / signed-number _)
+                   /  COLLATE
+                   /  foreign-key-clause
+                   /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
+
+ table-constraint  ←  CONSTRAINT name _
+                   /  ( PRIMARY KEY
+                      / UNIQUE ) "(" _ indexed-columns ")" _ conflict-clause
+                   /  CHECK group-expr
+                   /  FOREIGN KEY "(" _ column-names ")" foreign-key-clause
+
+conflict-clause  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
+
+   `column-names`  ←  column-name _ ("," _ column-name _)*
+`indexed-columns`  ←  indexed-column ("," _ indexed-column)*
+
+indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
+
+group-expr  ←  "(" _ expr _ ")" _ ; probably mute this one
+```
+
+
+#### name
+
+  The rules for what is actually a valid identifier are cunningle reverse\-
+engineered here, with a bit of help from stack and the source code\.
+
+Sources\[\{\*\}\]\[\{\*\*\}\]:
+
+\{\*\}: https://stackoverflow\.com/questions/3373234/what\-sqlite\-column\-name\-can\-be\-cannot\-be
+
+\{\*\*\}: https://sqlite\.org/src/file?name=src/tokenize\.c&ci=trunk
+
+```peg
+         name  ←  quoted / id
+
+     `quoted`  ←  '"' quote-name '"'
+               /  "[" quote-name "]"
+               /  "`" quote-name "`"
+            ;  /  "'" quote-name "'"
+         `id`  ←  (!keyword bare-name)
+
+  `bare-name`  ←  lead-char follow-char*
+  `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
+`follow-char`  ←  lead-char / [0-9] ; / deprecated-dollar
+   quote-name  ←  (!'"' 1)+
+
+; deprecated-dollar  ← "$"
+```
+
+
+### Whitespace
+
+Adding a `dent` rule costs nothing and helps when it helps\.
+
+```peg
+  `_`  ←  ws*
+ `ws`  ←  (comment / dent / WS)+
+
+; tracking indentation can be useful
+`dent`  ←  "\n" (!"\n" WS)*
+
+; we want a one-byte whitespace-only
+; why \f and not \v? don't know!
+`WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
+
+`comment`  ←  line-comment / block-comment
+`line-comment`  ←  "--" (!"\n" 1)*
+`block-comment`  ←  "/*" (!"*/" 1)* ("*/" / -1)
+```
+
+
+### terminal class
+
+The class of bytes which terminates a keyword, allowing `not` to be
+distinguished from `note`\.
+
+```peg
+`t`  ←  &(glyph / WS / -1)
+
+`glyph`  ← {()[]{~`!@#$%^&*_+=|\\;:\"\',<.>/?} / "}"
+```
+peg
 
 
 ### Keywords
 
-We'll give them all Capital letters\.
+We get to do a whole small song\-and\-dance to make case\-insensitive keywords\.
 
-But I'm not going to generate this by hand\. That would be tedious\.
+This is generated automatically from a block at the bottom of the document\.
 
-We need all the keywords, which I can mechanically munge out of the draft spec
-like so\.
-
-
-#### But first, a bit of codegen\.
-
-The letter rules were easy to write with multiple cursors, the keywords we
-will generate programmatically\.
-
-We even sort them so that "ROWID" will match before "ROW"\.
-
-In our algorithm, hitting CURRENT\_TIME will produce a brief cache miss, as the
-terminal rule `t` is checked and fails, which immediately raises the
-production CURRENT\_TIMESTAMP
-
-To make the keywords, we need to turn e\.g\. `AND` into `AND  ←  A N D t`, which
-we do like so\. We can reuse them, as is,
-
-The \#noKnit tag is the poor man's ifdef\!
-
-```lua
--- first thing we do is sort these and print that
-
-local kwset = {"ABORT","ADD","AFTER","ALL","ALTER","ALWAYS","ANALYZE","AND",
-   "ASC","AS","ATTACH","AUTOINCREMENT","BEFORE","BEGIN","BETWEEN","BY",
-   "CASCADE","CASE","CAST","CHECK","COLLATE","COLUMN","COMMIT","CONFLICT",
-   "CONSTRAINT","CREATE","CROSS","CURRENT_DATE","CURRENT_TIMESTAMP",
-   "CURRENT_TIME","DATABASE","DEFAULT","DEFERRABLE","DEFERRED","DELETE",
-   "DESC","DETACH","DISTINCT","DROP","EACH","ELSE","END","ESCAPE","EXCEPT",
-   "EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FOREIGN","FOR","FROM","FULL",
-   "GENERATED","GLOB","GROUP","HAVING","IF","IGNORE","IMMEDIATE","INDEX",
-   "INITIALLY","INNER","INSERT","INSTEAD","INTERSECT","INTO","IN","ISNULL",
-   "IS","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH","NATURAL","NOTNULL","NOT",
-   "NULL","OF","OFFSET","ON","ORDER","OR","OUTER","PLAN","PRAGMA","PRIMARY",
-   "QUERY","RAISE","REFERENCES","REGEXP","REINDEX","RENAME","RIGHT","REPLACE",
-   "RESTRICT","ROLLBACK","ROWID","ROW","SET","SELECT","STORED","STRICT",
-   "TABLE","TEMPORARY","TEMP","THEN","TO","TRANSACTION","TRIGGER","UNION",
-   "UNIQUE","UPDATE","USING","VACUUM","VALUES","VIEW","VIRTUAL","WHEN",
-   "WITHOUT","WHERE",}
-
--- sort function being:
-local char, byte, sub = assert(string.char),
-                        assert(string.byte),
-                        assert(string.sub)
-
-local function pegsort(left, right)
-   local a, b = byte(left, 1), byte(right, 1)
-   if a < b then return true
-   elseif a > b then return false
-   else
-      local longer, shorter;
-      if #left > #right then
-         longer, shorter = left, right
-      else
-         longer, shorter = right, left
-      end
-      local sublong = sub(longer, 1, #shorter)
-      if sublong == shorter then
-         return longer == left
-      else
-         return left < right
-      end
-   end
-end
-
-table.sort(kwset, pegsort)
-
-
--- I insist on justifying the arrows, so we make padding:
-local longest = 0
-for _, kw in ipairs(kwset) do
-   longest = #kw > longest and #kw or longest
-end
-
--- make the rules
-local insert, concat = assert(table.insert), assert(table.concat)
-
-local poggers = {}
-
-for i, keyword in ipairs(kwset) do
-   local pad = (" "):rep(longest - #keyword + 3)
-   local rule = {pad, keyword, "  ←  "}
-   for i = 1, #keyword do
-      local chomp = char(byte(keyword,i))
-      if chomp == "_" then
-         -- wrap this one as a literal
-         insert(rule, '"_"')
-      else
-         insert(rule, chomp)
-      end
-      insert(rule, " ")
-   end
-   insert(rule, "t _")
-   poggers[i] = concat(rule)
-end
-
--- now the keyword rule
-
-local head     =   " keyword  ←  ((  "
-local div_pad  = "\n             /  "
-local div = " / "
-local WID = 78
-
-local wide = #head
-
-local champ = {head}
-local footer = " )) t\n"
-
-local no_div = true
--- awful hack to work around bad original parser!
-local count = 0
-for i, kw in ipairs(kwset) do
-   count = count + 1
-   local div = div
-   if count == 20 then
-      div = ") / ("
-      count = 1
-   end
-   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
-   if next_w <= WID then
-      if no_div then
-         no_div = false
-      else
-        insert(champ, div)
-        wide = wide + #div
-      end
-   else
-      insert(champ, div_pad)
-      wide = #div_pad - 1 -- because the newline isn't width
-   end
-   insert(champ, kw)
-   wide = wide + #kw
-end
-
-insert(champ, footer)
-
-
--- last but not least! let's pretty print kwargs:
-
-local kw_pr = {"local kwset = {"}
-local wide = #kw_pr[1]
-for i, kw in ipairs(kwset) do
-    local tok = '"' .. kw .. '",'
-    local next_w = wide + #tok
-    if next_w <= WID then
-      insert(kw_pr, tok)
-      wide = next_w
-   else
-      insert(kw_pr, "\n   ")
-      insert(kw_pr, tok)
-      wide = #tok + 3
-   end
-end
-insert(kw_pr, "}\n\n")
-
-
--- print the rules
-print(concat(poggers, "\n"))
-print(concat(champ))
-print(concat(kw_pr))
-```
-
-Which we can run anytime we want, to generate the following:
+We include trailing whitespace in keywords since the meaning is printed on the
+label, and it avoids dribbling `_` all over the grammr\.
 
 ```peg
                ABORT  ←  A B O R T t _
@@ -345,6 +340,9 @@ Which we can run anytime we want, to generate the following:
                WHERE  ←  W H E R E t _
 ```
 
+
+#### Keyword Rule
+
 With these powers combined, we have a keyword rule\.
 
 It doesn't have to look this hideous but the legacy PEG parser has
@@ -371,183 +369,229 @@ left\-leaning choice\.
              /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT ))
 ```
 
-Which lets us refer to these without trailing whitespace\. The keyword token
-carries around that whitespace but the span is the `.id` so we will never care
-about that\.
 
-Now, Orb is supposed to do this sort of routine codegen task for us, without
-the print statement\.
+#### Case Insensitive Letters
 
-Squad goals\.
+SQL bEiNg WhAt It iS, we need a rule `A` etc which matches both ASCII forms\.
 
-
-### name
-
-thanks stack https://stackoverflow\.com/questions/3373234/what\-sqlite\-column\-name\-can\-be\-cannot\-be
-
-https://sqlite\.org/src/file?name=src/tokenize\.c&ci=trunk
+No one would call this pretty, but it's correct and legible\.
 
 ```peg
-name <- quoted / keyword / bare-name
-
-  bare-name   <- lead-char follow-char*
-  lead-char <- [\x80-\xff] / [A-Z] / [a-z] / "_"
-follow-char <- lead-char / [0-9]
-     `quoted` <- '"' quote-name  '"'
-   quote-name <- (!'"' 1)+
+`A`  ←  {Aa}
+`B`  ←  {Bb}
+`C`  ←  {Cc}
+`D`  ←  {Dd}
+`E`  ←  {Ee}
+`F`  ←  {Ff}
+`G`  ←  {Gg}
+`H`  ←  {Hh}
+`I`  ←  {Ii}
+`J`  ←  {Ji}
+`K`  ←  {Kk}
+`L`  ←  {Ll}
+`M`  ←  {Mm}
+`N`  ←  {Nn}
+`O`  ←  {Oo}
+`P`  ←  {Pp}
+`Q`  ←  {Qq}
+`R`  ←  {Rr}
+`S`  ←  {Ss}
+`T`  ←  {Tt}
+`U`  ←  {Uu}
+`V`  ←  {Vv}
+`W`  ←  {Ww}
+`X`  ←  {Xx}
+`Y`  ←  {Yy}
+`Z`  ←  {Zz}
 ```
 
 
-### create\-table
+## Cat & Hand off to Vav
 
-I found dropping the `-state`, `-stmt`, `-statement` clarifying in the Lua
-grammar, so we do likewise here\.
-
-Espalier PEGs are emphatically case sensitive\.
-
-Another [straightfoward translation](https://www.sqlite.org/syntax/create-table-stmt.html) from the docs\.
-
-```peg
-create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
-                (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
-                ; add AS select... later!
-                "(" _ column-def _ ("," _ column-def _)* ")" _
-                table-options*
-
-schema-name  ←  name
- table-name  ←  name
-```
-
-
-#### column\_def
-
-[We continue](https://www.sqlite.org/syntax/column-constraint.html)
-
-```peg
- column-def  ←  column-name _ (type-name _)? (column-constraint _)*
-column-name  ←  name
-
-type-name <- (affinity _)+ fluff?
-
-`affinity` <-  blob-column
-           /  integer-column
-           /  text-column
-           /  real-column
-           /  numeric-column
-
-blob-column <- B L O B !follow-char
-
-integer-column <- (!int-affin lead-char)?
-                  (!int-affin follow-char)*
-                  int-affin follow-char*
-`int-affin` <- I N T
-
-text-column <- (!text-affin lead-char)?
-                  (!text-affin follow-char)*
-                  text-affin follow-char*
-`text-affin` <- C H A R / C L O B / T E X T
-
-real-column <- (!real-affin lead-char)?
-                  (!real-affin follow-char)*
-                  real-affin follow-char*
-`real-affin` <- R E A L / F L O A / D O U B
-
-numeric-column <- name
-
-
-; it's not fluff obviously but wtf even is this? it's a compatibility thing
-`fluff` <- "("_ signed-number _")"_
-        / "("_ signed-number _","_ signed-number _")"_
-
-
-column-constraint  ←  CONSTRAINT name _
-                   /  PRIMARY KEY (ASC / DESC)? conflict-clause AUTOINCREMENT?
-                   /  NOT NULL conflict-clause
-                   /  UNIQUE conflict-clause
-                   /  CHECK group-expr
-                   /  DEFAULT (group-expr / literal-value _ / signed-number _)
-                   /  COLLATE
-                   /  foreign-key-clause
-                   /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
-
-group-expr <- "(" _ expr _ ")" _ ; probably mute this one
-```
-
-
-#### table\_options
-
-```peg
-table-options <- (WITHOUT ROWID / STRICT) _","_
-```
-
-
-### SQLite start rule
-
-We're handing this off to Vav but it does need to have a leading start rule,
-so let's sketch that real quick:
-
-```peg
-sql <- (sql-statement _";"_)+
-
-; this is a long one which we fill in systematically
-sql-statement <- explain? ( create-table
-                          / alter-table )
-explain <- EXPLAIN (QUERY PLAN)?
-```
-
-### Whitespace
-
-Adding a `dent` rule costs nothing and helps when it helps\.
-
-```peg
-; we do the usual optional and not-optional
-`_`  ←  ws*
-`ws`  ←  (comment / dent / WS)+
-
-; tracking indentation can be useful
-`dent`  ←  "\n" (!"\n" WS)*
-
-; we want a one-byte whitespace-only
-; why \f and not \v? don't know!
-`WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
-
-`comment`  ←  line-comment / block-comment
-`line-comment`  ←  "--" (!"\n" 1)*
-`block-comment`  ←  "/*" (!"*/" 1)* ("*/" / -1)
-```
-
-
-### terminal class
-
-The class of bytes which terminates a keyword, allowing `not` to be
-distinguished from `note`\.
-
-```peg
-`t`  ←  &(glyph / WS / -1)
-`glyph`  ← {()[]!:#@!%^&*\"\'\\<>,./?|} / "{" / "}"
-```
-
-
-## OK now what
-
-Now to hand it to vav\!
-
-I'm exporting this as an array, like so\.
+  I'm writing this one in chunks for legibility, and on the off chance that
+some subset of the blocks might be useful to test before Vav gets
+sophisticated enough that it doesn't matter\.
 
 ```lua
 local sqlite_blocks = {
    sql_statement,
-   caseless_letters,
-   whitespace_rules,
-   terminal_rule,
+   create_table,
+   column_def,
+   column_table_constraints,
+   -- the 'lexer' rules
    name_rules,
    keyword_rules,
    keyword_rule,
-   create_table,
-   column_def,
-   table_options,
+   caseless_letters,
+   whitespace_rules,
+   terminal_rule,
 }
 ```
+
+But before we return this, there's a chunk of code for making all those
+keywords up top\.
+
+
+#### Codegen Block For Keywords
+
+The letter rules were easy to write with multiple cursors, the keywords are
+generated programmatically\.
+
+We even sort them so that "ROWID" will match before "ROW"\.
+
+In our algorithm, hitting CURRENT\_TIME will produce a brief cache miss, as the
+terminal rule `t` is checked and fails, which immediately raises the
+production CURRENT\_TIMESTAMP
+
+To make the keywords, we need to turn e\.g\. `AND` into `AND  ←  A N D t`, which
+we do like so\. We can reuse them, as is,
+
+The \#noKnit tag is the poor man's ifdef\!
+
+```lua
+-- first thing we do is sort these and print that
+
+local kwset = {"ABORT","ADD","AFTER","ALL","ALTER","ALWAYS","ANALYZE","AND",
+   "ASC","AS","ATTACH","AUTOINCREMENT","BEFORE","BEGIN","BETWEEN","BY",
+   "CASCADE","CASE","CAST","CHECK","COLLATE","COLUMN","COMMIT","CONFLICT",
+   "CONSTRAINT","CREATE","CROSS","CURRENT_DATE","CURRENT_TIMESTAMP",
+   "CURRENT_TIME","DATABASE","DEFAULT","DEFERRABLE","DEFERRED","DELETE",
+   "DESC","DETACH","DISTINCT","DROP","EACH","ELSE","END","ESCAPE","EXCEPT",
+   "EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FOREIGN","FOR","FROM","FULL",
+   "GENERATED","GLOB","GROUP","HAVING","IF","IGNORE","IMMEDIATE","INDEX",
+   "INITIALLY","INNER","INSERT","INSTEAD","INTERSECT","INTO","IN","ISNULL",
+   "IS","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH","NATURAL","NOTNULL","NOT",
+   "NULL","OF","OFFSET","ON","ORDER","OR","OUTER","PLAN","PRAGMA","PRIMARY",
+   "QUERY","RAISE","REFERENCES","REGEXP","REINDEX","RENAME","RIGHT","REPLACE",
+   "RESTRICT","ROLLBACK","ROWID","ROW","SET","SELECT","STORED","STRICT",
+   "TABLE","TEMPORARY","TEMP","THEN","TO","TRANSACTION","TRIGGER","UNION",
+   "UNIQUE","UPDATE","USING","VACUUM","VALUES","VIEW","VIRTUAL","WHEN",
+   "WITHOUT","WHERE",}
+
+-- sort function being:
+local char, byte, sub = assert(string.char),
+                        assert(string.byte),
+                        assert(string.sub)
+
+local function pegsort(left, right)
+   local a, b = byte(left, 1), byte(right, 1)
+   if a < b then return true
+   elseif a > b then return false
+   else
+      local longer, shorter;
+      if #left > #right then
+         longer, shorter = left, right
+      else
+         longer, shorter = right, left
+      end
+      local sublong = sub(longer, 1, #shorter)
+      if sublong == shorter then
+         return longer == left
+      else
+         return left < right
+      end
+   end
+end
+
+table.sort(kwset, pegsort)
+
+
+-- I insist on justifying the arrows, so we make padding:
+local longest = 0
+for _, kw in ipairs(kwset) do
+   longest = #kw > longest and #kw or longest
+end
+
+-- make the rules
+local insert, concat = assert(table.insert), assert(table.concat)
+
+local poggers = {}
+
+for i, keyword in ipairs(kwset) do
+   local pad = (" "):rep(longest - #keyword + 3)
+   local rule = {pad, keyword, "  ←  "}
+   for i = 1, #keyword do
+      local chomp = char(byte(keyword,i))
+      if chomp == "_" then
+         -- wrap this one as a literal
+         insert(rule, '"_"')
+      else
+         insert(rule, chomp)
+      end
+      insert(rule, " ")
+   end
+   insert(rule, "t _")
+   poggers[i] = concat(rule)
+end
+
+-- now the keyword rule
+
+local head     =   " keyword  ←  ((  "
+local div_pad  = "\n             /  "
+local div = " / "
+local WID = 78
+
+local wide = #head
+
+local champ = {head}
+local footer = " ))\n"
+
+local no_div = true
+-- awful hack to work around bad original parser!
+local count = 0
+for i, kw in ipairs(kwset) do
+   count = count + 1
+   local div = div
+   if count == 20 then
+      div = ") / ("
+      count = 1
+   end
+   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
+   if next_w <= WID then
+      if no_div then
+         no_div = false
+      else
+        insert(champ, div)
+        wide = wide + #div
+      end
+   else
+      insert(champ, div_pad)
+      wide = #div_pad - 1 -- because the newline isn't width
+   end
+   insert(champ, kw)
+   wide = wide + #kw
+end
+
+insert(champ, footer)
+
+
+-- last but not least! let's pretty print kwargs:
+
+local kw_pr = {"local kwset = {"}
+local wide = #kw_pr[1]
+for i, kw in ipairs(kwset) do
+    local tok = '"' .. kw .. '",'
+    local next_w = wide + #tok
+    if next_w <= WID then
+      insert(kw_pr, tok)
+      wide = next_w
+   else
+      insert(kw_pr, "\n   ")
+      insert(kw_pr, tok)
+      wide = #tok + 3
+   end
+end
+insert(kw_pr, "}\n\n")
+
+
+-- print the rules
+print(concat(poggers, "\n"))
+print(concat(champ))
+print(concat(kw_pr))
+```
+
+
+#### Off we go
 
 ```lua
 return {table.concat(sqlite_blocks, "\n\n"), blocks = sqlite_blocks}

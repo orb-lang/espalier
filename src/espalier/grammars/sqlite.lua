@@ -10,38 +10,34 @@
 
 
 
+local sql_statement = [[
+          sql  ←  (sql-statement _ semi _)+
 
+sql-statement  ←  explain? ( alter-table
+                           / analyze
+                           / attach
+                           / begin
+                           / commit
+                           / create-index
+                           / create-table
+                           / create-trigger
+                           / create-view
+                           / create-virtual-table
+                           / delete
+                           / detach
+                           / drop
+                           / insert
+                           / pragma
+                           / reindex
+                           / release
+                           / rollback
+                           / savepoint
+                           / select
+                           / update
+                           / vacuum )
+       `semi`  ←  ";" / -1
 
-
-
-
-local caseless_letters = [[
-`A`  ←  {Aa}
-`B`  ←  {Bb}
-`C`  ←  {Cc}
-`D`  ←  {Dd}
-`E`  ←  {Ee}
-`F`  ←  {Ff}
-`G`  ←  {Gg}
-`H`  ←  {Hh}
-`I`  ←  {Ii}
-`J`  ←  {Ji}
-`K`  ←  {Kk}
-`L`  ←  {Ll}
-`M`  ←  {Mm}
-`N`  ←  {Nn}
-`O`  ←  {Oo}
-`P`  ←  {Pp}
-`Q`  ←  {Qq}
-`R`  ←  {Rr}
-`S`  ←  {Ss}
-`T`  ←  {Tt}
-`U`  ←  {Uu}
-`V`  ←  {Vv}
-`W`  ←  {Ww}
-`X`  ←  {Xx}
-`Y`  ←  {Yy}
-`Z`  ←  {Zz}
+explain  ←  EXPLAIN (QUERY PLAN)?
 ]]
 
 
@@ -58,7 +54,20 @@ local caseless_letters = [[
 
 
 
+local create_table = [[
+create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
+                 (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
+                 ; add AS select... later!
+                 "(" _ column-def
+                 ("," _ column-def)*
+                 "," _ column-constraint* ")" _
+                table-options*
 
+  schema-name  ←  name
+   table-name  ←  name
+table-options  ←  t-opt ("," _  t-opt)*
+      `t-opt`  ←  (WITHOUT ROWID / STRICT)
+]]
 
 
 
@@ -66,23 +75,74 @@ local caseless_letters = [[
 
 
 
+local column_def = [[
+ column-def  ←  column-name _ (type-name)? (column-constraint _)*
+column-name  ←  name
 
+  type-name  ←  (affinity _) fluff?
 
+    `affinity`  ←  blob-column
+                /  integer-column
+                /  text-column
+                /  real-column
+                /  numeric-column
 
+   blob-column  ←  B L O B !follow-char
 
+integer-column  ←  (!integer-word id _)* integer-word (_ id)*
+`integer-word`  ←  (!int-affin lead-char)?
+                   (!int-affin follow-char)*
+                   int-affin follow-char*
+   `int-affin`  ←  I N T
 
+   text-column  ←  (!text-word id _)* text-word (_ id)*
+   `text-word`  ←  (!text-affin lead-char)?
+                   (!text-affin follow-char)*
+                   text-affin follow-char*
+  `text-affin`  ←  C H A R / C L O B / T E X T
 
+   real-column  ←  (!real-word id _)* real-word (_ id)*
+   `real-word`  ←  (!real-affin lead-char)?
+                   (!real-affin follow-char)*
+                   real-affin follow-char*
+  `real-affin`  ←  R E A L / F L O A / D O U B
 
+numeric-column  ←  name
 
+; these have no actual semantic value in SQLite
+`fluff`  ←  "("_ signed-number _")"_
+         /  "("_ signed-number _","_ signed-number _")"_
+]]
 
 
 
 
+local column_table_constraints = [[
+column-constraint  ←  CONSTRAINT name _
+                   /  PRIMARY KEY (ASC / DESC)? conflict-clause AUTOINCREMENT?
+                   /  NOT NULL conflict-clause
+                   /  UNIQUE conflict-clause
+                   /  CHECK group-expr
+                   /  DEFAULT (group-expr / literal-value _ / signed-number _)
+                   /  COLLATE
+                   /  foreign-key-clause
+                   /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
 
+ table-constraint  ←  CONSTRAINT name _
+                   /  ( PRIMARY KEY
+                      / UNIQUE ) "(" _ indexed-columns ")" _ conflict-clause
+                   /  CHECK group-expr
+                   /  FOREIGN KEY "(" _ column-names ")" foreign-key-clause
 
+conflict-clause  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
+   `column-names`  ←  column-name _ ("," _ column-name _)*
+`indexed-columns`  ←  indexed-column ("," _ indexed-column)*
 
+indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
 
+group-expr  ←  "(" _ expr _ ")" _ ; probably mute this one
+]]
 
 
 
@@ -96,18 +156,43 @@ local caseless_letters = [[
 
 
 
+local name_rules = [[
+         name  ←  quoted / id
 
+     `quoted`  ←  '"' quote-name '"'
+               /  "[" quote-name "]"
+               /  "`" quote-name "`"
+            ;  /  "'" quote-name "'"
+         `id`  ←  (!keyword bare-name)
 
+  `bare-name`  ←  lead-char follow-char*
+  `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
+`follow-char`  ←  lead-char / [0-9] ; / deprecated-dollar
+   quote-name  ←  (!'"' 1)+
 
+; deprecated-dollar  ← "$"
+]]
 
 
 
 
 
 
+local whitespace_rules = [[
+  `_`  ←  ws*
+ `ws`  ←  (comment / dent / WS)+
 
+; tracking indentation can be useful
+`dent`  ←  "\n" (!"\n" WS)*
 
+; we want a one-byte whitespace-only
+; why \f and not \v? don't know!
+`WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
 
+`comment`  ←  line-comment / block-comment
+`line-comment`  ←  "--" (!"\n" 1)*
+`block-comment`  ←  "/*" (!"*/" 1)* ("*/" / -1)
+]]
 
 
 
@@ -115,99 +200,11 @@ local caseless_letters = [[
 
 
 
+local terminal_rule = [[
+`t`  ←  &(glyph / WS / -1)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+`glyph`  ← {()[]{~`!@#$%^&*_+=|\\;:\"\',<.>/?} / "}"
+]]
 
 
 
@@ -350,6 +347,9 @@ local keyword_rules = [[
 
 
 
+
+
+
 local keyword_rule = [[
  keyword  ←  ((  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
              /  ASC / AS / ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN
@@ -378,155 +378,33 @@ local keyword_rule = [[
 
 
 
-
-
-
-
-
-
-
-
-
-local name_rules = [[
-name <- quoted / keyword / bare-name
-
-  bare-name   <- lead-char follow-char*
-  lead-char <- [\x80-\xff] / [A-Z] / [a-z] / "_"
-follow-char <- lead-char / [0-9]
-     `quoted` <- '"' quote-name  '"'
-   quote-name <- (!'"' 1)+
-]]
-
-
-
-
-
-
-
-
-
-
-
-
-
-local create_table = [[
-create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
-                (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
-                ; add AS select... later!
-                "(" _ column-def _ ("," _ column-def _)* ")" _
-                table-options*
-
-schema-name  ←  name
- table-name  ←  name
-]]
-
-
-
-
-
-
-local column_def = [[
- column-def  ←  column-name _ (type-name _)? (column-constraint _)*
-column-name  ←  name
-
-type-name <- (affinity _)+ fluff?
-
-`affinity` <-  blob-column
-           /  integer-column
-           /  text-column
-           /  real-column
-           /  numeric-column
-
-blob-column <- B L O B !follow-char
-
-integer-column <- (!int-affin lead-char)?
-                  (!int-affin follow-char)*
-                  int-affin follow-char*
-`int-affin` <- I N T
-
-text-column <- (!text-affin lead-char)?
-                  (!text-affin follow-char)*
-                  text-affin follow-char*
-`text-affin` <- C H A R / C L O B / T E X T
-
-real-column <- (!real-affin lead-char)?
-                  (!real-affin follow-char)*
-                  real-affin follow-char*
-`real-affin` <- R E A L / F L O A / D O U B
-
-numeric-column <- name
-
-
-; it's not fluff obviously but wtf even is this? it's a compatibility thing
-`fluff` <- "("_ signed-number _")"_
-        / "("_ signed-number _","_ signed-number _")"_
-
-
-column-constraint  ←  CONSTRAINT name _
-                   /  PRIMARY KEY (ASC / DESC)? conflict-clause AUTOINCREMENT?
-                   /  NOT NULL conflict-clause
-                   /  UNIQUE conflict-clause
-                   /  CHECK group-expr
-                   /  DEFAULT (group-expr / literal-value _ / signed-number _)
-                   /  COLLATE
-                   /  foreign-key-clause
-                   /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
-
-group-expr <- "(" _ expr _ ")" _ ; probably mute this one
-]]
-
-
-
-
-local table_options = [[
-table-options <- (WITHOUT ROWID / STRICT) _","_
-]]
-
-
-
-
-
-
-
-local sql_statement = [[
-sql <- (sql-statement _";"_)+
-
-; this is a long one which we fill in systematically
-sql-statement <- explain? ( create-table
-                          / alter-table )
-explain <- EXPLAIN (QUERY PLAN)?
-]]
-
-
-
-
-
-local whitespace_rules = [[
-; we do the usual optional and not-optional
-`_`  ←  ws*
-`ws`  ←  (comment / dent / WS)+
-
-; tracking indentation can be useful
-`dent`  ←  "\n" (!"\n" WS)*
-
-; we want a one-byte whitespace-only
-; why \f and not \v? don't know!
-`WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
-
-`comment`  ←  line-comment / block-comment
-`line-comment`  ←  "--" (!"\n" 1)*
-`block-comment`  ←  "/*" (!"*/" 1)* ("*/" / -1)
-]]
-
-
-
-
-
-
-
-local terminal_rule = [[
-`t`  ←  &(glyph / WS / -1)
-`glyph`  ← {()[]!:#@!%^&*\"\'\\<>,./?|} / "{" / "}"
+local caseless_letters = [[
+`A`  ←  {Aa}
+`B`  ←  {Bb}
+`C`  ←  {Cc}
+`D`  ←  {Dd}
+`E`  ←  {Ee}
+`F`  ←  {Ff}
+`G`  ←  {Gg}
+`H`  ←  {Hh}
+`I`  ←  {Ii}
+`J`  ←  {Ji}
+`K`  ←  {Kk}
+`L`  ←  {Ll}
+`M`  ←  {Mm}
+`N`  ←  {Nn}
+`O`  ←  {Oo}
+`P`  ←  {Pp}
+`Q`  ←  {Qq}
+`R`  ←  {Rr}
+`S`  ←  {Ss}
+`T`  ←  {Tt}
+`U`  ←  {Uu}
+`V`  ←  {Vv}
+`W`  ←  {Ww}
+`X`  ←  {Xx}
+`Y`  ←  {Yy}
+`Z`  ←  {Zz}
 ]]
 
 
@@ -539,16 +417,182 @@ local terminal_rule = [[
 
 local sqlite_blocks = {
    sql_statement,
-   caseless_letters,
-   whitespace_rules,
-   terminal_rule,
+   create_table,
+   column_def,
+   column_table_constraints,
+   -- the 'lexer' rules
    name_rules,
    keyword_rules,
    keyword_rule,
-   create_table,
-   column_def,
-   table_options,
+   caseless_letters,
+   whitespace_rules,
+   terminal_rule,
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
