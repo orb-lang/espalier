@@ -182,6 +182,47 @@ foreign-key-clause  ←  REFERENCES table-name ("("_ column-names ")"_)?
 
 
 
+
+local expression = [[
+ ;; expr-compound comes first but written after basic viability is demostrated
+expr  ←  expr-atom
+`expr-atom`  ←  literal-value
+             / bind-parameter
+             /  CAST "("_ expr AS type-name _")"
+             /  NOT EXISTS "("_ select ")"
+             ; / CASE is complex
+             / function-expr
+             / raise-function
+
+function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
+                  filter-clause? over-clause?
+
+; lists are usually lifted, so this one most likely shall be as well
+expr-list  ←  expr (_","_ expr)*
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local name_rules = [[
          name  ←  quoted / id
 
@@ -204,7 +245,6 @@ local name_rules = [[
 
 
 local literal_rules = [[
- ; I don't know why signed-number isn't in literal-value but I trust Richard
 literal-value  ←  number / string / blob / NULL / TRUE / FALSE
                   / CURRENT_TIMESTAMP / CURRENT_TIME / CURRENT_DATE
 signed-number  ←  {+-}? number
@@ -429,6 +469,7 @@ local keyword_rule = [[
 
 
 
+
 local caseless_letters = [[
 `A`  ←  {Aa}
 `B`  ←  {Bb}
@@ -472,6 +513,7 @@ local sqlite_blocks = {
    column_def,
    column_table_constraints,
    foreign_key_clause,
+   --expression,
    -- the 'lexer' rules
    literal_rules,
    name_rules,
@@ -580,6 +622,32 @@ for i, keyword in ipairs(kwset) do
 end
 
 -- now the keyword rule
+-- which we're going to build the optimal search structure: a trie.
+local trie = {}
+local push = table.insert
+
+local function makeTrie(_trie, kw_set)
+   for i, keyword in ipairs(kw_set) do
+      if keyword ~= "" then
+         local head, body = sub(keyword, 1, 1), sub(keyword, 2)
+         if body ~= "" then
+            local sub_trie = _trie[head] or {}
+            push(sub_trie, body)
+            _trie[head] = sub_trie
+         end
+      end
+   end
+   ---[[ recursion next!
+   for head, bodies in pairs(_trie) do
+      _trie[head] = makeTrie(_trie[head], bodies)
+   end
+   --]]
+
+end
+
+makeTrie(trie, kwset)
+
+print(require "repr:repr" .ts_color(trie))
 
 local head     =   " keyword  ←  ((  "
 local div_pad  = "\n             /  "

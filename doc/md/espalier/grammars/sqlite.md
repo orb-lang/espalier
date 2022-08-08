@@ -159,6 +159,45 @@ foreign-key-clause  ←  REFERENCES table-name ("("_ column-names ")"_)?
 ```
 
 
+### Expressions
+
+As with the Lua parser, and any other complex\-precedence parser, we concern
+ourselves in the grammar with recognition\.  The correct tree shape is built
+by the usual suspects\.
+
+
+#### Angle of Attack
+
+  The railroad diagram which is our [source of truth](https://www.sqlite.org/lang_expr.html) is heavily left\-
+recursive, which we can't do\.  It should flow nicely once we separate out the
+cursor\-advancing rules from the recursive case\.
+
+It is almost inordinately complex and has no hope of being correct, outside of
+the favored cases, without a test corpus\.
+
+A brief and somewhat cross\-eyed perusal of the test directory of SQLite
+suggests some hope of merely generating, rather than generating and excecuting,
+some subset of the queries\.
+
+```peg
+ ;; expr-compound comes first but written after basic viability is demostrated
+expr  ←  expr-atom
+`expr-atom`  ←  literal-value
+             / bind-parameter
+             /  CAST "("_ expr AS type-name _")"
+             /  NOT EXISTS "("_ select ")"
+             ; / CASE is complex
+             / function-expr
+             / raise-function
+
+function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
+                  filter-clause? over-clause?
+
+; lists are usually lifted, so this one most likely shall be as well
+expr-list  ←  expr (_","_ expr)*
+```
+
+
 
 ### Tokens
 
@@ -202,7 +241,6 @@ Sources\[\{\*\}\]\[\{\*\*\}\]:
 ### literals
 
 ```peg
- ; I don't know why signed-number isn't in literal-value but I trust Richard
 literal-value  ←  number / string / blob / NULL / TRUE / FALSE
                   / CURRENT_TIMESTAMP / CURRENT_TIME / CURRENT_DATE
 signed-number  ←  {+-}? number
@@ -257,7 +295,7 @@ peg
 
 We get to do a whole small song\-and\-dance to make case\-insensitive keywords\.
 
-This is generated automatically from a block at the bottom of the document\.
+This is generated programmatically from a block at the bottom of the document\.
 
 We include trailing whitespace in keywords since the meaning is printed on the
 label, and it avoids dribbling `_` all over the grammr\.
@@ -425,7 +463,8 @@ left\-leaning choice\.
 
 SQL bEiNg WhAt It iS, we need a rule `A` etc which matches both ASCII forms\.
 
-No one would call this pretty, but it's correct and legible\.
+The result: Every uppercase letter is a rule matching either the upper\- or
+lower\-case form\.
 
 ```peg
 `A`  ←  {Aa}
@@ -470,6 +509,7 @@ local sqlite_blocks = {
    column_def,
    column_table_constraints,
    foreign_key_clause,
+   --expression,
    -- the 'lexer' rules
    literal_rules,
    name_rules,
@@ -578,6 +618,32 @@ for i, keyword in ipairs(kwset) do
 end
 
 -- now the keyword rule
+-- which we're going to build the optimal search structure: a trie.
+local trie = {}
+local push = table.insert
+
+local function makeTrie(_trie, kw_set)
+   for i, keyword in ipairs(kw_set) do
+      if keyword ~= "" then
+         local head, body = sub(keyword, 1, 1), sub(keyword, 2)
+         if body ~= "" then
+            local sub_trie = _trie[head] or {}
+            push(sub_trie, body)
+            _trie[head] = sub_trie
+         end
+      end
+   end
+   ---[[ recursion next!
+   for head, bodies in pairs(_trie) do
+      _trie[head] = makeTrie(_trie[head], bodies)
+   end
+   --]]
+
+end
+
+makeTrie(trie, kwset)
+
+print(require "repr:repr" .ts_color(trie))
 
 local head     =   " keyword  ←  ((  "
 local div_pad  = "\n             /  "
