@@ -57,12 +57,11 @@ Another [[straightfoward translation]§] from the docs.
 #!peg @create_table #asLua
 create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
                  (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
-                 ; add AS select... later!
-                 ( AS select
-                 / "(" _ column-def
-                   ("," _ column-def)*
-                   "," _ column-constraint* ")" _
-                   table-options* )
+                 ( AS select /
+                    "(" _ column-def
+                    ("," _ column-def)*
+                    ("," _ column-constraint+ )* ")" _
+                    table-options* )
 
   schema-name  ←  name
    table-name  ←  name
@@ -125,24 +124,40 @@ column-constraint  ←  CONSTRAINT name _
                    /  UNIQUE conflict-clause
                    /  CHECK group-expr
                    /  DEFAULT (group-expr / literal-value _ / signed-number _)
-                   /  COLLATE
+                   /  COLLATE collation-name
                    /  foreign-key-clause
                    /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
 
  table-constraint  ←  CONSTRAINT name _
                    /  ( PRIMARY KEY
-                      / UNIQUE ) "(" _ indexed-columns ")" _ conflict-clause
+                      / UNIQUE ) "("_ indexed-columns ")"_ conflict-clause
                    /  CHECK group-expr
-                   /  FOREIGN KEY "(" _ column-names ")" foreign-key-clause
+                   /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
 
 conflict-clause  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
-   `column-names`  ←  column-name _ ("," _ column-name _)*
-`indexed-columns`  ←  indexed-column ("," _ indexed-column)*
+   `column-names`  ←  column-name _ (","_ column-name _)*
+`indexed-columns`  ←  indexed-column (","_ indexed-column)*
 
 indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
 
-group-expr  ←  "(" _ expr _ ")" _ ; probably mute this one
+    group-expr  ←  "("_ expr _ ")"_ ; probably mute this one
+#/peg
+
+
+**** Foreign Key Clause
+
+#!peg @foreign_key_clause #asLua
+foreign-key-clause  ←  REFERENCES table-name ("("_ column-names ")"_)?
+                       fk-on-clause*
+                       (NOT? DEFERRABLE (INITIALLY (DEFERRED / IMMEDIATE))?)?
+
+    `fk-on-clause`  ←  (ON (DELETE / UPDATE)
+                           ( SET (NULL / DEFAULT)
+                           / CASCADE
+                           / RESTRICT
+                           / NO ACTION ))
+                    /  MATCH name _
 #/peg
 
 
@@ -168,10 +183,33 @@ Sources[{*}][{**}]:
 
   `bare-name`  ←  lead-char follow-char*
   `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
-`follow-char`  ←  lead-char / [0-9] ; / deprecated-dollar
+`follow-char`  ←  lead-char / [0-9]  / "$" ; deprecated-dollar
    quote-name  ←  (!'"' 1)+
 
 ; deprecated-dollar  ← "$"
+#/peg
+
+
+*** literals
+
+#!peg @literal_rules #asLua
+ ; I don't know why signed-number isn't in literal-value but I trust Richard
+literal-value  ←  number / string / blob / NULL / TRUE / FALSE
+                  / CURRENT_TIMESTAMP / CURRENT_TIME / CURRENT_DATE
+signed-number  ←  {+-}? number
+
+       number  ←  real /  hex / integer
+
+       `real`  ←  (integer ("." integer)*) / ("." integer)
+                  (("e" / "E") "-"? integer)?
+        `hex`  ←  "0" {Xx} higit+ ("." higit*)?
+    `integer`  ←  digit+
+
+      `digit`  ←  [0-9]
+      `higit`  ←  digit / [a-f] / [A-F]
+
+       string  ←  "'" ((!"'" 1) / "''") "'"
+         blob  ←  {xX} "'" higit* "'"
 #/peg
 
 
@@ -186,7 +224,7 @@ Adding a =dent= rule costs nothing and helps when it helps.
 ; tracking indentation can be useful
 `dent`  ←  "\n" (!"\n" WS)*
 
-; we want a one-byte whitespace-only
+; whitespace token rule, defined in hex as in the documentation
 ; why \f and not \v? don't know!
 `WS`  ←  {\x09\x0a\x0c\x0d\x20} ; {\t\n\f\r }
 
@@ -196,15 +234,12 @@ Adding a =dent= rule costs nothing and helps when it helps.
 #/peg
 
 
-*** terminal class
+*** terminal rule
 
-The class of bytes which terminates a keyword, allowing =not= to be
-distinguished from =note=.
+This lets us distinguish the keyword =create= from the identifier =creative=.
 
 #!peg @terminal_rule #asLua
-`t`  ←  &(glyph / WS / -1)
-
-`glyph`  ← {()[]{~`!@#$%^&*_+=|\\;:\"\',<.>/?} / "}"
+`t`  ←  !follow-char
 #/peg
 peg
 
@@ -421,7 +456,9 @@ local sqlite_blocks = {
    create_table,
    column_def,
    column_table_constraints,
+   foreign_key_clause,
    -- the 'lexer' rules
+   literal_rules,
    name_rules,
    keyword_rules,
    keyword_rule,
