@@ -5,6 +5,14 @@
 Language\.
 
 
+#### imports
+
+```lua
+local core, cluster = use("qor:core", "cluster:cluster")
+local table, string = core.table, core.string
+```
+
+
 ### SQLite start rule
 
   A collection of one or more SQL statements, separated by a semicolon\.  The
@@ -437,39 +445,110 @@ It doesn't have to look this hideous but the legacy PEG parser has
 left\-leaning choice\.
 
 ```peg
-keyword  ←   B (E (T W E E N / F O R E / G I N ) )
-             / J O I N
-             / D (I S T I N C T / R O P / A T A B A S E / E (T A C H / F (A
-             U L T / E (R (R (A B L E / E D ) ) ) ) / L E T E / S C ) )
-             / L (I (K E / M I T ) / E F T )
-             / E (X (I S T S / C (L U S I V E / E P T ) / P L A I N ) / S
-             C A P E / N D / L S E / A C H )
-             / T (R (I G G E R / A N S A C T I O N / U E ) / H E N / A B L E
-             / E (M (P O R A R Y ) ) )
-             / M A T C H
-             / N (O (T N U L L ) / A T U R A L / U L L )
-             / G (R O U P / L O B / E N E R A T E D )
-             / O (R D E R / F F S E T / U T E R )
-             / W (I T H O U T / H (E (R E ) ) )
-             / K E Y
+keyword  ←  ( A ( B O R T
+                   / C T I O N
+                   / D D
+                   / F T E R
+                   / L ( T E R
+                       / W A Y S )
+                   / N A L Y Z E
+                   / S C
+                   / T T A C H
+                   / U T O I N C R E M E N T )
+            / B E ( F O R E
+                   / G I N
+                   / T W E E N )
+             / C ( A S C A D E
+                 / H E C K
+                 / O ( L ( L A T E
+                         / U M N )
+                     / M M I T
+                     / N ( F L I C T
+                         / S T R A I N T ) )
+                 / R ( E A T E
+                     / O S S )
+                 / U R R E N T "_" ( D A T E
+                                   / T I M E S T A M P ) )
+             / D ( A T A B A S E
+                 / E ( F ( A U L T
+                         / E R R ( A B L E
+                                 / E D ) )
+                     / L E T E
+                     / S C
+                     / T A C H )
+                 / I S T I N C T
+                 / R O P )
+             / E ( A C H
+                 / L S E
+                 / N D
+                 / S C A P E
+                 / X ( C ( E P T
+                         / L U S I V E )
+                     / I S T S
+                     / P L A I N ) )
+             / F ( A ( I L
+                     / L S E )
+                 / O R E I G N
+                 / R O M
+                 / U L L )
+             / G ( E N E R A T E D
+                 / L O B
+                 / R O U P )
              / H A V I N G
-             / A (B O R T / S C / D D / L (T E R / W A Y S ) / T T A C H / F
-             T E R / N (A L Y Z E ) / C T I O N / U T O I N C R E M E N T )
-             / P (L A N / R (A G M A / I M A R Y ) )
-             / I (G N O R E / M M E D I A T E / S N U L L / N (I T I A L L Y
-             / S (T E A D / E R T ) / N E R / D E X / T (E R S E C T ) ) )
-             / F (R O M / O (R E I G N ) / A (I L / L S E ) / U L L )
+             / I ( G N O R E
+                 / M M E D I A T E
+                 / N ( D E X
+                     / I T I A L L Y
+                     / N E R
+                     / S ( E R T
+                         / T E A D )
+                     / T E R S E C T )
+                 / S N U L L )
+             / J O I N
+             / K E Y
+             / L ( E F T
+                 / I ( K E
+                     / M I T ) )
+             / M A T C H
+             / N ( A T U R A L
+                 / O T N U L L
+                 / U L L )
+             / O ( F F S E T
+                 / R D E R
+                 / U T E R )
+             / P ( L A N
+                 / R ( A G M A
+                     / I M A R Y ) )
              / Q U E R Y
-             / U (P D A T E / S I N G / N (I (Q U E / O N ) ) )
-             / S (T (R I C T / O R E D ) / E (L E C T ) )
-             / V (A (C U U M / L U E S ) / I (R T U A L / E W ) )
-             / C (O (M M I T / L (L A T E / U M N ) / N (S T R A I N T / F
-             L I C T ) ) / U (R (R (E (N (T (_ (D A T E / T (I (M (E
-             S T A M P ) ) ) ) ) ) ) ) ) ) / R (E A T E / O S S ) / H E C K
-             / A (S (C A D E ) ) )
-             / R (I G H T / O (L L B A C K / W I D ) / A I S E / E (I
-             N D E X / F E R E N C E S / S T R I C T / N A M E / G E X P / P
-             L A C E ) ) t
+             / R ( A I S E
+                 / E ( F E R E N C E S
+                     / G E X P
+                     / I N D E X
+                     / N A M E
+                     / P L A C E
+                     / S T R I C T )
+                 / I G H T
+                 / O ( L L B A C K
+                     / W I D ) )
+             / S ( E L E C T
+                 / T ( O R E D
+                     / R I C T ) )
+             / T ( A B L E
+                 / E M P O R A R Y
+                 / H E N
+                 / R ( A N S A C T I O N
+                     / I G G E R
+                     / U E ) )
+             / U ( N I ( O N
+                       / Q U E )
+                 / P D A T E
+                 / S I N G )
+             / V ( A ( C U U M
+                     / L U E S )
+                 / I ( E W
+                     / R T U A L ) )
+             / W ( H E R E
+                 / I T H O U T ) ) t
 ```
 
 
@@ -528,7 +607,7 @@ local sqlite_blocks = {
    literal_rules,
    name_rules,
    keyword_rules,
-   keyword_rule,
+   --keyword_rule,
    caseless_letters,
    whitespace_rules,
    terminal_rule,
@@ -639,7 +718,7 @@ end
 
 -- now the keyword rule
 -- we're going to build the optimal search structure: a trie.
-local push = table.insert
+local push, pop = table.insert, table.remove
 
 local function makeTrie(kw_set)
    local trie, suffix = {}, {}
@@ -672,44 +751,50 @@ local trie = makeTrie(kwset)
 
 -- but first we must print it /correctly/
 
-local head     =   " keyword  ←   "
-local div_pad  = "\n             /  "
-local div = " / "
-local sub_div = "/ ( "
+local head     =   " keyword  ←  ( "
 local WID = 78
 
-local wide = #head
+local wide = #head - 2
 
 local treezus = {head}
 
-local pad = "\n             "
-
-local function addTok(...)
-   for i = 1, select('#', ...) do
-      local token = select(i, ...)
-      local len = wide + #token
-      if len >= WID then
-         push(treezus, pad)
-         push(treezus, token)
-         wide = #pad + #token - 1
-      else
-         push(treezus, token)
-         wide = len
-      end
-   end
-end
+local tab_stop = {#head - 7}
 
 local nkeys = table.nkeys
 
+local function newLine()
+   push(treezus, "\n")
+   local stops = tab_stop[#tab_stop]
+   push(treezus, (" "):rep(stops))
+   wide = stops
+end
+
+local function addTok(...)
+    for i = 1, select('#', ...) do
+       local token = select(i, ...)
+       local len = wide + #token
+       if len >= WID then
+          push(treezus, pad)
+          push(treezus, token)
+          wide = #pad + #token - 1
+       else
+          push(treezus, token)
+          wide = len
+       end
+    end
+ end
+
+local sortedpairs = assert(table.sortedpairs)
+
 local function rulify(trie, outer)
    local slash = false
-   for letter, tail in pairs(trie) do
+   for letter, tail in sortedpairs(trie) do
+      if letter == "_" then
+         letter = '"_"'
+      end
       if slash then
-         if outer then
-            WID = 1 -- ugly!
-         end
+         newLine()
          addTok("/ ")
-         WID = 78
       else
          slash = true
       end
@@ -719,52 +804,22 @@ local function rulify(trie, outer)
          addTok(letter, " ")
          local split = nkeys(tail) > 1
          if split then
-            addTok("(")
+            addTok("( ")
+            push(tab_stop, wide - 2)
          end
          rulify(tail)
          if split then
             addTok(") ")
-         else
-            addTok(" ")
+            pop(tab_stop)
          end
       end
    end
 end
 
 rulify(trie, true)
+insert(treezus, ") t")
 
 print(concat(treezus))
-
-local champ = {head}
-local footer = " ))\n"
-
-local no_div = true
--- awful hack to work around bad original parser!
-local count = 0
-for i, kw in ipairs(kwset) do
-   count = count + 1
-   local div = div
-   if count == 20 then
-      div = ") / ("
-      count = 1
-   end
-   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
-   if next_w <= WID then
-      if no_div then
-         no_div = false
-      else
-        insert(champ, div)
-        wide = wide + #div
-      end
-   else
-      insert(champ, div_pad)
-      wide = #div_pad - 1 -- because the newline isn't width
-   end
-   insert(champ, kw)
-   wide = wide + #kw
-end
-
-insert(champ, footer)
 
 
 -- last but not least! let's pretty print kwargs:
