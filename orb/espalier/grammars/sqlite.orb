@@ -11,30 +11,30 @@ Language.
 end of the file is considered a valid semicolon.
 
 #!peg @sql_statement #asLua
-          sql  ←  (sql-statement _ semi _)+
+          sql  ←  _ (statement _ semi _)+
 
-sql-statement  ←  explain? ( alter-table
-                           / analyze
-                           / attach
-                           / begin
-                           / commit
-                           / create-index
-                           / create-table
-                           / create-trigger
-                           / create-view
-                           / create-virtual-table
-                           / delete
-                           / detach
-                           / drop
-                           / insert
-                           / pragma
-                           / reindex
-                           / release
-                           / rollback
-                           / savepoint
-                           / select
-                           / update
-                           / vacuum )
+`statement`  ←  explain? ( alter-table
+                         / analyze
+                         / attach
+                         / begin
+                         / commit
+                         / create-index
+                         / create-table
+                         / create-trigger
+                         / create-view
+                         / create-virtual-table
+                         / delete
+                         / detach
+                         / drop
+                         / insert
+                         / pragma
+                         / reindex
+                         / release
+                         / rollback
+                         / savepoint
+                         / select
+                         / update
+                         / vacuum )
        `semi`  ←  ";" / -1
 
 explain  ←  EXPLAIN (QUERY PLAN)?
@@ -134,7 +134,7 @@ column-constraint  ←  CONSTRAINT name _
                    /  CHECK group-expr
                    /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
 
-conflict-clause  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
+`conflict-clause`  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
    `column-names`  ←  column-name _ (","_ column-name _)*
 `indexed-columns`  ←  indexed-column (","_ indexed-column)*
@@ -159,6 +159,16 @@ foreign-key-clause  ←  REFERENCES table-name ("("_ column-names ")"_)?
                            / NO ACTION ))
                     /  MATCH name _
 #/peg
+
+
+
+*** Tokens
+
+  The specification is designed around a separate lexing pass, as is
+nigh-universal.
+
+It should be tractable to order the rules in this section such that a lexer is
+the result, if that should prove useful for whatever reason.
 
 
 **** name
@@ -188,6 +198,7 @@ Sources[{*}][{**}]:
 
 ; deprecated-dollar  ← "$"
 #/peg
+
 
 
 *** literals
@@ -255,6 +266,7 @@ label, and it avoids dribbling =_= all over the grammr.
 
 #!peg @keyword_rules #asLua
                ABORT  ←  A B O R T t _
+              ACTION  ←  A C T I O N t _
                  ADD  ←  A D D t _
                AFTER  ←  A F T E R t _
                  ALL  ←  A L L t _
@@ -302,6 +314,7 @@ label, and it avoids dribbling =_= all over the grammr.
               EXISTS  ←  E X I S T S t _
              EXPLAIN  ←  E X P L A I N t _
                 FAIL  ←  F A I L t _
+               FALSE  ←  F A L S E t _
              FOREIGN  ←  F O R E I G N t _
                  FOR  ←  F O R t _
                 FROM  ←  F R O M t _
@@ -332,9 +345,10 @@ label, and it avoids dribbling =_= all over the grammr.
              NATURAL  ←  N A T U R A L t _
              NOTNULL  ←  N O T N U L L t _
                  NOT  ←  N O T t _
+                  NO  ←  N O t _
                 NULL  ←  N U L L t _
-                  OF  ←  O F t _
               OFFSET  ←  O F F S E T t _
+                  OF  ←  O F t _
                   ON  ←  O N t _
                ORDER  ←  O R D E R t _
                   OR  ←  O R t _
@@ -343,19 +357,19 @@ label, and it avoids dribbling =_= all over the grammr.
               PRAGMA  ←  P R A G M A t _
              PRIMARY  ←  P R I M A R Y t _
                QUERY  ←  Q U E R Y t _
-               RAISE  ←  R A I S E t _
           REFERENCES  ←  R E F E R E N C E S t _
+               RAISE  ←  R A I S E t _
               REGEXP  ←  R E G E X P t _
              REINDEX  ←  R E I N D E X t _
               RENAME  ←  R E N A M E t _
-               RIGHT  ←  R I G H T t _
              REPLACE  ←  R E P L A C E t _
             RESTRICT  ←  R E S T R I C T t _
+               RIGHT  ←  R I G H T t _
             ROLLBACK  ←  R O L L B A C K t _
                ROWID  ←  R O W I D t _
                  ROW  ←  R O W t _
-                 SET  ←  S E T t _
               SELECT  ←  S E L E C T t _
+                 SET  ←  S E T t _
               STORED  ←  S T O R E D t _
               STRICT  ←  S T R I C T t _
                TABLE  ←  T A B L E t _
@@ -365,6 +379,7 @@ label, and it avoids dribbling =_= all over the grammr.
                   TO  ←  T O t _
          TRANSACTION  ←  T R A N S A C T I O N t _
              TRIGGER  ←  T R I G G E R t _
+                TRUE  ←  T R U E t _
                UNION  ←  U N I O N t _
               UNIQUE  ←  U N I Q U E t _
               UPDATE  ←  U P D A T E t _
@@ -374,10 +389,9 @@ label, and it avoids dribbling =_= all over the grammr.
                 VIEW  ←  V I E W t _
              VIRTUAL  ←  V I R T U A L t _
                 WHEN  ←  W H E N t _
-             WITHOUT  ←  W I T H O U T t _
                WHERE  ←  W H E R E t _
+             WITHOUT  ←  W I T H O U T t _
 #/peg
-
 
 **** Keyword Rule
 
@@ -387,24 +401,25 @@ It doesn't have to look this hideous but the legacy PEG parser has
 left-leaning choice.
 
 #!peg @keyword_rule #asLua
- keyword  ←  ((  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
-             /  ASC / AS / ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN
-             /  BY / CASCADE / CASE / CAST) / (CHECK / COLLATE / COLUMN
-             /  COMMIT / CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
-             /  CURRENT_TIMESTAMP / CURRENT_TIME / DATABASE / DEFAULT
-             /  DEFERRABLE / DEFERRED / DELETE / DESC / DETACH / DISTINCT
-             /  DROP / EACH / ELSE / END / ESCAPE / EXCEPT / EXCLUSIVE
-             /  EXISTS / EXPLAIN / FAIL / FOREIGN / FOR / FROM / FULL
-             /  GENERATED / GLOB / GROUP / HAVING / IF) / (IGNORE / IMMEDIATE
-             /  INDEX / INITIALLY / INNER / INSERT / INSTEAD / INTERSECT
-             /  INTO / IN / ISNULL / IS / JOIN / KEY / LEFT / LIKE / LIMIT
-             /  MATCH / NATURAL) / (NOTNULL / NOT / NULL / OFFSET / OF / ON
-             /  ORDER / OR / OUTER / PLAN / PRAGMA / PRIMARY / QUERY / RAISE
-             /  REFERENCES / REGEXP / REINDEX / RENAME / REPLACE) / (ROLLBACK
-             /  RESTRICT / RIGHT / ROWID / ROW / SELECT / SET / STORED
-             /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
-             /  TRIGGER / UNION / UNIQUE / UPDATE) / (USING / VACUUM / VALUES
-             /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT ))
+ keyword  ←  ((  ABORT / ACTION / ADD / AFTER / ALL / ALTER / ALWAYS
+             /  ANALYZE / AND / ASC / AS / ATTACH / AUTOINCREMENT / BEFORE
+             /  BEGIN / BETWEEN / BY / CASCADE / CASE) / (CAST / CHECK
+             /  COLLATE / COLUMN / COMMIT / CONFLICT / CONSTRAINT / CREATE
+             /  CROSS / CURRENT_DATE / CURRENT_TIMESTAMP / CURRENT_TIME
+             /  DATABASE / DEFAULT / DEFERRABLE / DEFERRED / DELETE / DESC
+             /  DETACH) / (DISTINCT / DROP / EACH / ELSE / END / ESCAPE
+             /  EXCEPT / EXCLUSIVE / EXISTS / EXPLAIN / FAIL / FALSE / FOREIGN
+             /  FOR / FROM / FULL / GENERATED / GLOB / GROUP) / (HAVING / IF
+             /  IGNORE / IMMEDIATE / INDEX / INITIALLY / INNER / INSERT
+             /  INSTEAD / INTERSECT / INTO / IN / ISNULL / IS / JOIN / KEY
+             /  LEFT / LIKE / LIMIT) / (MATCH / NATURAL / NOTNULL / NOT / NO
+             /  NULL / OFFSET / OF / ON / ORDER / OR / OUTER / PLAN / PRAGMA
+             /  PRIMARY / QUERY / REFERENCES / RAISE / REGEXP) / (REINDEX
+             /  RENAME / REPLACE / RESTRICT / RIGHT / ROLLBACK / ROWID / ROW
+             /  SELECT / SET / STORED / STRICT / TABLE / TEMPORARY / TEMP
+             /  THEN / TO / TRANSACTION / TRIGGER) / (TRUE / UNION / UNIQUE
+             /  UPDATE / USING / VACUUM / VALUES / VIEW / VIRTUAL / WHEN
+             /  WHERE / WITHOUT ))
 #/peg
 
 
@@ -491,22 +506,22 @@ The #noKnit tag is the poor man's ifdef!
 #!lua #noKnit
 -- first thing we do is sort these and print that
 
-local kwset = {"ABORT","ADD","AFTER","ALL","ALTER","ALWAYS","ANALYZE","AND",
-   "ASC","AS","ATTACH","AUTOINCREMENT","BEFORE","BEGIN","BETWEEN","BY",
-   "CASCADE","CASE","CAST","CHECK","COLLATE","COLUMN","COMMIT","CONFLICT",
-   "CONSTRAINT","CREATE","CROSS","CURRENT_DATE","CURRENT_TIMESTAMP",
-   "CURRENT_TIME","DATABASE","DEFAULT","DEFERRABLE","DEFERRED","DELETE",
-   "DESC","DETACH","DISTINCT","DROP","EACH","ELSE","END","ESCAPE","EXCEPT",
-   "EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FOREIGN","FOR","FROM","FULL",
-   "GENERATED","GLOB","GROUP","HAVING","IF","IGNORE","IMMEDIATE","INDEX",
-   "INITIALLY","INNER","INSERT","INSTEAD","INTERSECT","INTO","IN","ISNULL",
-   "IS","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH","NATURAL","NOTNULL","NOT",
-   "NULL","OF","OFFSET","ON","ORDER","OR","OUTER","PLAN","PRAGMA","PRIMARY",
-   "QUERY","RAISE","REFERENCES","REGEXP","REINDEX","RENAME","RIGHT","REPLACE",
-   "RESTRICT","ROLLBACK","ROWID","ROW","SET","SELECT","STORED","STRICT",
-   "TABLE","TEMPORARY","TEMP","THEN","TO","TRANSACTION","TRIGGER","UNION",
-   "UNIQUE","UPDATE","USING","VACUUM","VALUES","VIEW","VIRTUAL","WHEN",
-   "WITHOUT","WHERE",}
+local kwset = {"ABORT","ACTION","ADD","AFTER","ALL","ALTER","ALWAYS",
+   "ANALYZE","AND","ASC","AS","ATTACH","BEFORE","AUTOINCREMENT","BEGIN",
+   "BETWEEN","BY","CASCADE","CASE","CAST","COLLATE","CHECK","COLUMN","COMMIT",
+   "CONFLICT","CONSTRAINT","CREATE","CROSS","CURRENT_DATE",
+   "CURRENT_TIMESTAMP","CURRENT_TIME","DATABASE","DEFAULT","DEFERRABLE",
+   "DEFERRED","DELETE","DESC","DETACH","DISTINCT","DROP","EACH","ELSE","END",
+   "EXCEPT","ESCAPE","EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FALSE","FOREIGN",
+   "FOR","FROM","FULL","GENERATED","GLOB","GROUP","HAVING","IF","IGNORE",
+   "IMMEDIATE","INDEX","INITIALLY","INSERT","INNER","INSTEAD","INTERSECT",
+   "INTO","IN","ISNULL","IS","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH",
+   "NATURAL","NOTNULL","NOT","NO","NULL","OFFSET","ON","OF","ORDER","OR",
+   "OUTER","PLAN","QUERY","PRAGMA","PRIMARY","RAISE","REFERENCES","REGEXP",
+   "REINDEX","RENAME","REPLACE","RESTRICT","RIGHT","ROLLBACK","ROWID","ROW",
+   "SELECT","SET","STORED","TABLE","STRICT","TEMPORARY","TEMP","THEN","TO",
+   "TRIGGER","TRANSACTION","TRUE","UNION","UNIQUE","UPDATE","USING","VACUUM",
+   "VALUES","VIEW","VIRTUAL","WHEN","WHERE","WITHOUT",}
 
 -- sort function being:
 local char, byte, sub = assert(string.char),

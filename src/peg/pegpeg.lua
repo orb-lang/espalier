@@ -4,8 +4,15 @@
 
 
 
-local pegpeg = [[
 
+
+
+
+
+
+
+
+local pegpeg = [[
       `peg`  ←  rules / anon
 
      rules  ←  _ rule+ (-1 / Error)
@@ -101,9 +108,10 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
       lt-refer  ←  "(<" reference ")"
      reference  ←  symbol
 
-      `_`  ←  (comment / dent / { \t\r})*
+      `_`  ←  (comment / dent / WS)*
 `comment`  ←  ";" (!"\n" utf8)*
    `dent`  ←  "\n" { \t}*
+     `WS`  ←  { \t\r}
 
     `utf8`  ←  [\x00-\x7f]
             /  [\xc2-\xdf] [\x80-\xbf]

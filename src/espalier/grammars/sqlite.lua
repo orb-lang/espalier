@@ -11,30 +11,30 @@
 
 
 local sql_statement = [[
-          sql  ←  (sql-statement _ semi _)+
+          sql  ←  _ (statement _ semi _)+
 
-sql-statement  ←  explain? ( alter-table
-                           / analyze
-                           / attach
-                           / begin
-                           / commit
-                           / create-index
-                           / create-table
-                           / create-trigger
-                           / create-view
-                           / create-virtual-table
-                           / delete
-                           / detach
-                           / drop
-                           / insert
-                           / pragma
-                           / reindex
-                           / release
-                           / rollback
-                           / savepoint
-                           / select
-                           / update
-                           / vacuum )
+`statement`  ←  explain? ( alter-table
+                         / analyze
+                         / attach
+                         / begin
+                         / commit
+                         / create-index
+                         / create-table
+                         / create-trigger
+                         / create-view
+                         / create-virtual-table
+                         / delete
+                         / detach
+                         / drop
+                         / insert
+                         / pragma
+                         / reindex
+                         / release
+                         / rollback
+                         / savepoint
+                         / select
+                         / update
+                         / vacuum )
        `semi`  ←  ";" / -1
 
 explain  ←  EXPLAIN (QUERY PLAN)?
@@ -134,7 +134,7 @@ column-constraint  ←  CONSTRAINT name _
                    /  CHECK group-expr
                    /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
 
-conflict-clause  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
+`conflict-clause`  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
    `column-names`  ←  column-name _ (","_ column-name _)*
 `indexed-columns`  ←  indexed-column (","_ indexed-column)*
@@ -172,6 +172,16 @@ foreign-key-clause  ←  REFERENCES table-name ("("_ column-names ")"_)?
 
 
 
+
+
+
+
+
+
+
+
+
+
 local name_rules = [[
          name  ←  quoted / id
 
@@ -188,6 +198,7 @@ local name_rules = [[
 
 ; deprecated-dollar  ← "$"
 ]]
+
 
 
 
@@ -255,6 +266,7 @@ local terminal_rule = [[
 
 local keyword_rules = [[
                ABORT  ←  A B O R T t _
+              ACTION  ←  A C T I O N t _
                  ADD  ←  A D D t _
                AFTER  ←  A F T E R t _
                  ALL  ←  A L L t _
@@ -302,6 +314,7 @@ local keyword_rules = [[
               EXISTS  ←  E X I S T S t _
              EXPLAIN  ←  E X P L A I N t _
                 FAIL  ←  F A I L t _
+               FALSE  ←  F A L S E t _
              FOREIGN  ←  F O R E I G N t _
                  FOR  ←  F O R t _
                 FROM  ←  F R O M t _
@@ -332,9 +345,10 @@ local keyword_rules = [[
              NATURAL  ←  N A T U R A L t _
              NOTNULL  ←  N O T N U L L t _
                  NOT  ←  N O T t _
+                  NO  ←  N O t _
                 NULL  ←  N U L L t _
-                  OF  ←  O F t _
               OFFSET  ←  O F F S E T t _
+                  OF  ←  O F t _
                   ON  ←  O N t _
                ORDER  ←  O R D E R t _
                   OR  ←  O R t _
@@ -343,19 +357,19 @@ local keyword_rules = [[
               PRAGMA  ←  P R A G M A t _
              PRIMARY  ←  P R I M A R Y t _
                QUERY  ←  Q U E R Y t _
-               RAISE  ←  R A I S E t _
           REFERENCES  ←  R E F E R E N C E S t _
+               RAISE  ←  R A I S E t _
               REGEXP  ←  R E G E X P t _
              REINDEX  ←  R E I N D E X t _
               RENAME  ←  R E N A M E t _
-               RIGHT  ←  R I G H T t _
              REPLACE  ←  R E P L A C E t _
             RESTRICT  ←  R E S T R I C T t _
+               RIGHT  ←  R I G H T t _
             ROLLBACK  ←  R O L L B A C K t _
                ROWID  ←  R O W I D t _
                  ROW  ←  R O W t _
-                 SET  ←  S E T t _
               SELECT  ←  S E L E C T t _
+                 SET  ←  S E T t _
               STORED  ←  S T O R E D t _
               STRICT  ←  S T R I C T t _
                TABLE  ←  T A B L E t _
@@ -365,6 +379,7 @@ local keyword_rules = [[
                   TO  ←  T O t _
          TRANSACTION  ←  T R A N S A C T I O N t _
              TRIGGER  ←  T R I G G E R t _
+                TRUE  ←  T R U E t _
                UNION  ←  U N I O N t _
               UNIQUE  ←  U N I Q U E t _
               UPDATE  ←  U P D A T E t _
@@ -374,8 +389,8 @@ local keyword_rules = [[
                 VIEW  ←  V I E W t _
              VIRTUAL  ←  V I R T U A L t _
                 WHEN  ←  W H E N t _
-             WITHOUT  ←  W I T H O U T t _
                WHERE  ←  W H E R E t _
+             WITHOUT  ←  W I T H O U T t _
 ]]
 
 
@@ -385,26 +400,26 @@ local keyword_rules = [[
 
 
 
-
 local keyword_rule = [[
- keyword  ←  ((  ABORT / ADD / AFTER / ALL / ALTER / ALWAYS / ANALYZE / AND
-             /  ASC / AS / ATTACH / AUTOINCREMENT / BEFORE / BEGIN / BETWEEN
-             /  BY / CASCADE / CASE / CAST) / (CHECK / COLLATE / COLUMN
-             /  COMMIT / CONFLICT / CONSTRAINT / CREATE / CROSS / CURRENT_DATE
-             /  CURRENT_TIMESTAMP / CURRENT_TIME / DATABASE / DEFAULT
-             /  DEFERRABLE / DEFERRED / DELETE / DESC / DETACH / DISTINCT
-             /  DROP / EACH / ELSE / END / ESCAPE / EXCEPT / EXCLUSIVE
-             /  EXISTS / EXPLAIN / FAIL / FOREIGN / FOR / FROM / FULL
-             /  GENERATED / GLOB / GROUP / HAVING / IF) / (IGNORE / IMMEDIATE
-             /  INDEX / INITIALLY / INNER / INSERT / INSTEAD / INTERSECT
-             /  INTO / IN / ISNULL / IS / JOIN / KEY / LEFT / LIKE / LIMIT
-             /  MATCH / NATURAL) / (NOTNULL / NOT / NULL / OFFSET / OF / ON
-             /  ORDER / OR / OUTER / PLAN / PRAGMA / PRIMARY / QUERY / RAISE
-             /  REFERENCES / REGEXP / REINDEX / RENAME / REPLACE) / (ROLLBACK
-             /  RESTRICT / RIGHT / ROWID / ROW / SELECT / SET / STORED
-             /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
-             /  TRIGGER / UNION / UNIQUE / UPDATE) / (USING / VACUUM / VALUES
-             /  VIEW / VIRTUAL / WHEN / WHERE / WITHOUT ))
+ keyword  ←  ((  ABORT / ACTION / ADD / AFTER / ALL / ALTER / ALWAYS
+             /  ANALYZE / AND / ASC / AS / ATTACH / AUTOINCREMENT / BEFORE
+             /  BEGIN / BETWEEN / BY / CASCADE / CASE) / (CAST / CHECK
+             /  COLLATE / COLUMN / COMMIT / CONFLICT / CONSTRAINT / CREATE
+             /  CROSS / CURRENT_DATE / CURRENT_TIMESTAMP / CURRENT_TIME
+             /  DATABASE / DEFAULT / DEFERRABLE / DEFERRED / DELETE / DESC
+             /  DETACH) / (DISTINCT / DROP / EACH / ELSE / END / ESCAPE
+             /  EXCEPT / EXCLUSIVE / EXISTS / EXPLAIN / FAIL / FALSE / FOREIGN
+             /  FOR / FROM / FULL / GENERATED / GLOB / GROUP) / (HAVING / IF
+             /  IGNORE / IMMEDIATE / INDEX / INITIALLY / INNER / INSERT
+             /  INSTEAD / INTERSECT / INTO / IN / ISNULL / IS / JOIN / KEY
+             /  LEFT / LIKE / LIMIT) / (MATCH / NATURAL / NOTNULL / NOT / NO
+             /  NULL / OFFSET / OF / ON / ORDER / OR / OUTER / PLAN / PRAGMA
+             /  PRIMARY / QUERY / REFERENCES / RAISE / REGEXP) / (REINDEX
+             /  RENAME / REPLACE / RESTRICT / RIGHT / ROLLBACK / ROWID / ROW
+             /  SELECT / SET / STORED / STRICT / TABLE / TEMPORARY / TEMP
+             /  THEN / TO / TRANSACTION / TRIGGER) / (TRUE / UNION / UNIQUE
+             /  UPDATE / USING / VACUUM / VALUES / VIEW / VIRTUAL / WHEN
+             /  WHERE / WITHOUT ))
 ]]
 
 
@@ -489,145 +504,145 @@ local sqlite_blocks = {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- first thing we do is sort these and print that
+
+local kwset = {"ABORT","ACTION","ADD","AFTER","ALL","ALTER","ALWAYS",
+   "ANALYZE","AND","ASC","AS","ATTACH","BEFORE","AUTOINCREMENT","BEGIN",
+   "BETWEEN","BY","CASCADE","CASE","CAST","COLLATE","CHECK","COLUMN","COMMIT",
+   "CONFLICT","CONSTRAINT","CREATE","CROSS","CURRENT_DATE",
+   "CURRENT_TIMESTAMP","CURRENT_TIME","DATABASE","DEFAULT","DEFERRABLE",
+   "DEFERRED","DELETE","DESC","DETACH","DISTINCT","DROP","EACH","ELSE","END",
+   "EXCEPT","ESCAPE","EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FALSE","FOREIGN",
+   "FOR","FROM","FULL","GENERATED","GLOB","GROUP","HAVING","IF","IGNORE",
+   "IMMEDIATE","INDEX","INITIALLY","INSERT","INNER","INSTEAD","INTERSECT",
+   "INTO","IN","ISNULL","IS","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH",
+   "NATURAL","NOTNULL","NOT","NO","NULL","OFFSET","ON","OF","ORDER","OR",
+   "OUTER","PLAN","QUERY","PRAGMA","PRIMARY","RAISE","REFERENCES","REGEXP",
+   "REINDEX","RENAME","REPLACE","RESTRICT","RIGHT","ROLLBACK","ROWID","ROW",
+   "SELECT","SET","STORED","TABLE","STRICT","TEMPORARY","TEMP","THEN","TO",
+   "TRIGGER","TRANSACTION","TRUE","UNION","UNIQUE","UPDATE","USING","VACUUM",
+   "VALUES","VIEW","VIRTUAL","WHEN","WHERE","WITHOUT",}
+
+-- sort function being:
+local char, byte, sub = assert(string.char),
+                        assert(string.byte),
+                        assert(string.sub)
+
+local function pegsort(left, right)
+   local a, b = byte(left, 1), byte(right, 1)
+   if a < b then return true
+   elseif a > b then return false
+   else
+      local longer, shorter;
+      if #left > #right then
+         longer, shorter = left, right
+      else
+         longer, shorter = right, left
+      end
+      local sublong = sub(longer, 1, #shorter)
+      if sublong == shorter then
+         return longer == left
+      else
+         return left < right
+      end
+   end
+end
+
+table.sort(kwset, pegsort)
+
+
+-- I insist on justifying the arrows, so we make padding:
+local longest = 0
+for _, kw in ipairs(kwset) do
+   longest = #kw > longest and #kw or longest
+end
+
+-- make the rules
+local insert, concat = assert(table.insert), assert(table.concat)
+
+local poggers = {}
+
+for i, keyword in ipairs(kwset) do
+   local pad = (" "):rep(longest - #keyword + 3)
+   local rule = {pad, keyword, "  ←  "}
+   for i = 1, #keyword do
+      local chomp = char(byte(keyword,i))
+      if chomp == "_" then
+         -- wrap this one as a literal
+         insert(rule, '"_"')
+      else
+         insert(rule, chomp)
+      end
+      insert(rule, " ")
+   end
+   insert(rule, "t _")
+   poggers[i] = concat(rule)
+end
+
+-- now the keyword rule
+
+local head     =   " keyword  ←  ((  "
+local div_pad  = "\n             /  "
+local div = " / "
+local WID = 78
+
+local wide = #head
+
+local champ = {head}
+local footer = " ))\n"
+
+local no_div = true
+-- awful hack to work around bad original parser!
+local count = 0
+for i, kw in ipairs(kwset) do
+   count = count + 1
+   local div = div
+   if count == 20 then
+      div = ") / ("
+      count = 1
+   end
+   local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
+   if next_w <= WID then
+      if no_div then
+         no_div = false
+      else
+        insert(champ, div)
+        wide = wide + #div
+      end
+   else
+      insert(champ, div_pad)
+      wide = #div_pad - 1 -- because the newline isn't width
+   end
+   insert(champ, kw)
+   wide = wide + #kw
+end
+
+insert(champ, footer)
+
+
+-- last but not least! let's pretty print kwargs:
+
+local kw_pr = {"local kwset = {"}
+local wide = #kw_pr[1]
+for i, kw in ipairs(kwset) do
+    local tok = '"' .. kw .. '",'
+    local next_w = wide + #tok
+    if next_w <= WID then
+      insert(kw_pr, tok)
+      wide = next_w
+   else
+      insert(kw_pr, "\n   ")
+      insert(kw_pr, tok)
+      wide = #tok + 3
+   end
+end
+insert(kw_pr, "}\n\n")
+
+
+-- print the rules
+print(concat(poggers, "\n"))
+print(concat(champ))
+print(concat(kw_pr))
 
 
 

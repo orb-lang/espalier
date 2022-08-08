@@ -4,8 +4,15 @@
   Rather than try to massage pegylator, we're going to translate the extant
 PEG engine, which we will after all be using.
 
-#!peg @pegpeg #asLua
 
+**** Pragmas #NYI
+
+I want to add pragmas, lines between or before rules which start on a newline.
+
+This involves carefully tweaking the whitespace so =rhs= doesn't consume a
+final whitespace token, which is... tricky.
+
+#!peg @pegpeg #asLua
       `peg`  ←  rules / anon
 
      rules  ←  _ rule+ (-1 / Error)
@@ -101,9 +108,10 @@ match-suffix  ←  "@" ; whitespace is not allowed. should it be?
       lt-refer  ←  "(<" reference ")"
      reference  ←  symbol
 
-      `_`  ←  (comment / dent / { \t\r})*
+      `_`  ←  (comment / dent / WS)*
 `comment`  ←  ";" (!"\n" utf8)*
    `dent`  ←  "\n" { \t}*
+     `WS`  ←  { \t\r}
 
     `utf8`  ←  [\x00-\x7f]
             /  [\xc2-\xdf] [\x80-\xbf]
