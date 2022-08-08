@@ -619,29 +619,31 @@ end
 
 -- now the keyword rule
 -- which we're going to build the optimal search structure: a trie.
-local trie = {}
 local push = table.insert
 
-local function makeTrie(_trie, kw_set)
+local function makeTrie(kw_set)
+   local trie, suffix = {}, {}
    for i, keyword in ipairs(kw_set) do
       if keyword ~= "" then
-         local head, body = sub(keyword, 1, 1), sub(keyword, 2)
-         if body ~= "" then
-            local sub_trie = _trie[head] or {}
-            push(sub_trie, body)
-            _trie[head] = sub_trie
+         local head, tail= sub(keyword, 1, 1), sub(keyword, 2)
+         if tail ~= "" then
+            suffix[head] = suffix[head] or {}
+            push(suffix[head], tail)
          end
       end
    end
-   ---[[ recursion next!
-   for head, bodies in pairs(_trie) do
-      _trie[head] = makeTrie(_trie[head], bodies)
+   for head, tails in pairs(suffix) do
+      assert(type(tails) ==  'table', tostring(tails))
+      if #tails > 1 then
+         trie[head] = makeTrie(tails)
+      elseif #tails == 1 then
+         trie[head] = tails[1]
+      end
    end
-   --]]
-
+   return trie
 end
 
-makeTrie(trie, kwset)
+local trie = makeTrie(kwset)
 
 print(require "repr:repr" .ts_color(trie))
 
