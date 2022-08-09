@@ -16,27 +16,21 @@ final whitespace token, which is... tricky.
       `peg`  ←  rules / anon
 
      rules  ←  _ rule+ (-1 / Error)
-      anon  ←  _ form+ (-1 / Error)
+      anon  ←  _ rhs (-1 / Error)
 
       rule  ←  lhs rhs
-    `form`  ←  binop / element _
 
        lhs  ←  (suppressed / rule-name) _ into _
-       rhs  ←  form+
+       rhs  ←  choice
 
-   `binop`  ←  choice
-            /  cats _
  `element`  ←  (simple / compound) !(_ into)
 
 suppressed  ←  "`" rule-name "`"
  rule-name  ←  symbol
     `into`  ←  ":=" / "←" / "<-" / "="''
 
-    choice  ←  cats (_ "/" _ cats)+
-    `cats`  ←  cat
-            /  element _
-       cat  ←  element _ (element _)+
-
+    choice  ←  cat ("/" _ cat)*
+       cat  ←  element _ (element _)*
    `simple` ←  repeated
             /  matched
             /  prefixed
@@ -46,7 +40,7 @@ suppressed  ←  "`" rule-name "`"
 
  `compound` ← group / enclosed
 
-   `group`  ←  "(" _ form+ ")"
+   `group`  ←  "(" _ choice ")"
 `enclosed`  ←  literal / set / range
 
   repeated  ←  allow-repeat _ "%" slice

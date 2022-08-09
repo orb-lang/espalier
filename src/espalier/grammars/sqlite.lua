@@ -639,218 +639,218 @@ local sqlite_blocks = {
 
 
 
--- first thing we do is sort these and print that
-
-local kwset = {"ABORT","ACTION","ADD","AFTER","ALL","ALTER","ALWAYS",
-   "ANALYZE","AND","ASC","AS","ATTACH","BEFORE","AUTOINCREMENT","BEGIN",
-   "BETWEEN","BY","CASCADE","CASE","CAST","COLLATE","CHECK","COLUMN","COMMIT",
-   "CONFLICT","CONSTRAINT","CREATE","CROSS","CURRENT_DATE",
-   "CURRENT_TIMESTAMP","CURRENT_TIME","DATABASE","DEFAULT","DEFERRABLE",
-   "DEFERRED","DELETE","DESC","DETACH","DISTINCT","DROP","EACH","ELSE","END",
-   "EXCEPT","ESCAPE","EXCLUSIVE","EXISTS","EXPLAIN","FAIL","FALSE","FOREIGN",
-   "FOR","FROM","FULL","GENERATED","GLOB","GROUP","HAVING","IF","IGNORE",
-   "IMMEDIATE","INDEX","INITIALLY","INSERT","INNER","INSTEAD","INTERSECT",
-   "INTO","IN","ISNULL","IS","JOIN","KEY","LEFT","LIKE","LIMIT","MATCH",
-   "NATURAL","NOTNULL","NOT","NO","NULL","OFFSET","ON","OF","ORDER","OR",
-   "OUTER","PLAN","QUERY","PRAGMA","PRIMARY","RAISE","REFERENCES","REGEXP",
-   "REINDEX","RENAME","REPLACE","RESTRICT","RIGHT","ROLLBACK","ROWID","ROW",
-   "SELECT","SET","STORED","TABLE","STRICT","TEMPORARY","TEMP","THEN","TO",
-   "TRIGGER","TRANSACTION","TRUE","UNION","UNIQUE","UPDATE","USING","VACUUM",
-   "VALUES","VIEW","VIRTUAL","WHEN","WHERE","WITHOUT",}
-
--- sort function being:
-local char, byte, sub = assert(string.char),
-                        assert(string.byte),
-                        assert(string.sub)
-
-local function pegsort(left, right)
-   local a, b = byte(left, 1), byte(right, 1)
-   if a < b then return true
-   elseif a > b then return false
-   else
-      local longer, shorter;
-      if #left > #right then
-         longer, shorter = left, right
-      else
-         longer, shorter = right, left
-      end
-      local sublong = sub(longer, 1, #shorter)
-      if sublong == shorter then
-         return longer == left
-      else
-         return left < right
-      end
-   end
-end
-
-table.sort(kwset, pegsort)
-
-
--- I insist on justifying the arrows, so we make padding:
-local longest = 0
-for _, kw in ipairs(kwset) do
-   longest = #kw > longest and #kw or longest
-end
-
--- make the rules
-local insert, concat = assert(table.insert), assert(table.concat)
-
-local poggers = {}
-
-local function stretch(keyword)
-   local stretched = {}
-   for i = 1, #keyword do
-      local chomp = char(byte(keyword,i))
-      if chomp == "_" then
-         -- wrap this one as a literal
-         insert(stretched, '"_"')
-      else
-         insert(stretched, chomp)
-      end
-      insert(stretched, " ")
-   end
-   return concat(stretched)
-end
-
-for i, keyword in ipairs(kwset) do
-   local pad = (" "):rep(longest - #keyword + 3)
-   local rule = {pad, keyword, "  ←  "}
-   insert(rule, stretch(keyword))
-   insert(rule, "t _")
-   poggers[i] = concat(rule)
-end
-
--- now the keyword rule
--- we're going to build the optimal search structure: a trie.
-local push, pop = table.insert, table.remove
-
-local function makeTrie(kw_set)
-   local trie, suffix = {}, {}
-   for i, keyword in ipairs(kw_set) do
-      if keyword ~= "" then
-         local head, tail= sub(keyword, 1, 1), sub(keyword, 2)
-         if tail ~= "" then
-            suffix[head] = suffix[head] or {}
-            push(suffix[head], tail)
-         end
-      end
-   end
-   for head, tails in pairs(suffix) do
-      assert(type(tails) ==  'table', tostring(tails))
-      if #tails > 1 then
-         trie[head] = makeTrie(tails)
-      elseif #tails == 1 then
-         trie[head] = tails[1]
-      end
-   end
-   return trie
-end
-
-local trie = makeTrie(kwset)
-
- print(require "repr:repr" .ts_color(trie))
-
--- this done, we must print the beast aesthetically.
--- otherwise what is to be gained?
-
--- but first we must print it /correctly/
-
-local head     =   " keyword  ←  ( "
-local WID = 78
-
-local wide = #head - 2
-
-local treezus = {head}
-
-local tab_stop = {#head - 7}
-
-local nkeys = table.nkeys
-
-local function newLine()
-   push(treezus, "\n")
-   local stops = tab_stop[#tab_stop]
-   push(treezus, (" "):rep(stops))
-   wide = stops
-end
-
-local function addTok(...)
-    for i = 1, select('#', ...) do
-       local token = select(i, ...)
-       local len = wide + #token
-       if len >= WID then
-          push(treezus, pad)
-          push(treezus, token)
-          wide = #pad + #token - 1
-       else
-          push(treezus, token)
-          wide = len
-       end
-    end
- end
-
-local sortedpairs = assert(table.sortedpairs)
-
-local function rulify(trie, outer)
-   local slash = false
-   for letter, tail in sortedpairs(trie) do
-      if letter == "_" then
-         letter = '"_"'
-      end
-      if slash then
-         newLine()
-         addTok("/ ")
-      else
-         slash = true
-      end
-      if type(tail) == 'string' then
-         addTok(letter, " ", stretch(tail))
-      else
-         addTok(letter, " ")
-         local split = nkeys(tail) > 1
-         if split then
-            addTok("( ")
-            push(tab_stop, wide - 2)
-         end
-         rulify(tail)
-         if split then
-            addTok(") ")
-            pop(tab_stop)
-         end
-      end
-   end
-end
-
-rulify(trie, true)
-insert(treezus, ") t")
-
-print(concat(treezus))
-
-
--- last but not least! let's pretty print kwargs:
-
-local kw_pr = {"local kwset = {"}
-local wide = #kw_pr[1]
-for i, kw in ipairs(kwset) do
-    local tok = '"' .. kw .. '",'
-    local next_w = wide + #tok
-    if next_w <= WID then
-      insert(kw_pr, tok)
-      wide = next_w
-   else
-      insert(kw_pr, "\n   ")
-      insert(kw_pr, tok)
-      wide = #tok + 3
-   end
-end
-insert(kw_pr, "}\n\n")
 
 
 
 
--- print the rules
--- print(concat(poggers, "\n"))
---print(concat(champ))
---print(concat(kw_pr))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
