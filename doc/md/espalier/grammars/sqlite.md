@@ -306,7 +306,7 @@ We get to do a whole small song\-and\-dance to make case\-insensitive keywords\.
 This is generated programmatically from a block at the bottom of the document\.
 
 We include trailing whitespace in keywords since the meaning is printed on the
-label, and it avoids dribbling `_` all over the grammr\.
+label, and it avoids dribbling `_` all over the grammar\.
 
 ```peg
                ABORT  ←  A B O R T t _
@@ -441,14 +441,14 @@ label, and it avoids dribbling `_` all over the grammr\.
 
 With these powers combined, we have a keyword rule\.
 
-It doesn't have to look this hideous but the legacy PEG parser has
-left\-leaning choice\.
+Does it need to be a trie?  Probably we're just imitating the parsing engine
+here\.
 
 ```peg
  keyword  ←  ( A  ( B O R T
                   / C T I O N
                   / D D
-                  / F T E R
+                  / F T E R†
                   / L  ( T E R
                        / W A Y S )
                   / N A L Y Z E

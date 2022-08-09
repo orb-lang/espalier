@@ -1,8 +1,14 @@
-# Parsing Expression Grammar of Parsing Expression Grammar
+# Parsing Expression Grammar for Parsing Parsing Expression Grammar Grammars
 
 
-  Rather than try to massage pegylator, we're going to translate the extant
-PEG engine, which we will after all be using\.
+  Yo dawg\.
+
+I heard you like parsing\.
+
+So I wrote a Parsing Expression Grammar in Parsing Expression Grammar, for
+parsing Parsing Expression Grammmars into expressive grammars, so I can parse
+a grammar into a grammar parser, so you can parse your parser while you
+express your grammar\.
 
 
 ```peg

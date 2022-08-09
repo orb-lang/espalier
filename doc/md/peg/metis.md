@@ -407,6 +407,8 @@ Syndex.analyze = cluster.ur.pass
 
 Let's get this out of the way real quick\.
 
+
+
 ```lua
 local function _synth(node, parent_synth, i)
    local synth = newSynth(node, i)
@@ -415,6 +417,39 @@ local function _synth(node, parent_synth, i)
       synth[i] = _synth(twig, synth, i)
    end
    return synth
+end
+```
+
+
+#### rules:trim\(\)
+
+Three rules are just noise when they have only one child:
+
+```lua
+local hoist = Set {'element', 'alt', 'cat'}
+```
+
+```lua
+function M.rules.trim(rules)
+   if rules.trimmed then return rules end
+   for i, rule in ipairs(rules) do
+      rule:trim()
+   end
+   rules.trimmed = true
+
+   return rules
+end
+
+function Twig.trim(twig)
+   for i, ast in ipairs(twig) do
+      if #ast == 1 and hoist[ast.id] then
+         twig[i] = ast[1]:trim()
+      else
+         ast:trim()
+      end
+   end
+
+   return twig
 end
 ```
 

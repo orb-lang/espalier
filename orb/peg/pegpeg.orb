@@ -1,8 +1,14 @@
-* Parsing Expression Grammar of Parsing Expression Grammar
+* Parsing Expression Grammar for Parsing Parsing Expression Grammar Grammars
 
 
-  Rather than try to massage pegylator, we're going to translate the extant
-PEG engine, which we will after all be using.
+  Yo dawg.
+
+I heard you like parsing.
+
+So I wrote a Parsing Expression Grammar in Parsing Expression Grammar, for
+parsing Parsing Expression Grammmars into expressive grammars, so I can parse
+a grammar into a grammar parser, so you can parse your parser while you
+express your grammar.
 
 
 #!peg @pegpeg #asLua
@@ -25,7 +31,7 @@ PEG engine, which we will after all be using.
              alt  ←  cat ("/" _ cat)*
              cat  ←  element element*
 
-         element  ←  prefix? part suffix? match-suffix?
+         element  ←  prefix? part suffix? backref?
 
         `prefix`  ←  and / not
         `suffix`  ←  zero-plus / one-plus / optional / repeat
@@ -44,7 +50,7 @@ PEG engine, which we will after all be using.
         optional  ←  "?" _
           repeat  ←  "%" _ slice
 
-  `match-suffix`  ←  "@" _ ( reference
+         backref  ←  "@" _ ( reference
                            / back-refer
                            / eq-refer
                            / gte-refer
