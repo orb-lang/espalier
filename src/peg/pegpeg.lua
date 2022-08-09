@@ -5,114 +5,106 @@
 
 
 
-
-
-
-
-
-
-
 local pegpeg = [[
-      `peg`  ←  rules / anon
+           `peg`  ←  rules / anon
 
-     rules  ←  _ rule+ (-1 / Error)
-      anon  ←  _ rhs (-1 / Error)
+           rules  ←  _ rule+ (-1 / Error)
+            anon  ←  _ rhs (-1 / Error)
 
-      rule  ←  lhs rhs
+            rule  ←  lhs rhs
 
-       lhs  ←  (suppressed / rule-name) _ into _
-       rhs  ←  choice
+             lhs  ←  (suppressed / rule-name) _ into _
+             rhs  ←  alt
 
- `element`  ←  (simple / compound) !(_ into)
+      suppressed  ←  "`" rule-name "`"
+       rule-name  ←  symbol
+          `into`  ←  ":=" / "←" / "<-" / "="''
+        `symbol`  ←  letter (letter / digit /  {-_})*
+                  /  "_"
 
-suppressed  ←  "`" rule-name "`"
- rule-name  ←  symbol
-    `into`  ←  ":=" / "←" / "<-" / "="''
+             alt  ←  cat ("/" _ cat)*
+             cat  ←  element element*
 
-    choice  ←  cat ("/" _ cat)*
-       cat  ←  element _ (element _)*
-   `simple` ←  repeated
-            /  matched
-            /  prefixed
-            /  suffixed
-            /  name
-            /  number
+         element  ←  prefix? part suffix? match-suffix?
 
- `compound` ← group / enclosed
+        `prefix`  ←  and / not
+        `suffix`  ←  zero-plus / one-plus / optional / repeat
+        `part`    ←  name _ !into
+                  /  literal _
+                  /  group _
+                  /  set _
+                  /  range _
+                  /  number _
 
-   `group`  ←  "(" _ choice ")"
-`enclosed`  ←  literal / set / range
+             and  ←  "&" _
+             not  ←  "!" _
 
-  repeated  ←  allow-repeat _ "%" slice
-   matched  ←  allow-repeat _ match-suffix
-`prefixed`  ←  not / and
-`suffixed`  ←  zero-or-more / one-or-more / optional
-      name  ←  symbol
-    number  ←  EOS / integer
+       zero-plus  ←  "*" _
+        one-plus  ←  "+" _
+        optional  ←  "?" _
+          repeat  ←  "%" _ slice
 
-        literal  ←  single-string / double-string
-            set  ←  "{" (!("}" / "\n") codepoint)* "}"
-          range  ←  "[" range-start "-" range-end "]"
+  `match-suffix`  ←  "@" _ ( reference
+                           / back-refer
+                           / eq-refer
+                           / gte-refer
+                           / gt-refer
+                           / lte-refer
+                           / lt-refer )
 
-`single-string`  ←  "'" ("\\" "'" / "\\" utf8 / (!"'" !"\n" utf8))* "'"
-`double-string`  ←  '"' ('\\' '"' / "\\" utf8 / (!'"' !"\n" utf8))* '"'
+            name  ←  symbol
+         literal  ←  single-string / double-string
+         `group`  ←  "(" _ alt ")"
+             set  ←  "{" (!("}" / "\n") codepoint)* "}"
+           range  ←  "[" range-start "-" range-end "]"
+          number  ←  EOS / integer
 
-    range-start  ←  escaped / codepoint
-      range-end  ←  escaped / codepoint
-        escaped  ←  hex-escape / "\\" codepoint
-   `hex-escape`  ←  "\\" {Xx} higit higit
-        `higit`  ←  [0-9] / [A-F] / [a-f]
-      codepoint  ←   utf8
+           slice  ←  integer-range / integer
+         integer  ←  digit+
+         `digit`  ←  [0-9]
+
+      back-refer  ←  "("   reference  ")"
+        eq-refer  ←  "(#"  reference  ")"
+       gte-refer  ←  "(>=" reference  ")"
+        gt-refer  ←  "(>"  reference  ")"
+       lte-refer  ←  "(<=" reference  ")"
+        lt-refer  ←  "(<"  reference  ")"
+       reference  ←  symbol
+
+ `single-string`  ←  "'" (escaped / !"'" utf8)* "'"
+ `double-string`  ←  '"' (escaped / !'"' utf8)* '"'
 
 
-       slice  ←  integer-range / integer
-match-suffix  ←  "@" ; whitespace is not allowed. should it be?
-                  ( reference
-                  / back-refer
-                  / eq-refer
-                  / gte-refer
-                  / gt-refer
-                  / lte-refer
-                  / lt-refer )
+       codepoint  ←   utf8
+     range-start  ←  escaped / codepoint
+       range-end  ←  escaped / codepoint
+ `integer-range`  ←  integer ".." integer
 
-           not  ←  "!" _ allow-prefix
-           and  ←  "&" _ allow-prefix
-  zero-or-more  ←  allow-suffix _ "*"
-   one-or-more  ←  allow-suffix _ "+"
-      optional  ←  allow-suffix _ "?"
+        `letter`  ←  [A-Z] / [a-z]
+      ; every Lua escape except \⏎
+      `escaped`  ←  "\\" ( ( {abfnrtv}
+                           / "'"
+                           / '"'
+                           / "\\" )
+                         / digit digit? digit? ; digit%1..3
+                         / "x" higit higit )
 
-`allow-repeat`  ←  prefixed / suffixed / jawn
-`allow-prefix`  ←  suffixed / jawn
-`allow-suffix`  ←  prefixed / jawn
-        `jawn`  ←  compound / name / number
+    `hex-escape`  ←  "\\" {Xx} higit higit
+         `higit`  ←  digit / [A-F] / [a-f]
 
-      `symbol`  ←  letter (letter / [0-9] /  {-_})*
-                /  "_"
-      `letter`  ←  [A-Z] / [a-z]
+             EOS  ←  "-1"
 
-           EOS  ←  "-1"
- integer-range  ←  integer ".." integer
-       integer  ←  [0-9]+
+             `_`  ←  (comment / dent / WS)*
+       `comment`  ←  ";" (!"\n" utf8)*
+          `dent`  ←  "\n" { \t}*
+            `WS`  ←  { \t\r}
 
-    back-refer  ←  "(" reference ")"
-      eq-refer  ←  "(#" reference ")"
-     gte-refer  ←  "(>=" reference ")"
-      gt-refer  ←  "(>" reference ")"
-     lte-refer  ←  "(<=" reference ")"
-      lt-refer  ←  "(<" reference ")"
-     reference  ←  symbol
+          `utf8`  ←  [\x00-\x7f]
+                  /  [\xc2-\xdf] [\x80-\xbf]
+                  /  [\xe0-\xef] [\x80-\xbf] [\x80-\xbf]
+                  /  [\xf0-\xf4] [\x80-\xbf] [\x80-\xbf] [\x80-\xbf]
 
-      `_`  ←  (comment / dent / WS)*
-`comment`  ←  ";" (!"\n" utf8)*
-   `dent`  ←  "\n" { \t}*
-     `WS`  ←  { \t\r}
-
-    `utf8`  ←  [\x00-\x7f]
-            /  [\xc2-\xdf] [\x80-\xbf]
-            /  [\xe0-\xef] [\x80-\xbf] [\x80-\xbf]
-            /  [\xf0-\xf4] [\x80-\xbf] [\x80-\xbf] [\x80-\xbf]
-
-     Error  ←  1+
+           Error  ←  1+
 ]]
 
 

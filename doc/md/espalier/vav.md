@@ -58,6 +58,6 @@ end
 ```
 
 ```lua
-return Vav
+return VavPeg
 ```
 
