@@ -52,12 +52,12 @@ local function Vav(peg_string)
    rules.pegparse = VavPeg
    rules.peg_str = peg_string
    -- we'll have checks here
-
-   return rules :synthesize()
+   rules :synthesize()
+   return rules
 end
 ```
 
 ```lua
-return VavPeg
+return Vav
 ```
 

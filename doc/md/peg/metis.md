@@ -310,6 +310,7 @@ without any visitor BS, once again we're handrolling here\.
 
 ```lua
 local walk = require "gadget:walk"
+
 local filter, reduce = assert(walk.filter), assert(walk.reduce)
 local classfilter = {}
 
@@ -408,17 +409,65 @@ Syndex.analyze = cluster.ur.pass
 Let's get this out of the way real quick\.
 
 
+##### Custom Synthesis
+
+Nothing past synthesis will work correctly until adjusted to the new structure
+of the AST\.
+
+Needed fields:
+
+`set` gets `.value`, `range` gets `.from_char` and `to_char`, `name`,
+`number`, `literal`, `rule_name`, all have `.token`\.
+
+I'm going to grab these custom, and may be back someday to rationalize this
+module, who knows\.
+
+```lua
+local SpecialSnowflake = Set {'set', 'range', 'name',
+                               'number', 'literal', 'rule_name'}
+
+local function extraSpecial(node, synth)
+   local c = synth.class
+   if c == 'range' then
+     synth.from_char, synth.to_char = node[1]:span(), node[2]:span()
+   elseif c == 'set' then
+      synth.value = node:span()
+   elseif c == 'name' or c == 'rule_name' then
+      synth.token = normalize(node:span())
+   else
+      synth.token = node:span()
+   end
+end
+```
+
 
 ```lua
 local function _synth(node, parent_synth, i)
    local synth = newSynth(node, i)
    synth.parent = parent_synth or synth
+   if SpecialSnowflake[synth.class] then
+      extraSpecial(node, synth)
+   end
    for i, twig in ipairs(node) do
       synth[i] = _synth(twig, synth, i)
    end
    return synth
 end
 ```
+
+
+### Codegen
+
+```lua
+local codegen = require "espalier:peg/codegen"
+
+for class, mixin in pairs(codegen) do
+   for trait, method in pairs(mixin) do
+      Syn[class][trait] = method
+   end
+end
+```
+
 
 
 #### rules:trim\(\)
@@ -461,7 +510,7 @@ function M.rules.synthesize(rules)
    s:verb("synthesized %S", synth.class)
    synth.pegparse = assert(rules.pegparse)
    synth.peg_str = rules.peg_str
-   rules.synth = synth --- don't... use this at all
+   rules.synth = synth --- this is useful, ish, at least in helm
    return synth
 end
 ```

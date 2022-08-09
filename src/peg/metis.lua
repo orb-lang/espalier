@@ -308,6 +308,7 @@ local Syn = setmetatable({Syndex}, {__index = Syn_index })
 
 
 local walk = require "gadget:walk"
+
 local filter, reduce = assert(walk.filter), assert(walk.reduce)
 local classfilter = {}
 
@@ -408,14 +409,62 @@ Syndex.analyze = cluster.ur.pass
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+local SpecialSnowflake = Set {'set', 'range', 'name',
+                               'number', 'literal', 'rule_name'}
+
+local function extraSpecial(node, synth)
+   local c = synth.class
+   if c == 'range' then
+     synth.from_char, synth.to_char = node[1]:span(), node[2]:span()
+   elseif c == 'set' then
+      synth.value = node:span()
+   elseif c == 'name' or c == 'rule_name' then
+      synth.token = normalize(node:span())
+   else
+      synth.token = node:span()
+   end
+end
+
+
+
+
 local function _synth(node, parent_synth, i)
    local synth = newSynth(node, i)
    synth.parent = parent_synth or synth
+   if SpecialSnowflake[synth.class] then
+      extraSpecial(node, synth)
+   end
    for i, twig in ipairs(node) do
       synth[i] = _synth(twig, synth, i)
    end
    return synth
 end
+
+
+
+
+
+
+local codegen = require "espalier:peg/codegen"
+
+for class, mixin in pairs(codegen) do
+   for trait, method in pairs(mixin) do
+      Syn[class][trait] = method
+   end
+end
+
 
 
 
@@ -459,7 +508,7 @@ function M.rules.synthesize(rules)
    s:verb("synthesized %S", synth.class)
    synth.pegparse = assert(rules.pegparse)
    synth.peg_str = rules.peg_str
-   rules.synth = synth --- don't... use this at all
+   rules.synth = synth --- this is useful, ish, at least in helm
    return synth
 end
 

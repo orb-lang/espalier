@@ -31,14 +31,14 @@ express your grammar\.
              alt  ←  cat ("/" _ cat)*
              cat  ←  element element*
 
-         element  ←  prefix? part suffix? match-suffix?
+         element  ←  prefix? part suffix? backref?
 
         `prefix`  ←  and / not
         `suffix`  ←  zero-plus / one-plus / optional / repeat
         `part`    ←  name _ !into
                   /  literal _
                   /  group _
-                  /  set _
+                  /  set-capture _
                   /  range _
                   /  number _
 
@@ -50,7 +50,7 @@ express your grammar\.
         optional  ←  "?" _
           repeat  ←  "%" _ slice
 
-  `match-suffix`  ←  "@" _ ( reference
+         backref  ←  "@" _ ( reference
                            / back-refer
                            / eq-refer
                            / gte-refer
@@ -61,7 +61,8 @@ express your grammar\.
             name  ←  symbol
          literal  ←  single-string / double-string
          `group`  ←  "(" _ alt ")"
-             set  ←  "{" (!("}" / "\n") codepoint)* "}"
+   `set-capture`  ←  "{" set "}"
+             set  ←  (!("}" / "\n") codepoint)*
            range  ←  "[" range-start "-" range-end "]"
           number  ←  EOS / integer
 

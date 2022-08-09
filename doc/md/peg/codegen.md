@@ -2,6 +2,12 @@
 
 A mixin for generating an lpeg \(and probably parseIR\) parser from Vav\.
 
+```lua
+local core, cluster = use("qor:core", "cluster:cluster")
+
+local Set = core.set
+```
+
 
 
 ## :toLpeg
@@ -82,10 +88,10 @@ local function push(tab, ...)
    return push(tab, select(2, ...))
 end
 
-local function _suppressHiddens(peg_rules)
+local function _suppressHiddens(rules)
    local hiddens = {}
-   for hidden in peg_rules : filter 'suppressed' do
-      insert(hiddens, hidden.token)
+   for hidden in rules :filter 'suppressed' do
+      insert(hiddens, hidden :take 'rule_name' . token)
    end
    if #hiddens == 0 then
       -- no hidden patterns
@@ -99,7 +105,7 @@ local function _suppressHiddens(peg_rules)
       if i < #hiddens then
          push(phrase, ", ")
          if len > 78 then
-            push(phrase("\n" .. (" "):rep(14)))
+            push(phrase, "\n",(" "):rep(14))
             len = 14
          end
       end
@@ -114,20 +120,20 @@ function M.rules.toLpeg(rules, extraLpeg)
                            -- reserve extra space at [2] for backref rules
    local phrase, preface = {_PREFACE, ""}, {}
    phrase.preface = preface
-   local start = rules :take 'rule' . token
+   local start = rules :take 'rule_name' . token
    local grammar_fn  = "_" .. start .."_fn"
    push(phrase, "local function ", grammar_fn, "(_ENV)\n", "   START ",
-                "\"", grammar_name, "\"\n")
+                "\"", start, "\"\n")
    -- Build the SUPPRESS function here, this requires finding the
    -- hidden rules and suppressing them
-   local suppress = _suppressHiddens(peg_rules)
+   local suppress = _suppressHiddens(rules)
    if suppress then
       push(phrase, suppress)
    end
    -- add initial indentation:
    push(phrase, "\n")
 
-   for rule in peg_rules : select "rule" do
+   for rule in rules :filter 'rule' do
       rule:toLpeg(phrase)
    end
    local pre = {""}
@@ -188,8 +194,178 @@ function M.alt.toLpeg(rule, phrase)
 end
 ```
 
+
+### group
+
+```lua
+function M.group.toLpeg(group, phrase)
+   push(phrase, "(")
+   assert(#group == 1, "group has other than one child")
+   group[1]:toLpeg(phrase)
+   push(phrase, ")")
+end
+```
+
+
+### name
+
 ```lua
 function M.name.toLpeg(name, phrase)
    push(phrase, 'V"', name.token, '"', " ")
 end
 ```
+
+
+### element
+
+  The parser is fast and simple, at the minor expense of pushing complexity to
+element\.
+
+I do want to circle back and see if packrat can handle the other version
+without blowing up in memory space, it would be a useful test because I expect
+that the many passes used to decide "ok this is just a bare name" are quite
+memo\-friendly\.
+
+Meanwhile: reference cases and `not` both need wrapping, so we just figure out
+every case here\.
+
+
+```lua
+local Prefix = Set {'and', 'not'}
+local Suffix = Set {'zero-plus', 'one-plus', 'optional', 'repeat'}
+local Backref = Set {'backref'}
+
+local Surrounding = Prefix + Suffix + Backref
+
+local backrefBegin, backrefEnd
+
+function M.element.toLpeg(elem, phrase)
+   local prefixed, backrefed  = Prefix[elem[1].class],
+                                Backref[elem[#elem].class]
+   local suffixed;
+   if backrefed then
+      suffixed = Suffix[elem[#elem-1].class]
+   else
+      suffixed = Suffix[elem[#elem].class]
+   end
+   local prefix, part, suffix, backref = nil, nil, nil, nil -- none of you are f
+
+   if prefixed then
+      prefix = elem[1]
+      part = elem[2]
+   else
+      part = elem[1]
+   end
+
+   if backrefed and suffixed then
+      backref = elem[#elem]
+      suffix  = elem[#elem - 1]
+   elseif suffixed then
+      suffix = elem[#elem]
+   elseif backrefed then
+      backref = elem[#elem]
+   end
+
+   assert(not Surrounding[part.class], "missed the element part somehow")
+
+   -- backrefs enclose everything including lookahead prefixes
+   if backref then
+      backrefBegin(backref, phrase)
+   end
+
+   if prefix then
+      local which = prefix.class
+      if which == 'and' then
+         push(phrase, "#")
+      elseif which == 'not' then
+         push(phrase, "-", "(")
+      else
+         error(("bad prefix of class %s"):format(which))
+      end
+   end
+
+   part:toLpeg(phrase)
+
+   if suffix then
+      local which = suffix.class
+      if which == 'zero-plus' then
+         push(phrase, "^0")
+      elseif which == 'one-plus' then
+         push(phrase, "^1")
+      elseif which == 'optional' then
+         push(phrase, "^-1")
+      elseif which == 'repeat' then
+         -- handle this case
+      else
+         error(("bad suffix of class %s"):format(which))
+      end
+   end
+
+   if prefix and prefix.class == 'not' then
+      push(phrase, ")")
+   end
+
+   if backref then
+      backrefEnd(backref, phrase)
+   end
+   push(phrase, " ")
+end
+```
+
+
+```lua
+function backrefBegin()
+
+end
+
+function backrefEnd()
+
+end
+```
+
+
+### literal
+
+```lua
+function M.literal.toLpeg(literal, phrase)
+   push(phrase, "P", literal.token)
+end
+```
+
+
+### number
+
+```lua
+function M.number.toLpeg(number, phrase)
+   push(phrase, "", number.token, " ")
+end
+```
+
+
+### set, range
+
+  These ones will undergo some refinement during the analysis phase, once I'm
+able to reboot that with the changed parsing semantics, which will be annoying
+rather than, say, perilous\.
+
+They're also supposed to handle unicode transparently, and don't\.
+
+That is, however, a library issue, rather than a codegen issue\.
+
+```lua
+function M.set.toLpeg(set, phrase)
+   push(phrase, 'S"', set.value, '"',  " ")
+end
+```
+
+```lua
+function M.range.toLpeg(range, phrase)
+   push(phrase, 'R"', range.from_char, range.to_char, '"', " ")
+end
+```
+
+
+```lua
+return M
+```
+

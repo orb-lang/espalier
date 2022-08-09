@@ -38,7 +38,7 @@ express your grammar.
         `part`    ←  name _ !into
                   /  literal _
                   /  group _
-                  /  set _
+                  /  set-capture _
                   /  range _
                   /  number _
 
@@ -61,7 +61,8 @@ express your grammar.
             name  ←  symbol
          literal  ←  single-string / double-string
          `group`  ←  "(" _ alt ")"
-             set  ←  "{" (!("}" / "\n") codepoint)* "}"
+   `set-capture`  ←  "{" set "}"
+             set  ←  (!("}" / "\n") codepoint)*
            range  ←  "[" range-start "-" range-end "]"
           number  ←  EOS / integer
 
