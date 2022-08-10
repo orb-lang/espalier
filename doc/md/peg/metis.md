@@ -56,7 +56,7 @@ local insert, remove, concat = assert(table.insert),
                                assert(table.remove),
                                assert(table.concat)
 local s = require "status:status" ()
-s.verbose = true
+s.verbose = false
 ```
 
 
@@ -429,7 +429,7 @@ local SpecialSnowflake = Set {'set', 'range', 'name',
 local function extraSpecial(node, synth)
    local c = synth.class
    if c == 'range' then
-     synth.from_char, synth.to_char = node[1]:span(), node[2]:span()
+      synth.from_char, synth.to_char = node[1]:span(), node[2]:span()
    elseif c == 'set' then
       synth.value = node:span()
    elseif c == 'name' or c == 'rule_name' then
@@ -507,7 +507,7 @@ function M.rules.synthesize(rules)
    rules.start = rules :take 'rule'
 
    local synth = _synth(rules)
-   s:verb("synthesized %S", synth.class)
+   s:verb("synthesized %s", synth.class)
    synth.pegparse = assert(rules.pegparse)
    synth.peg_str = rules.peg_str
    rules.synth = synth --- this is useful, ish, at least in helm

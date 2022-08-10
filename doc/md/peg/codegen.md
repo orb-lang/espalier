@@ -4,7 +4,7 @@ A mixin for generating an lpeg \(and probably parseIR\) parser from Vav\.
 
 ```lua
 local core, cluster = use("qor:core", "cluster:cluster")
-
+local Feed = use "text:formfeed"
 local Set = core.set
 ```
 
@@ -79,16 +79,9 @@ end
 #### Helper functions
 
 ```lua
-local insert, concat = assert(table.insert), assert(table.concat)
+local  concat =  assert(table.concat)
 
-local function push(tab, ...)
-   local one = ...
-   if not one then return end
-   insert(tab, one)
-   return push(tab, select(2, ...))
-end
-
-local function _suppressHiddens(rules)
+local function suppressHiddens(rules, feed)
    local hiddens = {}
    for hidden in rules :filter 'suppressed' do
       insert(hiddens, hidden :take 'rule_name' . token)
@@ -97,54 +90,57 @@ local function _suppressHiddens(rules)
       -- no hidden patterns
       return nil
    end
-   local len = 14
-   local phrase = {"   SUPPRESS ("}
+   feed:newLine()
+   feed:push("SUPPRESS", " ", "(")
+   feed:indent()
    for i, patt in ipairs(hiddens) do
-      push(phrase, "\"", patt, "\"")
-      len = len + #patt + 2
+      feed:push('"' .. patt .. '"')
       if i < #hiddens then
-         push(phrase, ", ")
-         if len > 78 then
-            push(phrase, "\n",(" "):rep(14))
-            len = 14
-         end
+         feed:push(",", " ")
       end
    end
-   insert(phrase, ")\n\n")
-   return concat(phrase)
+   feed:push(")")
+   feed:dedent()
+   feed:newLine()
+   feed:newLine()
 end
 ```
 
 ```lua
 function M.rules.toLpeg(rules, extraLpeg)
-                           -- reserve extra space at [2] for backref rules
-   local phrase, preface = {_PREFACE, ""}, {}
-   phrase.preface = preface
+   local feed = Feed { lex = require "helm:lex" . colorize }
+   insert(feed, _PREFACE)
+   -- reserve extra space at [2] for backref rules
+   local preface = {}
+   insert(feed, "")
+   feed.preface = preface
    local start = rules :take 'rule_name' . token
    local grammar_fn  = "_" .. start .."_fn"
-   push(phrase, "local function ", grammar_fn, "(_ENV)\n", "   START ",
-                "\"", start, "\"\n")
+   feed :push("local function ", grammar_fn, "(_ENV)")
+        :indent(3)
+        :newLine()
+        :push("START", " ", "'" .. start .. "'")
+        :newLine()
    -- Build the SUPPRESS function here, this requires finding the
    -- hidden rules and suppressing them
-   local suppress = _suppressHiddens(rules)
-   if suppress then
-      push(phrase, suppress)
-   end
-   -- add initial indentation:
-   push(phrase, "\n")
+   suppressHiddens(rules, feed)
 
+   -- aggregate rules into the feed
    for rule in rules :filter 'rule' do
-      rule:toLpeg(phrase)
+      rule:toLpeg(feed)
    end
+
+   -- splice in backref functions if needed
    local pre = {""}
    for _, backref in ipairs(preface) do
       push(pre, backref_rules[backref])
    end
-   phrase[2] = concat(pre)
+   feed[2] = concat(pre)
 
+   feed :dedent() :push "end" :newLine(2)
+        :push("return", " ", grammar_fn) :newLine()
 
-   push(phrase, "\nend\n\nreturn ", grammar_fn, "\n")
-   return concat(phrase)
+   return feed
 end
 ```
 
@@ -152,16 +148,20 @@ end
 ### rule :toLpeg\(\)
 
 ```lua
-function M.rule.toLpeg(rule, phrase)
-   push(phrase, "_ENV[", rule.token, "] = ")
-   rule :take 'rhs' :toLpeg(phrase)
+function M.rule.toLpeg(rule, feed)
+   local token = '"' .. assert(rule :take 'rule_name' . token) .. '"'
+   feed :push("_ENV", "[", token, "]", " ", "=", " ")
+        :indent()
+   rule :take 'rhs' :toLpeg(feed)
+
+   feed :dedent() :newLine(2)
 end
 ```
 
 ```lua
-function M.rhs.toLpeg(rhs, phrase)
+function M.rhs.toLpeg(rhs, feed)
    assert(#rhs == 1, "more than one child on rhs?")
-   rhs[1]:toLpeg(phrase)
+   rhs[1]:toLpeg(feed)
 end
 ```
 
@@ -169,28 +169,28 @@ end
 ### cat, alt
 
 ```lua
-function M.cat.toLpeg(rule, phrase)
+function M.cat.toLpeg(rule, feed)
    for i, element in ipairs(rule) do
-      push(phrase, " ")
-      element:toLpeg(phrase)
+      feed:push("")
+      element:toLpeg(feed)
       if i < #rule then
-         push(phrase, " ", "*", " ")
+         feed:push("", "*", " ")
       end
    end
-   push(phrase, " ")
+   feed:push(" ")
 end
 ```
 
 ```lua
-function M.alt.toLpeg(rule, phrase)
+function M.alt.toLpeg(rule, feed)
    for i, element in ipairs(rule) do
-      push(phrase, " ")
-      element:toLpeg(phrase)
+      feed:push("")
+      element:toLpeg(feed)
       if i < #rule then
-         push(phrase, " ", "+", " ")
+         feed:push("", "+", " ")
       end
    end
-   push(phrase, " ")
+   feed:push(" ")
 end
 ```
 
@@ -198,11 +198,11 @@ end
 ### group
 
 ```lua
-function M.group.toLpeg(group, phrase)
-   push(phrase, "(")
+function M.group.toLpeg(group, feed)
+   feed :push("", "(") :indent()
    assert(#group == 1, "group has other than one child")
-   group[1]:toLpeg(phrase)
-   push(phrase, ")")
+   group[1]:toLpeg(feed)
+   feed:push(")") :dedent()
 end
 ```
 
@@ -210,8 +210,8 @@ end
 ### name
 
 ```lua
-function M.name.toLpeg(name, phrase)
-   push(phrase, 'V"', name.token, '"', " ")
+function M.name.toLpeg(name, feed)
+   feed:push("", 'V"' .. name.token .. '"', " ")
 end
 ```
 
@@ -239,7 +239,7 @@ local Surrounding = Prefix + Suffix + Backref
 
 local backrefBegin, backrefEnd
 
-function M.element.toLpeg(elem, phrase)
+function M.element.toLpeg(elem, feed)
    local prefixed, backrefed  = Prefix[elem[1].class],
                                 Backref[elem[#elem].class]
    local suffixed;
@@ -270,30 +270,30 @@ function M.element.toLpeg(elem, phrase)
 
    -- backrefs enclose everything including lookahead prefixes
    if backref then
-      backrefBegin(backref, phrase)
+      backrefBegin(backref, feed)
    end
 
    if prefix then
       local which = prefix.class
       if which == 'and' then
-         push(phrase, "#")
+         feed:push("", "#")
       elseif which == 'not' then
-         push(phrase, "-", "(")
+         feed:push("", "-", "(") :indent()
       else
          error(("bad prefix of class %s"):format(which))
       end
    end
 
-   part:toLpeg(phrase)
+   part:toLpeg(feed)
 
    if suffix then
       local which = suffix.class
       if which == 'zero-plus' then
-         push(phrase, "^0")
+         feed:push("^0")
       elseif which == 'one-plus' then
-         push(phrase, "^1")
+         feed:push("^1")
       elseif which == 'optional' then
-         push(phrase, "^-1")
+         feed:push("^-1")
       elseif which == 'repeat' then
          -- handle this case
       else
@@ -302,13 +302,13 @@ function M.element.toLpeg(elem, phrase)
    end
 
    if prefix and prefix.class == 'not' then
-      push(phrase, ")")
+      feed :push(")") :dedent()
    end
 
    if backref then
-      backrefEnd(backref, phrase)
+      backrefEnd(backref, feed)
    end
-   push(phrase, " ")
+   feed:push(" ")
 end
 ```
 
@@ -327,8 +327,8 @@ end
 ### literal
 
 ```lua
-function M.literal.toLpeg(literal, phrase)
-   push(phrase, "P", literal.token)
+function M.literal.toLpeg(literal, feed)
+   feed:push("", "P" .. literal.token, " ")
 end
 ```
 
@@ -336,8 +336,8 @@ end
 ### number
 
 ```lua
-function M.number.toLpeg(number, phrase)
-   push(phrase, "", number.token, " ")
+function M.number.toLpeg(number, feed)
+   feed:push("", number.token, " ")
 end
 ```
 
@@ -353,14 +353,14 @@ They're also supposed to handle unicode transparently, and don't\.
 That is, however, a library issue, rather than a codegen issue\.
 
 ```lua
-function M.set.toLpeg(set, phrase)
-   push(phrase, 'S"', set.value, '"',  " ")
+function M.set.toLpeg(set, feed)
+   feed:push("", 'S"' .. set.value ..'"',  " ")
 end
 ```
 
 ```lua
-function M.range.toLpeg(range, phrase)
-   push(phrase, 'R"', range.from_char, range.to_char, '"', " ")
+function M.range.toLpeg(range, feed)
+   feed:push("", 'R"' .. range.from_char, range.to_char .. '"', " ")
 end
 ```
 

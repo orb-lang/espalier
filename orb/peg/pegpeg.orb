@@ -7,9 +7,8 @@ I heard you like parsing.
 
 So I wrote a Parsing Expression Grammar in Parsing Expression Grammar, for
 parsing Parsing Expression Grammmars into expressive grammars, so I can parse
-a grammar into a grammar parser, so you can parse your parser while you
-express your grammar.
-
+a grammar into a grammar parser, so you can use the parser parser from the
+grammar grammar to parse your parser while you express your grammar.
 
 #!peg @pegpeg #asLua
            `peg`  ←  rules / anon
