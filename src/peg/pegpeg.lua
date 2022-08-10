@@ -16,7 +16,9 @@ local pegpeg = [[
            rules  ←  _ rule+ (-1 / Error)
             anon  ←  _ rhs (-1 / Error)
 
-            rule  ←  lhs rhs
+            rule  ←  lhs rhs rule-sep
+
+        rule-sep  ←   _
 
              lhs  ←  (suppressed / rule-name) _ into _
              rhs  ←  alt
@@ -27,27 +29,27 @@ local pegpeg = [[
         `symbol`  ←  letter (letter / digit /  {-_})*
                   /  "_"
 
-             alt  ←  cat ("/" _ cat)*
-             cat  ←  element element*
+             alt  ←  cat (_ "/" _ cat)*
+             cat  ←  element (_ element)*
 
          element  ←  prefix? part suffix? backref?
 
         `prefix`  ←  and / not
         `suffix`  ←  zero-plus / one-plus / optional / repeat
-        `part`    ←  name _ !into
-                  /  literal _
-                  /  group _
-                  /  set-capture _
-                  /  range _
-                  /  number _
+        `part`    ←  name !(_ into)
+                  /  literal
+                  /  group
+                  /  set-capture
+                  /  range
+                  /  number
 
              and  ←  "&" _
              not  ←  "!" _
 
-       zero-plus  ←  "*" _
-        one-plus  ←  "+" _
-        optional  ←  "?" _
-          repeat  ←  "%" _ slice
+       zero-plus  ←  _ "*"
+        one-plus  ←  _ "+"
+        optional  ←  _ "?"
+          repeat  ←  _ "%" _ slice
 
          backref  ←  "@" _ ( reference
                            / back-refer
@@ -59,7 +61,7 @@ local pegpeg = [[
 
             name  ←  symbol
          literal  ←  single-string / double-string
-           group  ←  "(" _ alt ")"
+           group  ←  "(" _ alt _ ")"
    `set-capture`  ←  "{" set "}"
              set  ←  (!("}" / "\n") codepoint)*
            range  ←  "[" range-start "-" range-end "]"

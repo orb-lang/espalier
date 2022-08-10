@@ -20,15 +20,22 @@ constituent parts\.
 ```lua
 local core, cluster = use("qor:core", "cluster:cluster")
 
-local pegpeg = require "espalier:peg/pegpeg"
-local Metis = require "espalier:peg/metis"
+local pegpeg = use "espalier:peg/pegpeg"
+local Metis = use "espalier:peg/metis"
 ```
 
 The inevitable metacircularity is delayed by using the existing peg/grammar
 system for the rules themselves\.
 
 ```lua
-local VavPeg = require "espalier:peg" (pegpeg, Metis) . parse
+local VavPeg = use "espalier:peg" (pegpeg, Metis) . parse
+```
+
+The same with our Grammar module, which is a precomposed Qoph in the latest
+fashion\.
+
+```lua
+local Grammar = use "espalier:espalier/grammar"
 ```
 
 We're juuuust about to swallow our own tails here\.
@@ -51,6 +58,30 @@ cluster.construct(new,
 
       return vav
    end)
+```
+
+
+## Vav interface \#Unstable
+
+The need for an intermediate Node to generate the synth nodes from will not
+be indefinite\.
+
+Vav will be the container for all the components, however\.
+
+
+### Vav:dji\(\)
+
+For today's purposes, produces and attaches a grammar\.
+
+```lua
+function Vav.dji(vav)
+   if not vav.lpeg_engine then
+      vav.lpeg_engine = vav.synth :toLpeg() :string()
+   end
+   -- we need more than this, notably the metis, but.
+   vav.parse, vav.grammar = Grammar(vav.lpeg_engine)
+   return vav.parse
+end
 ```
 
 

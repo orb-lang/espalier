@@ -20,15 +20,22 @@
 
 local core, cluster = use("qor:core", "cluster:cluster")
 
-local pegpeg = require "espalier:peg/pegpeg"
-local Metis = require "espalier:peg/metis"
+local pegpeg = use "espalier:peg/pegpeg"
+local Metis = use "espalier:peg/metis"
 
 
 
 
 
 
-local VavPeg = require "espalier:peg" (pegpeg, Metis) . parse
+local VavPeg = use "espalier:peg" (pegpeg, Metis) . parse
+
+
+
+
+
+
+local Grammar = use "espalier:espalier/grammar"
 
 
 
@@ -51,6 +58,30 @@ cluster.construct(new,
 
       return vav
    end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Vav.dji(vav)
+   if not vav.lpeg_engine then
+      vav.lpeg_engine = vav.synth :toLpeg() :string()
+   end
+   -- we need more than this, notably the metis, but.
+   vav.parse, vav.grammar = Grammar(vav.lpeg_engine)
+   return vav.parse
+end
 
 
 
