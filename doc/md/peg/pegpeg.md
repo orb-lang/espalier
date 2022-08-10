@@ -59,7 +59,7 @@ grammar grammar to parse your parser while you express your grammar\.
 
             name  ←  symbol
          literal  ←  single-string / double-string
-         `group`  ←  "(" _ alt ")"
+           group  ←  "(" _ alt ")"
    `set-capture`  ←  "{" set "}"
              set  ←  (!("}" / "\n") codepoint)*
            range  ←  "[" range-start "-" range-end "]"

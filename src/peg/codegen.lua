@@ -108,7 +108,7 @@ end
 
 
 function M.rules.toLpeg(rules, extraLpeg)
-   local feed = Feed { lex = require "helm:lex" . colorize }
+   local feed = Feed ()
    insert(feed, _PREFACE)
    -- reserve extra space at [2] for backref rules
    local preface = {}
@@ -119,7 +119,7 @@ function M.rules.toLpeg(rules, extraLpeg)
    feed :push("local function ", grammar_fn, "(_ENV)")
         :indent(3)
         :newLine()
-        :push("START", " ", "'" .. start .. "'")
+        :push("START", "", "'" .. start .. "'")
         :newLine()
    -- Build the SUPPRESS function here, this requires finding the
    -- hidden rules and suppressing them
@@ -151,7 +151,7 @@ end
 function M.rule.toLpeg(rule, feed)
    local token = '"' .. assert(rule :take 'rule_name' . token) .. '"'
    feed :push("_ENV", "[", token, "]", " ", "=", " ")
-        :indent()
+        :indent() :nudge(1)
    rule :take 'rhs' :toLpeg(feed)
 
    feed :dedent() :newLine(2)
@@ -174,10 +174,10 @@ function M.cat.toLpeg(rule, feed)
       feed:push("")
       element:toLpeg(feed)
       if i < #rule then
-         feed:push("", "*", " ")
+         feed:push("", "*", "")
       end
    end
-   feed:push(" ")
+   feed:push("")
 end
 
 
@@ -187,10 +187,10 @@ function M.alt.toLpeg(rule, feed)
       feed:push("")
       element:toLpeg(feed)
       if i < #rule then
-         feed:push("", "+", " ")
+         feed:push("", "+", "")
       end
    end
-   feed:push(" ")
+   feed:push("")
 end
 
 
@@ -202,7 +202,7 @@ function M.group.toLpeg(group, feed)
    feed :push("", "(") :indent()
    assert(#group == 1, "group has other than one child")
    group[1]:toLpeg(feed)
-   feed:push(")") :dedent()
+   feed:push(")", "") :dedent()
 end
 
 
@@ -211,7 +211,7 @@ end
 
 
 function M.name.toLpeg(name, feed)
-   feed:push("", 'V"' .. name.token .. '"', " ")
+   feed:push("", 'V"' .. name.token .. '"', "")
 end
 
 
@@ -232,7 +232,7 @@ end
 
 
 local Prefix = Set {'and', 'not'}
-local Suffix = Set {'zero-plus', 'one-plus', 'optional', 'repeat'}
+local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
 local Backref = Set {'backref'}
 
 local Surrounding = Prefix + Suffix + Backref
@@ -288,12 +288,12 @@ function M.element.toLpeg(elem, feed)
 
    if suffix then
       local which = suffix.class
-      if which == 'zero-plus' then
-         feed:push("^0")
-      elseif which == 'one-plus' then
-         feed:push("^1")
+      if which == 'zero_plus' then
+         feed:cling("^0")
+      elseif which == 'one_plus' then
+         feed:cling("^1")
       elseif which == 'optional' then
-         feed:push("^-1")
+         feed:cling("^-1")
       elseif which == 'repeat' then
          -- handle this case
       else
@@ -308,7 +308,7 @@ function M.element.toLpeg(elem, feed)
    if backref then
       backrefEnd(backref, feed)
    end
-   feed:push(" ")
+   feed:push("")
 end
 
 
@@ -328,7 +328,7 @@ end
 
 
 function M.literal.toLpeg(literal, feed)
-   feed:push("", "P" .. literal.token, " ")
+   feed:push("", "P" .. literal.token, "")
 end
 
 
@@ -337,7 +337,7 @@ end
 
 
 function M.number.toLpeg(number, feed)
-   feed:push("", number.token, " ")
+   feed:push("", number.token, "")
 end
 
 
@@ -354,13 +354,13 @@ end
 
 
 function M.set.toLpeg(set, feed)
-   feed:push("", 'S"' .. set.value ..'"',  " ")
+   feed:push("", 'S"' .. set.value ..'"',  "")
 end
 
 
 
 function M.range.toLpeg(range, feed)
-   feed:push("", 'R"' .. range.from_char, range.to_char .. '"', " ")
+   feed:push("", 'R"' .. range.from_char, range.to_char .. '"', "")
 end
 
 
