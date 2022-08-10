@@ -837,22 +837,23 @@ function Syn.rules.analyze(rules)
       rules:makeDummies()
    end
 
-   rules:constrain()
+   return rules:anomalies()
+   --rules:constrain()
 end
 ```
 
 
 ### rules:anomalies\(\)
 
-If everything is in order, returns `nil`, otherwise, the less\-than\-perfect
-aspects of the grammar as\-is\.
+If everything is in order, returns `nil, message`, otherwise, the
+less\-than\-perfect aspects of the grammar as\-is\.
 
 ```lua
 function Syn.rules.anomalies(rules)
    local coll = rules.collection
    if not coll then return nil, "collectRules first" end
    if not (coll.missing or coll.surplus or coll.dupes) then
-      return nil
+      return nil, "no anomalies detected"
    else
       return { missing = coll.missing,
                surplus = coll.surplus,
@@ -1191,7 +1192,7 @@ end
 ```
 
 ```lua
-function Syn.choice.sumConstraints(choice, coll)
+function Syn.alt.sumConstraints(choice, coll)
    local maybe = nil
    for _, sub in ipairs(choice) do
       if sub.compound then
