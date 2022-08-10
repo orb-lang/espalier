@@ -93,14 +93,32 @@ local Q = {}
 
 
 
-Q.maybe = Set {'zero_or_more', 'optional'}
+Q.nofail = Set {'zero_plus', 'optional'}
 
 
 
 
 
 
-Q.compound = Set {'cat', 'choice'}
+
+
+Q.predicate = Set {'and', 'not'}
+
+
+
+
+
+
+
+
+Q.nullable = Q.predicate + Q.nofail
+
+
+
+
+
+
+Q.compound = Set {'cat', 'alt'}
 
 
 
@@ -110,6 +128,33 @@ Q.compound = Set {'cat', 'choice'}
 
 
 Q.terminal = Set {'literal', 'set', 'range', 'number'}
+
+
+
+
+
+
+
+
+
+
+
+Q.unbounded = Set { 'zero_plus', 'one_plus' }
+
+
+
+
+
+local Prop = {}
+for trait, classSet in pairs(Q) do
+   for class in pairs(classSet) do
+      Prop[class] = Prop[class] or {}
+      insert(Prop[class], trait)
+   end
+end
+for class, array in pairs(Prop) do
+   Prop[class] = Set[array]
+end
 
 
 
@@ -162,7 +207,8 @@ local function builder(_new, synth, node, i)
    synth.node = node
    node.synth = synth
    synth.line, synth.col = node:linePos()
-   -- this is just for reading purposes, remove
+   -- this is just for reading purposes in helm
+   -- add a feature to the lens to allow this through
    synth.class = _new.class
    if Q.terminal[synth.class] then
       synth.token = node:span()
@@ -185,6 +231,7 @@ local suppress = Set {
    -- this field isn't used but I think it will be
    'final',
    'constrained',
+   'peh',
    'o',
    'col',
    'up',
@@ -440,6 +487,8 @@ end
 
 
 
+local analyzeElement;
+
 local function _synth(node, parent_synth, i)
    local synth = newSynth(node, i)
    synth.parent = parent_synth or synth
@@ -449,7 +498,73 @@ local function _synth(node, parent_synth, i)
    for i, twig in ipairs(node) do
       synth[i] = _synth(twig, synth, i)
    end
+   -- elements
+   if synth.class == 'element' then
+      analyzeElement(synth)
+   end
    return synth
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+local Prefix = Set {'and', 'not'}
+local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
+local Backref = Set {'backref'}
+
+local Surrounding = Prefix + Suffix + Backref
+
+
+
+function analyzeElement(elem)
+   local prefixed, backrefed  = Prefix[elem[1].class],
+                                Backref[elem[#elem].class]
+   local suffixed;
+   if backrefed then
+      suffixed = Suffix[elem[#elem-1].class]
+   else
+      suffixed = Suffix[elem[#elem].class]
+   end
+   local modifier = { prefix = false,
+                      suffix = false,
+                      backref = false, }
+
+   local part;
+
+   if prefixed then
+      modifier.prefix = elem[1]
+      part = elem[2]
+      elem.part = 2
+   else
+      part = elem[1]
+      elem.part = 1
+   end
+
+   if backrefed and suffixed then
+      modifier.backref = elem[#elem]
+      modifier.suffix  = elem[#elem - 1]
+   elseif suffixed then
+      modifier.suffix = elem[#elem]
+   elseif backrefed then
+      modifier.backref = elem[#elem]
+   end
+   assert(part and (not Surrounding[part.class]),
+          "weirdness encountered analyzing element")
+   for _, mod in pairs(modifier) do
+      if mod then
+         elem[mod.class] = true
+         part[mod.class] = true
+      end
+   end
 end
 
 
@@ -508,7 +623,7 @@ function M.rules.synthesize(rules)
 
    local synth = _synth(rules)
    s:verb("synthesized %s", synth.class)
-   synth.peg_str = rules.peg_str
+   synth.peh = rules.peh
    rules.synth = synth --- this is useful, ish, at least in helm
    return synth
 end
@@ -834,6 +949,12 @@ function Syn.rules.analyze(rules)
       rules:makeDummies()
    end
 
+   -- we'll switch to using these directly
+   for k, v in pairs(coll) do
+      rules[k] = v
+   end
+
+
    return rules:anomalies()
    --rules:constrain()
 end
@@ -849,12 +970,12 @@ end
 function Syn.rules.anomalies(rules)
    local coll = rules.collection
    if not coll then return nil, "collectRules first" end
-   if not (coll.missing or coll.surplus or coll.dupes) then
+   if not (rules.missing or rules.surplus or rules.dupes) then
       return nil, "no anomalies detected"
    else
-      return { missing = coll.missing,
-               surplus = coll.surplus,
-               dupes   = coll.dupes }
+      return { missing = rules.missing,
+               surplus = rules.surplus,
+               dupes   = rules.dupes }
    end
 end
 
@@ -908,12 +1029,12 @@ function Syn.rules.makeDummies(rules)
    if not rules.collection then
       return nil, 'no analysis has been performed'
    end
-   local missing = rules.collection.missing
+   local missing = rules.missing
    if (not missing) or #missing == 0 then
       return nil, 'no rules are missing'
    end
    local dummy_str, pad = {"\n\n"}, " "
-   if rules.collection.ruleMap['_'] then
+   if rules.ruleMap['_'] then
       pad = " _ "
    end
    for _, name in ipairs(missing) do
@@ -926,7 +1047,6 @@ function Syn.rules.makeDummies(rules)
       insert(dummy_str, dumbRule(name, pad, patt))
    end
    rules.dummy_str = concat(dummy_str)
-   return rules.pegparse(rules.dummy_str)
 end
 
 
@@ -941,17 +1061,10 @@ function Syn.rules.dummyParser(rules)
       return nil, "no dummy rules"
    end
    rules:makeDummies()
-   local with_dummy = rules.peg_str .. rules.dummy_str
-   return Peg(with_dummy):toGrammar()
+   local with_dummy = rules.peh .. rules.dummy_str
+   -- do this with Vav
+   -- return Peg(with_dummy):toGrammar()
 end
-
-
-
-
-
-
-
-
 
 
 
@@ -1101,9 +1214,9 @@ end
 function Syn.rule.constrain(rule, coll)
    local rhs = assert(rule :take 'rhs')
    local body = rhs[1]
-   if body.maybe then
-      rhs.maybe = true
-      rule.maybe = true
+   if body.nofail then
+      rhs.nofail = true
+      rule.nofail = true
    end
    if body.compound then
       body:sumConstraints(coll)
@@ -1122,7 +1235,7 @@ function Syn.name.constrain(name, coll)
    if rule.constrained then
       name.final = rule.final
       name.terminal = rule.terminal
-      name.maybe = rule.maybe
+      name.nofail = rule.nofail
       name.locked = rule.locked
       name.constrained = true
       name.unconstrained = nil
@@ -1150,14 +1263,14 @@ function Syn.cat.sumConstraints(cat, coll)
             sub.unconstrained = true
          end
       end
-      if sub.locked or (not sub.maybe) then
+      if sub.locked or (not sub.nofail) then
          idx = i
          gate = sub
       end
-      if (not sub.maybe) then
+      if (not sub.nofail) then
          if not locked then
-            assert(not sub.maybe)
-            if sub.token == "_" then sub.seriously = "wtf: " .. tostring(sub.maybe) end
+            assert(not sub.nofail)
+            if sub.token == "_" then sub.seriously = "wtf: " .. tostring(sub.nofail) end
             sub.lock = true
             locked = true
          end
@@ -1192,13 +1305,13 @@ function Syn.alt.sumConstraints(choice, coll)
       if sub.compound then
          sub:sumConstraints(coll)
       end
-      if sub.maybe then
+      if sub.nofail then
          maybe = true
          -- for future expansion: this has to be the last rule
          -- to be meaningful under ordered choice
       end
    end
-   choice.maybe = maybe
+   choice.nofail = maybe
    choice.constrained = true
 end
 
@@ -1212,7 +1325,7 @@ function Syn.repeated.constrain(repeated, coll)
    if not range then return end
    local start = tonumber(range[1])
    if start == 0 then
-      repeated.maybe = true
+      repeated.nofail = true
    end
    repeated.constrained = true
 end

@@ -4,9 +4,11 @@
 ---[[ generate lua parser
 Vav = require "espalier:vav"
 lua_peg = require "scry:lua-peg"
-v = Vav(lua_peg):synthesize()
+vav = Vav(lua_peg)
 
-print(tostring(v:toLpeg():view()))
+vav :dji()
+
+print(vav.lpeg_engine)
 
 --]]
 --[[

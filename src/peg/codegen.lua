@@ -231,6 +231,9 @@ end
 
 
 
+
+
+
 local Prefix = Set {'and', 'not'}
 local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
 local Backref = Set {'backref'}
@@ -240,72 +243,37 @@ local Surrounding = Prefix + Suffix + Backref
 local backrefBegin, backrefEnd
 
 function M.element.toLpeg(elem, feed)
-   local prefixed, backrefed  = Prefix[elem[1].class],
-                                Backref[elem[#elem].class]
-   local suffixed;
-   if backrefed then
-      suffixed = Suffix[elem[#elem-1].class]
-   else
-      suffixed = Suffix[elem[#elem].class]
-   end
-   local prefix, part, suffix, backref = nil, nil, nil, nil -- none of you are f
-
-   if prefixed then
-      prefix = elem[1]
-      part = elem[2]
-   else
-      part = elem[1]
-   end
-
-   if backrefed and suffixed then
-      backref = elem[#elem]
-      suffix  = elem[#elem - 1]
-   elseif suffixed then
-      suffix = elem[#elem]
-   elseif backrefed then
-      backref = elem[#elem]
-   end
-
-   assert(not Surrounding[part.class], "missed the element part somehow")
+   local part = elem[elem.part]
 
    -- backrefs enclose everything including lookahead prefixes
-   if backref then
+   if false then
       backrefBegin(backref, feed)
    end
 
-   if prefix then
-      local which = prefix.class
-      if which == 'and' then
+   if elem['and'] then
          feed:push("", "#")
-      elseif which == 'not' then
+   elseif elem['not'] then
          feed:push("", "-", "(") :indent()
-      else
-         error(("bad prefix of class %s"):format(which))
-      end
    end
 
    part:toLpeg(feed)
 
-   if suffix then
-      local which = suffix.class
-      if which == 'zero_plus' then
-         feed:cling("^0")
-      elseif which == 'one_plus' then
-         feed:cling("^1")
-      elseif which == 'optional' then
-         feed:cling("^-1")
-      elseif which == 'repeat' then
-         -- handle this case
-      else
-         error(("bad suffix of class %s"):format(which))
-      end
+   if elem.zero_plus then
+      feed:cling("^0")
+   elseif elem.one_plus then
+      feed:cling("^1")
+   elseif elem.optional then
+      feed:cling("^-1")
+   elseif elem['repeat'] then
+      -- handle this case
    end
 
-   if prefix and prefix.class == 'not' then
+
+   if elem['not'] then
       feed :push(")") :dedent()
    end
 
-   if backref then
+   if false then
       backrefEnd(backref, feed)
    end
    feed:push("")
