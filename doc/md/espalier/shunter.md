@@ -202,6 +202,11 @@ end
   The upvalue `is_operator` is just `precedence` again, but here being
 used to test for operators\.
 
+\#Todo
+       therefore be possible to reuse the tables \(simpler\) without changing
+       metatables \(tricky\.\.\.\), and we should allocate rather than switch
+       metas because LuaJIT hates that\.
+
 ```lua
 local function linker(is_operator, unary, Metas)
    local function link(out, expr)

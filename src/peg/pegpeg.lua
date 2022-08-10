@@ -16,9 +16,13 @@ local pegpeg = [[
            rules  ←  _ rule+ (-1 / Error)
             anon  ←  _ rhs (-1 / Error)
 
+                             ; this is the only trailing whitespace left
+                             ; there are other things to do but this iteration
+                             ; should support adding optional pragma lines
+                             ; before rules.
             rule  ←  lhs rhs rule-sep
 
-        rule-sep  ←   _
+      `rule-sep`  ←   _
 
              lhs  ←  (suppressed / rule-name) _ into _
              rhs  ←  alt
@@ -34,7 +38,7 @@ local pegpeg = [[
 
          element  ←  prefix? part suffix? backref?
 
-        `prefix`  ←  and / not
+        `prefix`  ←  (and / not) _
         `suffix`  ←  zero-plus / one-plus / optional / repeat
         `part`    ←  name !(_ into)
                   /  literal
@@ -43,8 +47,8 @@ local pegpeg = [[
                   /  range
                   /  number
 
-             and  ←  "&" _
-             not  ←  "!" _
+             and  ←  "&"
+             not  ←  "!"
 
        zero-plus  ←  _ "*"
         one-plus  ←  _ "+"

@@ -456,7 +456,9 @@ end
 ```
 
 
-### Codegen
+### Codegen Mixin
+
+Eventually this is clade\-native behavior\.
 
 ```lua
 local codegen = require "espalier:peg/codegen"
@@ -470,31 +472,31 @@ end
 
 
 
-#### rules:trim\(\)
+#### rules:hoist\(\)
 
 Three rules are just noise when they have only one child:
 
 ```lua
-local hoist = Set {'element', 'alt', 'cat'}
+local Hoist = Set {'element', 'alt', 'cat'}
 ```
 
 ```lua
-function M.rules.trim(rules)
-   if rules.trimmed then return rules end
+function M.rules.hoist(rules)
+   if rules.hoisted then return rules end
    for i, rule in ipairs(rules) do
-      rule:trim()
+      rule:hoist()
    end
-   rules.trimmed = true
+   rules.hoisted = true
 
    return rules
 end
 
-function Twig.trim(twig)
+function Twig.hoist(twig)
    for i, ast in ipairs(twig) do
-      if #ast == 1 and hoist[ast.id] then
-         twig[i] = ast[1]:trim()
+      if #ast == 1 and Hoist[ast.id] then
+         twig[i] = ast[1]:hoist()
       else
-         ast:trim()
+         ast:hoist()
       end
    end
 
