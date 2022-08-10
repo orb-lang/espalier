@@ -508,7 +508,6 @@ function M.rules.synthesize(rules)
 
    local synth = _synth(rules)
    s:verb("synthesized %s", synth.class)
-   synth.pegparse = assert(rules.pegparse)
    synth.peg_str = rules.peg_str
    rules.synth = synth --- this is useful, ish, at least in helm
    return synth

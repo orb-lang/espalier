@@ -15,24 +15,12 @@ This is largely a matter of breaking the existing architecture down into its
 constituent parts\.
 
 
-### pegpeg
-
-A fresh, cleaner implementation of the PEG grammar extension we use in
-Espalier\.
-
-Interpreted by the old engine \(like everything else\!\)\.\. for now\.k
+#### imports
 
 ```lua
+local core, cluster = use("qor:core", "cluster:cluster")
+
 local pegpeg = require "espalier:peg/pegpeg"
-```
-
-
-### Metis
-
-Vav takes over as, well, the Vav combinator, for now we can focus on
-middleware for our nice tight new IR\.
-
-```lua
 local Metis = require "espalier:peg/metis"
 ```
 
@@ -43,21 +31,30 @@ system for the rules themselves\.
 local VavPeg = require "espalier:peg" (pegpeg, Metis) . parse
 ```
 
+We're juuuust about to swallow our own tails here\.
 
-### Vav
+
+## Vav
 
 ```lua
-local function Vav(peg_string)
-   local rules = VavPeg(peg_string)
-   rules.pegparse = VavPeg
-   rules.peg_str = peg_string
-   -- we'll have checks here
-   rules :synthesize()
-   return rules
-end
+local new, Vav, Vav_M = cluster.order()
+
+Vav.pegparse = VavPeg
+
+
+cluster.construct(new,
+   function(_new, vav, peh)
+     vav.rules = VavPeg(peh)
+     vav.peh = peh
+     -- we'll have checks here
+     vav.synth = vav.rules :synthesize()
+
+      return vav
+   end)
 ```
 
+
 ```lua
-return Vav
+return new
 ```
 
