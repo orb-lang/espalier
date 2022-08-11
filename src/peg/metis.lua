@@ -153,7 +153,7 @@ for trait, classSet in pairs(Q) do
    end
 end
 for class, array in pairs(Prop) do
-   Prop[class] = Set[array]
+   Prop[class] = Set(array)
 end
 
 
@@ -181,7 +181,8 @@ local Twig = Node :inherit()
 
 
 local function __index(metabuild, key)
-   metabuild[key] = Twig :inherit(key)
+   local M = Twig :inherit(key)
+   metabuild[key] = M
    return metabuild[key]
 end
 
@@ -460,14 +461,6 @@ Syndex.analyze = cluster.ur.pass
 
 
 
-
-
-
-
-
-
-
-
 local SpecialSnowflake = Set {'set', 'range', 'name',
                                'number', 'literal', 'rule_name'}
 
@@ -489,9 +482,18 @@ end
 
 local analyzeElement;
 
+-- note: better lenses obviate this
+local allpairs = table.allpairs
+
 local function _synth(node, parent_synth, i)
    local synth = newSynth(node, i)
    synth.parent = parent_synth or synth
+   -- we copy the flags so I can see them in helm :/
+   for key, value in allpairs(synth) do
+      if type(value) == 'boolean' then
+         synth[key] = value
+      end
+   end
    if SpecialSnowflake[synth.class] then
       extraSpecial(node, synth)
    end
@@ -504,6 +506,8 @@ local function _synth(node, parent_synth, i)
    end
    return synth
 end
+
+
 
 
 
@@ -538,15 +542,13 @@ function analyzeElement(elem)
                       suffix = false,
                       backref = false, }
 
-   local part;
+   local part
 
    if prefixed then
       modifier.prefix = elem[1]
       part = elem[2]
-      elem.part = 2
    else
       part = elem[1]
-      elem.part = 1
    end
 
    if backrefed and suffixed then
@@ -562,8 +564,22 @@ function analyzeElement(elem)
    for _, mod in pairs(modifier) do
       if mod then
          elem[mod.class] = true
+         local traits = Prop[mod.class]
+         if traits then
+            for trait in pairs(traits) do
+               elem[trait] = true
+            end
+         end
          part[mod.class] = true
       end
+   end
+   -- strip now-extraneous information
+   for i = 1, #elem do
+      elem[i] = nil
+   end
+   elem[1] = part
+   if backrefed then
+      elem[2] = modifier.backref
    end
 end
 
@@ -620,8 +636,8 @@ end
 
 function M.rules.synthesize(rules)
    rules.start = rules :take 'rule'
-
    local synth = _synth(rules)
+   ---[[DBG]] synth.Prop = Prop
    s:verb("synthesized %s", synth.class)
    synth.peh = rules.peh
    rules.synth = synth --- this is useful, ish, at least in helm

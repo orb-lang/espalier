@@ -243,7 +243,7 @@ local Surrounding = Prefix + Suffix + Backref
 local backrefBegin, backrefEnd
 
 function M.element.toLpeg(elem, feed)
-   local part = elem[elem.part]
+   local part, backref = elem[1], elem[2]
 
    -- backrefs enclose everything including lookahead prefixes
    if false then

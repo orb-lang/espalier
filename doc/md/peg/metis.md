@@ -153,7 +153,7 @@ for trait, classSet in pairs(Q) do
    end
 end
 for class, array in pairs(Prop) do
-   Prop[class] = Set[array]
+   Prop[class] = Set(array)
 end
 ```
 
@@ -181,7 +181,8 @@ local Twig = Node :inherit()
 
 ```lua
 local function __index(metabuild, key)
-   metabuild[key] = Twig :inherit(key)
+   local M = Twig :inherit(key)
+   metabuild[key] = M
    return metabuild[key]
 end
 ```
@@ -458,16 +459,8 @@ Let's get this out of the way real quick\.
 
 ##### Custom Synthesis
 
-Nothing past synthesis will work correctly until adjusted to the new structure
-of the AST\.
-
-Needed fields:
-
-`set` gets `.value`, `range` gets `.from_char` and `to_char`, `name`,
-`number`, `literal`, `rule_name`, all have `.token`\.
-
-I'm going to grab these custom, and may be back someday to rationalize this
-module, who knows\.
+Here we decorate particular synth nodes with useful representations and
+contextual information\.
 
 ```lua
 local SpecialSnowflake = Set {'set', 'range', 'name',
@@ -491,9 +484,18 @@ end
 ```lua
 local analyzeElement;
 
+-- note: better lenses obviate this
+local allpairs = table.allpairs
+
 local function _synth(node, parent_synth, i)
    local synth = newSynth(node, i)
    synth.parent = parent_synth or synth
+   -- we copy the flags so I can see them in helm :/
+   for key, value in allpairs(synth) do
+      if type(value) == 'boolean' then
+         synth[key] = value
+      end
+   end
    if SpecialSnowflake[synth.class] then
       extraSpecial(node, synth)
    end
@@ -518,6 +520,8 @@ in some fashion, what we do here is promote that information onto the
 element, and copy it to the component part, such that we no longer need to
 consider those synth nodes\.
 
+We then dispose of the surroundings, except for back references\.
+
 ```lua
 local Prefix = Set {'and', 'not'}
 local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
@@ -540,15 +544,13 @@ function analyzeElement(elem)
                       suffix = false,
                       backref = false, }
 
-   local part;
+   local part
 
    if prefixed then
       modifier.prefix = elem[1]
       part = elem[2]
-      elem.part = 2
    else
       part = elem[1]
-      elem.part = 1
    end
 
    if backrefed and suffixed then
@@ -564,8 +566,22 @@ function analyzeElement(elem)
    for _, mod in pairs(modifier) do
       if mod then
          elem[mod.class] = true
+         local traits = Prop[mod.class]
+         if traits then
+            for trait in pairs(traits) do
+               elem[trait] = true
+            end
+         end
          part[mod.class] = true
       end
+   end
+   -- strip now-extraneous information
+   for i = 1, #elem do
+      elem[i] = nil
+   end
+   elem[1] = part
+   if backrefed then
+      elem[2] = modifier.backref
    end
 end
 ```
@@ -622,8 +638,8 @@ end
 ```lua
 function M.rules.synthesize(rules)
    rules.start = rules :take 'rule'
-
    local synth = _synth(rules)
+   ---[[DBG]] synth.Prop = Prop
    s:verb("synthesized %s", synth.class)
    synth.peh = rules.peh
    rules.synth = synth --- this is useful, ish, at least in helm
