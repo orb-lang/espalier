@@ -448,112 +448,112 @@ local keyword_rules = [[
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+local keyword_rule = [[
+ keyword  ←  ( A  ( B O R T
+                  / C T I O N
+                  / D D
+                  / F T E R
+                  / L  ( T E R
+                       / W A Y S )
+                  / N A L Y Z E
+                  / S C
+                  / T T A C H
+                  / U T O I N C R E M E N T )
+            / B E  ( F O R E
+                   / G I N
+                   / T W E E N )
+            / C  ( A S C A D E
+                 / H E C K
+                 / O  ( L  ( L A T E
+                           / U M N )
+                      / M M I T
+                      / N  ( F L I C T
+                           / S T R A I N T ) )
+                 / R  ( E A T E
+                      / O S S )
+                 / U R R E N T "_"  ( D A T E
+                                    / T I M E S T A M P ) )
+            / D  ( A T A B A S E
+                 / E  ( F  ( A U L T
+                           / E R R  ( A B L E
+                                    / E D ) )
+                      / L E T E
+                      / S C
+                      / T A C H )
+                 / I S T I N C T
+                 / R O P )
+            / E  ( A C H
+                 / L S E
+                 / N D
+                 / S C A P E
+                 / X  ( C  ( E P T
+                           / L U S I V E )
+                      / I S T S
+                      / P L A I N ) )
+            / F  ( A  ( I L
+                      / L S E )
+                 / O R E I G N
+                 / R O M
+                 / U L L )
+            / G  ( E N E R A T E D
+                 / L O B
+                 / R O U P )
+            / H A V I N G
+            / I  ( G N O R E
+                 / M M E D I A T E
+                 / N  ( D E X
+                      / I T I A L L Y
+                      / N E R
+                      / S  ( E R T
+                           / T E A D )
+                      / T E R S E C T )
+                 / S N U L L )
+            / J O I N
+            / K E Y
+            / L  ( E F T
+                 / I  ( K E
+                      / M I T ) )
+            / M A T C H
+            / N  ( A T U R A L
+                 / O T N U L L
+                 / U L L )
+            / O  ( F F S E T
+                 / R D E R
+                 / U T E R )
+            / P  ( L A N
+                 / R  ( A G M A
+                      / I M A R Y ) )
+            / Q U E R Y
+            / R  ( A I S E
+                 / E  ( F E R E N C E S
+                      / G E X P
+                      / I N D E X
+                      / N A M E
+                      / P L A C E
+                      / S T R I C T )
+                 / I G H T
+                 / O  ( L L B A C K
+                      / W I D ) )
+            / S  ( E L E C T
+                 / T  ( O R E D
+                      / R I C T ) )
+            / T  ( A B L E
+                 / E M P O R A R Y
+                 / H E N
+                 / R  ( A N S A C T I O N
+                      / I G G E R
+                      / U E ) )
+            / U  ( N I  ( O N
+                        / Q U E )
+                 / P D A T E
+                 / S I N G )
+            / V  ( A  ( C U U M
+                      / L U E S )
+                 / I  ( E W
+                      / R T U A L ) )
+            / W  ( H E R E
+                 / I T H O U T ) ) t
+]]
 
 
 
@@ -611,7 +611,7 @@ local sqlite_blocks = {
    literal_rules,
    name_rules,
    keyword_rules,
-   --keyword_rule,
+   keyword_rule,
    caseless_letters,
    whitespace_rules,
    terminal_rule,

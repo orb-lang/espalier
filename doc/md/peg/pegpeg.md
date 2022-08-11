@@ -59,13 +59,9 @@ few quirks and extensions:
 
             anon  ←  _ rhs (-1 / Error)
 
-                             ; this is the only trailing whitespace left
-                             ; there are other things to do but this iteration
-                             ; should support adding optional pragma lines
-                             ; before rules.
-            rule  ←  lhs rhs ;
+            rule  ←  lhs rhs
 
-       rule-sep   ←   _
+       rule-sep   ←   _ ; pragma lines go here
 
              lhs  ←  (suppressed / rule-name) _ into _
              rhs  ←  alt

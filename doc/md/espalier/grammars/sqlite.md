@@ -448,7 +448,7 @@ here\.
  keyword  ←  ( A  ( B O R T
                   / C T I O N
                   / D D
-                  / F T E R†
+                  / F T E R
                   / L  ( T E R
                        / W A Y S )
                   / N A L Y Z E
@@ -607,7 +607,7 @@ local sqlite_blocks = {
    literal_rules,
    name_rules,
    keyword_rules,
-   --keyword_rule,
+   keyword_rule,
    caseless_letters,
    whitespace_rules,
    terminal_rule,
