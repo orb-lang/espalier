@@ -10,19 +10,62 @@ parsing Parsing Expression Grammmars into expressive grammars, so I can parse
 a grammar into a grammar parser, so you can use the parser parser from the
 grammar grammar to parse your parser while you express your grammar.
 
-#!peg @pegpeg #asLua
-           `peg`  ←  rules / anon
 
-           rules  ←  _ rule+ (-1 / Error)
+*** PEGPEG
+
+  This is a straightforward representation of Brian Ford's PEG syntax with a
+few quirks and extensions:
+
+  -  The end of input is presented as =-1=.
+
+     This pattern is used frequently in the existing codebase, but it's too
+     Lua/Wirth for my taste, since it implies (and this is why I excluded
+     such rules) that =-2= means /one byte/ left, which is distasteful.
+
+     This convention is as tolerable as any other string manipulation in Lua,
+     that is to say, the lack of ordination unified with measure is at least
+     pervasive.  Here it is the only place where the worse convention leaks
+     into the specification, and I'd rather it didn't.
+
+     The semantic should be that =0= is End of String, with =-1= meaning one
+     character remaining, and so on. It's worth making this change while I
+     still can.
+
+  -  Neither =true=, nor =false=, nor any variation, are reserved rule names.
+     The rule which always succeds is the empty literal =""=, which may be
+     negated with =!""= to get the rule which always fails.
+
+  -  Supports a limited form of reference capture and back-reference
+     comparison, enough to support a number of common language patterns such
+     as long strings in Lua.
+
+     The major limitation is that the references do not survive rule capture.
+     This makes them an efficient mechanism with negligible effect on
+     performance, but require the paired references to either be a part of the
+     same rule, or part of a subrule with is suppressed =`thus`= in its
+     definition; these rules perform no captures of their own, returning all
+     captures
+
+     This will pose some difficulty in parsing languages, Python in
+     particular, which rely heavily on semantic indentation.  PEGPEG is
+     capable of recognizing these rules, but may need some combination of
+     post-parse tree reconciliation, and/or the use of subgrammars, to resolve
+     the details into the correct parse tree.
+
+#!peg @pegpeg #asLua
+           `peg`  ←   rules / anon
+
+           rules  ←  (rule_sep rule)+ (_ -1 / Error)
+
             anon  ←  _ rhs (-1 / Error)
 
                              ; this is the only trailing whitespace left
                              ; there are other things to do but this iteration
                              ; should support adding optional pragma lines
                              ; before rules.
-            rule  ←  lhs rhs rule-sep
+            rule  ←  lhs rhs ;
 
-      `rule-sep`  ←   _
+       rule-sep   ←   _
 
              lhs  ←  (suppressed / rule-name) _ into _
              rhs  ←  alt

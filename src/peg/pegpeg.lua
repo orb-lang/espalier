@@ -10,19 +10,62 @@
 
 
 
-local pegpeg = [[
-           `peg`  ←  rules / anon
 
-           rules  ←  _ rule+ (-1 / Error)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local pegpeg = [[
+           `peg`  ←   rules / anon
+
+           rules  ←  (rule_sep rule)+ (_ -1 / Error)
+
             anon  ←  _ rhs (-1 / Error)
 
                              ; this is the only trailing whitespace left
                              ; there are other things to do but this iteration
                              ; should support adding optional pragma lines
                              ; before rules.
-            rule  ←  lhs rhs rule-sep
+            rule  ←  lhs rhs ;
 
-      `rule-sep`  ←   _
+       rule-sep   ←   _
 
              lhs  ←  (suppressed / rule-name) _ into _
              rhs  ←  alt
