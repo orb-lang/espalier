@@ -51,10 +51,10 @@ Vav.pegparse = VavPeg
 
 cluster.construct(new,
    function(_new, vav, peh)
-     vav.rules = VavPeg(peh)
-     if vav.rules then
-        vav.rules :hoist()
-        vav.synth = vav.rules :synthesize()
+     vav.grammar = VavPeg(peh)
+     if vav.grammar then
+        vav.grammar :hoist()
+        vav.synth = vav.grammar :synthesize()
      else
         vav.failedParse = true
      end

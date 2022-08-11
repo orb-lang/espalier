@@ -53,11 +53,11 @@ few quirks and extensions:
      the details into the correct parse tree.
 
 #!peg @pegpeg #asLua
-           `peg`  ←   rules / anon
+           `peg`  ←   grammar / pattern
 
-           rules  ←  (rule_sep rule)+ (_ -1 / Error)
+           grammar  ←  (rule_sep rule)+ (_ -1 / Error)
 
-            anon  ←  _ rhs (-1 / Error)
+         pattern  ←  _ rhs (-1 / Error)
 
             rule  ←  lhs rhs
 

@@ -81,9 +81,9 @@ end
 ```lua
 local  concat =  assert(table.concat)
 
-local function suppressHiddens(rules, feed)
+local function suppressHiddens(grammar, feed)
    local hiddens = {}
-   for hidden in rules :filter 'suppressed' do
+   for hidden in grammar :filter 'suppressed' do
       insert(hiddens, hidden :take 'rule_name' . token)
    end
    if #hiddens == 0 then
@@ -107,14 +107,14 @@ end
 ```
 
 ```lua
-function M.rules.toLpeg(rules, extraLpeg)
+function M.grammar.toLpeg(grammar, extraLpeg)
    local feed = Feed ()
    insert(feed, _PREFACE)
    -- reserve extra space at [2] for backref rules
    local preface = {}
    insert(feed, "")
    feed.preface = preface
-   local start = rules :take 'rule_name' . token
+   local start = grammar :take 'rule_name' . token
    local grammar_fn  = "_" .. start .."_fn"
    feed :push("local function ", grammar_fn, "(_ENV)")
         :indent(3)
@@ -123,10 +123,10 @@ function M.rules.toLpeg(rules, extraLpeg)
         :newLine()
    -- Build the SUPPRESS function here, this requires finding the
    -- hidden rules and suppressing them
-   suppressHiddens(rules, feed)
+   suppressHiddens(grammar, feed)
 
    -- aggregate rules into the feed
-   for rule in rules :filter 'rule' do
+   for rule in grammar :filter 'rule' do
       rule:toLpeg(feed)
    end
 

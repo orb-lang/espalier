@@ -610,14 +610,14 @@ local Hoist = Set {'element', 'alt', 'cat'}
 
 
 
-function M.rules.hoist(rules)
-   if rules.hoisted then return rules end
-   for i, rule in ipairs(rules) do
+function M.grammar.hoist(grammar)
+   if grammar.hoisted then return grammar end
+   for i, rule in ipairs(grammar) do
       rule:hoist()
    end
-   rules.hoisted = true
+   grammar.hoisted = true
 
-   return rules
+   return grammar
 end
 
 function Twig.hoist(twig)
@@ -634,13 +634,13 @@ end
 
 
 
-function M.rules.synthesize(rules)
-   rules.start = rules :take 'rule'
-   local synth = _synth(rules)
+function M.grammar.synthesize(grammar)
+   grammar.start = grammar :take 'rule'
+   local synth = _synth(grammar)
    ---[[DBG]] synth.Prop = Prop
    s:verb("synthesized %s", synth.class)
-   synth.peh = rules.peh
-   rules.synth = synth --- this is useful, ish, at least in helm
+   synth.peh = grammar.peh
+   grammar.synth = synth --- this is useful, ish, at least in helm
    return synth
 end
 
@@ -704,7 +704,7 @@ end
 
 
 
-function Syn.rules.collectRules(rules)
+function Syn.grammar.collectRules(grammar)
    -- our containers:
    local nameSet, nameMap = Set {}, {} -- #{token*}, token => {name*}
    local dupe, surplus, missing = {}, {}, {} -- {rule*}, {rule*}, {token*}
@@ -712,7 +712,7 @@ function Syn.rules.collectRules(rules)
    local ruleCalls = {} -- token => {name*}
    local ruleSet = Set {}   -- #{rule_name}
 
-   for name in rules :filter 'name' do
+   for name in grammar :filter 'name' do
       local token = normalize(name:span())
       name.token = token
       nameSet[token] = true
@@ -721,9 +721,9 @@ function Syn.rules.collectRules(rules)
       nameMap[token] = refs
    end
 
-   local start_rule = rules :take 'rule'
+   local start_rule = grammar :take 'rule'
 
-   for rule in rules :filter 'rule' do
+   for rule in grammar :filter 'rule' do
       local token = normalize(rule :take 'rule_name' :span())
       rule.token = token
       ruleSet[token] = true
@@ -846,8 +846,8 @@ end
 
 
 
-function Syn.rules.callSet(rules)
-   local collection = rules.collection or rules:collectRules()
+function Syn.grammar.callSet(grammar)
+   local collection = grammar.collection or grammar:collectRules()
    return _callSet(collection.ruleCalls)
 end
 
@@ -868,8 +868,8 @@ local function setFor(tab)
    return Set(clone1(tab))
 end
 
-local function graphCalls(rules)
-   local collection = assert(rules.collection)
+local function graphCalls(grammar)
+   local collection = assert(grammar.collection)
    local ruleCalls, ruleMap = assert(collection.ruleCalls),
                                assert(collection.ruleMap)
    local regulars = assert(collection.regulars)
@@ -950,29 +950,29 @@ end
 
 
 
-function Syn.rules.analyze(rules)
-   rules.collection = rules:collectRules()
-   local coll = assert(rules.collection)
+function Syn.grammar.analyze(grammar)
+   grammar.collection = grammar:collectRules()
+   local coll = assert(grammar.collection)
 
-   local regulars, recursive = partition(coll.ruleCalls, rules:callSet())
+   local regulars, recursive = partition(coll.ruleCalls, grammar:callSet())
    local ruleMap = assert(coll.ruleMap)
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
    coll.regulars, coll.recursive = regulars, recursive
-   coll.calls = graphCalls(rules)
+   coll.calls = graphCalls(grammar)
    if coll.missing then
-      rules:makeDummies()
+      grammar:makeDummies()
    end
 
    -- we'll switch to using these directly
    for k, v in pairs(coll) do
-      rules[k] = v
+      grammar[k] = v
    end
 
 
-   return rules:anomalies()
-   --rules:constrain()
+   return grammar:anomalies()
+   --grammar:constrain()
 end
 
 
@@ -983,15 +983,15 @@ end
 
 
 
-function Syn.rules.anomalies(rules)
-   local coll = rules.collection
+function Syn.grammar.anomalies(grammar)
+   local coll = grammar.collection
    if not coll then return nil, "collectRules first" end
-   if not (rules.missing or rules.surplus or rules.dupes) then
+   if not (grammar.missing or grammar.surplus or grammar.dupes) then
       return nil, "no anomalies detected"
    else
-      return { missing = rules.missing,
-               surplus = rules.surplus,
-               dupes   = rules.dupes }
+      return { missing = grammar.missing,
+               surplus = grammar.surplus,
+               dupes   = grammar.dupes }
    end
 end
 
@@ -1041,16 +1041,16 @@ local function dumbRule(name, pad, patt)
            .. patt .. pad .. "\n"
 end
 
-function Syn.rules.makeDummies(rules)
-   if not rules.collection then
+function Syn.grammar.makeDummies(grammar)
+   if not grammar.collection then
       return nil, 'no analysis has been performed'
    end
-   local missing = rules.missing
+   local missing = grammar.missing
    if (not missing) or #missing == 0 then
       return nil, 'no rules are missing'
    end
    local dummy_str, pad = {"\n\n"}, " "
-   if rules.ruleMap['_'] then
+   if grammar.ruleMap['_'] then
       pad = " _ "
    end
    for _, name in ipairs(missing) do
@@ -1062,22 +1062,22 @@ function Syn.rules.makeDummies(rules)
       end
       insert(dummy_str, dumbRule(name, pad, patt))
    end
-   rules.dummy_str = concat(dummy_str)
+   grammar.dummy_str = concat(dummy_str)
 end
 
 
 
 local Peg = require "espalier:espalier/peg"
 
-function Syn.rules.dummyParser(rules)
-   if not rules.collection then
-      rules:collectRules()
+function Syn.grammar.dummyParser(grammar)
+   if not grammar.collection then
+      grammar:collectRules()
    end
-   if not rules.collection.missing then
+   if not grammar.collection.missing then
       return nil, "no dummy rules"
    end
-   rules:makeDummies()
-   local with_dummy = rules.peh .. rules.dummy_str
+   grammar:makeDummies()
+   local with_dummy = grammar.peh .. grammar.dummy_str
    -- do this with Vav
    -- return Peg(with_dummy):toGrammar()
 end
@@ -1185,16 +1185,16 @@ end
 
 
 
-function Syn.rules.constrain(rules)
+function Syn.grammar.constrain(grammar)
    local coll;
-   if rules.collection then
-      coll = rules.collection
+   if grammar.collection then
+      coll = grammar.collection
    else
-      rules:analyze()
-      coll = assert(rules.collection)
+      grammar:analyze()
+      coll = assert(grammar.collection)
    end
-   if rules:anomalies() then
-      return nil, "can't constrain imperfect grammar (yet)", rules:anomalies()
+   if grammar:anomalies() then
+      return nil, "can't constrain imperfect grammar (yet)", grammar:anomalies()
    end
 
    local regulars, ruleMap = coll.regulars, coll.ruleMap
@@ -1212,11 +1212,11 @@ function Syn.rules.constrain(rules)
       end
    end
 
-   for rule in rules :filter 'rule' do
+   for rule in grammar :filter 'rule' do
       rule:constrain(coll)
    end
 
-   for name in rules :filter 'name' do
+   for name in grammar :filter 'name' do
       name:constrain(coll)
    end
 
