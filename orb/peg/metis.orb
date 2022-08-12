@@ -1003,26 +1003,7 @@ end
 things about them, then using that knowledge in a surprising number of ways.
 
 
-*** Ghost Rules
 
-We have three sorts of rules here: shown, hidden, and ghost.
-
-Shown and hidden rules are straightfoward enough, a ghost rule is any rule we
-make out of an un-named fragment of another rule.
-
-Most of the time we're concerned with named rules and just call those rules. A
-fragment of grammar without a name we call a pattern, a ghost rule is
-something we (intend to) /make/ out of our patterns for use in Dji.
-
-At some point we'll have synthetic rules as well, and won't that be fun.
-
-
-**** grammar:expandRules
-
-This will create and where possible deduplicate literal rules.
-
-We'll use an obvious naming convention with leading underscores, which are
-invalid rule names in the grammar /and this is one of the good reasons/.
 
 
 *** grammar:makeDummies()
@@ -1066,6 +1047,9 @@ function Syn.grammar.makeDummies(grammar)
 end
 #/lua
 
+
+**** grammar:dummyParser()
+
 #!lua
 local Peg = require "espalier:espalier/peg"
 
@@ -1085,95 +1069,10 @@ end
 
 
 
-*** Control Flow Analysis
-
-  We are discovering what requirements a given pattern imposes on the rest of
-the Grammar, so we can use this strategically.
-
-The simplest part is synthesizing what is /mandatory/, each atomic pattern
-either is or isn't, and this composes, that composition being our main target
-of interest.
-
-
-*** Locks
-
-One pattern we're looking for is any concatenation of (at least) two
-elements where the first and the last are both mandatory.
-
-We know of such a pattern, that once we've passed the first of those elements,
-we must pass the final one as well, or abandon the pattern entirely.
-
-We call such a rule =.locked=, the first element is a lock and the last is a
-gate.
-
-Since left-recursion is forbidden in PEGs (Roberto Ierusalimschy says that
-it's semantically unclear what it would even mean, although there are a
-plethora of papers which disagree), our task is quite a bit easier if we
-presume that the grammar is well-formed.
-
-In fact we shouldn't presume this, we should detect left recursion rather than
-throwing it at LPEG and seeing if it sticks, but this part of the code will
-make that assumption since we can reject lefta recursion earlier in the
-pipeline.
-
-
-**** lock rules
-
-A rule is a lock if, once the containing rule has succeeded against this rule,
-the container must either succeed the rest of the rule or fail: specifically
-it cannot backtrack past a lock rule and succeed.
-
-Example being ="= for a string and so on, some of them are easy to spot but I
-do expect that rules like =("k" b "y" / "K" B "Y") "Z"= will be more
-interesting, this is really two rules tried one after the other and inlined,
-the rule itself doesn't have a lock but rather two.  Disjoint choice may be
-locked between 0 and 2 times, a given cat sequence is or isn't.
-
-Writing this for later trial: =("k" b "y" / "K" B? "Y?") "Z"= because there's
-some sort of distributive rule to apply here.
-
-
-**** gate rules
-
-A rule is a gate if it must be passed for the containing rule to succeed.
-
-
-***** starting_fails_rule
-
-This is an important subcondition for us to look for, the case where a rule
-is made up of choices and if one of the choices is *started* but not finished
-then the entire rule will fail.
-
-This will be the case *if*: the subrule is /locked/, and the /lock/ of the
-subrule is incompatible with the first mandatory match of any subsequent
-subrule in the choice.
-
-An example where this will apply is statements in Lua, many of which begin
-with a unique keyword which serves as a lock.  Once an ="if"= has been
-correctly parsed in the right location, no other statement rule can succeed,
-so a failure of the =if= rule fails the statement rule.
-
-=statement= is itself mandatory, and this gets us to error escape analysis.
-
-Conceptually, negative lookahead has a similar function, but we don't need a
-separate flag for it because =not= is the only condition which triggers it.
-Negative lookahead we could call "success fails rule", while =and= gives us
-two causes for a failure where we otherwise have only one.
-
-Positive lookahead isn't as interesting, although it gives us a head start on
-error recovery, which is nice.  It does have this interesting 'pseudomatch'
-quality but it will be tricky to extract that in a useful way.
-
-
-**** Escaping failures
-
-We should therefore be able to find locked rules which break the entire
-grammar if they don't pass the gate.
-
-
 *** grammar:constrain()
 
-So let's see what wisdom we might derive.
+This stage is all about reconciling the information collected during analysis
+with the appearances of rule variables within the grammar.
 
 
 **** grammar:constrain()

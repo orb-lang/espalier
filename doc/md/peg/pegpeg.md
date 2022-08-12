@@ -55,7 +55,7 @@ few quirks and extensions:
 ```peg
            `peg`  ←   grammar / pattern
 
-           grammar  ←  (rule_sep rule)+ (_ -1 / Error)
+         grammar  ←  (rule_sep rule)+ (_ -1 / Error)
 
          pattern  ←  _ rhs (-1 / Error)
 
@@ -70,7 +70,7 @@ few quirks and extensions:
        rule-name  ←  symbol
           `into`  ←  ":=" / "←" / "<-" / "="''
         `symbol`  ←  letter (letter / digit /  {-_})*
-                  /  "_"
+                  /   "_"
 
              alt  ←  cat (_ "/" _ cat)*
              cat  ←  element (_ element)*
@@ -80,11 +80,13 @@ few quirks and extensions:
         `prefix`  ←  (and / not) _
         `suffix`  ←  zero-plus / one-plus / optional / repeat
         `part`    ←  name !(_ into)
-                  /  literal
-                  /  group
-                  /  set-capture
-                  /  range
-                  /  number
+                  /   literal
+                  /   group
+                  /   set-capture
+                  /   range
+                  /   number
+
+
 
              and  ←  "&"
              not  ←  "!"
@@ -95,12 +97,12 @@ few quirks and extensions:
           repeat  ←  _ "%" _ slice
 
          backref  ←  "@" _ ( reference
-                           / back-refer
-                           / eq-refer
-                           / gte-refer
-                           / gt-refer
-                           / lte-refer
-                           / lt-refer )
+                            / back-refer
+                            / eq-refer
+                            / gte-refer
+                            / gt-refer
+                            / lte-refer
+                            / lt-refer )
 
             name  ←  symbol
          literal  ←  single-string / double-string
@@ -144,6 +146,7 @@ few quirks and extensions:
          `higit`  ←  digit / [A-F] / [a-f]
 
              EOS  ←  "-1"
+
 
              `_`  ←  (comment / dent / WS)*
        `comment`  ←  ";" (!"\n" utf8)*

@@ -1014,25 +1014,6 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 local find, gsub = string.find, string.gsub
 
 local function dumbRule(name, pad, patt)
@@ -1067,6 +1048,9 @@ end
 
 
 
+
+
+
 local Peg = require "espalier:espalier/peg"
 
 function Syn.grammar.dummyParser(grammar)
@@ -1081,91 +1065,6 @@ function Syn.grammar.dummyParser(grammar)
    -- do this with Vav
    -- return Peg(with_dummy):toGrammar()
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
