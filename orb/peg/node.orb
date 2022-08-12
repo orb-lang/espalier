@@ -154,6 +154,8 @@ This being another port of Grammar, with some extras.
 
 #!lua
 local ltype = assert(L.type)
+local V, P = L.V, L.P
+
 local function makeBuilder(Qoph, engine, ...)
    -- these defaults should result in a 'pure' recognizer
    local capture_patt, oncapture = Qoph.capture_patt or {P(true)},
@@ -170,11 +172,11 @@ local function makeBuilder(Qoph, engine, ...)
             suppressed[select(i, ... )] = true
          end
       end,
-      V = L.V,
-      P = L.P }
+      V = V,
+      P = P }
 
-    setmeta(env_index, { __index = _env })
-    setmeta(env, {
+    setmetatable(env_index, { __index = _env })
+    setmetatable(env, {
        __index = env_index,
        __newindex = function( _, name, capture )
           if suppressed[name] then
@@ -200,13 +202,12 @@ local function makeBuilder(Qoph, engine, ...)
           end
        end })
 
-   -- call passed function with custom environment (5.1- and 5.2-style)
-   if VER == " 5.1" then
+   return function(func)
       setfenv(func, env )
+      func( env )
+      assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
+      return g
    end
-   func( env )
-   assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
-   return g
 end
 #/lua
 
