@@ -8,14 +8,6 @@
 
 
 
-local core, cluster = use("qor:core", "cluster:cluster")
-local table, string = core.table, core.string
-
-
-
-
-
-
 
 
 local sql_statement = [[
@@ -84,7 +76,7 @@ table-options  ←  t-opt ("," _  t-opt)*
 
 
 local column_def = [[
- column-def  ←  column-name _ (type-name)? (column-constraint _)*
+ column-def  ←  column-name _ (type-name)? (_ column-constraint _)*
 column-name  ←  name
 
   type-name  ←  (affinity _) fluff?
@@ -127,9 +119,10 @@ numeric-column  ←  name
 
 local column_table_constraints = [[
 column-constraint  ←  CONSTRAINT name _
+
+                   /  NOT NULL  ; conflict-clause?
                    /  PRIMARY KEY (ASC / DESC)? conflict-clause AUTOINCREMENT?
-                   /  NOT NULL conflict-clause
-                   /  UNIQUE conflict-clause
+                   /  UNIQUE conflict-clause?
                    /  CHECK group-expr
                    /  DEFAULT (group-expr / literal-value _ / signed-number _)
                    /  COLLATE collation-name
@@ -137,10 +130,10 @@ column-constraint  ←  CONSTRAINT name _
                    /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
 
  table-constraint  ←  CONSTRAINT name _
+                   /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
                    /  ( PRIMARY KEY
                       / UNIQUE ) "("_ indexed-columns ")"_ conflict-clause
                    /  CHECK group-expr
-                   /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
 
 `conflict-clause`  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
@@ -238,7 +231,7 @@ local name_rules = [[
                /  "[" quote-name "]"
                /  "`" quote-name "`"
             ;  /  "'" quote-name "'"
-         `id`  ←  (!keyword bare-name)
+           id  ←  (!keyword bare-name)
 
   `bare-name`  ←  lead-char follow-char*
   `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
@@ -606,7 +599,7 @@ local sqlite_blocks = {
    column_def,
    column_table_constraints,
    foreign_key_clause,
-   --expression,
+   expression,
    -- the 'lexer' rules
    literal_rules,
    name_rules,
@@ -616,6 +609,9 @@ local sqlite_blocks = {
    whitespace_rules,
    terminal_rule,
 }
+
+
+
 
 
 

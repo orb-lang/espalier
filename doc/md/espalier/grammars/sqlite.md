@@ -5,14 +5,6 @@
 Language\.
 
 
-#### imports
-
-```lua
-local core, cluster = use("qor:core", "cluster:cluster")
-local table, string = core.table, core.string
-```
-
-
 ### SQLite start rule
 
   A collection of one or more SQL statements, separated by a semicolon\.  The
@@ -82,7 +74,7 @@ table-options  ←  t-opt ("," _  t-opt)*
 fun one, getting the affinities out at parse\-time can't hurt, yeah?
 
 ```peg
- column-def  ←  column-name _ (type-name)? (column-constraint _)*
+ column-def  ←  column-name _ (type-name)? (_ column-constraint _)*
 column-name  ←  name
 
   type-name  ←  (affinity _) fluff?
@@ -125,9 +117,10 @@ numeric-column  ←  name
 
 ```peg
 column-constraint  ←  CONSTRAINT name _
+
+                   /  NOT NULL  ; conflict-clause?
                    /  PRIMARY KEY (ASC / DESC)? conflict-clause AUTOINCREMENT?
-                   /  NOT NULL conflict-clause
-                   /  UNIQUE conflict-clause
+                   /  UNIQUE conflict-clause?
                    /  CHECK group-expr
                    /  DEFAULT (group-expr / literal-value _ / signed-number _)
                    /  COLLATE collation-name
@@ -135,10 +128,10 @@ column-constraint  ←  CONSTRAINT name _
                    /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
 
  table-constraint  ←  CONSTRAINT name _
+                   /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
                    /  ( PRIMARY KEY
                       / UNIQUE ) "("_ indexed-columns ")"_ conflict-clause
                    /  CHECK group-expr
-                   /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
 
 `conflict-clause`  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
@@ -234,7 +227,7 @@ Sources\[\{\*\}\]\[\{\*\*\}\]:
                /  "[" quote-name "]"
                /  "`" quote-name "`"
             ;  /  "'" quote-name "'"
-         `id`  ←  (!keyword bare-name)
+           id  ←  (!keyword bare-name)
 
   `bare-name`  ←  lead-char follow-char*
   `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
@@ -602,7 +595,7 @@ local sqlite_blocks = {
    column_def,
    column_table_constraints,
    foreign_key_clause,
-   --expression,
+   expression,
    -- the 'lexer' rules
    literal_rules,
    name_rules,
@@ -635,6 +628,9 @@ we do like so\. We can reuse them, as is,
 The \#noKnit tag is the poor man's ifdef\!
 
 ```lua
+local core, cluster = use("qor:core", "cluster:cluster")
+local table, string = core.table, core.string
+
 -- first thing we do is sort these and print that
 
 local kwset = {"ABORT","ACTION","ADD","AFTER","ALL","ALTER","ALWAYS",

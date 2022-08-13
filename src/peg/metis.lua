@@ -1011,9 +1011,6 @@ end
 
 
 
-
-
-
 local find, gsub = string.find, string.gsub
 
 local function dumbRule(name, pad, patt)
@@ -1043,7 +1040,7 @@ function Syn.grammar.makeDummies(grammar)
       end
       insert(dummy_str, dumbRule(name, pad, patt))
    end
-   grammar.dummy_str = concat(dummy_str)
+   grammar.dummy_rules = concat(dummy_str)
 end
 
 

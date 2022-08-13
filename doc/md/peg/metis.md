@@ -1006,9 +1006,6 @@ end
 things about them, then using that knowledge in a surprising number of ways\.
 
 
-
-
-
 ### grammar:makeDummies\(\)
 
 Does nothing if `.missing` is empty, otherwise makes dummies of missing rules\.
@@ -1046,7 +1043,7 @@ function Syn.grammar.makeDummies(grammar)
       end
       insert(dummy_str, dumbRule(name, pad, patt))
    end
-   grammar.dummy_str = concat(dummy_str)
+   grammar.dummy_rules = concat(dummy_str)
 end
 ```
 
