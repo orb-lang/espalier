@@ -79,7 +79,7 @@ column-name  ←  name
 
   type-name  ←  (affinity _) fluff?
 
-     affinity  ←  name (_ name)*
+   `affinity`  ←  name (_ name)*
 
 ; these have no actual semantic value in SQLite
 `fluff`  ←  "("_ signed-number _")"_
@@ -138,7 +138,7 @@ column-constraint  ←  CONSTRAINT name _
                    /  PRIMARY KEY (ASC / DESC)? conflict-clause? AUTOINCREMENT?
                    /  UNIQUE conflict-clause?
                    /  CHECK group-expr
-                   /  DEFAULT (group-expr / literal-value _ / signed-number _)
+                   /  DEFAULT (number / NULL / literal-value / group-expr / signed-number)
                    /  COLLATE collation-name
                    /  foreign-key-clause
                    /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
@@ -257,16 +257,19 @@ Sources\[\{\*\}\]\[\{\*\*\}\]:
 ### literals
 
 ```peg
-literal-value  ←  number / string / blob / NULL / TRUE / FALSE
-                  / CURRENT_TIMESTAMP / CURRENT_TIME / CURRENT_DATE
-signed-number  ←  {+-}? number
+literal-value  ←  (number / string / blob / NULL / TRUE / FALSE
+                  / CURRENT_TIMESTAMP / CURRENT_TIME / CURRENT_DATE)
+signed-number  ←  {+-} number
 
        number  ←  real / hex / integer
 
-       `real`  ←  (integer ("." integer)*) / ("." integer)
-                  (("e" / "E") "-"? integer)?
-        `hex`  ←  "0" {Xx} higit+ ("." higit*)?
-    `integer`  ←  digit+
+       real  ←  ((integer ("." fraction)) / ("." fraction))
+                  (("e" / "E") "-"? exponent)?
+        hex  ←  "0" {Xx} higit+ ("." higit*)?
+    integer  ←  digit+
+
+   fraction  ←  digit+
+   exponent  ←  digit+
 
       `digit`  ←  [0-9]
       `higit`  ←  digit / [a-f] / [A-F]

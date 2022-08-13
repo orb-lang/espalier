@@ -90,7 +90,12 @@ end
 #/lua
 
 
-*** Vav:try()
+*** Vav:try(rule?)
+
+Generates a (hopefully) usable parser, even in the absence of the full
+panoply of rules.
+
+If the string =rule= is supplied, Vav will return a grammar for that rule.
 
 #!lua
 function Vav.try(vav)
