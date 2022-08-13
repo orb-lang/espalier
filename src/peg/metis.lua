@@ -1048,6 +1048,46 @@ end
 
 
 
+
+
+
+
+
+
+
+
+function Syn.grammar.pehFor(grammar, rule)
+   if not grammar.collection then
+      grammar:collectRules()
+   end
+
+   local calls, ruleMap = grammar.calls, grammar.ruleMap
+   local dupe, phrase = {rule = true}, {}
+   local calling = calls[rule]
+
+   insert(phrase, ruleMap[rule]:span())
+   insert(phrase, "\n\n")
+
+   local function rulesOf(call_set)
+      for rule_name in pairs(call_set) do
+         if not dupe[rule_name] then
+            dupe[rule_name] = true
+            insert(phrase, ruleMap[rule_name]:span())
+            insert(phrase, "\n\n")
+            rulesOf(calls[rule_name])
+         end
+      end
+   end
+   rulesOf(calling)
+
+   return concat(phrase)
+end
+
+
+
+
+
+
 local Peg = require "espalier:espalier/peg"
 
 function Syn.grammar.dummyParser(grammar)

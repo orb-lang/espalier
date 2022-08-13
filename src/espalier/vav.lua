@@ -98,13 +98,14 @@ end
 
 
 
-function Vav.try(vav)
+function Vav.try(vav, rule)
    local anomalous = vav.synth:analyze()
    if anomalous and anomalous.missing then
       vav.synth:makeDummies()
-   else
+   elseif not rule then
       return vav:dji()
    end
+
    vav.dummy = new(vav.peh .. vav.synth.dummy_rules)
    vav.test_engine = vav.dummy.synth :toLpeg() :string()
    vav.test_parse, vav.test_grammar = Grammar(vav.test_engine)

@@ -159,7 +159,7 @@ local V, P = L.V, L.P
 local function makeBuilder(Qoph, engine, ...)
    -- these defaults should result in a 'pure' recognizer
    local capture_patt, oncapture = Qoph.capture_patt or {P(true)},
-                                   Qoph.oncapture or 0
+                                   Qoph.oncapture
    local _env = Qoph.env or {}
    local g = {}
    local suppressed = {}
@@ -176,6 +176,7 @@ local function makeBuilder(Qoph, engine, ...)
       P = P }
 
     setmetatable(env_index, { __index = _env })
+
     setmetatable(env, {
        __index = env_index,
        __newindex = function( _, name, capture )
@@ -186,19 +187,23 @@ local function makeBuilder(Qoph, engine, ...)
 
           local patt = P ""
           for _, pattern in ipairs(capture_patt) do
-            -- special cases
-            if pattern == 'name' then
-               patt = patt * Cc(name)
-            elseif pattern == 'capture' then
-               patt = patt * Ct(value)
-            elseif type(pattern) == 'function' then
-               patt = patt * pattern()
-            elseif ltype(pattern) == 'pattern' then
-               patt = patt * pattern
-            elseif type(pattern) == 'table' then
-               patt = patt * pattern[1](unpack(pattern, 2))
-            end
-            g[name] = patt / oncapture
+             -- special cases
+             if pattern == 'name' then
+                patt = patt * Cc(name)
+             elseif pattern == 'capture' then
+                patt = patt * Ct(value)
+             elseif type(pattern) == 'function' then
+                patt = patt * pattern()
+             elseif ltype(pattern) == 'pattern' then
+                patt = patt * pattern
+             elseif type(pattern) == 'table' then
+                patt = patt * pattern[1](unpack(pattern, 2))
+             end
+             if oncapture then
+                g[name] = patt / oncapture
+             else
+                g[name] = patt
+             end
           end
        end })
 
