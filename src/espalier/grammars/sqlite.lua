@@ -60,7 +60,7 @@ create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
                  ( AS select /
                     "(" _ column-def
                     ("," _ column-def)*
-                    ("," _ column-constraint+ )* ")" _
+                    ("," (_ table-constraint)+)? _ ")" _
                     table-options* )
 
   schema-name  ←  name
@@ -81,38 +81,54 @@ column-name  ←  name
 
   type-name  ←  (affinity _) fluff?
 
-    `affinity`  ←  blob-column
-                /  integer-column
-                /  text-column
-                /  real-column
-                /  numeric-column
-
-   blob-column  ←  B L O B !follow-char
-
-integer-column  ←  (!integer-word id _)* integer-word (_ id)*
-`integer-word`  ←  (!int-affin lead-char)?
-                   (!int-affin follow-char)*
-                   int-affin follow-char*
-   `int-affin`  ←  I N T
-
-   text-column  ←  (!text-word id _)* text-word (_ id)*
-   `text-word`  ←  (!text-affin lead-char)?
-                   (!text-affin follow-char)*
-                   text-affin follow-char*
-  `text-affin`  ←  C H A R / C L O B / T E X T
-
-   real-column  ←  (!real-word id _)* real-word (_ id)*
-   `real-word`  ←  (!real-affin lead-char)?
-                   (!real-affin follow-char)*
-                   real-affin follow-char*
-  `real-affin`  ←  R E A L / F L O A / D O U B
-
-numeric-column  ←  name
+     affinity  ←  name (_ name)*
 
 ; these have no actual semantic value in SQLite
 `fluff`  ←  "("_ signed-number _")"_
          /  "("_ signed-number _","_ signed-number _")"_
+
 ]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -121,7 +137,7 @@ local column_table_constraints = [[
 column-constraint  ←  CONSTRAINT name _
 
                    /  NOT NULL  ; conflict-clause?
-                   /  PRIMARY KEY (ASC / DESC)? conflict-clause AUTOINCREMENT?
+                   /  PRIMARY KEY (ASC / DESC)? conflict-clause? AUTOINCREMENT?
                    /  UNIQUE conflict-clause?
                    /  CHECK group-expr
                    /  DEFAULT (group-expr / literal-value _ / signed-number _)
@@ -137,7 +153,7 @@ column-constraint  ←  CONSTRAINT name _
 
 `conflict-clause`  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
-   `column-names`  ←  column-name _ (","_ column-name _)*
+     column-names  ←  column-name _ (","_ column-name _)*
 `indexed-columns`  ←  indexed-column (","_ indexed-column)*
 
 indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
@@ -149,7 +165,7 @@ indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
 
 
 local foreign_key_clause = [[
-foreign-key-clause  ←  REFERENCES table-name ("("_ column-names ")"_)?
+foreign-key-clause  ←  REFERENCES table-name _ ("("_ column-names ")"_)?
                        fk-on-clause*
                        (NOT? DEFERRABLE (INITIALLY (DEFERRED / IMMEDIATE))?)?
 
@@ -157,7 +173,7 @@ foreign-key-clause  ←  REFERENCES table-name ("("_ column-names ")"_)?
                            ( SET (NULL / DEFAULT)
                            / CASCADE
                            / RESTRICT
-                           / NO ACTION ))
+                           / NO ACTION )) _
                     /  MATCH name _
 ]]
 
@@ -230,15 +246,14 @@ local name_rules = [[
      `quoted`  ←  '"' quote-name '"'
                /  "[" quote-name "]"
                /  "`" quote-name "`"
+              ;;  Legal but deprecated
             ;  /  "'" quote-name "'"
-           id  ←  (!keyword bare-name)
+         `id`  ←  !keyword bare-name
 
   `bare-name`  ←  lead-char follow-char*
   `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
-`follow-char`  ←  lead-char / [0-9]  / "$" ; deprecated-dollar
+`follow-char`  ←  lead-char / [0-9]  / "$"
    quote-name  ←  (!'"' 1)+
-
-; deprecated-dollar  ← "$"
 ]]
 
 
@@ -250,7 +265,7 @@ literal-value  ←  number / string / blob / NULL / TRUE / FALSE
                   / CURRENT_TIMESTAMP / CURRENT_TIME / CURRENT_DATE
 signed-number  ←  {+-}? number
 
-       number  ←  real /  hex / integer
+       number  ←  real / hex / integer
 
        `real`  ←  (integer ("." integer)*) / ("." integer)
                   (("e" / "E") "-"? integer)?
@@ -442,110 +457,25 @@ local keyword_rules = [[
 
 
 local keyword_rule = [[
- keyword  ←  ( A  ( B O R T
-                  / C T I O N
-                  / D D
-                  / F T E R
-                  / L  ( T E R
-                       / W A Y S )
-                  / N A L Y Z E
-                  / S C
-                  / T T A C H
-                  / U T O I N C R E M E N T )
-            / B E  ( F O R E
-                   / G I N
-                   / T W E E N )
-            / C  ( A S C A D E
-                 / H E C K
-                 / O  ( L  ( L A T E
-                           / U M N )
-                      / M M I T
-                      / N  ( F L I C T
-                           / S T R A I N T ) )
-                 / R  ( E A T E
-                      / O S S )
-                 / U R R E N T "_"  ( D A T E
-                                    / T I M E S T A M P ) )
-            / D  ( A T A B A S E
-                 / E  ( F  ( A U L T
-                           / E R R  ( A B L E
-                                    / E D ) )
-                      / L E T E
-                      / S C
-                      / T A C H )
-                 / I S T I N C T
-                 / R O P )
-            / E  ( A C H
-                 / L S E
-                 / N D
-                 / S C A P E
-                 / X  ( C  ( E P T
-                           / L U S I V E )
-                      / I S T S
-                      / P L A I N ) )
-            / F  ( A  ( I L
-                      / L S E )
-                 / O R E I G N
-                 / R O M
-                 / U L L )
-            / G  ( E N E R A T E D
-                 / L O B
-                 / R O U P )
-            / H A V I N G
-            / I  ( G N O R E
-                 / M M E D I A T E
-                 / N  ( D E X
-                      / I T I A L L Y
-                      / N E R
-                      / S  ( E R T
-                           / T E A D )
-                      / T E R S E C T )
-                 / S N U L L )
-            / J O I N
-            / K E Y
-            / L  ( E F T
-                 / I  ( K E
-                      / M I T ) )
-            / M A T C H
-            / N  ( A T U R A L
-                 / O T N U L L
-                 / U L L )
-            / O  ( F F S E T
-                 / R D E R
-                 / U T E R )
-            / P  ( L A N
-                 / R  ( A G M A
-                      / I M A R Y ) )
-            / Q U E R Y
-            / R  ( A I S E
-                 / E  ( F E R E N C E S
-                      / G E X P
-                      / I N D E X
-                      / N A M E
-                      / P L A C E
-                      / S T R I C T )
-                 / I G H T
-                 / O  ( L L B A C K
-                      / W I D ) )
-            / S  ( E L E C T
-                 / T  ( O R E D
-                      / R I C T ) )
-            / T  ( A B L E
-                 / E M P O R A R Y
-                 / H E N
-                 / R  ( A N S A C T I O N
-                      / I G G E R
-                      / U E ) )
-            / U  ( N I  ( O N
-                        / Q U E )
-                 / P D A T E
-                 / S I N G )
-            / V  ( A  ( C U U M
-                      / L U E S )
-                 / I  ( E W
-                      / R T U A L ) )
-            / W  ( H E R E
-                 / I T H O U T ) ) t
+ keyword  ←  (  ABORT / ACTION / ADD / AFTER / ALL / ALTER / ALWAYS
+             /  ANALYZE / AND / ASC / AS / ATTACH / AUTOINCREMENT / BEFORE
+             /  BEGIN / BETWEEN / BY / CASCADE / CASE / CAST / CHECK
+             /  COLLATE / COLUMN / COMMIT / CONFLICT / CONSTRAINT / CREATE
+             /  CROSS / CURRENT_DATE / CURRENT_TIMESTAMP / CURRENT_TIME
+             /  DATABASE / DEFAULT / DEFERRABLE / DEFERRED / DELETE / DESC
+             /  DETACH / DISTINCT / DROP / EACH / ELSE / END / ESCAPE
+             /  EXCEPT / EXCLUSIVE / EXISTS / EXPLAIN / FAIL / FALSE / FOREIGN
+             /  FOR / FROM / FULL / GENERATED / GLOB / GROUP / HAVING / IF
+             /  IGNORE / IMMEDIATE / INDEX / INITIALLY / INNER / INSERT
+             /  INSTEAD / INTERSECT / INTO / IN / ISNULL / IS / JOIN / KEY
+             /  LEFT / LIKE / LIMIT / MATCH / NATURAL / NOTNULL / NOT / NO
+             /  NULL / OFFSET / OF / ON / ORDER / OR / OUTER / PLAN / PRAGMA
+             /  PRIMARY / QUERY / REFERENCES / RAISE / REGEXP / REINDEX
+             /  RENAME / REPLACE / RESTRICT / RIGHT / ROLLBACK / ROWID / ROW
+             /  SELECT / SET / STORED / STRICT / TABLE / TEMPORARY / TEMP
+             /  THEN / TO / TRANSACTION / TRIGGER / TRUE / UNION / UNIQUE
+             /  UPDATE / USING / VACUUM / VALUES / VIEW / VIRTUAL / WHEN
+             /  WHERE / WITHOUT )
 ]]
 
 
@@ -598,6 +528,7 @@ local sqlite_blocks = {
    create_table,
    column_def,
    column_table_constraints,
+   -- column_affinity,
    foreign_key_clause,
    expression,
    -- the 'lexer' rules
@@ -609,6 +540,40 @@ local sqlite_blocks = {
    whitespace_rules,
    terminal_rule,
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

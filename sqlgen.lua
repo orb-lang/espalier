@@ -1,7 +1,7 @@
 
----[[GEN]] require "espalier:espalier/grammars/sqlite"
+--[[GEN]] require "espalier:espalier/grammars/sqlite"
 
----[[ generate lua parser
+--[[ generate lua parser
 Vav = require "espalier:vav"
 lua_peg = require "scry:lua-peg"
 vav = Vav(lua_peg)
