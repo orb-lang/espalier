@@ -490,12 +490,12 @@ local allpairs = table.allpairs
 local function _synth(node, parent_synth, i)
    local synth = newSynth(node, i)
    synth.parent = parent_synth or synth
-   -- we copy the flags so I can see them in helm :/
+   --[[ we copy the flags so I can see them in helm :/
    for key, value in allpairs(synth) do
       if type(value) == 'boolean' then
          synth[key] = value
       end
-   end
+   end --]]
    if SpecialSnowflake[synth.class] then
       extraSpecial(node, synth)
    end
@@ -1065,25 +1065,23 @@ function Syn.grammar.pehFor(grammar, rule)
    end
 
    local calls, ruleMap = grammar.calls, grammar.ruleMap
-   local dupe, phrase = {rule = true}, {}
-   local calling = calls[rule]
-
+   local phrase =  {}
    insert(phrase, ruleMap[rule]:span())
-   insert(phrase, "\n\n")
 
-   local function rulesOf(call_set)
+   local shuttle = Deque()
+   shuttle :push(calls[rule])
+   local added = {rule = true}
+   for call_set in shuttle :popAll() do
       for rule_name in pairs(call_set) do
-         if not dupe[rule_name] then
-            dupe[rule_name] = true
+         if not added[rule_name] then
+            added[rule_name] = true
             insert(phrase, ruleMap[rule_name]:span())
-            insert(phrase, "\n\n")
-            rulesOf(calls[rule_name])
+            shuttle :push(calls[rule_name])
          end
       end
    end
-   rulesOf(calling)
 
-   return concat(phrase)
+   return concat(phrase, "\n\n")
 end
 ```
 

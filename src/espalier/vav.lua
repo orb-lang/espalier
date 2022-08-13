@@ -99,11 +99,20 @@ end
 
 
 function Vav.try(vav, rule)
-   local anomalous = vav.synth:analyze()
+   local synth = vav.synth
+   if not synth.calls then
+      synth:analyze()
+   end
+
+   local anomalous = synth:anomalies()
    if anomalous and anomalous.missing then
-      vav.synth:makeDummies()
+      synth:makeDummies()
    elseif not rule then
       return vav:dji()
+   end
+   if rule then
+      local peh = synth:pehFor(rule)
+      return peh
    end
 
    vav.dummy = new(vav.peh .. vav.synth.dummy_rules)
