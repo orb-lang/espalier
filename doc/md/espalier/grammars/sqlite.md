@@ -138,10 +138,11 @@ column-constraint  ←  CONSTRAINT name _
                    /  PRIMARY KEY (ASC / DESC)? conflict-clause? AUTOINCREMENT?
                    /  UNIQUE conflict-clause?
                    /  CHECK group-expr
-                   /  DEFAULT (number / NULL / literal-value / group-expr / signed-number)
+                   /  DEFAULT (NULL / literal-value / group-expr / signed-number)
                    /  COLLATE collation-name
                    /  foreign-key-clause
                    /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
+
 
  table-constraint  ←  CONSTRAINT name _
                    /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
@@ -274,7 +275,7 @@ signed-number  ←  {+-} number
       `digit`  ←  [0-9]
       `higit`  ←  digit / [a-f] / [A-F]
 
-       string  ←  "'" ((!"'" 1) / "''") "'"
+       string  ←  "'" ((!"'" 1) / "''")* "'"
          blob  ←  {xX} "'" higit* "'"
 ```
 

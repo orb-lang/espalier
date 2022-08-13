@@ -61,7 +61,7 @@ local pegpeg = [[
 
             rule  ←  lhs rhs
 
-       rule-sep   ←   _ ; pragma lines go here
+     `rule-sep`   ←   _ ; pragma lines go here
 
              lhs  ←  (suppressed / rule-name) _ into _
              rhs  ←  alt

@@ -84,7 +84,7 @@ function Vav.dji(vav)
       vav.lpeg_engine = vav.synth :toLpeg() :string()
    end
    -- we need more than this, notably the metis, but.
-   vav.parse, vav.grammar = Grammar(vav.lpeg_engine)
+   vav.parse, vav.pattern = Grammar(vav.lpeg_engine)
    return vav.parse
 end
 #/lua
@@ -112,12 +112,13 @@ function Vav.try(vav, rule)
    end
    if rule then
       local peh = synth:pehFor(rule)
-      return peh
+      local ruleVav = new(peh)
+      return ruleVav :try(), ruleVav
    end
 
    vav.dummy = new(vav.peh .. vav.synth.dummy_rules)
    vav.test_engine = vav.dummy.synth :toLpeg() :string()
-   vav.test_parse, vav.test_grammar = Grammar(vav.test_engine)
+   vav.test_parse, vav.test_pattern = Grammar(vav.test_engine)
    return vav.test_parse
 end
 #/lua

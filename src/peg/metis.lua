@@ -485,10 +485,14 @@ local analyzeElement;
 -- note: better lenses obviate this
 local allpairs = table.allpairs
 
+local s = use "status:status" ()
+s.verbose = false
+
 local function _synth(node, parent_synth, i)
    local synth = newSynth(node, i)
+   s:verb("synthesizing %s", node.id)
    synth.parent = parent_synth or synth
-   --[[ we copy the flags so I can see them in helm :/
+   ---[[ we copy the flags so I can see them in helm :/
    for key, value in allpairs(synth) do
       if type(value) == 'boolean' then
          synth[key] = value
@@ -1061,7 +1065,9 @@ function Syn.grammar.pehFor(grammar, rule)
       grammar:collectRules()
    end
 
-   local calls, ruleMap = grammar.calls, grammar.ruleMap
+   local calls, ruleMap, missing = grammar.calls,
+                                   grammar.ruleMap,
+                                   grammar.missing
    local phrase =  {}
    insert(phrase, ruleMap[rule]:span())
 
@@ -1072,8 +1078,10 @@ function Syn.grammar.pehFor(grammar, rule)
       for rule_name in pairs(call_set) do
          if not added[rule_name] then
             added[rule_name] = true
-            insert(phrase, ruleMap[rule_name]:span())
-            shuttle :push(calls[rule_name])
+            if ruleMap[rule_name] then
+               insert(phrase, ruleMap[rule_name]:span())
+               shuttle :push(calls[rule_name])
+            end
          end
       end
    end
