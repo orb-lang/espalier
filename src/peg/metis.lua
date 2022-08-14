@@ -1159,8 +1159,11 @@ end
 
 
 
-function Syndex.constrain(synth)
+function Syndex.constrain(synth, coll)
    synth.base_constraint_rule = true
+   for i, elem in ipairs(synth) do
+      elem:constrain(coll)
+   end
 end
 
 
