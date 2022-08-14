@@ -625,6 +625,7 @@ function M.grammar.hoist(grammar)
 end
 
 function Twig.hoist(twig)
+   if #twig == 0 then return twig end
    for i, ast in ipairs(twig) do
       if #ast == 1 and Hoist[ast.id] then
          twig[i] = ast[1]:hoist()
@@ -632,7 +633,14 @@ function Twig.hoist(twig)
          ast:hoist()
       end
    end
-
+   -- this makes zero sense but I'm missing hoists somehow
+   for i, ast in ipairs(twig) do
+      if #ast == 1 and Hoist[ast.id] then
+         twig[i] = ast[1]:hoist()
+      else
+         ast:hoist()
+      end
+   end
    return twig
 end
 ```
@@ -1153,6 +1161,12 @@ grammar\.
 `:constrain` requires that the grammar be ordinary, not anomalous: we don't
 bother doing fancy things with under or over\-specified grammars\.
 
+```lua
+function Syndex.constrain(synth)
+   synth.base_constraint_rule = true
+end
+```
+
 
 ### grammar:constrain\(\)
 
@@ -1304,6 +1318,9 @@ end
 
 
 
+### name:constrain\(\)
+
+This is all about copying traits from the rule body to the reference\.
 
 
 ```lua
@@ -1313,13 +1330,15 @@ function Syn.name.constrain(name, coll)
    if rule.constrained then
       name.constrained_by_rule = true
       local body = rule :take 'rhs' [1]
-      for k, v in pairs(body) do
-         if type(v) == 'boolean' then
-            name[k] = v
-         end
-      end
+      name.locked = body.locked
+      name.predicate = body.predicate
+      name.nullable = body.nullable
+      name.terminal = body.terminal
+      name.unbounded = body.unbounded
+      name.nofail = body.nofail
    else
       name.constrained_by_rule = false
+      name.did_not_see_rule = true -- this branch shouldn't occur
    end
 end
 ```
