@@ -1272,14 +1272,12 @@ function Syn.alt.constrain(choice, coll)
          sub:constrain(coll)
       else
          sub.no_constrain_method = true
-         goto continue
       end
       if sub.nofail then
          maybe = true
          -- for future expansion: this has to be the last rule
          -- to be meaningful under ordered choice
       end
-      ::continue::
    end
    choice.nofail = maybe
    choice.constrained = true
@@ -1293,6 +1291,14 @@ end
 ```lua
 function Syn.element.constrain(element, coll)
    -- ??
+   for _, sub in ipairs(element) do
+      if sub.constrain then
+         sub:constrain(coll)
+      else
+         sub.no_constrain_method = true
+      end
+   end
+
 end
 ```
 
@@ -1306,14 +1312,12 @@ function Syn.name.constrain(name, coll)
    local rule = assert(coll.ruleMap[tok])
    if rule.constrained then
       name.constrained_by_rule = true
-      --[[ this is from before
-      name.final = rule.final
-      name.terminal = rule.terminal
-      name.nofail = rule.nofail
-      name.locked = rule.locked
-      name.constrained = true
-      name.unconstrained = nil
-      --]]
+      local body = rule :take 'rhs' [1]
+      for k, v in pairs(body) do
+         if type(v) == 'boolean' then
+            name[k] = v
+         end
+      end
    else
       name.constrained_by_rule = false
    end
