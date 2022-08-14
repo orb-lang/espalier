@@ -748,10 +748,10 @@ function Syn.grammar.collectRules(grammar)
       end
       ruleMap[token] = rule
       if not nameSet[token] then
-         -- while it is valid to refer to the top rule, it is not noteworthy
-         -- when a grammar does not.
-         -- rules which are not findable from the start rule aren't part of
-         -- the grammar, and are therefore surplus
+         --  While it is valid to refer to the top rule, it isn't noteworthy
+         --  when a grammar does not.
+         --  Rules which are not findable from the start rule aren't part of
+         --  the grammar, and are therefore surplus
          if rule ~= start_rule then
             rule.surplus = true
             insert(surplus, rule)
@@ -765,12 +765,15 @@ function Syn.grammar.collectRules(grammar)
          insert(calls, tok)
       end
    end
+
+   -- account for missing rules (referenced but not defined)
    for name in pairs(nameSet) do
       if not ruleMap[name] then
          insert(missing, name)
       end
    end
    sort(missing)
+
    return { nameSet   =  nameSet,
             nameMap   =  nameMap,
             ruleMap   =  ruleMap,
@@ -1087,7 +1090,8 @@ end
   Returns the concatenated peg string to recognize a single rule, which will
 include rules referenced recursively.
 
-
+#Todo The call sets are supposed to be complete for a given rule, so the
+      use of a shuttle and =added= check here shouldn't be necessary.
 
 #!lua
 function Syn.grammar.pehFor(grammar, rule)
@@ -1175,7 +1179,7 @@ function Syn.grammar.constrain(grammar)
          ruleMap[name]:constrain(coll)
       end
       for name_str in pairs(tier) do              -- orphan references
-         for _, name in ipairs(nameMap[name_str] or {}) do
+         for _, name in ipairs(nameMap[name_str] or {}) do -- prob. redundant
             name:constrain(coll)
          end
       end
@@ -1195,71 +1199,45 @@ function Syn.grammar.constrain(grammar)
 end
 #/lua
 
+
+*** rule:constrain(coll)
+
+Constrains an individual rule.
+
 #!lua
 function Syn.rule.constrain(rule, coll)
    local rhs = assert(rule :take 'rhs')
+   assert(#rhs == 1, "bad arity on RHS")
    local body = rhs[1]
-   if body.nofail then
-      rhs.nofail = true
-      rule.nofail = true
-   end
-   if body.compound then
-      body:sumConstraints(coll)
-      if body.locked then
-         rule.locked = true
-      end
-   end
-   rule.constrained = true
-end
-#/lua
-
-#!lua
-function Syn.name.constrain(name, coll)
-   local tok = assert(name.token)
-   local rule = assert(coll.ruleMap[tok])
-   if rule.constrained then
-      name.final = rule.final
-      name.terminal = rule.terminal
-      name.nofail = rule.nofail
-      name.locked = rule.locked
-      name.constrained = true
-      name.unconstrained = nil
-   else
-      name.unconstrained = true
-   end
+   body:constrain(coll)
 end
 #/lua
 
 
-**** Compound constraints
+*** Compound constraints: cat, alt
 
 #!lua
-function Syn.cat.sumConstraints(cat, coll)
+function Syn.cat.constrain(cat, coll)
    local locked;
    local gate;
    local idx;
    for i, sub in ipairs(cat) do
-      if sub.compound then
-         sub:sumConstraints(coll)
+      if sub.constrain then
+         sub:constrain(coll)
       else
-         if sub.constrain then
-            sub:constrain(coll)
-         else
-            sub.unconstrained = true
-         end
+         sub.no_constrain_method = true
       end
-      if sub.locked or (not sub.nofail) then
+      if sub.locked or sub.terminal then
          idx = i
          gate = sub
       end
       if (not sub.nofail) then
          if not locked then
-            assert(not sub.nofail)
-            if sub.token == "_" then sub.seriously = "wtf: " .. tostring(sub.nofail) end
             sub.lock = true
             locked = true
          end
       end
+      ::continue::
    end
 
    if gate then
@@ -1268,6 +1246,8 @@ function Syn.cat.sumConstraints(cat, coll)
          gate.lock = nil
       else
          gate.gate = true
+         -- look for other unfailable rules
+         -- sub.terminal is not very good, improve
          for i = idx-1, 1, -1 do
             local sub = cat[i]
             if not sub.terminal then break end
@@ -1284,22 +1264,62 @@ end
 #/lua
 
 #!lua
-function Syn.alt.sumConstraints(choice, coll)
+function Syn.alt.constrain(choice, coll)
    local maybe = nil
    for _, sub in ipairs(choice) do
-      if sub.compound then
-         sub:sumConstraints(coll)
+      if sub.constrain then
+         sub:constrain(coll)
+      else
+         sub.no_constrain_method = true
+         goto continue
       end
       if sub.nofail then
          maybe = true
          -- for future expansion: this has to be the last rule
          -- to be meaningful under ordered choice
       end
+      ::continue::
    end
    choice.nofail = maybe
    choice.constrained = true
 end
 #/lua
+
+
+
+*** element:constrain(coll)
+
+#!lua
+function Syn.element.constrain(element, coll)
+   -- ??
+end
+#/lua
+
+
+
+
+
+#!lua
+function Syn.name.constrain(name, coll)
+   local tok = assert(name.token)
+   local rule = assert(coll.ruleMap[tok])
+   if rule.constrained then
+      name.constrained_by_rule = true
+      --[[ this is from before
+      name.final = rule.final
+      name.terminal = rule.terminal
+      name.nofail = rule.nofail
+      name.locked = rule.locked
+      name.constrained = true
+      name.unconstrained = nil
+      --]]
+   else
+      name.constrained_by_rule = false
+   end
+end
+#/lua
+
+
 
 
 ***** Catching optional repeates
