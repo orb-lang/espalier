@@ -59,8 +59,8 @@ create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
                  (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
                  ( AS select /
                     "(" _ column-def
-                    ("," _ column-def)*
-                    ("," (_ table-constraint)+)? _ ")" _
+                    (_ "," _ column-def)*
+                    (_ "," (_ table-constraint)+)? _ ")" _
                     table-options* )
 
   schema-name  ←  name
@@ -76,7 +76,7 @@ table-options  ←  t-opt ("," _  t-opt)*
 
 
 local column_def = [[
- column-def  ←  column-name _ (type-name)? (_ column-constraint _)*
+ column-def  ←  column-name _ (type-name)? (_ column-constraint)*
 column-name  ←  name
 
   type-name  ←  (affinity _) fluff?
@@ -140,10 +140,13 @@ column-constraint  ←  CONSTRAINT name _
                    /  PRIMARY KEY (ASC / DESC)? conflict-clause? AUTOINCREMENT?
                    /  UNIQUE conflict-clause?
                    /  CHECK group-expr
-                   /  DEFAULT (NULL / literal-value / group-expr / signed-number)
+                   /  DEFAULT (number / string / blob / NULL / TRUE / FALSE
+                               / CURRENT_TIMESTAMP / CURRENT_TIME
+                               / CURRENT_DATE / group-expr / signed-number)
                    /  COLLATE collation-name
                    /  foreign-key-clause
                    /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
+
 
 
  table-constraint  ←  CONSTRAINT name _
@@ -262,8 +265,8 @@ local name_rules = [[
 
 
 local literal_rules = [[
-literal-value  ←  (number / string / blob / NULL / TRUE / FALSE
-                  / CURRENT_TIMESTAMP / CURRENT_TIME / CURRENT_DATE)
+`literal-value`  ←  (number / string / blob / NULL / TRUE / FALSE
+                    / CURRENT_TIMESTAMP / CURRENT_TIME / CURRENT_DATE)
 signed-number  ←  {+-} number
 
        number  ←  real / hex / integer

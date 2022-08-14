@@ -16,5 +16,6 @@ print(vav.lpeg_engine)
 sqlish = require "espalier:sqlish"
 local trial = sqlish:try()
 local num = Vav(sqlish.synth :pehFor 'number')
+use "qor:core" . string.spit('sqlish_out.lua', sqlish.test_engine)
 print(ts(num))
 --]]
