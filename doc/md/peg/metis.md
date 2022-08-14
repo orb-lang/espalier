@@ -229,9 +229,7 @@ Keeps printable data in the synth manageable\.
 local suppress = Set {
    'parent',
    'line',
-   -- this field isn't used but I think it will be
-   'final',
-   'constrained',
+   --'constrained',
    'peh',
    'o',
    'col',
@@ -1181,8 +1179,8 @@ function Syn.grammar.constrain(grammar)
          coll.nameQ:push(name)
          ruleMap[name]:constrain(coll)
       end
-      for name_str in pairs(tier) do              -- orphan references
-         for _, name in ipairs(nameMap[name_str] or {}) do -- prob. redundant
+      for name_str in pairs(tier) do
+         for _, name in ipairs(nameMap[name_str]) do
             name:constrain(coll)
          end
       end
@@ -1213,6 +1211,9 @@ function Syn.rule.constrain(rule, coll)
    assert(#rhs == 1, "bad arity on RHS")
    local body = rhs[1]
    body:constrain(coll)
+   if body.constrained then
+      rule.constrained = true
+   end
 end
 ```
 
@@ -1233,14 +1234,11 @@ function Syn.cat.constrain(cat, coll)
       if sub.locked or sub.terminal then
          idx = i
          gate = sub
-      end
-      if (not sub.nofail) then
          if not locked then
             sub.lock = true
             locked = true
          end
       end
-      ::continue::
    end
 
    if gate then
