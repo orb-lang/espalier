@@ -215,6 +215,8 @@ expr  ←  expr-atom
              / function-expr
              / raise-function
 
+;bind-parameter  ←  "bind" "parameter"
+
 function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
                   filter-clause? over-clause?
 
