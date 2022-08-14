@@ -1227,6 +1227,9 @@ function Syn.rule.constrain(rule, coll)
    body:constrain(coll)
    if body.constrained then
       rule.constrained = true
+   else
+      -- #Todo remove this
+      rule.constrained = true
    end
 end
 ```
