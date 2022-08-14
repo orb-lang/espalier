@@ -1,12 +1,19 @@
 # Peg Debugger
 
 
-### Using
+Likely to be integrated more closely into the Espalier ecosystem, we begin
+with the script as\-is
+
+
+### Use
 
 ```lua
 local grammar = require('pegdebug').trace(lpegGrammar, traceOptions)
 lpeg.match(lpeg.P(grammar),"subject string")
 ```
+
+
+#### License
 
 
 ```license
@@ -30,6 +37,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
+
+
+## PegDebug
 
 ```lua
 --

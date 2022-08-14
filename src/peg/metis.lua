@@ -697,6 +697,11 @@ end
 
 
 
+
+
+
+
+
 local function nonempty(tab)
    if #tab > 0 then
       return tab
@@ -708,6 +713,8 @@ end
 
 
 
+local sort = table.sort
+
 function Syn.grammar.collectRules(grammar)
    -- our containers:
    local nameSet, nameMap = Set {}, {} -- #{token*}, token => {name*}
@@ -717,6 +724,9 @@ function Syn.grammar.collectRules(grammar)
    local ruleSet = Set {}   -- #{rule_name}
 
    for name in grammar :filter 'name' do
+      -- #Todo: this is probably the second time this happens?
+      -- this, and the second one with rule_name, can be changed to
+      -- asserts, then removed
       local token = normalize(name:span())
       name.token = token
       nameSet[token] = true
@@ -760,6 +770,7 @@ function Syn.grammar.collectRules(grammar)
          insert(missing, name)
       end
    end
+   sort(missing)
    return { nameSet   =  nameSet,
             nameMap   =  nameMap,
             ruleMap   =  ruleMap,
@@ -976,8 +987,29 @@ function Syn.grammar.analyze(grammar)
 
 
    return grammar:anomalies()
-   --grammar:constrain()
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -998,6 +1030,8 @@ function Syn.grammar.anomalies(grammar)
                dupes   = grammar.dupes }
    end
 end
+
+
 
 
 
@@ -1056,8 +1090,6 @@ end
 
 
 
-
-
 function Syn.grammar.pehFor(grammar, rule)
    if not grammar.collection then
       grammar:collectRules()
@@ -1103,10 +1135,7 @@ function Syn.grammar.dummyParser(grammar)
    end
    grammar:makeDummies()
    local with_dummy = grammar.peh .. grammar.dummy_str
-   -- do this with Vav
-   -- return Peg(with_dummy):toGrammar()
 end
-
 
 
 

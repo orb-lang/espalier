@@ -652,18 +652,21 @@ end
 ```
 
 
-## Data gathering
+## Data gathering: grammar:analyze\(\)
 
-We're just going to be greedy and get our hands on any static relationships
-we can, and use them later\.
 
-Broken up into several chunks for clarity\.
+  This is where we digest the implicit recursive structure of the grammar into
+various explicit and useful forms\.
+
+This concludes by sorting the grammar into ordinary, meaning it has no
+missing, surplus, or duplicated rules, and anomalous, the antonym\.
+
+This is broken up into several subsidiary methods and helper functions,
+largely for the purpose of clarity\.  Everything in this section is expected to
+be accessed through `:analyze`\.
 
 
 ### grammar:collectRules\(\)
-
-Time for a big ol' info dump\!  May as well grab All The Formats and see where
-we get w\. it\.
 
 This builds up a large collection of relational information, while decorating
 rules and names with tokens representing their normalized value\.
@@ -697,7 +700,9 @@ rules and names with tokens representing their normalized value\.
 
 #### nonempty\(tab\)
 
-Probably belongs in core\.
+Returns a table in the event it has \(array\) contents, otherwise `nil`\.
+
+Good candidate for `core`\.
 
 ```lua
 local function nonempty(tab)
@@ -711,6 +716,8 @@ end
 
 
 ```lua
+local sort = table.sort
+
 function Syn.grammar.collectRules(grammar)
    -- our containers:
    local nameSet, nameMap = Set {}, {} -- #{token*}, token => {name*}
@@ -720,6 +727,9 @@ function Syn.grammar.collectRules(grammar)
    local ruleSet = Set {}   -- #{rule_name}
 
    for name in grammar :filter 'name' do
+      -- #Todo: this is probably the second time this happens?
+      -- this, and the second one with rule_name, can be changed to
+      -- asserts, then removed
       local token = normalize(name:span())
       name.token = token
       nameSet[token] = true
@@ -763,6 +773,7 @@ function Syn.grammar.collectRules(grammar)
          insert(missing, name)
       end
    end
+   sort(missing)
    return { nameSet   =  nameSet,
             nameMap   =  nameMap,
             ruleMap   =  ruleMap,
@@ -867,8 +878,8 @@ addition and a queue to obtain the full rule set seen by any other given
 rule\.
 
 This returns a map of names to a Set of every rule which can be visited from
-that rule name\.  It actually return the two halves \(terminal and regular\) as
-well as the union, but it most likely doesn't have to\.
+that rule name, followed by the regular and recursive halves, which we do not
+currently collect\.
 
 ```lua
 local function setFor(tab)
@@ -979,9 +990,30 @@ function Syn.grammar.analyze(grammar)
 
 
    return grammar:anomalies()
-   --grammar:constrain()
 end
 ```
+
+
+## Anomalous Grammars
+
+A grammar is anomalous if it has missing, duplicate, or surplus rules\.
+
+Duplicate rules are a simple error, since the only semantic of a duplicate
+rule is to overwrite the earlier with the latter, so we have no further
+action to take in the moments before the mistake is corrected by the user\.
+
+Missing rules we can account for by building placeholders, which we do\.
+
+Surplus rules are an interesting case, because there is a coherent kind of
+surplus rule or rules: an alternate grammar built partially or wholly from
+rules referenced from the start rule of the grammar\.
+
+The intention of the Vav framework is that it will be tractable to assemble
+this sort of rule from parts, and this is more clear than embedding several
+grammars into one\.
+
+But it's a coherent action to take on surplus rules, the semantic is clear
+enough, and we'll consider doing it\.
 
 
 ### grammar:anomalies\(\)
@@ -1004,18 +1036,20 @@ end
 ```
 
 
-## Constraints
+## Peh Methods
 
-  This algorithm is almost entirely about adding flags to rules as we discover
-things about them, then using that knowledge in a surprising number of ways\.
+
+  Various functions to produce a Peh: a string in PEG format specifying a
+grammar\.
 
 
 ### grammar:makeDummies\(\)
 
 Does nothing if `.missing` is empty, otherwise makes dummies of missing rules\.
 
-The dummy rule just matches the string of the missing rule name, which is
-exactly what we want\.
+The dummy rule just matches the string of the missing rule name, giving us a
+reasonable placeholder to allow testing of portions of a grammar before
+filling in the remaining clauses\.
 
 ```lua
 local find, gsub = string.find, string.gsub
@@ -1049,8 +1083,6 @@ function Syn.grammar.makeDummies(grammar)
 end
 ```
 
-
-## Parser\-returning
 
 
 ### grammar:pehFor 'rule'
@@ -1106,26 +1138,23 @@ function Syn.grammar.dummyParser(grammar)
    end
    grammar:makeDummies()
    local with_dummy = grammar.peh .. grammar.dummy_str
-   -- do this with Vav
-   -- return Peg(with_dummy):toGrammar()
 end
 ```
 
 
+## Constrain
+
+  The constraint phase of the algorithm uses the mappings established in
+analysis to provide insight into the compound and recursive structure of the
+grammar\.
+
+`:constrain` requires that the grammar be ordinary, not anomalous: we don't
+bother doing fancy things with under or over\-specified grammars\.
+
 
 ### grammar:constrain\(\)
 
-This stage is all about reconciling the information collected during analysis
-with the appearances of rule variables within the grammar\.
-
-
-#### grammar:constrain\(\)
-
-Performs the post\-analysis constraint satisfaction\.
-
-I think the basic structure of `grammar`, `rule` \(maybe\) and `cat` are all
-roughly correct, the rest I'll just scrap\.
-
+Performs the post\-analysis constraint satisfaction
 
 ```lua
 function Syn.grammar.constrain(grammar)
