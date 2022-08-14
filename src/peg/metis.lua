@@ -1018,9 +1018,7 @@ end
 local find, gsub = string.find, string.gsub
 
 local function dumbRule(name, pad, patt)
-   return  "`" .. name .. "`  <-  DUMMY-" .. name .. "\n"
-           .. "DUMMY-" .. name .. "  <-  " .. pad
-           .. patt .. pad .. "\n"
+   return   name .. "  <-  " .. pad .. patt .. pad .. "\n"
 end
 
 function Syn.grammar.makeDummies(grammar)

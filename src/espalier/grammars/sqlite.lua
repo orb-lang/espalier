@@ -140,9 +140,7 @@ column-constraint  ←  CONSTRAINT name _
                    /  PRIMARY KEY (ASC / DESC)? conflict-clause? AUTOINCREMENT?
                    /  UNIQUE conflict-clause?
                    /  CHECK group-expr
-                   /  DEFAULT (number / string / blob / NULL / TRUE / FALSE
-                               / CURRENT_TIMESTAMP / CURRENT_TIME
-                               / CURRENT_DATE / group-expr / signed-number)
+                   /  DEFAULT (literal-value / group-expr / signed-number)
                    /  COLLATE collation-name
                    /  foreign-key-clause
                    /  (GENERATED ALWAYS)? AS group-expr (STORED / VIRTUAL)?
@@ -215,7 +213,7 @@ expr  ←  expr-atom
              / function-expr
              / raise-function
 
-;bind-parameter  ←  "bind" "parameter"
+; bind-parameter  ←  "bind" "parameter"
 
 function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
                   filter-clause? over-clause?
