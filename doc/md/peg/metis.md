@@ -1238,8 +1238,14 @@ function Syn.grammar.constrain(grammar)
    for node in shuttle:popAll() do
       bail = bail + 1
       node:constrain(coll)
-      if bail > 512 then
+      if bail > 1024 then
          grammar.had_to_bail = true
+         grammar.no_constraint = {}
+         for node in grammar :walk() do
+            if not node.constrained then
+               insert(grammar.no_constraint, node)
+            end
+         end
          break
       end
    end
@@ -1284,14 +1290,14 @@ function Syn.cat.constrain(cat, coll)
    local locked;
    local gate;
    local idx;
-   local complete;
+   local again;
    for i, sub in ipairs(cat) do
       if sub.constrain then
          sub:constrain(coll)
          if not sub.constrained then
             -- really we should bail here, because we'll push once per
             -- incomplete rule
-            complete = false
+            again = true
          end
       end
       if sub.locked or sub.terminal then
@@ -1302,6 +1308,11 @@ function Syn.cat.constrain(cat, coll)
             locked = true
          end
       end
+   end
+
+   if again then
+      col.shuttle:push(cat)
+      return
    end
 
    if gate then
@@ -1318,16 +1329,11 @@ function Syn.cat.constrain(cat, coll)
             sub.gate = true
          end
       end
-      complete = true
-   end
-   if not complete then
-      coll.shuttle:push(cat)
    end
 
    if locked then
       cat.locked = true
    end
-   cat.constrained = complete
 end
 ```
 
