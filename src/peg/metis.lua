@@ -111,6 +111,15 @@ Q.predicate = Set {'and', 'not'}
 
 
 
+Q.failsucceeds = Set {'not'}
+
+
+
+
+
+
+
+
 Q.nullable = Q.predicate + Q.nofail
 
 
@@ -234,10 +243,10 @@ local suppress = Set {
    'o',
    'col',
    'up',
-   'node',
+   'node'
 }
 local _lens = { hide_key = suppress,
-                depth = 10 }
+                depth = math.huge }
 local Syn_repr = require "repr:lens" (_lens)
 
 SynM.__repr = Syn_repr
@@ -506,6 +515,9 @@ local function _synth(node, parent_synth, i)
    if synth.class == 'element' then
       analyzeElement(synth)
    end
+   if synth.class == 'rule' then
+      synth.token = assert(synth :take 'rule_name' . token)
+   end
    return synth
 end
 
@@ -607,8 +619,14 @@ end
 
 
 
-
 local Hoist = Set {'element', 'alt', 'cat'}
+
+
+
+
+
+
+
 
 
 
@@ -1134,18 +1152,22 @@ end
 
 
 
-local Peg = require "espalier:espalier/peg"
 
-function Syn.grammar.dummyParser(grammar)
-   if not grammar.collection then
-      grammar:collectRules()
-   end
-   if not grammar.collection.missing then
-      return nil, "no dummy rules"
-   end
-   grammar:makeDummies()
-   local with_dummy = grammar.peh .. grammar.dummy_str
-end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1188,10 +1210,13 @@ function Syn.grammar.constrain(grammar)
    local regulars, ruleMap = coll.regulars, coll.ruleMap
    local nameMap = coll.nameMap
    coll.nameQ = Deque()
+   coll.shuttle = Deque()
+   local seen = {}
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
          coll.nameQ:push(name)
          ruleMap[name]:constrain(coll)
+         seen[name] = true
       end
       for name_str in pairs(tier) do
          for _, name in ipairs(nameMap[name_str]) do
@@ -1201,16 +1226,15 @@ function Syn.grammar.constrain(grammar)
    end
 
    for rule in grammar :filter 'rule' do
-      rule:constrain(coll)
+      if not seen[rule.token] then
+         rule:constrain(coll)
+      end
    end
 
+   -- this should be redundant
    for name in grammar :filter 'name' do
       name:constrain(coll)
    end
-
-   -- lift up regulars
-
-   -- say sensible things about recursives
 end
 
 
@@ -1228,10 +1252,16 @@ function Syn.rule.constrain(rule, coll)
    if body.constrained then
       rule.constrained = true
    else
-      -- #Todo remove this
+      -- this is to satisfy the rest of the engine
       rule.constrained = true
+      -- this is so we can eliminate it
+      rule.fiat_constraint = true
    end
 end
+
+
+
+
 
 
 
@@ -1242,11 +1272,15 @@ function Syn.cat.constrain(cat, coll)
    local locked;
    local gate;
    local idx;
+   local complete;
    for i, sub in ipairs(cat) do
       if sub.constrain then
          sub:constrain(coll)
-      else
-         sub.no_constrain_method = true
+         if not sub.constrained then
+            -- really we should bail here, because we'll push once per
+            -- incomplete rule
+            complete = false
+         end
       end
       if sub.locked or sub.terminal then
          idx = i
@@ -1272,6 +1306,10 @@ function Syn.cat.constrain(cat, coll)
             sub.gate = true
          end
       end
+      complete = true
+   end
+   if not complete then
+      coll.shuttle:push(cat)
    end
 
    if locked then
@@ -1309,11 +1347,7 @@ end
 function Syn.element.constrain(element, coll)
    -- ??
    for _, sub in ipairs(element) do
-      if sub.constrain then
-         sub:constrain(coll)
-      else
-         sub.no_constrain_method = true
-      end
+      sub:constrain(coll)
    end
 
 end
@@ -1338,6 +1372,7 @@ function Syn.name.constrain(name, coll)
       name.nullable = body.nullable
       name.terminal = body.terminal
       name.unbounded = body.unbounded
+      name.failsucceeds = body.failsucceeds
       name.nofail = body.nofail
    else
       name.constrained_by_rule = false

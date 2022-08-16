@@ -79,6 +79,17 @@ cluster.construct(new,
 
 
 
+function Vav.constrain(vav)
+   return vav.synth:constrain()
+end
+
+
+
+
+
+
+
+
 function Vav.dji(vav)
    if not vav.lpeg_engine then
       vav.lpeg_engine = vav.synth :toLpeg() :string()

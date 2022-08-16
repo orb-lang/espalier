@@ -74,6 +74,17 @@ be indefinite.
 Vav will be the container for all the components, however.
 
 
+*** Vav:constrain()
+
+A pass-through which we'll be using for awhile at least.
+
+#!lua
+function Vav.constrain(vav)
+   return vav.synth:constrain()
+end
+#/lua
+
+
 *** Vav:dji()
 
 For today's purposes, produces and attaches a grammar.

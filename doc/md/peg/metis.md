@@ -106,6 +106,15 @@ Q.predicate = Set {'and', 'not'}
 ```
 
 
+#### Q\.failsucceeds
+
+A rule which succeeds by failing, aka `not`, we use this in rule constraints\.
+
+```lua
+Q.failsucceeds = Set {'not'}
+```
+
+
 #### Q\.nullable
 
 A rule which can match without advancing the cursor\.
@@ -234,10 +243,10 @@ local suppress = Set {
    'o',
    'col',
    'up',
-   'node',
+   'node'
 }
 local _lens = { hide_key = suppress,
-                depth = 10 }
+                depth = math.huge }
 local Syn_repr = require "repr:lens" (_lens)
 
 SynM.__repr = Syn_repr
@@ -508,6 +517,9 @@ local function _synth(node, parent_synth, i)
    if synth.class == 'element' then
       analyzeElement(synth)
    end
+   if synth.class == 'rule' then
+      synth.token = assert(synth :take 'rule_name' . token)
+   end
    return synth
 end
 ```
@@ -604,7 +616,6 @@ end
 ```
 
 
-
 #### grammar:hoist\(\)
 
 Three rules are just noise when they have only one child:
@@ -612,6 +623,13 @@ Three rules are just noise when they have only one child:
 ```lua
 local Hoist = Set {'element', 'alt', 'cat'}
 ```
+
+So we eliminate them by 'hoisting' the child to the parent's index on the
+grandparent\.
+
+This implementation has to hoist twice, for some obvious\-in\-retrospect reason
+I'm having trouble caring about\. Node 2\.0 will feature hoisting as a native
+operation\.
 
 ```lua
 function M.grammar.hoist(grammar)
@@ -682,8 +700,8 @@ rules and names with tokens representing their normalized value\.
 
   - nameSet:  The set of every name in normalized token form\.
 
-  - nameMap:  The tokens of nameSet mapped to an array of all occurance in the
-      grammar\.
+  - nameMap:  The tokens of nameSet mapped to an array of all right hand side
+      references in the grammar\.
 
   - ruleMap:  A map from the rule name \(token\) to the synthesized rule\.
 
@@ -1134,24 +1152,6 @@ end
 ```
 
 
-#### grammar:dummyParser\(\)
-
-```lua
-local Peg = require "espalier:espalier/peg"
-
-function Syn.grammar.dummyParser(grammar)
-   if not grammar.collection then
-      grammar:collectRules()
-   end
-   if not grammar.collection.missing then
-      return nil, "no dummy rules"
-   end
-   grammar:makeDummies()
-   local with_dummy = grammar.peh .. grammar.dummy_str
-end
-```
-
-
 ## Constrain
 
   The constraint phase of the algorithm uses the mappings established in
@@ -1160,6 +1160,28 @@ grammar\.
 
 `:constrain` requires that the grammar be ordinary, not anomalous: we don't
 bother doing fancy things with under or over\-specified grammars\.
+
+
+#### Fixed Point
+
+Grammars are recursive, and allow an arbitrary amount of indirection, so our
+only hope of completing this constraint process is to reach a fixed point,
+where calling `:constrain` on any of the Nodes will have no further effect\.
+
+The most straightforward way to do this is to run a queue and push anything
+which isn't complete onto it\.
+
+When the initial passes are complete, we pop\-and\-push on the queue until
+everything is relaxed\.
+
+The trick will be knowing when a node has no further possibility of traits
+changing\.
+
+
+### Base :constrain
+
+Tags the class as having been constrained by the base rule and visits the
+kids\.
 
 ```lua
 function Syndex.constrain(synth, coll)
@@ -1191,10 +1213,13 @@ function Syn.grammar.constrain(grammar)
    local regulars, ruleMap = coll.regulars, coll.ruleMap
    local nameMap = coll.nameMap
    coll.nameQ = Deque()
+   coll.shuttle = Deque()
+   local seen = {}
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
          coll.nameQ:push(name)
          ruleMap[name]:constrain(coll)
+         seen[name] = true
       end
       for name_str in pairs(tier) do
          for _, name in ipairs(nameMap[name_str]) do
@@ -1204,16 +1229,15 @@ function Syn.grammar.constrain(grammar)
    end
 
    for rule in grammar :filter 'rule' do
-      rule:constrain(coll)
+      if not seen[rule.token] then
+         rule:constrain(coll)
+      end
    end
 
+   -- this should be redundant
    for name in grammar :filter 'name' do
       name:constrain(coll)
    end
-
-   -- lift up regulars
-
-   -- say sensible things about recursives
 end
 ```
 
@@ -1231,8 +1255,10 @@ function Syn.rule.constrain(rule, coll)
    if body.constrained then
       rule.constrained = true
    else
-      -- #Todo remove this
+      -- this is to satisfy the rest of the engine
       rule.constrained = true
+      -- this is so we can eliminate it
+      rule.fiat_constraint = true
    end
 end
 ```
@@ -1240,16 +1266,24 @@ end
 
 ### Compound constraints: cat, alt
 
+Cat and alt are where all the fancy happens, we need to look for 'locked' cat
+rules: those which, once started, will fail if they don't reach a specific
+end rule and succeed\.
+
 ```lua
 function Syn.cat.constrain(cat, coll)
    local locked;
    local gate;
    local idx;
+   local complete;
    for i, sub in ipairs(cat) do
       if sub.constrain then
          sub:constrain(coll)
-      else
-         sub.no_constrain_method = true
+         if not sub.constrained then
+            -- really we should bail here, because we'll push once per
+            -- incomplete rule
+            complete = false
+         end
       end
       if sub.locked or sub.terminal then
          idx = i
@@ -1275,6 +1309,10 @@ function Syn.cat.constrain(cat, coll)
             sub.gate = true
          end
       end
+      complete = true
+   end
+   if not complete then
+      coll.shuttle:push(cat)
    end
 
    if locked then
@@ -1312,11 +1350,7 @@ end
 function Syn.element.constrain(element, coll)
    -- ??
    for _, sub in ipairs(element) do
-      if sub.constrain then
-         sub:constrain(coll)
-      else
-         sub.no_constrain_method = true
-      end
+      sub:constrain(coll)
    end
 
 end
@@ -1341,6 +1375,7 @@ function Syn.name.constrain(name, coll)
       name.nullable = body.nullable
       name.terminal = body.terminal
       name.unbounded = body.unbounded
+      name.failsucceeds = body.failsucceeds
       name.nofail = body.nofail
    else
       name.constrained_by_rule = false
