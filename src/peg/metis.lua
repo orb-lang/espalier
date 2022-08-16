@@ -364,7 +364,12 @@ local Syn = setmetatable({Syndex}, {__index = Syn_index })
 
 local walk = require "gadget:walk"
 
-local filter, reduce = assert(walk.filter), assert(walk.reduce)
+local depth, filter, reduce = assert(walk.depth),
+                              assert(walk.filter),
+                              assert(walk.reduce)
+
+Syndex.walk = depth
+
 local classfilter = {}
 
 local function filterer(class)
@@ -1195,6 +1200,35 @@ end
 
 
 
+
+local function queuetate(node)
+   if node == false then return false end
+   local phrase = {node.class, ":", tostring(node.token)}
+   return concat(phrase)
+end
+
+
+
+
+
+
+
+
+local function queueUp(shuttle, node)
+   if node.on then return end
+   node.on = true
+   shuttle:push(node)
+end
+
+
+
+
+
+
+
+
+local mutate = assert(table.mutate)
+
 function Syn.grammar.constrain(grammar)
    local coll;
    if grammar.collection then
@@ -1227,25 +1261,28 @@ function Syn.grammar.constrain(grammar)
    end
 
    for rule in grammar :filter 'rule' do
-      if not seen[rule.token] then
-         shuttle:push(rule)
-      end
+      queueUp(shuttle, rule)
    end
    local bail = 0
    for node in shuttle:popAll() do
-      bail = bail + 1
-      node:constrain(coll)
-      if bail > 1024 then
-         grammar.had_to_bail = true
-         grammar.no_constraint = {}
-         for node in grammar :walk() do
-            if not node.constrained then
-               insert(grammar.no_constraint, node)
+      if type(node) == 'table' then
+         node.on = nil
+         bail = bail + 1
+         node:constrain(coll)
+         if bail > 1024 then
+            grammar.had_to_bail = true
+            grammar.no_constraint = {}
+            for node in grammar :walk() do
+               if not node.constrained then
+                  insert(grammar.no_constraint, node)
+               end
             end
+            mutate(shuttle, queuetate)
+            break
          end
-         break
-      end
+      end -- ugh
    end
+   grammar.had_to_bail = not not grammar.had_to_bail
    -- this should be redundant
    for name in grammar :filter 'name' do
       name:constrain(coll)
@@ -1267,10 +1304,7 @@ function Syn.rule.constrain(rule, coll)
    if body.constrained then
       rule.constrained = true
    else
-      -- this is to satisfy the rest of the engine
-      rule.constrained = true
-      -- this is so we can eliminate it
-      rule.fiat_constraint = true
+      queueUp(coll.shuttle, rule)
    end
 end
 
@@ -1308,8 +1342,10 @@ function Syn.cat.constrain(cat, coll)
    end
 
    if again then
-      col.shuttle:push(cat)
+      queueUp(coll.shuttle, cat)
       return
+   else
+      cat.constrained = true
    end
 
    if gate then
@@ -1342,7 +1378,7 @@ function Syn.alt.constrain(choice, coll)
       if sub.constrain then
          sub:constrain(coll)
          if not sub.constrained then
-            coll.shuttle:push(choice)
+            queueUp(coll.shuttle, choice)
             again = true
          end
       else
@@ -1371,7 +1407,7 @@ function Syn.element.constrain(element, coll)
       sub:constrain(coll)
       if not sub.constrained then
          again = true
-         coll.shuttle:push(element)
+         queueUp(coll.shuttle, element)
       end
    end
    element.constrained = not not again
