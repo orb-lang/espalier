@@ -1213,7 +1213,8 @@ function Syn.grammar.constrain(grammar)
    local regulars, ruleMap = coll.regulars, coll.ruleMap
    local nameMap = coll.nameMap
    coll.nameQ = Deque()
-   coll.shuttle = Deque()
+   local shuttle = Deque()
+   coll.shuttle = shuttle
    local seen = {}
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
@@ -1230,10 +1231,18 @@ function Syn.grammar.constrain(grammar)
 
    for rule in grammar :filter 'rule' do
       if not seen[rule.token] then
-         rule:constrain(coll)
+         shuttle:push(rule)
       end
    end
-
+   local bail = 0
+   for node in shuttle:popAll() do
+      bail = bail + 1
+      node:constrain(coll)
+      if bail > 512 then
+         grammar.had_to_bail = true
+         break
+      end
+   end
    -- this should be redundant
    for name in grammar :filter 'name' do
       name:constrain(coll)
@@ -1318,16 +1327,21 @@ function Syn.cat.constrain(cat, coll)
    if locked then
       cat.locked = true
    end
-   cat.constrained = true
+   cat.constrained = complete
 end
 ```
 
 ```lua
 function Syn.alt.constrain(choice, coll)
    local maybe = nil
+   local again;
    for _, sub in ipairs(choice) do
       if sub.constrain then
          sub:constrain(coll)
+         if not sub.constrained then
+            coll.shuttle:push(choice)
+            again = true
+         end
       else
          sub.no_constrain_method = true
       end
@@ -1338,7 +1352,7 @@ function Syn.alt.constrain(choice, coll)
       end
    end
    choice.nofail = maybe
-   choice.constrained = true
+   choice.constrained = not not again
 end
 ```
 
@@ -1349,16 +1363,21 @@ end
 ```lua
 function Syn.element.constrain(element, coll)
    -- ??
+   local again;
    for _, sub in ipairs(element) do
       sub:constrain(coll)
+      if not sub.constrained then
+         again = true
+         coll.shuttle:push(element)
+      end
    end
-
+   element.constrained = not not again
 end
 ```
 
 
 
-### name:constrain\(\)
+### name:constrain\(coll\)
 
 This is all about copying traits from the rule body to the reference\.
 
