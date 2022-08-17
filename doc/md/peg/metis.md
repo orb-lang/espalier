@@ -363,6 +363,34 @@ local Syn = setmetatable({Syndex}, {__index = Syn_index })
 The goal with clades is to allow these sorts of methods to be composable
 without any visitor BS, once again we're handrolling here\.
 
+
+#### Reporting
+
+
+##### synth:pathName\(\)
+
+
+```lua
+function Syndex.pathName(synth)
+   local phrase, stack = {}, {synth.class}
+   local parent = synth.parent
+   while parent ~= parent.parent do
+      insert(stack, parent.class)
+      parent = parent.parent
+   end
+   while #stack > 0 do
+      insert(phrase, remove(stack))
+      insert(phrase, "/")
+   end
+   phrase[#phrase] = ":"
+   insert(phrase, synth.token or "none")
+   return concat(phrase)
+end
+```
+
+
+#### Traversal
+
 ```lua
 local walk = require "gadget:walk"
 
@@ -1207,8 +1235,7 @@ overflows, which should never happen when this code is stable\.
 ```lua
 local function queuetate(node)
    if node == false then return false end
-   local phrase = {node.class, ":", tostring(node.token)}
-   return concat(phrase)
+   return node:pathName()
 end
 ```
 
@@ -1264,7 +1291,7 @@ function Syn.grammar.constrain(grammar)
          end
       end
    end
-   --[=[
+   ---[=[
    for rule in grammar :filter 'rule' do
       queueUp(shuttle, rule)
    end
@@ -1275,7 +1302,7 @@ function Syn.grammar.constrain(grammar)
          node.on = nil
          bail = bail + 1
          node:constrain(coll)
-         if bail > 1024 then
+         if bail > 2048 then
             grammar.had_to_bail = true
             grammar.no_constraint = {}
             for node in grammar :walk() do
@@ -1389,6 +1416,7 @@ function Syn.cat.constrain(cat, coll)
 
    if locked then
       cat.locked = true
+      cat.constrained = true -- this is the recursion buster I hope
    end
 end
 ```
@@ -1459,6 +1487,8 @@ function Syn.name.constrain(name, coll)
    else
       name.constrained_by_rule = false
       name.did_not_see_rule = true -- this branch shouldn't occur
+      queueUp(coll.shuttle, rule)
+      queueUp(coll.shuttle, name)
    end
 end
 ```
