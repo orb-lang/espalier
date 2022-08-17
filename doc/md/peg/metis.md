@@ -389,6 +389,25 @@ end
 ```
 
 
+##### synth:withinRule\(\)
+
+```lua
+function Syndex.withinRule(synth)
+   if synth.class == 'rule' then return nil, 'this is a rule' end
+   if synth.class == 'grammar' then return nil, 'this is a grammar' end
+   local parent = synth.parent
+   while parent ~= parent.parent do
+      if parent.class == 'rule' then
+         return parent.token
+      else
+         parent = parent.parent
+      end
+   end
+   return nil, 'mistakes were made (new tree structure?)'
+end
+```
+
+
 #### Traversal
 
 ```lua
@@ -1305,11 +1324,12 @@ function Syn.grammar.constrain(grammar)
          if bail > 2048 then
             grammar.had_to_bail = true
             grammar.no_constraint = {}
-            for node in grammar :walk() do
-               if not node.constrained and not (node == grammar) then
-                  insert(grammar.no_constraint, node)
+            for rule in grammar :filter 'rule' do
+               if not rule.constrained then
+                  grammar.no_constraint[rule.token] = rule
                end
             end
+
             mutate(shuttle, queuetate)
             break
          end
@@ -1340,6 +1360,7 @@ function Syn.rule.constrain(rule, coll)
    body:constrain(coll)
    if body.constrained then
       rule.constrained = true
+      rhs.constrained = true
    else
       queueUp(coll.shuttle, rule)
    end
@@ -1467,13 +1488,32 @@ end
 
 This is all about copying traits from the rule body to the reference\.
 
+We have to handle a self\-reference carefully: the first time we see it, we're
+still collecting the other properties, so we push the rule again and tag the
+name\.
+
 
 ```lua
 function Syn.name.constrain(name, coll)
-   local tok = assert(name.token)
-   local rule = assert(coll.ruleMap[tok])
+   local token = assert(name.token)
+   local rule = assert(coll.ruleMap[token])
 
    local body = rule :take 'rhs' [1]
+   local body_constraint =  nil
+   local self_ref = token == name:withinRule()
+   if self_ref then
+      rule.self_recursive = true
+      if name.seen_self then
+         body_constraint = body.constrained
+         body.constrained = true
+         name.seen_self = nil
+      else
+         name.seen_self = true
+         queueUp(coll.shuttle, rule)
+         return
+      end
+   end
+
    if body.constrained then
       name.constrained = true
       name.constrained_by_rule = true
@@ -1484,9 +1524,14 @@ function Syn.name.constrain(name, coll)
       name.unbounded = body.unbounded
       name.failsucceeds = body.failsucceeds
       name.nofail = body.nofail
+      if self_ref then
+         -- this may not be the only reason we're not constrained
+         -- so we restore the original state, whatever it was
+         body.constrained = body_constraint
+      end
    else
       name.constrained_by_rule = false
-      name.did_not_see_rule = true -- this branch shouldn't occur
+      --[[DBG]] name.did_not_see_rule = true
       queueUp(coll.shuttle, rule)
       queueUp(coll.shuttle, name)
    end
