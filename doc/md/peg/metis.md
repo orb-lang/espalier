@@ -719,7 +719,7 @@ end
 function M.grammar.synthesize(grammar)
    grammar.start = grammar :take 'rule'
    local synth = _synth(grammar)
-   ---[[DBG]] synth.Prop = Prop
+   ----[[DBG]] synth.Prop = Prop
    s:verb("synthesized %s", synth.class)
    synth.peh = grammar.peh
    grammar.synth = synth --- this is useful, ish, at least in helm
@@ -1342,14 +1342,13 @@ function Syn.grammar.constrain(grammar)
          end
       end
    end
-   ---[=[
    for rule in grammar :filter 'rule' do
       queueUp(shuttle, rule)
    end
    local bail = 0
    for node in shuttle:popAll() do
       if type(node) == 'table' then
-         --[[DBG]] node.popped = node.popped and node.popped + 1 or 1
+         ---[[DBG]] node.popped = node.popped and node.popped + 1 or 1
          node.on = nil
          bail = bail + 1
          node:constrain(coll)
@@ -1375,7 +1374,6 @@ function Syn.grammar.constrain(grammar)
       end
    end
    grammar.nodes_seen = bail
-   --]=]
    grammar.had_to_bail = not not grammar.had_to_bail
 end
 ```
@@ -1427,12 +1425,10 @@ function Syn.cat.constrain(cat, coll)
    local idx;
    local again;
    for i, sub in ipairs(cat) do
-      --[[DBG]] sub.bookmark = nil
+      ---[[DBG]] sub.bookmark = nil
       sub:constrain(coll)
       if not sub.constrained then
-         -- really we should bail here, because we'll push once per
-         -- incomplete rule
-         --[[DBG]] sub.bookmark = true
+         ---[[DBG]] sub.bookmark = true
          again = true
       end
 
@@ -1443,6 +1439,9 @@ function Syn.cat.constrain(cat, coll)
             sub.lock = true
             locked = true
          end
+      end
+      if sub.unbounded then
+         cat.unbounded = true
       end
    end
 
@@ -1476,14 +1475,17 @@ end
 ```
 
 ```lua
-function Syn.alt.constrain(choice, coll)
+function Syn.alt.constrain(alt, coll)
    local maybe = nil
    local again;
-   for _, sub in ipairs(choice) do
+   for _, sub in ipairs(alt) do
       sub:constrain(coll)
       if not sub.constrained then
-         queueUp(coll.shuttle, choice)
+         queueUp(coll.shuttle, alt)
          again = true
+      end
+      if sub.unbounded then
+         alt.unbounded = true
       end
       if sub.nofail then
          maybe = true
@@ -1491,8 +1493,8 @@ function Syn.alt.constrain(choice, coll)
          -- to be meaningful under ordered choice
       end
    end
-   choice.nofail = maybe
-   choice.constrained =  not again
+   alt.nofail = maybe
+   alt.constrained =  not again
 end
 ```
 
@@ -1578,6 +1580,7 @@ function Syn.name.constrain(name, coll)
    local self_ref = token == name:withinRule()
    if self_ref then
       rule.self_recursive = true
+      rule.unbounded = true
       if name.seen_self then
          name.seen_self = nil
       else
@@ -1587,7 +1590,7 @@ function Syn.name.constrain(name, coll)
       end
    end
    local changed = copyTraits(rule, name)
-   ---[[DBG]] name.changed = changed
+   ----[[DBG]] name.changed = changed
    if not changed then
       name.no_change = name.no_change and name.no_change + 1 or 1
       if name.no_change > 2 then
@@ -1605,9 +1608,7 @@ end
 ```
 
 
-
-
-##### Catching optional repeates
+##### Catching optional repeats
 
 ```lua
 function Syn.repeated.constrain(repeated, coll)
@@ -1616,6 +1617,7 @@ function Syn.repeated.constrain(repeated, coll)
    local start = tonumber(range[1])
    if start == 0 then
       repeated.nofail = true
+      repeated.nullable = true
    end
    repeated.constrained = true
 end
@@ -1639,14 +1641,6 @@ more intelligent about putting things like whitespace at the end where they
 belong\.
 
 
-
-### Arithmetic
-
-```lua
-function SynM.__add(grammar, rule)
-
-end
-```
 
 
 ```lua
