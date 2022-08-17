@@ -111,6 +111,9 @@ Q.predicate = Set {'and', 'not'}
 
 
 
+
+
+
 Q.failsucceeds = Set {'not'}
 
 
@@ -238,7 +241,9 @@ cluster.construct(new, builder)
 local suppress = Set {
    'parent',
    'line',
-   --'constrained',
+   'constrained',
+   'constrained_by_rule',
+   'constrained_by_fixed_point',
    'peh',
    'o',
    'col',
@@ -1185,7 +1190,6 @@ end
 
 
 
-
 function Syn.grammar.pehFor(grammar, rule)
    if not grammar.collection then
       grammar:collectRules()
@@ -1415,6 +1419,12 @@ end
 
 
 
+
+
+
+
+
+
 function Syn.cat.constrain(cat, coll)
    local locked;
    local gate;
@@ -1450,6 +1460,10 @@ function Syn.cat.constrain(cat, coll)
 
       if sub.unbounded then
          cat.unbounded = true
+         if not sub.nullable then
+            idx = i
+            gate = sub
+         end
       end
    end
 
@@ -1470,11 +1484,14 @@ function Syn.cat.constrain(cat, coll)
       else
          gate.gate = true
          -- look for other unfailable /terminal/ rules
-         for i = idx-1, 1, -1 do
-            local sub = cat[i]
-            if not sub.terminal then break end
-            sub.gate = true
-            sub.dam = nil
+         -- at-most-one unbounded gate at the end
+         if not gate.unbounded then
+            for i = idx-1, 1, -1 do
+               local sub = cat[i]
+               if not sub.terminal then break end
+               sub.gate = true
+               sub.dam = nil
+            end
          end
       end
    else

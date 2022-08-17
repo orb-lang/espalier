@@ -108,7 +108,10 @@ Q.predicate = Set {'and', 'not'}
 
 #### Q\.failsucceeds
 
-A rule which succeeds by failing, aka `not`, we use this in rule constraints\.
+A rule which succeeds by failing, aka `not`\.
+
+There is a reason to have a category of one, which is that this condition
+propagates beyond its definition during rule constraint\.
 
 ```lua
 Q.failsucceeds = Set {'not'}
@@ -133,7 +136,7 @@ Q.compound = Set {'cat', 'alt'}
 
 #### Q\.terminal
 
-Rules which produce cursor movement in and of themselves\.
+Rules which produce a definite amount of cursor movement in and of themselves\.
 
 ```lua
 Q.terminal = Set {'literal', 'set', 'range', 'number'}
@@ -238,7 +241,9 @@ Keeps printable data in the synth manageable\.
 local suppress = Set {
    'parent',
    'line',
-   --'constrained',
+   'constrained',
+   'constrained_by_rule',
+   'constrained_by_fixed_point',
    'peh',
    'o',
    'col',
@@ -1179,7 +1184,6 @@ end
 ```
 
 
-
 ### grammar:pehFor 'rule'
 
   Returns the concatenated peg string to recognize a single rule, which will
@@ -1417,6 +1421,12 @@ Cat and alt are where all the fancy happens, we need to look for 'locked' cat
 rules: those which, once started, will fail if they don't reach a specific
 end rule and succeed\.
 
+
+#### cat
+
+This is where the most intricate stuff happens, which I will document when it
+settles all the way down\.
+
 ```lua
 function Syn.cat.constrain(cat, coll)
    local locked;
@@ -1453,6 +1463,10 @@ function Syn.cat.constrain(cat, coll)
 
       if sub.unbounded then
          cat.unbounded = true
+         if not sub.nullable then
+            idx = i
+            gate = sub
+         end
       end
    end
 
@@ -1473,11 +1487,14 @@ function Syn.cat.constrain(cat, coll)
       else
          gate.gate = true
          -- look for other unfailable /terminal/ rules
-         for i = idx-1, 1, -1 do
-            local sub = cat[i]
-            if not sub.terminal then break end
-            sub.gate = true
-            sub.dam = nil
+         -- at-most-one unbounded gate at the end
+         if not gate.unbounded then
+            for i = idx-1, 1, -1 do
+               local sub = cat[i]
+               if not sub.terminal then break end
+               sub.gate = true
+               sub.dam = nil
+            end
          end
       end
    else
