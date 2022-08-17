@@ -1278,6 +1278,8 @@ end
 
 
 
+
+
 local function queueUp(shuttle, node)
    if node.on then return end
    node.on = true
@@ -1288,6 +1290,19 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+local BAIL_AT = 16384
 
 
 
@@ -1335,7 +1350,7 @@ function Syn.grammar.constrain(grammar)
          node.on = nil
          bail = bail + 1
          node:constrain(coll)
-         if bail > 2048 then
+         if bail > BAIL_AT then
             grammar.had_to_bail = true
             grammar.no_constraint = {}
             for rule in grammar :filter 'rule' do
@@ -1356,6 +1371,7 @@ function Syn.grammar.constrain(grammar)
                 :format(tostring(node), ts(bare(shuttle))))
       end
    end
+   grammar.nodes_seen = bail
    --]=]
    grammar.had_to_bail = not not grammar.had_to_bail
 end
@@ -1519,8 +1535,6 @@ end
 
 
 
-
-
 local Trait = Set {'locked', 'predicate', 'nullable', 'terminal', 'unbounded',
                    'failsucceeds', 'nofail', 'recursive', 'self_recursive'}
 
@@ -1555,6 +1569,7 @@ end
 
 
 function Syn.name.constrain(name, coll)
+   if name.constrained then return end
    local token = assert(name.token)
    local rule = assert(coll.ruleMap[token])
    local self_ref = token == name:withinRule()
@@ -1568,7 +1583,17 @@ function Syn.name.constrain(name, coll)
          return
       end
    end
-   name.changed = copyTraits(rule, name)
+   local changed = copyTraits(rule, name)
+   ---[[DBG]] name.changed = changed
+   if not changed then
+      name.no_change = name.no_change and name.no_change + 1 or 1
+      if name.no_change > 2 then
+         name.no_change = nil
+         name.constrained_by_rule = nil
+         name.constrained_by_fixed_point = true
+         name.constrained = true
+      end
+   end
    if not name.constrained then
       queueUp(coll.shuttle, rule)
       queueUp(coll.shuttle, name)

@@ -1278,7 +1278,9 @@ end
 
 #### queueUp\(shuttle, node\)
 
-This keeps us from pushing a node which is already on queue\.
+This keeps us from pushing a node which is already on queue, in particular,
+a rule will not be pushed each time it's seen, meaning that all names waiting
+on that rule will be behind it\.
 
 ```lua
 local function queueUp(shuttle, node)
@@ -1291,7 +1293,20 @@ end
 
 ### grammar:constrain\(\)
 
-Performs the post\-analysis constraint satisfaction
+Performs the post\-analysis constraint satisfaction\.
+
+
+#### BAIL\_AT
+
+The queue can potentially run for a long time in a grammar with many rules, so
+we set this reasonably high\.
+
+In principle we should be able to get a good guess based on the complexity
+we've already collected but\.  But\.
+
+```lua
+local BAIL_AT = 16384
+```
 
 ```lua
 local mutate = assert(table.mutate)
@@ -1338,7 +1353,7 @@ function Syn.grammar.constrain(grammar)
          node.on = nil
          bail = bail + 1
          node:constrain(coll)
-         if bail > 2048 then
+         if bail > BAIL_AT then
             grammar.had_to_bail = true
             grammar.no_constraint = {}
             for rule in grammar :filter 'rule' do
@@ -1359,6 +1374,7 @@ function Syn.grammar.constrain(grammar)
                 :format(tostring(node), ts(bare(shuttle))))
       end
    end
+   grammar.nodes_seen = bail
    --]=]
    grammar.had_to_bail = not not grammar.had_to_bail
 end
@@ -1512,15 +1528,13 @@ name\.
 Welp\. Obvious once I see it but, self\-recursion only breaks the tie sometimes,
 and we have to handle arbitrary cycles\.
 
-We could detect them, or, we could provisionally copy things and stop once
-it's clear that nothing is changing\.
-
-Detecting them is the only correct thing to do, I suspect\. But I'm also going
-to try it dynamically and see if the context can be assembled while we're
-already iterating\. Seems likely\.
+What we do is count "copy with no change" and if we see it twice, we're done\.
 
 
 #### copyTraits\(rule, name\): changed: b
+
+Copys over traits, returning `true` if any of the copied traits has changed
+the state of `name`\.
 
 
 ```lua
@@ -1558,6 +1572,7 @@ end
 
 ```lua
 function Syn.name.constrain(name, coll)
+   if name.constrained then return end
    local token = assert(name.token)
    local rule = assert(coll.ruleMap[token])
    local self_ref = token == name:withinRule()
@@ -1571,7 +1586,17 @@ function Syn.name.constrain(name, coll)
          return
       end
    end
-   name.changed = copyTraits(rule, name)
+   local changed = copyTraits(rule, name)
+   ---[[DBG]] name.changed = changed
+   if not changed then
+      name.no_change = name.no_change and name.no_change + 1 or 1
+      if name.no_change > 2 then
+         name.no_change = nil
+         name.constrained_by_rule = nil
+         name.constrained_by_fixed_point = true
+         name.constrained = true
+      end
+   end
    if not name.constrained then
       queueUp(coll.shuttle, rule)
       queueUp(coll.shuttle, name)
