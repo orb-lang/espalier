@@ -241,9 +241,12 @@ cluster.construct(new, builder)
 local suppress = Set {
    'parent',
    'line',
+   ---[[DBG]] --[=[
    'constrained',
    'constrained_by_rule',
    'constrained_by_fixed_point',
+   'references',
+   --]=]
    'peh',
    'o',
    'col',
@@ -395,18 +398,30 @@ end
 
 
 
-function Syndex.withinRule(synth)
+
+
+function Syndex.parentRule(synth)
    if synth.class == 'rule' then return nil, 'this is a rule' end
    if synth.class == 'grammar' then return nil, 'this is a grammar' end
    local parent = synth.parent
    while parent ~= parent.parent do
       if parent.class == 'rule' then
-         return parent.token
+         return parent
       else
          parent = parent.parent
       end
    end
    return nil, 'mistakes were made (new tree structure?)'
+end
+
+
+
+function Syndex.withinRule(synth)
+   local rule, why = synth:parentRule()
+   if not rule then
+      return nil, why
+   end
+   return rule.token
 end
 
 
@@ -721,7 +736,7 @@ end
 function M.grammar.synthesize(grammar)
    grammar.start = grammar :take 'rule'
    local synth = _synth(grammar)
-   ----[[DBG]] synth.Prop = Prop
+   ---[[DBG]] synth.Prop = Prop
    s:verb("synthesized %s", synth.class)
    synth.peh = grammar.peh
    grammar.synth = synth --- this is useful, ish, at least in helm
@@ -807,8 +822,7 @@ function Syn.grammar.collectRules(grammar)
       -- #Todo: this is probably the second time this happens?
       -- this, and the second one with rule_name, can be changed to
       -- asserts, then removed
-      local token = normalize(name:span())
-      name.token = token
+      local token = assert(name.token)
       nameSet[token] = true
       local refs = nameMap[token] or {}
       insert(refs, name)
@@ -818,8 +832,8 @@ function Syn.grammar.collectRules(grammar)
    local start_rule = grammar :take 'rule'
 
    for rule in grammar :filter 'rule' do
-      local token = normalize(rule :take 'rule_name' :span())
-      rule.token = token
+      local token = assert(rule.token)
+      rule.references = nameMap[token]
       ruleSet[token] = true
       if ruleMap[token] then
          -- lpeg uses the *last* rule defined so we do likewise
@@ -1345,6 +1359,7 @@ function Syn.grammar.constrain(grammar)
    for rule in grammar :filter 'rule' do
       queueUp(shuttle, rule)
    end
+   queueUp(shuttle, grammar)
    local bail = 0
    for node in shuttle:popAll() do
       if type(node) == 'table' then
@@ -1395,6 +1410,26 @@ function Syn.rule.constrain(rule, coll)
    else
       queueUp(coll.shuttle, rule)
    end
+   rule:propagateConstraints(coll)
+end
+
+
+
+
+
+
+
+
+function Syn.rule.propagateConstraints(rule, coll)
+   if rule.references then -- could be the start rule
+      for _, ref in ipairs(rule.references) do
+         ref:constrain(coll)
+         -- this should only be necessary on change
+         -- we make sure the rule is looked at again
+         local rule = ref:parentRule()
+         queueUp(coll.shuttle, rule)
+      end
+   end
 end
 
 
@@ -1431,6 +1466,8 @@ function Syn.cat.constrain(cat, coll)
    local idx;
    local again;
    local terminal = true
+   local nofail = true
+   local nullable = true
    for i, sub in ipairs(cat) do
       -- reset our conditions because we routinely do this several times
       sub.lock, sub.dam, sub.gate, sub.gate_lock = nil, nil, nil, nil
@@ -1441,7 +1478,7 @@ function Syn.cat.constrain(cat, coll)
          again = true
       end
 
-      if sub.locked or sub.terminal then
+      if not sub.nullable then
          idx = i
          gate = sub
          if not locked then
@@ -1460,19 +1497,18 @@ function Syn.cat.constrain(cat, coll)
 
       if sub.unbounded then
          cat.unbounded = true
-         if not sub.nullable then
-            idx = i
-            gate = sub
-         end
       end
+      nofail = nofail and sub.nofail
+      nullable = nullable and sub.nullable
    end
 
    cat.terminal = terminal or nil
+   cat.nofail = nofail or nil
+   cat.constrained = not again
 
+   -- probably this is not necessary?
    if again then
       queueUp(coll.shuttle, cat)
-   else
-      cat.constrained = true
    end
 
    if gate then
@@ -1480,7 +1516,6 @@ function Syn.cat.constrain(cat, coll)
       if gate.lock then
          gate.gate_lock = true
          gate.lock = nil
-         locked = false
       else
          gate.gate = true
          -- look for other unfailable /terminal/ rules
@@ -1500,14 +1535,13 @@ function Syn.cat.constrain(cat, coll)
 
    if locked then
       cat.locked = true
-      cat.constrained = true -- this is the recursion buster I hope
    end
 end
 
 
 
 function Syn.alt.constrain(alt, coll)
-   local maybe = nil
+   local nofail, nullable = nil, nil
    local again;
    local locked = true
    local terminal = true
@@ -1521,14 +1555,13 @@ function Syn.alt.constrain(alt, coll)
          alt.unbounded = true
       end
       terminal = terminal and sub.terminal
-      if sub.nofail then
-         maybe = true
-         -- for future expansion: this has to be the last rule
-         -- to be meaningful under ordered choice
-      end
+
+      nofail = nofail or sub.nofail
+      nullable = nullable or sub.nullable
       locked = locked and sub.locked
    end
-   alt.nofail      = maybe
+   alt.nofail      = nofail
+   alt.nullable    = nullable
    alt.terminal    = terminal or nil
    alt.locked      = locked   or nil
    alt.constrained = not again
@@ -1552,6 +1585,16 @@ function Syn.element.constrain(element, coll)
    end
    element.constrained = not again
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1610,6 +1653,15 @@ end
 
 
 
+
+
+
+
+local FIX_POINT = 4
+
+
+
+
 function Syn.name.constrain(name, coll)
    if name.constrained then return end
    local token = assert(name.token)
@@ -1627,11 +1679,12 @@ function Syn.name.constrain(name, coll)
       end
    end
    local changed = copyTraits(rule, name)
-   ----[[DBG]] name.changed = changed
+   ---[[DBG]] name.changed = changed
    if not changed then
       name.no_change = name.no_change and name.no_change + 1 or 1
-      if name.no_change > 2 then
-         name.no_change = nil
+      if name.no_change > FIX_POINT then
+         ---[[DBG]] --[[
+         name.no_change = nil --]]
          name.constrained_by_rule = nil
          name.constrained_by_fixed_point = true
          name.constrained = true
@@ -1640,8 +1693,8 @@ function Syn.name.constrain(name, coll)
    if not name.constrained then
       queueUp(coll.shuttle, rule)
       queueUp(coll.shuttle, name)
-   else
-      name.no_change = nil -- no longer relevant
+   else ---[[DBG]] --[[
+      name.no_change = nil -- no longer relevant --]]
    end
 end
 
@@ -1660,8 +1713,6 @@ function Syn.repeated.constrain(repeated, coll)
    end
    repeated.constrained = true
 end
-
-
 
 
 
