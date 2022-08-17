@@ -1042,6 +1042,23 @@ end
 ```
 
 
+#### trimRecursive\(recursive\)
+
+```lua
+local function trimRecursive(recursive, ruleMap)
+   for rule, callset in pairs(recursive) do
+      for elem in pairs(callset) do
+         if not ruleMap[elem].recursive then
+            callset[elem] = nil
+         end
+      end
+   end
+
+   return recursive
+end
+```
+
+
 ### grammar:analyze\(\)
 
 Pulls together the caller\-callee relationships\.
@@ -1056,7 +1073,7 @@ function Syn.grammar.analyze(grammar)
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
-   coll.regulars, coll.recursive = regulars, recursive
+   coll.regulars, coll.recursive = regulars, trimRecursive(recursive, ruleMap)
    coll.calls = graphCalls(grammar)
    if coll.missing then
       grammar:makeDummies()
@@ -1491,6 +1508,16 @@ This is all about copying traits from the rule body to the reference\.
 We have to handle a self\-reference carefully: the first time we see it, we're
 still collecting the other properties, so we push the rule again and tag the
 name\.
+
+Welp\. Obvious once I see it but, self\-recursion only breaks the tie sometimes,
+and we have to handle arbitrary cycles\.
+
+We could detect them, or, we could provisionally copy things and stop once
+it's clear that nothing is changing\.
+
+Detecting them is the only correct thing to do, I suspect\. But I'm also going
+to try it dynamically and see if the context can be assembled while we're
+already iterating\. Seems likely\.
 
 
 ```lua

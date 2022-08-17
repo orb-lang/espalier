@@ -1042,6 +1042,23 @@ end
 
 
 
+local function trimRecursive(recursive, ruleMap)
+   for rule, callset in pairs(recursive) do
+      for elem in pairs(callset) do
+         if not ruleMap[elem].recursive then
+            callset[elem] = nil
+         end
+      end
+   end
+
+   return recursive
+end
+
+
+
+
+
+
 
 
 function Syn.grammar.analyze(grammar)
@@ -1053,7 +1070,7 @@ function Syn.grammar.analyze(grammar)
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
-   coll.regulars, coll.recursive = regulars, recursive
+   coll.regulars, coll.recursive = regulars, trimRecursive(recursive, ruleMap)
    coll.calls = graphCalls(grammar)
    if coll.missing then
       grammar:makeDummies()
@@ -1477,6 +1494,16 @@ function Syn.element.constrain(element, coll)
    end
    element.constrained = not again
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
