@@ -1518,18 +1518,49 @@ end
 
 
 
+
+
+
+local Trait = Set {'locked', 'predicate', 'nullable', 'terminal', 'unbounded',
+                   'failsucceeds', 'nofail', 'recursive', 'self_recursive'}
+
+local function copyTraits(rule, name)
+   local changed = false
+   for trait, state in pairs(rule) do
+      if Trait[trait] then
+         local differs = name[trait] ~= state
+         changed = changed or differs
+         name[trait] = state
+      end
+   end
+   local body = rule :take 'rhs' [1]
+   for trait, state in pairs(body) do
+      if Trait[trait] then
+         local differs = name[trait] ~= state
+         changed = changed or differs
+         name[trait] = state
+      end
+   end
+   if body.constrained then
+      name.constrained = true
+      name.constrained_by_rule = true
+   else
+      name.constrained_by_rule = false
+   end
+
+   return changed
+end
+
+
+
+
 function Syn.name.constrain(name, coll)
    local token = assert(name.token)
    local rule = assert(coll.ruleMap[token])
-
-   local body = rule :take 'rhs' [1]
-   local body_constraint =  nil
    local self_ref = token == name:withinRule()
    if self_ref then
       rule.self_recursive = true
       if name.seen_self then
-         body_constraint = body.constrained
-         body.constrained = true
          name.seen_self = nil
       else
          name.seen_self = true
@@ -1537,25 +1568,8 @@ function Syn.name.constrain(name, coll)
          return
       end
    end
-
-   if body.constrained then
-      name.constrained = true
-      name.constrained_by_rule = true
-      name.locked = body.locked
-      name.predicate = body.predicate
-      name.nullable = body.nullable
-      name.terminal = body.terminal
-      name.unbounded = body.unbounded
-      name.failsucceeds = body.failsucceeds
-      name.nofail = body.nofail
-      if self_ref then
-         -- this may not be the only reason we're not constrained
-         -- so we restore the original state, whatever it was
-         body.constrained = body_constraint
-      end
-   else
-      name.constrained_by_rule = false
-      --[[DBG]] name.did_not_see_rule = true
+   name.changed = copyTraits(rule, name)
+   if not name.constrained then
       queueUp(coll.shuttle, rule)
       queueUp(coll.shuttle, name)
    end
