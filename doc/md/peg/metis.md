@@ -1190,10 +1190,11 @@ kids\.
 
 ```lua
 function Syndex.constrain(synth, coll)
-   synth.base_constraint_rule = true
    for i, elem in ipairs(synth) do
       elem:constrain(coll)
    end
+   synth.base_constraint_rule = true
+   synth.constrained = true
 end
 ```
 
@@ -1250,7 +1251,7 @@ function Syn.grammar.constrain(grammar)
    local shuttle = Deque()
    coll.shuttle = shuttle
    local seen = {}
-   for _, tier in ipairs(regulars) do
+   for i, tier in ipairs(regulars) do
       for name in pairs(tier) do
          coll.nameQ:push(name)
          ruleMap[name]:constrain(coll)
@@ -1258,17 +1259,19 @@ function Syn.grammar.constrain(grammar)
       end
       for name_str in pairs(tier) do
          for _, name in ipairs(nameMap[name_str]) do
+            name.seen_at = i
             name:constrain(coll)
          end
       end
    end
-
+   --[=[
    for rule in grammar :filter 'rule' do
       queueUp(shuttle, rule)
    end
    local bail = 0
    for node in shuttle:popAll() do
       if type(node) == 'table' then
+         --[[DBG]] node.popped = node.popped and node.popped + 1 or 1
          node.on = nil
          bail = bail + 1
          node:constrain(coll)
@@ -1276,20 +1279,24 @@ function Syn.grammar.constrain(grammar)
             grammar.had_to_bail = true
             grammar.no_constraint = {}
             for node in grammar :walk() do
-               if not node.constrained then
+               if not node.constrained and not (node == grammar) then
                   insert(grammar.no_constraint, node)
                end
             end
             mutate(shuttle, queuetate)
             break
          end
-      end -- ugh
+      else
+         -- bad shape?
+         local ts = require "repr:repr".ts_color
+         local bare = require "valiant:replkit".bare
+         error((
+            "weird result %s from queue %s")
+                :format(tostring(node), ts(bare(shuttle))))
+      end
    end
+   --]=]
    grammar.had_to_bail = not not grammar.had_to_bail
-   -- this should be redundant
-   for name in grammar :filter 'name' do
-      name:constrain(coll)
-   end
 end
 ```
 
@@ -1313,6 +1320,19 @@ end
 ```
 
 
+### terminals
+
+```lua
+local function termConstrain(terminal)
+   terminal.constrained = true
+end
+
+for class in pairs(Q.terminal) do
+   Syn[class].constrain = termConstrain
+end
+```
+
+
 ### Compound constraints: cat, alt
 
 Cat and alt are where all the fancy happens, we need to look for 'locked' cat
@@ -1326,14 +1346,15 @@ function Syn.cat.constrain(cat, coll)
    local idx;
    local again;
    for i, sub in ipairs(cat) do
-      if sub.constrain then
-         sub:constrain(coll)
-         if not sub.constrained then
-            -- really we should bail here, because we'll push once per
-            -- incomplete rule
-            again = true
-         end
+      --[[DBG]] sub.bookmark = nil
+      sub:constrain(coll)
+      if not sub.constrained then
+         -- really we should bail here, because we'll push once per
+         -- incomplete rule
+         --[[DBG]] sub.bookmark = true
+         again = true
       end
+
       if sub.locked or sub.terminal then
          idx = i
          gate = sub
@@ -1346,7 +1367,6 @@ function Syn.cat.constrain(cat, coll)
 
    if again then
       queueUp(coll.shuttle, cat)
-      return
    else
       cat.constrained = true
    end
@@ -1378,14 +1398,10 @@ function Syn.alt.constrain(choice, coll)
    local maybe = nil
    local again;
    for _, sub in ipairs(choice) do
-      if sub.constrain then
-         sub:constrain(coll)
-         if not sub.constrained then
-            queueUp(coll.shuttle, choice)
-            again = true
-         end
-      else
-         sub.no_constrain_method = true
+      sub:constrain(coll)
+      if not sub.constrained then
+         queueUp(coll.shuttle, choice)
+         again = true
       end
       if sub.nofail then
          maybe = true
@@ -1394,7 +1410,7 @@ function Syn.alt.constrain(choice, coll)
       end
    end
    choice.nofail = maybe
-   choice.constrained = not not again
+   choice.constrained =  not again
 end
 ```
 
@@ -1413,7 +1429,7 @@ function Syn.element.constrain(element, coll)
          queueUp(coll.shuttle, element)
       end
    end
-   element.constrained = not not again
+   element.constrained = not again
 end
 ```
 
@@ -1428,9 +1444,11 @@ This is all about copying traits from the rule body to the reference\.
 function Syn.name.constrain(name, coll)
    local tok = assert(name.token)
    local rule = assert(coll.ruleMap[tok])
-   if rule.constrained then
+
+   local body = rule :take 'rhs' [1]
+   if body.constrained then
+      name.constrained = true
       name.constrained_by_rule = true
-      local body = rule :take 'rhs' [1]
       name.locked = body.locked
       name.predicate = body.predicate
       name.nullable = body.nullable
