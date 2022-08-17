@@ -636,7 +636,6 @@ function analyzeElement(elem)
                elem[trait] = true
             end
          end
-         part[mod.class] = true
       end
    end
    -- strip now-extraneous information
@@ -976,7 +975,7 @@ local function graphCalls(grammar)
    -- which we call 'final'
    local depSet = regulars[1]
    for name in pairs(depSet) do
-      ruleMap[name].final = true
+      ---[[DBG]] ruleMap[name].final = true
       regSets[name] = Set {}
    end
    -- second tier has only the already-summoned direct calls
@@ -1334,7 +1333,7 @@ function Syn.grammar.constrain(grammar)
       end
       for name_str in pairs(tier) do
          for _, name in ipairs(nameMap[name_str]) do
-            name.seen_at = i
+            ---[[DBG]] name.seen_at = i
             name:constrain(coll)
          end
       end
@@ -1421,11 +1420,14 @@ function Syn.cat.constrain(cat, coll)
    local gate;
    local idx;
    local again;
+   local terminal = true
    for i, sub in ipairs(cat) do
-      ---[[DBG]] sub.bookmark = nil
+      -- reset our conditions because we routinely do this several times
+      sub.lock, sub.dam, sub.gate, sub.gate_lock = nil, nil, nil, nil
+
       sub:constrain(coll)
+
       if not sub.constrained then
-         ---[[DBG]] sub.bookmark = true
          again = true
       end
 
@@ -1435,12 +1437,23 @@ function Syn.cat.constrain(cat, coll)
          if not locked then
             sub.lock = true
             locked = true
+         else
+            sub.dam = true
          end
       end
+
+      if sub.terminal or sub.predicate then
+         terminal = terminal and true
+      else
+         terminal = false
+      end
+
       if sub.unbounded then
          cat.unbounded = true
       end
    end
+
+   cat.terminal = terminal or nil
 
    if again then
       queueUp(coll.shuttle, cat)
@@ -1449,19 +1462,23 @@ function Syn.cat.constrain(cat, coll)
    end
 
    if gate then
+      gate.dam = nil
       if gate.lock then
          gate.gate_lock = true
          gate.lock = nil
+         locked = false
       else
          gate.gate = true
-         -- look for other unfailable rules
-         -- sub.terminal is not very good, improve
+         -- look for other unfailable /terminal/ rules
          for i = idx-1, 1, -1 do
             local sub = cat[i]
             if not sub.terminal then break end
             sub.gate = true
+            sub.dam = nil
          end
       end
+   else
+      locked = false -- right? lock but no gate = not locked
    end
 
    if locked then
@@ -1475,6 +1492,8 @@ end
 function Syn.alt.constrain(alt, coll)
    local maybe = nil
    local again;
+   local locked = true
+   local terminal = true
    for _, sub in ipairs(alt) do
       sub:constrain(coll)
       if not sub.constrained then
@@ -1484,14 +1503,18 @@ function Syn.alt.constrain(alt, coll)
       if sub.unbounded then
          alt.unbounded = true
       end
+      terminal = terminal and sub.terminal
       if sub.nofail then
          maybe = true
          -- for future expansion: this has to be the last rule
          -- to be meaningful under ordered choice
       end
+      locked = locked and sub.locked
    end
-   alt.nofail = maybe
-   alt.constrained =  not again
+   alt.nofail      = maybe
+   alt.terminal    = terminal or nil
+   alt.locked      = locked   or nil
+   alt.constrained = not again
 end
 
 
@@ -1600,6 +1623,8 @@ function Syn.name.constrain(name, coll)
    if not name.constrained then
       queueUp(coll.shuttle, rule)
       queueUp(coll.shuttle, name)
+   else
+      name.no_change = nil -- no longer relevant
    end
 end
 
