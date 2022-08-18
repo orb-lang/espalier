@@ -246,6 +246,7 @@ local suppress = Set {
    'constrained_by_rule',
    'constrained_by_fixed_point',
    'references',
+   'compound',
    --]=]
    'peh',
    'o',
@@ -1360,9 +1361,12 @@ function Syn.grammar.constrain(grammar)
       end
    end
    for rule in grammar :filter 'rule' do
-      queueUp(shuttle, rule)
+      -- should be redundant to include the rules already in
+      -- seen above
+      if not seen[rule.token] then
+         queueUp(shuttle, rule)
+      end
    end
-   queueUp(shuttle, grammar)
    local bail = 0
    for node in shuttle:popAll() do
       if type(node) == 'table' then
@@ -1429,8 +1433,10 @@ function Syn.rule.propagateConstraints(rule, coll)
          ref:constrain(coll)
          -- this should only be necessary on change
          -- we make sure the rule is looked at again
-         local rule = ref:parentRule()
-         queueUp(coll.shuttle, rule)
+         if ref.changed then
+            local rule = ref:parentRule()
+            queueUp(coll.shuttle, rule)
+         end
       end
    end
 end
@@ -1481,10 +1487,10 @@ function Syn.cat.constrain(cat, coll)
          again = true
       end
 
-      if not sub.nullable then
+      if (not sub.nullable) or sub.predicate then
          idx = i
          gate = sub
-         if not locked then
+         if (not locked) then
             sub.lock = true
             locked = true
          else
@@ -1506,13 +1512,9 @@ function Syn.cat.constrain(cat, coll)
    end
 
    cat.terminal = terminal or nil
-   cat.nofail = nofail or nil
+   cat.nofail   = nofail or nil
+   cat.nullable = nullable or nil
    cat.constrained = not again
-
-   -- probably this is not necessary?
-   if again then
-      queueUp(coll.shuttle, cat)
-   end
 
    if gate then
       gate.dam = nil
@@ -1551,7 +1553,6 @@ function Syn.alt.constrain(alt, coll)
    for _, sub in ipairs(alt) do
       sub:constrain(coll)
       if not sub.constrained then
-         queueUp(coll.shuttle, alt)
          again = true
       end
       if sub.unbounded then
@@ -1583,7 +1584,6 @@ function Syn.element.constrain(element, coll)
       sub:constrain(coll)
       if not sub.constrained then
          again = true
-         queueUp(coll.shuttle, element)
       end
    end
    element.constrained = not again
@@ -1623,8 +1623,9 @@ Copies over traits, returning `true` if any of the copied traits has changed
 the state of `name`\.
 
 ```lua
-local Trait = Set {'locked', 'predicate', 'nullable', 'terminal', 'unbounded',
-                   'failsucceeds', 'nofail', 'recursive', 'self_recursive'}
+local Trait = Set {'locked', 'predicate', 'nullable', 'terminal',
+                   'unbounded', 'compound', 'failsucceeds', 'nofail',
+                   'recursive', 'self_recursive'}
 
 local function copyTraits(rule, name)
    local changed = false
@@ -1660,7 +1661,7 @@ end
 If we see a name twice with no changes that *should* be it\.
 
 ```lua
-local FIX_POINT = 4
+local FIX_POINT = 2
 ```
 
 
@@ -1695,7 +1696,6 @@ function Syn.name.constrain(name, coll)
    end
    if not name.constrained then
       queueUp(coll.shuttle, rule)
-      queueUp(coll.shuttle, name)
    else ---[[DBG]] --[[
       name.no_change = nil -- no longer relevant --]]
    end
