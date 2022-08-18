@@ -1658,7 +1658,7 @@ end
 
 
 
-local FIX_POINT = 2
+local FIX_POINT = 1
 
 
 

@@ -1661,7 +1661,7 @@ end
 If we see a name twice with no changes that *should* be it\.
 
 ```lua
-local FIX_POINT = 2
+local FIX_POINT = 1
 ```
 
 
