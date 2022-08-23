@@ -72,19 +72,18 @@ create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
                     (_ "," (_ table-constraint)+)? _ ")" _
                     table-options* )
 
-  schema-name  ←  name
-   table-name  ←  name
+  schema-name  ←  name-val
+   table-name  ←  name-val
 table-options  ←  t-opt ("," _  t-opt)*
       `t-opt`  ←  (WITHOUT ROWID / STRICT)
 ]]
 
 
 
-
 local create_index = [[
 create-index  ←  CREATE UNIQUE? INDEX (IF NOT EXISTS)? (schema-name _ "." _)?
                  index-name _ ON table-name _ indexed-columns (WHERE expr)?
-  index-name  ←  name
+  index-name  ←  name-val
 ]]
 
 
@@ -95,9 +94,9 @@ create-index  ←  CREATE UNIQUE? INDEX (IF NOT EXISTS)? (schema-name _ "." _)?
 
 local column_def = [[
  column-def  ←  column-name _ (type-name)? (_ column-constraint)*
-column-name  ←  name
+column-name  ←  name-val
 
-  type-name  ←  (affinity _) fluff?
+`type-name`  ←  (affinity _) fluff?
 
 ; these have no actual semantic value in SQLite
 `fluff`  ←  "("_ signed-number _")"_
@@ -115,14 +114,14 @@ local column_affinity = [[
 
    blob-column  ←  B L O B !follow-char
 
-integer-column  ←  (no-affinity _)* integer-word (_ name)*
-  integer-word  ←  &((!int-affin !t 1)* int-affin) id
+integer-column  ←  (no-affinity _)* integer-word (_ name-val)*
+`integer-word`  ←  &((!int-affin !t 1)* int-affin) name-val
 
-   text-column  ←  (no-affinity _)* text-word (_ id)*
-     text-word  ←  &((!text-affin !t 1)* text-affin) id
+   text-column  ←  (no-affinity _)* text-word (_ name-val)*
+   `text-word`  ←  &((!text-affin !t 1)* text-affin) id
 
-   real-column  ←  (no-affinity _)* real-word (_ id)*
-     real-word  ←  &((!text-affin !t 1)* text-affin) id
+   real-column  ←  (no-affinity _)* real-word (_ name-val)*
+   `real-word`  ←  &((!text-affin !t 1)* text-affin) id
 
  `no-affinity`  ←  &((!affine !t 1)+) name
 
@@ -134,7 +133,7 @@ integer-column  ←  (no-affinity _)* integer-word (_ name)*
 
   `real-affin`  ←  R E A L / F L O A / D O U B
 
-numeric-column  ←  name (_ name)*
+numeric-column  ←  name-val (_ name-val)*
 ]]
 
 
@@ -320,8 +319,8 @@ expr-list  ←  expr (_","_ expr)*
 
 
 local name_rules = [[
-               name  ←  quoted / id
-
+               name  ←  name-val quoted / id
+         `name-val`  ←   quoted / id
            `quoted`  ←  '"' quote-name '"'
                      /  deprecated-quote
    deprecated-quote  ←  "[" quote-name "]"
