@@ -126,8 +126,8 @@ function Vav.try(vav, rule)
       local ruleVav = new(peh)
       return ruleVav :try(), ruleVav
    end
-
-   vav.dummy = new(vav.peh .. vav.synth.dummy_rules)
+   vav.peh_dummy = vav.peh .. vav.synth.dummy_rules
+   vav.dummy = new(vav.peh_dummy)
    vav.test_engine = vav.dummy.synth :toLpeg() :string()
    vav.test_parse, vav.test_pattern = Grammar(vav.test_engine)
    return vav.test_parse

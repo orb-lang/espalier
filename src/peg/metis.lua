@@ -791,25 +791,7 @@ end
 
 
 
-
-
-
-
-
-
-
-local function nonempty(tab)
-   if #tab > 0 then
-      return tab
-   else
-      return nil
-   end
-end
-
-
-
-
-local sort = table.sort
+local sort, nonempty = table.sort, assert(table.nonempty)
 
 function Syn.grammar.collectRules(grammar)
    -- our containers:
@@ -1064,7 +1046,8 @@ end
 local function trimRecursive(recursive, ruleMap)
    for rule, callset in pairs(recursive) do
       for elem in pairs(callset) do
-         if not ruleMap[elem].recursive then
+         if (not ruleMap[elem])
+            or (not ruleMap[elem].recursive) then
             callset[elem] = nil
          end
       end
@@ -1268,6 +1251,12 @@ end
 
 
 
+
+
+
+
+
+
 function Syndex.constrain(synth, coll)
    for i, elem in ipairs(synth) do
       elem:constrain(coll)
@@ -1351,6 +1340,9 @@ function Syn.grammar.constrain(grammar)
          seen[name] = true
       end
       for name_str in pairs(tier) do
+         if not nameMap[name_str] then
+            error("missing from nameMap: " .. name_str)
+         end
          for _, name in ipairs(nameMap[name_str]) do
             ---[[DBG]] name.seen_at = i
             name:constrain(coll)

@@ -106,7 +106,7 @@ local pegpeg = [[
 
             name  ←  symbol
          literal  ←  single-string / double-string
-         `group`  ←  "(" _ alt _ ")"
+           group  ←  "(" _ alt _ ")"
    `set-capture`  ←  "{" set "}"
              set  ←  (!("}" / "\n") codepoint)*
            range  ←  "[" range-start "-" range-end "]"

@@ -40,7 +40,16 @@ end of the file is considered a valid semicolon.
 explain  ←  EXPLAIN (QUERY PLAN)?
 #/peg
 
-We'll dive straight in with =create-table= and build out from there.
+These are listed in the same order as the SQLite diagram, which may not be the
+optimal choice order for a PEG, but SQL statements as a whole are trivially
+disjoint in these categories, and besides, we have to write them all (at least
+the first terminal!) before we can order them.
+
+As add ordering logic to the post-constraint phase, but the pieces are in
+place for that.
+
+The statement list starts with =A=, we can start where a database starts:
+creating tables.
 
 
 *** create-table
@@ -217,6 +226,8 @@ expr  ←  expr-atom
 
 function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
                   filter-clause? over-clause?
+
+function-name  ←  name
 
 ; lists are usually lifted, so this one most likely shall be as well
 expr-list  ←  expr (_","_ expr)*

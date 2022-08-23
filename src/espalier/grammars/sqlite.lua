@@ -54,6 +54,15 @@ explain  ←  EXPLAIN (QUERY PLAN)?
 
 
 
+
+
+
+
+
+
+
+
+
 local create_table = [[
 create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
                  (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
@@ -217,6 +226,8 @@ expr  ←  expr-atom
 
 function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
                   filter-clause? over-clause?
+
+function-name  ←  name
 
 ; lists are usually lifted, so this one most likely shall be as well
 expr-list  ←  expr (_","_ expr)*

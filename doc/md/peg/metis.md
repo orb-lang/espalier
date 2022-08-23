@@ -793,26 +793,8 @@ rules and names with tokens representing their normalized value\.
   - missing:  Any rule referenced by name which isn't defined in the grammar\.
 
 
-
-#### nonempty\(tab\)
-
-Returns a table in the event it has \(array\) contents, otherwise `nil`\.
-
-Good candidate for `core`\.
-
 ```lua
-local function nonempty(tab)
-   if #tab > 0 then
-      return tab
-   else
-      return nil
-   end
-end
-```
-
-
-```lua
-local sort = table.sort
+local sort, nonempty = table.sort, assert(table.nonempty)
 
 function Syn.grammar.collectRules(grammar)
    -- our containers:
@@ -1067,7 +1049,8 @@ end
 local function trimRecursive(recursive, ruleMap)
    for rule, callset in pairs(recursive) do
       for elem in pairs(callset) do
-         if not ruleMap[elem].recursive then
+         if (not ruleMap[elem])
+            or (not ruleMap[elem].recursive) then
             callset[elem] = nil
          end
       end
@@ -1249,26 +1232,32 @@ grammar\.
 bother doing fancy things with under or over\-specified grammars\.
 
 
-#### Fixed Point
+#### Propagation
 
 Grammars are recursive, and allow an arbitrary amount of indirection, so our
 only hope of completing this constraint process is to reach a fixed point,
 where calling `:constrain` on any of the Nodes will have no further effect\.
 
-The most straightforward way to do this is to run a queue and push anything
-which isn't complete onto it\.
+We've already determined the call 'tiers' for non\-recursive rules, and we
+can begin by constraining the rules we call final: those with no references
+at all\.
 
-When the initial passes are complete, we pop\-and\-push on the queue until
-everything is relaxed\.
+Each regular tier from that point is constrained by constraining the rule,
+and propagating the traits to each reference\.
 
-The trick will be knowing when a node has no further possibility of traits
-changing\.
+This leaves recursion, direct or otherwise\. We repeatedly constrain rules, and
+propagate any changes we've recovered, until every name we see doesn't change
+when we copy the traits over\.  At which point the constraints are complete,
+and we can do things with them\.
 
 
 ### Base :constrain
 
 Tags the class as having been constrained by the base rule and visits the
 kids\.
+
+In the fully mature system we won't have this, it's only here to provide
+plausible behavior for classes we hadn't specified\.
 
 ```lua
 function Syndex.constrain(synth, coll)
@@ -1281,7 +1270,7 @@ end
 ```
 
 
-#### queue 'tater
+#### queue 'tater \#Debug
 
 This is just to strip the work queue down to something readable when it
 overflows, which should never happen when this code is stable\.
@@ -1296,9 +1285,9 @@ end
 
 #### queueUp\(shuttle, node\)
 
-This keeps us from pushing a node which is already on queue, in particular,
-a rule will not be pushed each time it's seen, meaning that all names waiting
-on that rule will be behind it\.
+This keeps us from pushing a node which is already on queue, in particular we
+can see a rule many times before we check it again, and this keeps it on the
+queue at\-most\-once\.
 
 ```lua
 local function queueUp(shuttle, node)
@@ -1354,6 +1343,9 @@ function Syn.grammar.constrain(grammar)
          seen[name] = true
       end
       for name_str in pairs(tier) do
+         if not nameMap[name_str] then
+            error("missing from nameMap: " .. name_str)
+         end
          for _, name in ipairs(nameMap[name_str]) do
             ---[[DBG]] name.seen_at = i
             name:constrain(coll)
@@ -1658,7 +1650,7 @@ end
 
 ### FIX\_POINT
 
-If we see a name twice with no changes that *should* be it\.
+If we see a name twice with no changes that *should* be it\. So far, so good\.
 
 ```lua
 local FIX_POINT = 1
