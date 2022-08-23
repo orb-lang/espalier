@@ -266,8 +266,7 @@ binary statements ends with an atom\.
                  ;  add not-in-select when there's some point
 
 `operator`  ←  concat / extract / neq / gte / lte / lshift / rshift / eq
-            /  add / sub / mul / div / mod / bit-and / bit-or
-
+            /  lt / gt / add / sub / mul / div / mod / bit-and / bit-or
           concat  ←  "||"
          extract  ←  "->>" / "->"
              neq  ←  "<>" / "!="
@@ -276,6 +275,8 @@ binary statements ends with an atom\.
           lshift  ←  "<<"
           rshift  ←  ">>"
               eq  ←  "==" / "=" ; note the transition to one-byte tokens
+              lt  ←  "<"
+              gt  ←  ">"
              add  ←  "+"
              sub  ←  "-"
              mul  ←  "*"
