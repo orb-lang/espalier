@@ -81,6 +81,15 @@ table-options  ←  t-opt ("," _  t-opt)*
 
 
 
+local create_index = [[
+create-index  ←  CREATE UNIQUE? INDEX (IF NOT EXISTS)? (schema-name _ "." _)?
+                 index-name _ ON table-name _ indexed-columns (WHERE expr)?
+  index-name  ←  name
+]]
+
+
+
+
 
 
 
@@ -90,54 +99,43 @@ column-name  ←  name
 
   type-name  ←  (affinity _) fluff?
 
-   `affinity`  ←  name (_ name)*
-
 ; these have no actual semantic value in SQLite
 `fluff`  ←  "("_ signed-number _")"_
          /  "("_ signed-number _","_ signed-number _")"_
-
 ]]
 
 
 
+local column_affinity = [[
+    `affinity`  ←  blob-column
+                /  integer-column
+                /  text-column
+                /  real-column
+                /  numeric-column
 
+   blob-column  ←  B L O B !follow-char
 
+integer-column  ←  (no-affinity _)* integer-word (_ name)*
+  integer-word  ←  &((!int-affin !t 1)* int-affin) id
 
+   text-column  ←  (no-affinity _)* text-word (_ id)*
+     text-word  ←  &((!text-affin !t 1)* text-affin) id
 
+   real-column  ←  (no-affinity _)* real-word (_ id)*
+     real-word  ←  &((!text-affin !t 1)* text-affin) id
 
+ `no-affinity`  ←  &((!affine !t 1)+) name
 
+      `affine`  ←  int-affin / text-affin / real-affin
 
+   `int-affin`  ←  I N T
 
+  `text-affin`  ←  C H A R / C L O B / T E X T
 
+  `real-affin`  ←  R E A L / F L O A / D O U B
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+numeric-column  ←  name (_ name)*
+]]
 
 
 
@@ -157,26 +155,26 @@ column-constraint  ←  CONSTRAINT name
 
 
  table-constraint  ←  CONSTRAINT name _
-                   /  FOREIGN KEY "("_ column-names ")"_ foreign-key-clause
+                   /  FOREIGN KEY column-names foreign-key-clause
                    /  ( PRIMARY KEY
-                      / UNIQUE ) "("_ indexed-columns ")"_ conflict-clause
+                      / UNIQUE ) indexed-columns conflict-clause?
                    /  CHECK group-expr
 
 `conflict-clause`  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
-     column-names  ←  column-name _ (","_ column-name _)*
-`indexed-columns`  ←  indexed-column (","_ indexed-column)*
+   `column-names`  ←  "(" _ column-name _ (","_ column-name _)* ")"_
+`indexed-columns`  ←  "(" _ indexed-column (","_ indexed-column)* _ ")" _
 
-indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
+   indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
 
-    group-expr  ←  "("_ expr _ ")"
+       group-expr  ←  "("_ expr _ ")"
 ]]
 
 
 
 
 local foreign_key_clause = [[
-foreign-key-clause  ←  REFERENCES table-name _ ("("_ column-names ")"_)?
+foreign-key-clause  ←  REFERENCES table-name _ column-names?
                        fk-on-clause*
                        (NOT? DEFERRABLE (INITIALLY (DEFERRED / IMMEDIATE))?)?
 
@@ -184,7 +182,7 @@ foreign-key-clause  ←  REFERENCES table-name _ ("("_ column-names ")"_)?
                            ( SET (NULL / DEFAULT)
                            / CASCADE
                            / RESTRICT
-                           / NO ACTION )) _
+                           / NO ACTION ))
                     /  MATCH name _
 ]]
 
@@ -322,14 +320,15 @@ expr-list  ←  expr (_","_ expr)*
 
 
 local name_rules = [[
-         name  ←  quoted / id
+               name  ←  quoted / id
 
-     `quoted`  ←  '"' quote-name '"'
-               /  "[" quote-name "]"
-               /  "`" quote-name "`"
-              ;;  Legal but deprecated
-            ;  /  "'" quote-name "'"
-         `id`  ←  !keyword bare-name
+           `quoted`  ←  '"' quote-name '"'
+                     /  deprecated-quote
+   deprecated-quote  ←  "[" quote-name "]"
+                     /  "`" quote-name "`"
+                     /  "'" quote-name "'"
+               `id`  ←  !keyword bare-name
+   allowed-keyword  ←  bare-name
 
   `bare-name`  ←  lead-char follow-char*
   `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
@@ -607,13 +606,16 @@ local caseless_letters = [[
 
 
 
+local column_affinity = column_affinity or ""
+
 local sqlite_blocks = {
    sql_statement,
    create_table,
    column_def,
    column_table_constraints,
-   -- column_affinity,
+   column_affinity,
    foreign_key_clause,
+   create_index,
    expression,
    -- the 'lexer' rules
    literal_rules,
