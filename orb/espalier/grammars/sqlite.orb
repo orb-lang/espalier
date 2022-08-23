@@ -143,12 +143,12 @@ numeric-column  ←  name (_ name)*
 **** Column and Table Constraints
 
 #!peg @column_table_constraints #asLua
-column-constraint  ←  CONSTRAINT name _
+column-constraint  ←  CONSTRAINT name
 
                    /  NOT NULL  ; conflict-clause?
                    /  PRIMARY KEY (ASC / DESC)? conflict-clause? AUTOINCREMENT?
                    /  UNIQUE conflict-clause?
-                   /  CHECK group-expr
+                   /  CHECK expr ;group-expr
                    /  DEFAULT (literal-value / group-expr / signed-number)
                    /  COLLATE collation-name
                    /  foreign-key-clause
@@ -169,7 +169,7 @@ column-constraint  ←  CONSTRAINT name _
 
 indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
 
-    group-expr  ←  "("_ expr _ ")"_ ; probably mute this one
+    group-expr  ←  "("_ expr _ ")"
 #/peg
 
 
@@ -211,25 +211,90 @@ some subset of the queries.
 
 [†]: https://www.sqlite.org/lang_expr.html
 
-#!peg @expression #asLua
- ;; expr-compound comes first but written after basic viability is demostrated
-expr  ←  expr-atom
-`expr-atom`  ←  literal-value
-             /  bind-parameter
-             /  CAST "("_ expr AS type-name _")"
-             /  NOT EXISTS "("_ select ")"
-             /  CASE (expr _)* (WHEN expr _ THEN expr _)+ (ELSE expr _)? END
-             /  function-expr
-             /  raise-function
+Without the Stay Winning Engine, it's tough to do this without any
+backtracking.
 
-; bind-parameter  ←  "bind" "parameter"
+The choices are to backtrack for a term or backtrack for a compound.  I'm
+using a =!binop= predicate to do the latter, because this completes without
+backtracking, and the alternative always backtracks once, since every chain of
+binary statements ends with an atom.
+
+
+#!peg @expression #asLua
+           expr  ←  expr-term !binop
+                 /  expr-term _ expr-rest
+
+    `expr-term`  ←  literal-value
+                 /  bind-parameter
+                 /  function-expr
+                 /  raise-function
+                 /  schema-name _"."_ table-name _"."_ column-name
+                 /  table-name  _"."_ column-name
+                 /  column-name
+                 /  group-expr
+                 /  CAST "("_ expr AS type-name _")"
+                 /  NOT EXISTS "("_ select ")"
+                 /  CASE (expr _)*
+                        (WHEN expr _ THEN expr _)+
+                        (ELSE expr _)?
+                    END
+
+    ; these rules are purely predicate
+    `binop` <- _ ( binop-glyph
+                 / COLLATE
+                 / NOTNULL
+                 / NOT
+                 / AND
+                 / OR
+                 / ISNULL
+                 / IS
+                 / EXISTS
+                 / LIKE
+                 / GLOB
+                 / REGEXP
+                 / MATCH )
+  `binop-glyph`  ←  "||" / "->>" / "->" / "<<" / ">>"
+                 /  "<=" / "=>"  / "!=" / "<>" / "=="
+                 /  {*/+-%<>=&|}
+
+    `expr-rest`  ←  operator _ expr
+                 /  (AND / OR) expr
+                 /  COLLATE name
+                 /  NOT? LIKE expr (_ ESCAPE expr)?
+                 /  NOT? (GLOB / REGEXP / MATCH) expr
+                 /  ISNULL
+                 /  NOT NULL
+                 /  NOTNULL
+                 /  IS NOT? (DISTINCT FROM)? expr
+                 /  NOT? BETWEEN expr AND expr
+                 ;  add not-in-select when there's some point
+
+`operator`  ←  concat / extract / neq / gte / lte / lshift / rshift / eq
+            /  add / sub / mul / div / mod / bit-and / bit-or
+
+          concat  ←  "||"
+         extract  ←  "->>" / "->"
+             neq  ←  "<>" / "!="
+             gte  ←  ">="
+             lte  ←  "<="
+          lshift  ←  "<<"
+          rshift  ←  ">>"
+              eq  ←  "==" / "=" ; note the transition to one-byte tokens
+             add  ←  "+"
+             sub  ←  "-"
+             mul  ←  "*"
+             div  ←  "/"
+             mod  ←  "%"
+         bit-and  ←  "&"
+          bit-or  ←  "|"
+
+
 
 function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
                   filter-clause? over-clause?
 
 function-name  ←  name
 
-; lists are usually lifted, so this one most likely shall be as well
 expr-list  ←  expr (_","_ expr)*
 #/peg
 
