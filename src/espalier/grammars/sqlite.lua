@@ -218,7 +218,7 @@ expr  ←  expr-atom
              / bind-parameter
              /  CAST "("_ expr AS type-name _")"
              /  NOT EXISTS "("_ select ")"
-             ; / CASE is complex
+             / CASE (expr _)* (WHEN expr _ THEN expr _)* (ELSE expr _)? END
              / function-expr
              / raise-function
 

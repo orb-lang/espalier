@@ -215,12 +215,12 @@ some subset of the queries.
  ;; expr-compound comes first but written after basic viability is demostrated
 expr  ←  expr-atom
 `expr-atom`  ←  literal-value
-             / bind-parameter
+             /  bind-parameter
              /  CAST "("_ expr AS type-name _")"
              /  NOT EXISTS "("_ select ")"
-             ; / CASE is complex
-             / function-expr
-             / raise-function
+             /  CASE (expr _)* (WHEN expr _ THEN expr _)+ (ELSE expr _)? END
+             /  function-expr
+             /  raise-function
 
 ; bind-parameter  ←  "bind" "parameter"
 
