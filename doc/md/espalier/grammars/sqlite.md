@@ -94,11 +94,11 @@ fun one, getting the affinities out at parse\-time can't hurt, yeah?
  column-def  ←  column-name _ (type-name)? (_ column-constraint)*
 column-name  ←  name-val
 
-`type-name`  ←  (affinity _) fluff?
+`type-name`  ←  (affinity _) column-width?
 
 ; these have no actual semantic value in SQLite
-`fluff`  ←  "("_ signed-number _")"_
-         /  "("_ signed-number _","_ signed-number _")"_
+column-width  ←  "("_ signed-number _")"_
+              /  "("_ signed-number _","_ signed-number _")"_
 ```
 
 With a not\-excessive amount of looking around, we type columns thus\.
@@ -217,7 +217,8 @@ binary statements ends with an atom\.
            expr  ←  expr-term !binop
                  /  expr-term _ expr-rest
 
-    `expr-term`  ←  literal-value
+    `expr-term`  ←  unop _ expr
+                 /  literal-value
                  /  bind-parameter
                  /  function-expr
                  /  raise-function
@@ -232,23 +233,30 @@ binary statements ends with an atom\.
                         (ELSE expr _)?
                     END
 
-    ; these rules are purely predicate
-    `binop` <- _ ( binop-glyph
-                 / COLLATE
-                 / NOTNULL
-                 / NOT
-                 / AND
-                 / OR
-                 / ISNULL
-                 / IS
-                 / EXISTS
-                 / LIKE
-                 / GLOB
-                 / REGEXP
-                 / MATCH )
+        ; these rules are purely predicate
+        `binop`  ←   _ ( binop-glyph
+                       / COLLATE
+                       / NOTNULL
+                       / NOT
+                       / AND
+                       / OR
+                       / ISNULL
+                       / IS
+                       / EXISTS
+                       / LIKE
+                       / GLOB
+                       / REGEXP
+                       / MATCH )
   `binop-glyph`  ←  "||" / "->>" / "->" / "<<" / ">>"
                  /  "<=" / "=>"  / "!=" / "<>" / "=="
                  /  {*/+-%<>=&|}
+
+         `unop`  ←  uplus / uminus / bit-not
+
+
+          uplus  ←  "+"
+         uminus  ←  "-"
+        bit-not  ←  "~"
 
     `expr-rest`  ←  operator _ expr
                  /  (AND / OR) expr
@@ -262,8 +270,9 @@ binary statements ends with an atom\.
                  /  NOT? BETWEEN expr AND expr
                  ;  add not-in-select when there's some point
 
-`operator`  ←  concat / extract / neq / gte / lte / lshift / rshift / eq
-            /  lt / gt / add / sub / mul / div / mod / bit-and / bit-or
+      `operator`  ←  concat / extract / neq / gte / lte / lshift / rshift
+                  /  eq /  lt / gt / add / sub / mul / div / mod
+                  /  bit-and / bit-or
           concat  ←  "||"
          extract  ←  "->>" / "->"
              neq  ←  "<>" / "!="
