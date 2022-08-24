@@ -41,6 +41,20 @@ local Grammar = use "espalier:espalier/grammar"
 We're juuuust about to swallow our own tails here\.
 
 
+### Vav combinator: Vav Peh Mem Tav
+
+Vav is the entire front, resolving everything which is proper to the grammar\.
+
+Peh is the structural specification, Mem provides \(specific\) match\-time
+behaviors, and Tav is properties and behaviors which are common across match
+classes\. Tav can present both qualia, a map of a property to all the class
+names which will carry it, and traits, specific metadatamethods, canonically\) for every metatable carrying the property\.
+
+\(
+The Vav combinator parses Peh, for rule analysis, and reconciles Mem and Tav
+against the present rules\. This protects against accidentally losing p
+
+
 ## Vav
 
 ```lua

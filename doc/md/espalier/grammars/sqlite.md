@@ -62,13 +62,16 @@ Espalier PEGs are emphatically case sensitive\.
 Another [straightfoward translation](https://www.sqlite.org/syntax/create-table-stmt.html) from the docs\.
 
 ```peg
-create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE
-                 (IF NOT EXISTS)? (schema-name _ "." _)? table-name _
+create-table  ←  CREATE (TEMP / TEMPORARY)? TABLE if-not-exists?
+                 schema-prefix? table-name _
                  ( AS select /
                     "(" _ column-def
                     (_ "," _ column-def)*
                     (_ "," (_ table-constraint)+)? _ ")" _
                     table-options* )
+ if-not-exists  ←  IF NOT EXISTS
+
+ `schema-prefix`  ←  schema-name _ "." _
 
   schema-name  ←  name-val
    table-name  ←  name-val
@@ -79,9 +82,24 @@ table-options  ←  t-opt ("," _  t-opt)*
 ### create\-index
 
 ```peg
-create-index  ←  CREATE UNIQUE? INDEX (IF NOT EXISTS)? (schema-name _ "." _)?
+create-index  ←  CREATE UNIQUE? INDEX if-not-exists? schema-prefix?
                  index-name _ ON table-name _ indexed-columns (WHERE expr)?
   index-name  ←  name-val
+```
+
+
+### create\-trigger
+
+```peg
+create-trigger  ←  CREATE (TEMPORARY / TEMP)? TRIGGER if-not-exists?
+                   schema-prefix? trigger-name (BEFORE / AFTER / INSTEAD OF)?
+                   (DELETE / INSERT / UPDATE OF column-names) ON table-name _
+                   (FOR EACH ROW)? (WHEN expr)?
+                   BEGIN trigger-stmts END
+
+`trigger-stmts`  ←  ((update / insert / delete / select) _ semi _)+
+
+trigger-name  ←  name-val
 ```
 
 
@@ -159,7 +177,7 @@ column-constraint  ←  CONSTRAINT name
 
 `conflict-clause`  ←  ON CONFLICT (ROLLBACK / ABORT / FAIL / IGNORE / REPLACE)
 
-   `column-names`  ←  "(" _ column-name _ (","_ column-name _)* ")"_
+   `column-names`  ←  "(" _ column-name _ (","_ column-name _)* ")" _
 `indexed-columns`  ←  "(" _ indexed-column (","_ indexed-column)* _ ")" _
 
    indexed-column  ←  (column-name / expr) _ (COLLATE name _)? (ASC / DESC)?
@@ -628,11 +646,12 @@ local column_affinity = column_affinity or ""
 local sqlite_blocks = {
    sql_statement,
    create_table,
+   create_index,
+   create_trigger,
    column_def,
    column_table_constraints,
    column_affinity,
    foreign_key_clause,
-   create_index,
    expression,
    -- the 'lexer' rules
    literal_rules,
