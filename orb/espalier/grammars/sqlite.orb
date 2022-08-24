@@ -335,20 +335,25 @@ Sources[{*}][{**}]:
 {**}: https://sqlite.org/src/file?name=src/tokenize.c&ci=trunk
 
 #!peg @name_rules #asLua
-               name  ←  name-val quoted / id
+               name  ←   quoted / id
          `name-val`  ←   quoted / id
+
            `quoted`  ←  '"' quote-name '"'
                      /  deprecated-quote
-   deprecated-quote  ←  "[" quote-name "]"
-                     /  "`" quote-name "`"
-                     /  "'" quote-name "'"
                `id`  ←  !keyword bare-name
-   allowed-keyword  ←  bare-name
+                     /  !keyword dollar-name
 
-  `bare-name`  ←  lead-char follow-char*
-  `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
-`follow-char`  ←  lead-char / [0-9]  / "$"
-   quote-name  ←  (!'"' 1)+
+         quote-name  ←  (!'"' 1)+
+   deprecated-quote  ←  "[" (!"]" 1)+ "]"
+                     /  "`" (!"`" 1)+ "`"
+                     /  "'" (!"'") "'"
+
+        `bare-name`  ←  lead-char follow-char*
+        dollar-name  ←  lead-char dollow-foller+
+
+        `lead-char`  ←  [\x80-\xff] / [A-Z] / [a-z] / "_"
+      `follow-char`  ←  lead-char / [0-9]
+    `dollow-foller` ←  follow-char  / "$"
 #/peg
 
 
