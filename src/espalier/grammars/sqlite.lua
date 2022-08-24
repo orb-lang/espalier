@@ -83,6 +83,7 @@ table-options  ←  t-opt ("," _  t-opt)*
 
 
 
+
 local create_index = [[
 create-index  ←  CREATE UNIQUE? INDEX if-not-exists? schema-prefix?
                  index-name _ ON table-name _ indexed-columns (WHERE expr)?
@@ -201,6 +202,41 @@ foreign-key-clause  ←  REFERENCES table-name _ column-names?
                            / RESTRICT
                            / NO ACTION ))
                     /  MATCH name _
+]]
+
+
+
+
+local select_stmt = [[
+         select  ←  common-table-expr-clause?
+                    (select-clause / val-clause)
+                       (compound-operator (select-clause / val-clause))*
+                    order-clause?
+                    limit-clause?
+
+common-table-expr-clause  ←  ""
+
+`select-clause`  ←  SELECT (DISTINCT / ALL)?
+                       result-column (_","_ result-column)*
+                    from-clause?
+                    where-clause?
+                    group-clause?
+                    window-clause?
+
+val-clause <- VALUES "(" _ expr-list _ ")" _
+
+from-clause  ←  FROM (join-clause / table-or-subquery) _
+
+where-clause  ←  WHERE expr _
+
+group-clause  ←  GROUP BY expr-list _ (HAVING expr _)?
+
+window-clause  ←  WINDOW name AS window-defn (_","_ name as window-defn)
+
+order-clause  ←  ORDER BY ordering-terms
+
+limit-clause  ←  LIMIT expr _ (OFFSET expr / ","_ expr)? _
+
 ]]
 
 
