@@ -265,44 +265,51 @@ local expression = [[
     `expr-rest`  ←  operator _ expr
                  /  (AND / OR) expr
                  /  COLLATE name
-                 /  NOT? LIKE expr (_ ESCAPE expr)?
-                 /  NOT? (GLOB / REGEXP / MATCH) expr
+                 /  like-op expr (_ ESCAPE exexpr)?
+                 /  match-op expr
                  /  ISNULL
                  /  NOT NULL
                  /  NOTNULL
-                 /  IS NOT? (DISTINCT FROM)? expr
-                 /  NOT? BETWEEN expr AND expr
-                 ;  add not-in-select when there's some point
+                 /  is-op expr
+                 /  between-expr
+                 /  in-select-expr
+
+             like-op  ←   NOT? LIKE
+            match-op  ←   NOT? (GLOB / REGEXP / MATCH)
+               is-op  ←   IS NOT? (DISTINCT FROM)?
+        between-expr  ←   NOT? BETWEEN expr AND expr
+      ; in-select-expr
 
       `operator`  ←  concat / extract / neq / gte / lte / lshift / rshift
                   /  eq /  lt / gt / add / sub / mul / div / mod
                   /  bit-and / bit-or
-          concat  ←  "||"
-         extract  ←  "->>" / "->"
-             neq  ←  "<>" / "!="
-             gte  ←  ">="
-             lte  ←  "<="
-          lshift  ←  "<<"
-          rshift  ←  ">>"
-              eq  ←  "==" / "=" ; note the transition to one-byte tokens
-              lt  ←  "<"
-              gt  ←  ">"
-             add  ←  "+"
-             sub  ←  "-"
-             mul  ←  "*"
-             div  ←  "/"
-             mod  ←  "%"
-         bit-and  ←  "&"
-          bit-or  ←  "|"
+
+                concat  ←  "||"
+               extract  ←  "->>" / "->"
+                   neq  ←  "<>" / "!="
+                   gte  ←  ">="
+                   lte  ←  "<="
+                lshift  ←  "<<"
+                rshift  ←  ">>"
+
+                    eq  ←  "==" / "="
+                    lt  ←  "<"
+                    gt  ←  ">"
+                   add  ←  "+"
+                   sub  ←  "-"
+                   mul  ←  "*"
+                   div  ←  "/"
+                   mod  ←  "%"
+               bit-and  ←  "&"
+                bit-or  ←  "|"
 
 
 
 function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
                   filter-clause? over-clause?
 
-function-name  ←  name
-
-expr-list  ←  expr (_","_ expr)*
+function-name  ←  name-val
+    expr-list  ←  expr (_","_ expr)*
 ]]
 
 
@@ -547,26 +554,27 @@ local keyword_rules = [[
 
 
 
+
 local keyword_rule = [[
- keyword  ←  (  ABORT / ACTION / ADD / AFTER / ALL / ALTER / ALWAYS
-             /  ANALYZE / AND / ASC / AS / ATTACH / AUTOINCREMENT / BEFORE
-             /  BEGIN / BETWEEN / BY / CASCADE / CASE / CAST / CHECK
-             /  COLLATE / COLUMN / COMMIT / CONFLICT / CONSTRAINT / CREATE
-             /  CROSS / CURRENT_DATE / CURRENT_TIMESTAMP / CURRENT_TIME
-             /  DATABASE / DEFAULT / DEFERRABLE / DEFERRED / DELETE / DESC
-             /  DETACH / DISTINCT / DROP / EACH / ELSE / END / ESCAPE
-             /  EXCEPT / EXCLUSIVE / EXISTS / EXPLAIN / FAIL / FALSE / FOREIGN
-             /  FOR / FROM / FULL / GENERATED / GLOB / GROUP / HAVING / IF
-             /  IGNORE / IMMEDIATE / INDEX / INITIALLY / INNER / INSERT
-             /  INSTEAD / INTERSECT / INTO / IN / ISNULL / IS / JOIN / KEY
-             /  LEFT / LIKE / LIMIT / MATCH / NATURAL / NOTNULL / NOT / NO
-             /  NULL / OFFSET / OF / ON / ORDER / OR / OUTER / PLAN / PRAGMA
-             /  PRIMARY / QUERY / REFERENCES / RAISE / REGEXP / REINDEX
-             /  RENAME / REPLACE / RESTRICT / RIGHT / ROLLBACK / ROWID / ROW
-             /  SELECT / SET / STORED / STRICT / TABLE / TEMPORARY / TEMP
-             /  THEN / TO / TRANSACTION / TRIGGER / TRUE / UNION / UNIQUE
-             /  UPDATE / USING / VACUUM / VALUES / VIEW / VIRTUAL / WHEN
-             /  WHERE / WITHOUT )
+ `keyword`  ←  (  ABORT / ACTION / ADD / AFTER / ALL / ALTER / ALWAYS
+               /  ANALYZE / AND / ASC / AS / ATTACH / AUTOINCREMENT / BEFORE
+               /  BEGIN / BETWEEN / BY / CASCADE / CASE / CAST / CHECK
+               /  COLLATE / COLUMN / COMMIT / CONFLICT / CONSTRAINT / CREATE
+               /  CROSS / CURRENT_DATE / CURRENT_TIMESTAMP / CURRENT_TIME
+               /  DATABASE / DEFAULT / DEFERRABLE / DEFERRED / DELETE / DESC
+               /  DETACH / DISTINCT / DROP / EACH / ELSE / END / ESCAPE
+               /  EXCEPT / EXCLUSIVE / EXISTS / EXPLAIN / FAIL / FALSE
+               /  FOREIGN / FOR / FROM / FULL / GENERATED / GLOB / GROUP
+               /  HAVING / IF / IGNORE / IMMEDIATE / INDEX / INITIALLY
+               /  INNER / INSERT / INSTEAD / INTERSECT / INTO / IN / ISNULL
+               /  IS / JOIN / KEY / LEFT / LIKE / LIMIT / MATCH / NATURAL
+               /  NOTNULL / NOT / NO / NULL / OFFSET / OF / ON / ORDER / OR
+               /  OUTER / PLAN / PRAGMA / PRIMARY / QUERY / REFERENCES
+               /  RAISE / REGEXP / REINDEX / RENAME / REPLACE / RESTRICT
+               /  RIGHT / ROLLBACK / ROWID / ROW / SELECT / SET / STORED
+               /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
+               /  TRIGGER / TRUE / UNION / UNIQUE / UPDATE / USING / VACUUM
+               /  VALUES / VIEW / VIRTUAL / WHEN / WHERE / WITHOUT )
 ]]
 
 
@@ -634,7 +642,6 @@ local sqlite_blocks = {
    whitespace_rules,
    terminal_rule,
 }
-
 
 
 

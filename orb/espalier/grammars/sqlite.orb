@@ -265,44 +265,51 @@ binary statements ends with an atom.
     `expr-rest`  ←  operator _ expr
                  /  (AND / OR) expr
                  /  COLLATE name
-                 /  NOT? LIKE expr (_ ESCAPE expr)?
-                 /  NOT? (GLOB / REGEXP / MATCH) expr
+                 /  like-op expr (_ ESCAPE exexpr)?
+                 /  match-op expr
                  /  ISNULL
                  /  NOT NULL
                  /  NOTNULL
-                 /  IS NOT? (DISTINCT FROM)? expr
-                 /  NOT? BETWEEN expr AND expr
-                 ;  add not-in-select when there's some point
+                 /  is-op expr
+                 /  between-expr
+                 /  in-select-expr
+
+             like-op  ←   NOT? LIKE
+            match-op  ←   NOT? (GLOB / REGEXP / MATCH)
+               is-op  ←   IS NOT? (DISTINCT FROM)?
+        between-expr  ←   NOT? BETWEEN expr AND expr
+      ; in-select-expr
 
       `operator`  ←  concat / extract / neq / gte / lte / lshift / rshift
                   /  eq /  lt / gt / add / sub / mul / div / mod
                   /  bit-and / bit-or
-          concat  ←  "||"
-         extract  ←  "->>" / "->"
-             neq  ←  "<>" / "!="
-             gte  ←  ">="
-             lte  ←  "<="
-          lshift  ←  "<<"
-          rshift  ←  ">>"
-              eq  ←  "==" / "=" ; note the transition to one-byte tokens
-              lt  ←  "<"
-              gt  ←  ">"
-             add  ←  "+"
-             sub  ←  "-"
-             mul  ←  "*"
-             div  ←  "/"
-             mod  ←  "%"
-         bit-and  ←  "&"
-          bit-or  ←  "|"
+
+                concat  ←  "||"
+               extract  ←  "->>" / "->"
+                   neq  ←  "<>" / "!="
+                   gte  ←  ">="
+                   lte  ←  "<="
+                lshift  ←  "<<"
+                rshift  ←  ">>"
+
+                    eq  ←  "==" / "="
+                    lt  ←  "<"
+                    gt  ←  ">"
+                   add  ←  "+"
+                   sub  ←  "-"
+                   mul  ←  "*"
+                   div  ←  "/"
+                   mod  ←  "%"
+               bit-and  ←  "&"
+                bit-or  ←  "|"
 
 
 
 function-expr  ←  function-name "("_ ("*" / (DISTINCT? expr-list)) _")"_
                   filter-clause? over-clause?
 
-function-name  ←  name
-
-expr-list  ←  expr (_","_ expr)*
+function-name  ←  name-val
+    expr-list  ←  expr (_","_ expr)*
 #/peg
 
 
@@ -540,33 +547,34 @@ label, and it avoids dribbling =_= all over the grammar.
              WITHOUT  ←  W I T H O U T t _
 #/peg
 
+
 **** Keyword Rule
 
 With these powers combined, we have a keyword rule.
 
-Does it need to be a trie?  Probably we're just imitating the parsing engine
-here.
+There's a printer to make this a trie, but it breaks the parse and doesn't
+get us much.
 
 #!peg @keyword_rule #asLua
- keyword  ←  (  ABORT / ACTION / ADD / AFTER / ALL / ALTER / ALWAYS
-             /  ANALYZE / AND / ASC / AS / ATTACH / AUTOINCREMENT / BEFORE
-             /  BEGIN / BETWEEN / BY / CASCADE / CASE / CAST / CHECK
-             /  COLLATE / COLUMN / COMMIT / CONFLICT / CONSTRAINT / CREATE
-             /  CROSS / CURRENT_DATE / CURRENT_TIMESTAMP / CURRENT_TIME
-             /  DATABASE / DEFAULT / DEFERRABLE / DEFERRED / DELETE / DESC
-             /  DETACH / DISTINCT / DROP / EACH / ELSE / END / ESCAPE
-             /  EXCEPT / EXCLUSIVE / EXISTS / EXPLAIN / FAIL / FALSE / FOREIGN
-             /  FOR / FROM / FULL / GENERATED / GLOB / GROUP / HAVING / IF
-             /  IGNORE / IMMEDIATE / INDEX / INITIALLY / INNER / INSERT
-             /  INSTEAD / INTERSECT / INTO / IN / ISNULL / IS / JOIN / KEY
-             /  LEFT / LIKE / LIMIT / MATCH / NATURAL / NOTNULL / NOT / NO
-             /  NULL / OFFSET / OF / ON / ORDER / OR / OUTER / PLAN / PRAGMA
-             /  PRIMARY / QUERY / REFERENCES / RAISE / REGEXP / REINDEX
-             /  RENAME / REPLACE / RESTRICT / RIGHT / ROLLBACK / ROWID / ROW
-             /  SELECT / SET / STORED / STRICT / TABLE / TEMPORARY / TEMP
-             /  THEN / TO / TRANSACTION / TRIGGER / TRUE / UNION / UNIQUE
-             /  UPDATE / USING / VACUUM / VALUES / VIEW / VIRTUAL / WHEN
-             /  WHERE / WITHOUT )
+ `keyword`  ←  (  ABORT / ACTION / ADD / AFTER / ALL / ALTER / ALWAYS
+               /  ANALYZE / AND / ASC / AS / ATTACH / AUTOINCREMENT / BEFORE
+               /  BEGIN / BETWEEN / BY / CASCADE / CASE / CAST / CHECK
+               /  COLLATE / COLUMN / COMMIT / CONFLICT / CONSTRAINT / CREATE
+               /  CROSS / CURRENT_DATE / CURRENT_TIMESTAMP / CURRENT_TIME
+               /  DATABASE / DEFAULT / DEFERRABLE / DEFERRED / DELETE / DESC
+               /  DETACH / DISTINCT / DROP / EACH / ELSE / END / ESCAPE
+               /  EXCEPT / EXCLUSIVE / EXISTS / EXPLAIN / FAIL / FALSE
+               /  FOREIGN / FOR / FROM / FULL / GENERATED / GLOB / GROUP
+               /  HAVING / IF / IGNORE / IMMEDIATE / INDEX / INITIALLY
+               /  INNER / INSERT / INSTEAD / INTERSECT / INTO / IN / ISNULL
+               /  IS / JOIN / KEY / LEFT / LIKE / LIMIT / MATCH / NATURAL
+               /  NOTNULL / NOT / NO / NULL / OFFSET / OF / ON / ORDER / OR
+               /  OUTER / PLAN / PRAGMA / PRIMARY / QUERY / REFERENCES
+               /  RAISE / REGEXP / REINDEX / RENAME / REPLACE / RESTRICT
+               /  RIGHT / ROLLBACK / ROWID / ROW / SELECT / SET / STORED
+               /  STRICT / TABLE / TEMPORARY / TEMP / THEN / TO / TRANSACTION
+               /  TRIGGER / TRUE / UNION / UNIQUE / UPDATE / USING / VACUUM
+               /  VALUES / VIEW / VIRTUAL / WHEN / WHERE / WITHOUT )
 #/peg
 
 
@@ -776,7 +784,7 @@ local trie = makeTrie(kwset)
 
 -- but first we must print it /correctly/
 
-local head     =   " keyword  ←  ( "
+local head     =   " `keyword`  ←  ( "
 local WID = 78
 
 local wide = #head - 2
@@ -842,7 +850,7 @@ local function rulify(trie, outer)
 end
 
 rulify(trie, true)
-insert(treezus, ") t")
+insert(treezus, ") t _ ")
 
 print(concat(treezus))
 
@@ -867,10 +875,10 @@ insert(kw_pr, "}\n\n")
 
 -- now the keyword rule, old school
 
-local head     =   " keyword  ←  (  "
-local div_pad  = "\n             /  "
+local head     =   " `keyword`  ←  (  "
+local div_pad  = "\n               /  "
 local div = " / "
-local WID = 78
+local WID = 77
 
 local wide = #head
 
@@ -879,7 +887,6 @@ local footer = " )\n"
 
 local no_div = true
 for i, kw in ipairs(kwset) do
-   count = count + 1
    local div = div
    local next_w = #kw + #div + wide + ((i == #kwset) and #footer - 1 or 0)
    if next_w <= WID then
