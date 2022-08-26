@@ -93,8 +93,20 @@ cluster.construct(new,
 
 
 
+
+
+
 function Vav.constrain(vav)
    return vav.synth:constrain()
+end
+
+
+
+
+
+
+function Vav.anomalies(vav)
+   return vav.synth:anomalies()
 end
 
 

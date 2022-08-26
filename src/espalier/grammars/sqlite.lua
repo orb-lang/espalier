@@ -217,11 +217,22 @@ local select_stmt = [[
 common-table-expr-clause  ←  ""
 
 `select-clause`  ←  SELECT (DISTINCT / ALL)?
-                       result-column (_","_ result-column)*
+                       result-column (","_ result-column)*
                     from-clause?
                     where-clause?
                     group-clause?
                     window-clause?
+
+`result-column`  ←  ( expr-as
+                    / expr
+                    / glob
+                    / table-glob ) _
+        expr-as  ←  expr _  pAS column-alias
+           glob  ←  "*"
+     table-glob  ←  table-name _ "." _ glob
+
+
+column-alias  ←  name-val
 
 val-clause <- VALUES "(" _ expr-list _ ")" _
 
@@ -236,7 +247,38 @@ window-clause  ←  WINDOW name AS window-defn (_","_ name as window-defn)
 order-clause  ←  ORDER BY ordering-terms
 
 limit-clause  ←  LIMIT expr _ (OFFSET expr / ","_ expr)? _
+]]
 
+local table_or_subquery = [[
+table-or-subquery  ←  schema-prefix? indexable-table
+                   /  table-function-name _"("_ expr-list _")" as-alias?
+                   /  "(" _ select _ ")" as-alias?
+                   /  "(" _ join-clause ")"
+                   /  "(" _ subqueries  ")"
+
+     `subqueries`  ←  table-or-subquery _ ("," _ table-or-subquery)*
+
+`indexable-table`  ←  table-name as-alias?
+                      (INDEXED BY index-name / NOT INDEXED)?
+       `as-alias`  ←  _ AS? table-alias _
+
+table-alias  ←  name-val
+]]
+
+
+
+
+local drop_stmt = [[
+`drop`  ←  drop-table
+        /  drop-index
+        /  drop-trigger
+        /  drop-view
+
+  drop-table  ←  DROP TABLE drop-mid? table-name
+  drop-index  ←  DROP INDEX drop-mid? index-name
+drop-trigger  ←  DROP TRIGGER drop-mid? trigger-name
+   drop-view  ←  DROP VIEW drop-mid? view-name
+  `drop-mid`  ←  (IF EXISTS)? schema-prefix?
 ]]
 
 
@@ -409,7 +451,6 @@ local name_rules = [[
       `follow-char`  ←  lead-char / [0-9]
     `dollow-foller` ←  follow-char  / "$"
 ]]
-
 
 
 
@@ -692,6 +733,9 @@ local sqlite_blocks = {
    column_table_constraints,
    column_affinity,
    foreign_key_clause,
+   select_stmt,
+   table_or_subquery,
+   drop_stmt,
    expression,
    -- the 'lexer' rules
    literal_rules,

@@ -1120,12 +1120,12 @@ end
 function Syn.grammar.anomalies(grammar)
    local coll = grammar.collection
    if not coll then return nil, "collectRules first" end
-   if not (grammar.missing or grammar.surplus or grammar.dupes) then
+   if not (grammar.missing or grammar.surplus or grammar.dupe) then
       return nil, "no anomalies detected"
    else
       return { missing = grammar.missing,
                surplus = grammar.surplus,
-               dupes   = grammar.dupes }
+               dupe   = grammar.dupe }
    end
 end
 

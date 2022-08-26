@@ -88,13 +88,25 @@ be indefinite.
 Vav will be the container for all the components, however.
 
 
-*** Vav:constrain()
+*** Pass-throughs
+
+
+**** Vav:constrain()
 
 A pass-through which we'll be using for awhile at least.
 
 #!lua
 function Vav.constrain(vav)
    return vav.synth:constrain()
+end
+#/lua
+
+
+**** Vav:anomalies()
+
+#!lua
+function Vav.anomalies(vav)
+   return vav.synth:anomalies()
 end
 #/lua
 
