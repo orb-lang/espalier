@@ -15,7 +15,10 @@ The =first, last, str= triple is gone.
 Instead we have =o, stride=, with no direct reference to the string.  We also
 provide a full zipper during capture, with every child pointing to the parent
 (as in Node), but also decorated with the index to the parent at which the
-child is found on the =up= field.
+child is found, on the =up= field.
+
+We do =stride= the Lua way, meaning it can be =-1= for a match with no width,
+and so on.
 
 This means we must use methods to insert and remove children, so that the
 zipper remains valid.  It comes with many compensating advantages, notably
@@ -48,178 +51,118 @@ return to the child node updating all intermediates with that version and
 the stride adjustment called for.
 
 
-*** Working backward toward Qoph
+** Design
 
-Our grammar generator has been serviceable but isn't general.
+Once more with feeling!
 
-Making it general is what the Qoph combinator is all about, and right now
-what we need is a capture pattern and function.
+The goal is that the string be /local/ to the Node, and /relative/ to a global
+string which may or may not be the same string.
+
+We need to be able to stitch together patches on strings, and delay allocating
+and interning a new string indefinitely.  The Palimpsest, which we use
+in 'Stache, is designed around this principle, the new Node should be more
+'palimpsest native' if you will.
+
+So every node has two instance slots, =.o= and =.O=, for the offset into
+=.str= and the offset into the 'real string'.  It also has =.v=, which starts
+at 1, this is passed to the root (a couple approaches here) and the version
+adjusted for any node along the path.  This can be a recursive call up and
+down, and probably should be.  The last Node might inform siblings, as a treat,
+this is probably an optimization but that's unclear.
+
+The parents, and only the parents, have to keep track of 'cracks', we handle
+this with some heuristics about rule type and length such that a new string
+is made for every change within something like a function.
+
+Any node crossing these boundaries has what is in effect a Palimpsest, no
+guarantees that exact module is suitable but it points the way.  It needs to
+know which patches to apply to get the string understood in common by all
+children, where ===o == O=== for all nodes =o=.
+
+Version numbers track 1 to 1 with the creation of new strings (ignoring
+interning since it's not relevant here), making undo relatively
+straightforward to provide.
+
+We'll extend this order for the case of intensive editing, such as a text
+editor will need, for all urgent uses this scheme will be more than
+sufficient.  Figuring out when a token is 'done' needs a concept of cursor
+position, which the basal Node won't have.
+
+Making a note that rendering a Node of this type can be a different operation
+from converting it to a string, given that we pass in a writer, especially
+one which can write some of a string without allocating.  More trouble than
+it's worth now.
+
+As an optimization, we can have a =v= of zero mean no changes are expected.
+This can easily be made editable by updating every Node to 1, after which the
+checks will be performed subsequently.  It will always be commonplace to have
+Nodes which aren't mutated, and LuaJIT will remove this one-sided check from
+traces.
+
+
+** Node
+
+  The Node is the base case of a cluster =clade=, which we have yet to
+implement.
+
+So we're going to build it one more time, and this time, we're doing it in
+Cluster, where it belongs.
 
 #!lua
-local L = use "lpeg"
-local core, cluster = use("qor:core", "cluster:cluster")
-local table = core.table
+local core = use "qor:core"
+local cluster, clade = use ("cluster:cluster", "cluster:clade")
 #/lua
 
 #!lua
-local NodeQoph = {}
+local new, Node, Node_M = cluster.order()
 #/lua
 
-This is tricky because it's called at build-time and the function provides
-=name, val=.  I don't believe lpeg has facilities for deconstructing patterns,
-which are opaque, broadly speaking, once composed.
+Let's write a =new= and get going. Qoph needs some way to assign, after all.
 
-We're left specifying an array of patterns with placeholders. Which isn't
-so bad.
+This is a simplified signature in the interest of speed.
 
 #!lua
-local Cp = L.Cp
-local Cc = L.Cc
-local Ct = L.Ct
-local Carg = L.Carg
-
-NodeQoph.capturePattern = {'name', Cp, 'capture', Cp,
-                           {Carg, 1}, {Carg, 2}, {Carg, 3}}
-#/lua
-
-This is.. usable, broadly speaking. More complex patterns can be captured by
-e.g. ={'choice', patt, patt}=, and we can usefully replace the positional
-arguments with known quantities for Vav to then pass into =match=
-positionally, e.g. instead of ={Carg, 1}= we can say ='input'= or ='string'=,
-='metis'= for =Carg(2)= and so on.
-
-Another possibility, a neater one, is to have one additional argument at the
-end of the pattern, provided by Qoph.  Which can be as simple as just the
-string, but can also be a table containing anything Dji builds in.
-
-We could keep the reified pattern call with arguments thing here, but the
-passing of state into the recognition function benefits from a single and
-implied API.
-
-The constructed pattern is applied against an =oncapture= function, like so:
-
-#!lua
-local compact = assert(table.compact)
-
-function NodeQoph.oncapture(class, first, capture, last, str, metas, offset)
-   t.first = first + offset
-   t.last  = last + offset - 1
-   t.str   = str
-   if metas[class] then
-      local meta = metas[class]
-      if type(meta) == "function" then
-        t.class = class
-        t = meta(t, offset)
-      else
-        t = setmeta(t, meta)
-      end
-      assert(t.class, "no class on Node")
-   else
-      t.class = class
-      setmeta(t, metas[1])
-   end
-
+cluster.construct(new, function(_new, id, t, first, last, str)
+   t.v = 0
+   t.o = first
+   t.O = first
+   t.stride = first - last
+   t.str = str
    if not t.parent then
+      -- root is self, not null
       t.parent = t
+      t.up = 0
    end
-
-   local top, touched = #t, false
-   for i = 1, top do
-      local cap = t[i]
-      if type(cap) ~= "table" or not cap.isNode then
-         touched = true
-         t[i] = nil
-      else
-         cap.parent = t
-      end
+   -- we used to 'drop' invalid data which snuck in here,
+   -- that should no longer be necessary
+   for i, child in ipairs(t) do
+      child.parent = t
+      child.up = i
    end
-   if touched then
-      compact(t, top)
-   end
-   -- post conditions
-   assert(t.isNode, "failed isNode: " .. class)
-   assert(t.str, "no string on node")
-   assert(t.parent, "no parent on " .. t.class)
    return t
-end
+end)
 #/lua
 
-This is only a slight change from =grammar.orb=, I figure it's always nice to
-get consistent results before taking off in a different direction.
+We'll write a custom nodemaker for this and wire it to Vav, meanwhile, some
+methods.
 
-Speaking of which: rather than split attention between modules, let's write
-a start on Qoph.
 
-This being another port of Grammar, with some extras.
+*** Node:span()
+
+This is where the difference goes!
 
 #!lua
-local ltype = assert(L.type)
-local V, P = L.V, L.P
+local sub = assert(string.sub)
 
-local function makeBuilder(Qoph, engine, ...)
-   -- these defaults should result in a 'pure' recognizer
-   local capture_patt, oncapture = Qoph.capture_patt or {P(true)},
-                                   Qoph.oncapture
-   local _env = Qoph.env or {}
-   local g = {}
-   local suppressed = {}
-   local env = {}
-   local env_index = {
-      START = function(name) g[1] = name end,
-      SUPPRESS = function(...)
-         suppressed = {}
-         for i = 1, select('#', ...) do
-            suppressed[select(i, ... )] = true
-         end
-      end,
-      V = V,
-      P = P }
-
-    setmetatable(env_index, { __index = _env })
-
-    setmetatable(env, {
-       __index = env_index,
-       __newindex = function( _, name, capture )
-          if suppressed[name] then
-             g[name] = capture
-             return
-          end
-
-          local patt = P ""
-          for _, pattern in ipairs(capture_patt) do
-             -- special cases
-             if pattern == 'name' then
-                patt = patt * Cc(name)
-             elseif pattern == 'capture' then
-                patt = patt * Ct(value)
-             elseif type(pattern) == 'function' then
-                patt = patt * pattern()
-             elseif ltype(pattern) == 'pattern' then
-                patt = patt * pattern
-             elseif type(pattern) == 'table' then
-                patt = patt * pattern[1](unpack(pattern, 2))
-             end
-             if oncapture then
-                g[name] = patt / oncapture
-             else
-                g[name] = patt
-             end
-          end
-       end })
-
-   return function(func)
-      setfenv(func, env )
-      func( env )
-      assert( g[ 1 ] and g[ g[ 1 ] ], "no start rule defined" )
-      return g
+function Node.span(node)
+   if node.v == 0 then
+      -- all is well
+      return sub(node.str, node.o, node.o + node.stride)
+   else
+      -- the fun part
    end
 end
 #/lua
 
-So that looks approximately correct.
 
-Let's export the pieces and see how they play.
 
-#!lua
-return {NodeQoph = NodeQoph, makeBuilder = makeBuilder }
-#/lua
