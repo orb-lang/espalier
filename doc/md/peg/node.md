@@ -121,12 +121,18 @@ Let's write a `new` and get going\. Qoph needs some way to assign, after all\.
 
 This is a simplified signature in the interest of speed\.
 
+
+### Node\(t, first, last, str\)
+
+We'll need `offset` as well\. The `.class` field is always on the metatable now,
+no more exceptions\.
+
 ```lua
-cluster.construct(new, function(_new, id, t, first, last, str)
+cluster.create(new, function(_new, t, first, last, str)
    t.v = 0
    t.o = first
    t.O = first
-   t.stride = first - last
+   t.stride = last - first
    t.str = str
    if not t.parent then
       -- root is self, not null
@@ -147,22 +153,79 @@ We'll write a custom nodemaker for this and wire it to Vav, meanwhile, some
 methods\.
 
 
+### Node:adjust\(\): b
+
+This we call first for almost anything, and contains the logic which brings a
+node up to date\.
+
+```lua
+function Node.adjust(node)
+   if node.v == 0 then
+      return true
+   end
+end
+```
+
+
 ### Node:span\(\)
 
-This is where the difference goes\!
+  This is one of our only opportunities to cross the boundaries of the
+interned strings backing the logical string\.
 
 ```lua
 local sub = assert(string.sub)
 
 function Node.span(node)
    if node.v == 0 then
-      -- all is well
+      -- means we don't have to use a method to look at the string
       return sub(node.str, node.o, node.o + node.stride)
-   else
-      -- the fun part
    end
+   -- the fun part
+   node:adjust()
 end
 ```
 
 
+### Node:bounds\(\)
 
+```lua
+function Node.bounds(node)
+   node:adjust()
+   return node.O, node.O + node.stride
+end
+```
+
+
+### Node:len\(\)
+
+```lua
+function Node.len(node)
+   node:adjust()
+   return node.O + node.stride + 1
+end
+```
+
+
+### Node:forward\(\)
+
+Returns the next \(prefix, depth first\) Node in the AST, or `nil` if it's the
+last leaf\.
+
+```lua
+function Node.forward(node, done)
+   if done or (#node == 0) then
+      local sibling = node.parent[node.up + 1]
+      if sibling then
+         return sibling
+      else
+         -- right-most child returned
+         return node.parent:forward(true)
+      end
+   end
+   return node[1]:forward()
+end
+```
+
+```lua
+return new
+```
