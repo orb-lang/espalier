@@ -1,0 +1,16 @@
+* Node Clade
+
+#!lua
+local Clade, Node = use ("cluster:clade", "espalier:peg/node")
+#/lua
+
+#!lua
+local function onindex(tab, field)
+   tab.tag = field
+   return tab
+end
+#/lua
+
+#!lua
+return Clade(Node, onindex)
+#/lua
