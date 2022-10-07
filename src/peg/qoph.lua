@@ -10,6 +10,8 @@ local L = use "lpeg"
 local core, cluster = use("qor:core", "cluster:cluster")
 local table = core.table
 
+local NodeClade = use "espalier:peg/nodeclade"
+
 
 
 local NodeQoph = {}
@@ -171,5 +173,36 @@ end
 
 
 
-return {NodeQoph = NodeQoph, makeBuilder = makeBuilder }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function Qoph(vav)
+   if not vav.mem then
+      vav.mem = NodeClade
+   end
+
+end
+
+
+
+
+return {NodeQoph = NodeQoph}
 

@@ -9,6 +9,8 @@ what we need is a capture pattern and function\.
 local L = use "lpeg"
 local core, cluster = use("qor:core", "cluster:cluster")
 local table = core.table
+
+local NodeClade = use "espalier:peg/nodeclade"
 ```
 
 ```lua
@@ -168,8 +170,39 @@ end
 
 So that looks approximately correct\.
 
-Let's export the pieces and see how they play\.
+
+#### Qoph Notes: Node 2
+
+Right now, Vav itself is backed by the original Pegylator\.
+
+`Vav:dji()` just calls Grammar a second time, and that's where we move to the
+new framework\.
+
+This should look like:
 
 ```lua
-return {NodeQoph = NodeQoph, makeBuilder = makeBuilder }
+function Vav.dji(vav)
+   if not vav.lpeg_engine then
+      vav.lpeg_engine = vav.synth :toLpeg() :string()
+   end
+   return Qoph(vav)
+end
+```
+
+Where Qoph returns Dji\.
+
+This is incorrect in some ways, let's not worry about those\.
+
+```lua
+local function Qoph(vav)
+   if not vav.mem then
+      vav.mem = NodeClade
+   end
+
+end
+```
+
+
+```lua
+return {NodeQoph = NodeQoph}
 ```

@@ -5,12 +5,12 @@ local Clade, Node = use ("cluster:clade", "espalier:peg/node")
 
 
 
-local function onindex(tab, field)
-   tab.tag = field
-   return tab
+local function postindex(tab, field)
+   tab[field].tag = field
+   return tab[field]
 end
 
 
 
-return Clade(Node, onindex)
+return Clade(Node, postindex)
 

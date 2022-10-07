@@ -18,6 +18,25 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local core, cluster = use("qor:core", "cluster:cluster")
 
 local pegpeg = use "espalier:peg/pegpeg"
@@ -28,7 +47,8 @@ local Metis = use "espalier:peg/metis"
 
 
 
-local VavPeg = use "espalier:peg" (pegpeg, Metis) . parse
+local VavPeg = use "espalier:peg" (pegpeg, Metis)
+local Vpeg = VavPeg.parse
 
 
 
@@ -62,21 +82,78 @@ local new, Vav, Vav_M = cluster.order()
 
 Vav.pegparse = VavPeg
 
+local _reconcile;
 
 cluster.construct(new,
-   function(_new, vav, peh)
-     vav.grammar = VavPeg(peh)
-     if vav.grammar then
-        vav.grammar :hoist()
-        vav.synth = vav.grammar :synthesize()
-     else
-        vav.failedParse = true
-     end
-     vav.peh = peh
-     -- we'll have checks here
+   function(_new, vav, peh, mem, tav)
+      vav.peh = peh
+      vav.grammar = VavPeg(peh)
+      if vav.grammar then
+         vav.grammar :hoist()
+         vav.synth = vav.grammar :synthesize()
+         -- signature is slightly odd here b/c :analyze returns anomalies
+         -- so a nil means that all is well
+         if (not vav.synth:analyze()) then
+            if (mem or tav)  then
+               _reconcile(vav, mem, tav)
+            end
+         end
+      else
+         vav.failedParse = true
+      end
+      -- we'll have checks here
 
       return vav
    end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function _reconcile(vav, mem, tav)
+   tav = tav or {}
+   local ruleMap = assert(vav.synth.ruleMap)
+   local traits = {}
+   for name, meta in pairs(mem) do
+      if not ruleMap[name] then
+         -- rethink all of this with clades!
+         error("Grammar has no '" .. name .. "' rule.")
+      end
+   end
+   -- extend the clade for remaining rules
+   local _;
+   for name in pairs(ruleMap) do
+      -- statement-oriented languages amirites
+      _ = mem[name]
+   end
+   -- decorate with tavs
+   for trait, members in pairs(tav) do
+      for elem in pairs(members) do
+         if not ruleMap[elem] then
+            error("Trait '" .. trait
+                  .. "' has unknown member '" .. elem .. "'.")
+         end
+         mem[elem].trait = true
+      end
+   end
+end
+
 
 
 
@@ -124,6 +201,11 @@ function Vav.dji(vav)
    vav.parse, vav.pattern = Grammar(vav.lpeg_engine)
    return vav.parse
 end
+
+
+
+
+
 
 
 

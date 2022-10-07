@@ -1,16 +1,19 @@
 * Node Clade
 
+This is Mem, as it turns out.
+
+
 #!lua
 local Clade, Node = use ("cluster:clade", "espalier:peg/node")
 #/lua
 
 #!lua
-local function onindex(tab, field)
-   tab.tag = field
-   return tab
+local function postindex(tab, field)
+   tab[field].tag = field
+   return tab[field]
 end
 #/lua
 
 #!lua
-return Clade(Node, onindex)
+return Clade(Node, postindex)
 #/lua
