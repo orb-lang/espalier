@@ -25,6 +25,8 @@ local core, cluster = use("qor:core", "cluster:cluster")
 local pegpeg = use "espalier:peg/pegpeg"
 local Metis = use "espalier:peg/metis"
 
+local Qoph = use "espalier:peg/bootstrap"
+
 
 
 
@@ -189,10 +191,7 @@ end
 
 
 function Vav.dji(vav)
-   local l_peh = vav:toLpeg()
-   -- we need more than this, notably the metis, but.
-   vav.parse, vav.pattern = Grammar(l_peh)
-   return vav.parse
+   return Qoph(vav)
 end
 
 
@@ -211,11 +210,6 @@ function Vav.toLpeg(vav)
 
    return vav.lpeg_engine
 end
-
-
-
-
-
 
 
 

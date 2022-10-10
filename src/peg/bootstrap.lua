@@ -84,6 +84,18 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 local match = assert(L.match)
 
 local function Qoph(vav)
@@ -121,5 +133,5 @@ end
 
 
 
-return new
+return Qoph
 

@@ -83,6 +83,18 @@ end
 
 ### Qoph
 
+Various Qophs scattered all over the Qodebase\.\.\.
+
+Noting here that pre\- and post\-conditional actions, as well as the engine
+used in define, are proper to Qoph\.
+
+Example: cases where root wants to be special, such as having a closure to
+provide state to every child, where such would need to be passed into Qoph\.
+
+Postconditions can get fairly elaborate for a Qoph which can recover from
+errors; we'll bubble them up to the parents as part of recognition, but it
+remains to detect them at least\.
+
 ```lua
 local match = assert(L.match)
 
@@ -121,5 +133,5 @@ Once that's cleaned up, we should have the new nodes rigged up so we can do
 interesting things with them\.
 
 ```lua
-return new
+return Qoph
 ```

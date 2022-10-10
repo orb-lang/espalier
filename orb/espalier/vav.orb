@@ -24,6 +24,8 @@ local core, cluster = use("qor:core", "cluster:cluster")
 
 local pegpeg = use "espalier:peg/pegpeg"
 local Metis = use "espalier:peg/metis"
+
+local Qoph = use "espalier:peg/bootstrap"
 #/lua
 
 The inevitable metacircularity is delayed by using the existing peg/grammar
@@ -189,10 +191,7 @@ For today's purposes, produces and attaches a grammar.
 
 #!lua
 function Vav.dji(vav)
-   local l_peh = vav:toLpeg()
-   -- we need more than this, notably the metis, but.
-   vav.parse, vav.pattern = Grammar(l_peh)
-   return vav.parse
+   return Qoph(vav)
 end
 #/lua
 
@@ -212,11 +211,6 @@ function Vav.toLpeg(vav)
    return vav.lpeg_engine
 end
 #/lua
-
-
-*** Vav:dji2()
-
-
 
 
 *** Vav:try(rule?)
