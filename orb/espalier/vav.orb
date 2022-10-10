@@ -1,27 +1,10 @@
 * Vav
 
+  The Vav combinator takes Peh, a rule specification, and Mem.
 
-  Vav is an unbound collection of PEG rules, which may constitute a proper
-Grammar.
+Mem is a [[clade][@/cluster:clade]], Peh is string recognized by the Dji
+of our PEG specification [[pegpeg][@peg/pegpeg]].
 
-
-*** This is actually the Peh and Vav combinator
-
-Here's how it's supposed to work:
-
-(deep breath)
-
-Peh takes Gimel (grammar) returning Peh, Vav takes Peh Mem Tav (Mem Tav is a
-combinator, name later) returning Vav, Dji takes Vav Qoph, returning Dji.
-
-Gimel is a *syntactically* valid set of rules.  Peh provides the framework for
-algebras on these rules.  This is currently the separation between analysis
-and constraint in Metis: analysis is Peh, constraint is part of Vav.
-
-Mem and Tav must pass a gate as well (dalet?), because Tav could refer to
-parts which Mem doesn't recognize.
-
-=Peh(gimel) :Dalet(mem, tav) :Dji(qoph) -> dji=?
 
 
 ** Rationale
@@ -61,18 +44,19 @@ local Grammar = use "espalier:espalier/grammar"
 We're juuuust about to swallow our own tails here.
 
 
-*** Vav combinator: Vav Peh Mem Tav
+*** Vav combinator: Vav Peh Mem
 
 Vav is the entire front, resolving everything which is proper to the grammar.
 
 Peh is the structural specification, Mem provides (specific) match-time
-behaviors, and Tav is properties and behaviors which are common across match
-classes. Tav can present both qualia, a map of a property to all the class
-names which will carry it, and traits, specific metadata
-(methods, canonically) for every metatable carrying the property.
+behaviors.
 
-The Vav combinator parses Peh, for rule analysis, and reconciles Mem and Tav
+The Vav combinator parses Peh, for rule analysis, and reconciles Mem
 against the present rules.
+
+I'm leaning toward =:Mem(mem)= being the interface, as the idiomatic
+equivalent of currying Vav to Peh, performing various transformrations, and
+then supplying mem.
 
 
 ** Vav
@@ -85,7 +69,7 @@ Vav.pegparse = VavPeg
 local _reconcile;
 
 cluster.construct(new,
-   function(_new, vav, peh, mem, tav)
+   function(_new, vav, peh, mem)
       vav.peh = peh
       vav.grammar = VavPeg(peh)
       if vav.grammar then
@@ -94,8 +78,9 @@ cluster.construct(new,
          -- signature is slightly odd here b/c :analyze returns anomalies
          -- so a nil means that all is well
          if (not vav.synth:analyze()) then
-            if (mem or tav)  then
-               _reconcile(vav, mem, tav)
+            if mem then
+               -- first example of using a method off the seed
+               _new.Mem(vav, mem)
             end
          end
       else
@@ -108,13 +93,9 @@ cluster.construct(new,
 #/lua
 
 
-**** _reconcile(vav, mem, tav?)
+**** Vav:Mem(mem)
 
-  Confirms that all keys of =mem=, and elements of the sets in =tav=, are
-valid
-matches for the grammar.
-
-We confirm these invariants:
+  The parameter =mem= is a clade,
 
   -  Any key in =mem= must be a rule name /or/ a trait (key in tav)
   -  Any field in tav sets must be a rule name
@@ -165,6 +146,20 @@ be indefinite.
 Vav will be the container for all the components, however.
 
 
+*** Vav:complete()
+
+Answers whether the Vav combinator is reconciled with Mem and ready to be
+combined with Qoph to produce Dji.
+
+
+#!lua
+function Vav.complete(vav)
+   -- obvious stub
+   return true
+end
+#/lua
+
+
 *** Pass-throughs
 
 
@@ -194,12 +189,27 @@ For today's purposes, produces and attaches a grammar.
 
 #!lua
 function Vav.dji(vav)
-   if not vav.lpeg_engine then
-      vav.lpeg_engine = vav.synth :toLpeg() :string()
-   end
+   local l_peh = vav:toLpeg()
    -- we need more than this, notably the metis, but.
-   vav.parse, vav.pattern = Grammar(vav.lpeg_engine)
+   vav.parse, vav.pattern = Grammar(l_peh)
    return vav.parse
+end
+#/lua
+
+
+**** Vav:toLpeg()
+
+#!lua
+function Vav.toLpeg(vav)
+   if vav.lpeg_engine then
+      return vav.lpeg_engine
+   end
+   vav.lpeg_engine = vav.synth :toLpeg() :string()
+   if not vav.lpeg_engine then
+      error "Lpeg function was not created"
+   end
+
+   return vav.lpeg_engine
 end
 #/lua
 

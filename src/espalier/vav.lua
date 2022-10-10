@@ -20,23 +20,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 local core, cluster = use("qor:core", "cluster:cluster")
 
 local pegpeg = use "espalier:peg/pegpeg"
@@ -78,6 +61,7 @@ local Grammar = use "espalier:espalier/grammar"
 
 
 
+
 local new, Vav, Vav_M = cluster.order()
 
 Vav.pegparse = VavPeg
@@ -85,7 +69,7 @@ Vav.pegparse = VavPeg
 local _reconcile;
 
 cluster.construct(new,
-   function(_new, vav, peh, mem, tav)
+   function(_new, vav, peh, mem)
       vav.peh = peh
       vav.grammar = VavPeg(peh)
       if vav.grammar then
@@ -94,8 +78,9 @@ cluster.construct(new,
          -- signature is slightly odd here b/c :analyze returns anomalies
          -- so a nil means that all is well
          if (not vav.synth:analyze()) then
-            if (mem or tav)  then
-               _reconcile(vav, mem, tav)
+            if mem then
+               -- first example of using a method off the seed
+               _new.Mem(vav, mem)
             end
          end
       else
@@ -105,10 +90,6 @@ cluster.construct(new,
 
       return vav
    end)
-
-
-
-
 
 
 
@@ -172,6 +153,20 @@ end
 
 
 
+function Vav.complete(vav)
+   -- obvious stub
+   return true
+end
+
+
+
+
+
+
+
+
+
+
 
 function Vav.constrain(vav)
    return vav.synth:constrain()
@@ -194,12 +189,27 @@ end
 
 
 function Vav.dji(vav)
-   if not vav.lpeg_engine then
-      vav.lpeg_engine = vav.synth :toLpeg() :string()
-   end
+   local l_peh = vav:toLpeg()
    -- we need more than this, notably the metis, but.
-   vav.parse, vav.pattern = Grammar(vav.lpeg_engine)
+   vav.parse, vav.pattern = Grammar(l_peh)
    return vav.parse
+end
+
+
+
+
+
+
+function Vav.toLpeg(vav)
+   if vav.lpeg_engine then
+      return vav.lpeg_engine
+   end
+   vav.lpeg_engine = vav.synth :toLpeg() :string()
+   if not vav.lpeg_engine then
+      error "Lpeg function was not created"
+   end
+
+   return vav.lpeg_engine
 end
 
 
