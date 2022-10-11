@@ -24,6 +24,7 @@ local core, cluster = use("qor:core", "cluster:cluster")
 
 local pegpeg = use "espalier:peg/pegpeg"
 local Metis = use "espalier:peg/metis"
+local NodeClade = use "espalier:peg/nodeclade"
 
 local Qoph = use "espalier:peg/bootstrap"
 #/lua
@@ -97,44 +98,43 @@ cluster.construct(new,
 
 **** Vav:Mem(mem)
 
-  The parameter =mem= is a clade,
-
-  -  Any key in =mem= must be a rule name /or/ a trait (key in tav)
-  -  Any field in tav sets must be a rule name
-  -  Keys in tav must *not* be rule names
-
-
-Initially, any violation throws an error.  By design, Vav throws errors when
-asked to do the impossible, which this isn't.  Eventually, we'll collect the
-errors, if any, and return one of =vav= or =nil, errors=.
+  The parameter =mem= is a clade, which needs to be reconciled against the
+existing rules, and with itself.
 
 #!lua
-function _reconcile(vav, mem, tav)
-   tav = tav or {}
+
+--- WARNING!!!
+--  This mutates NodeClade, which is intended as an 'abstract' base genre.
+--  Specialization of Clades should be added ASAP.
+
+function Vav.Mem(vav, mem)
+   if not mem then
+      mem = NodeClade
+   end
    local ruleMap = assert(vav.synth.ruleMap)
-   local traits = {}
-   for name, meta in pairs(mem) do
-      if not ruleMap[name] then
-         -- rethink all of this with clades!
-         error("Grammar has no '" .. name .. "' rule.")
+   local tape = assert(mem.tape, "mem is missing the tape, bad clade?")
+   -- first we make sure no keys on the tape are missing a rule
+   for tag in pairs(tape) do
+      if type(tag) ~= 'string' then
+         goto continue
       end
+      if not ruleMap[tag] then
+         local name = vav.synth[1][1][1].token -- absurd thing to do
+         error("Mem has a phyle named " .. tag
+               .. ", no such rule in Peh("
+                .. name .. ").")
+      end
+      ::continue::
    end
-   -- extend the clade for remaining rules
+   -- next we fill out the clade with any rules without genre
    local _;
-   for name in pairs(ruleMap) do
-      -- statement-oriented languages amirites
-      _ = mem[name]
+   for rule in pairs(ruleMap) do
+      _ = tape[rule]
    end
-   -- decorate with tavs
-   for trait, members in pairs(tav) do
-      for elem in pairs(members) do
-         if not ruleMap[elem] then
-            error("Trait '" .. trait
-                  .. "' has unknown member '" .. elem .. "'.")
-         end
-         mem[elem].trait = true
-      end
-   end
+   -- last, coalesce the clade, which might make a clone of mem
+   vav.mem = assert(mem:coalesce())
+
+   return vav
 end
 #/lua
 
@@ -185,12 +185,15 @@ end
 #/lua
 
 
-*** Vav:dji()
+*** Vav:Dji()
 
 For today's purposes, produces and attaches a grammar.
 
 #!lua
-function Vav.dji(vav)
+function Vav.Dji(vav)
+   if not vav.mem then
+      vav:Mem()
+   end
    return Qoph(vav)
 end
 #/lua

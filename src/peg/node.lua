@@ -128,7 +128,12 @@ local new, Node, Node_M = cluster.order()
 
 
 
-cluster.create(new, function(_new, t, first, last, str)
+local ts = require "repr:repr" . ts_color
+cluster.create(new, function(_new, __, first, t, last, str, offset)
+   assert(type(first) == 'number', ts(first))
+   assert(type(t) == 'table')
+   assert(type(last) == 'number', ts(last))
+   assert(type(str) == 'string')
    t.v = 0
    t.o = first
    t.O = first

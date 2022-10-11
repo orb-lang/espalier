@@ -57,6 +57,14 @@ local function define(vav)
                     end
                  end }
    local seed = assert(vav.mem.seed)
+   -- maybe not the place to do this?
+   for name, builder in pairs(seed) do
+      if type(builder) ~= 'function' then
+         seed[name] = function(...)
+                         return builder(...)
+                      end
+      end
+   end
 
    setmetatable(env, {
       __index = env_index,
@@ -72,9 +80,9 @@ local function define(vav)
          end
       end })
 
-   setfenv(lvav, env)()
-   assert(grammar[1] and grammar[grammar[1]], "no start rule defined")
-   vav.grammar = grammar
+   setfenv(lvav, env)()(env)
+   --assert(grammar[1], "no start rule defined for:\n" .. l_peh)
+   vav.gmap = grammar
 
    return grammar
 end
@@ -120,8 +128,8 @@ local function Qoph(vav)
          return nil
       end
       -- post-process here
-      match.complete = match.last == #sub_str + offset
-      return match
+      matched.complete = matched.last == #sub_str + offset
+      return matched
    end
    vav.dji = dji
 

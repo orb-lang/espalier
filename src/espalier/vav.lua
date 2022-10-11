@@ -24,6 +24,7 @@ local core, cluster = use("qor:core", "cluster:cluster")
 
 local pegpeg = use "espalier:peg/pegpeg"
 local Metis = use "espalier:peg/metis"
+local NodeClade = use "espalier:peg/nodeclade"
 
 local Qoph = use "espalier:peg/bootstrap"
 
@@ -102,39 +103,38 @@ cluster.construct(new,
 
 
 
+--- WARNING!!!
+--  This mutates NodeClade, which is intended as an 'abstract' base genre.
+--  Specialization of Clades should be added ASAP.
 
-
-
-
-
-
-
-function _reconcile(vav, mem, tav)
-   tav = tav or {}
+function Vav.Mem(vav, mem)
+   if not mem then
+      mem = NodeClade
+   end
    local ruleMap = assert(vav.synth.ruleMap)
-   local traits = {}
-   for name, meta in pairs(mem) do
-      if not ruleMap[name] then
-         -- rethink all of this with clades!
-         error("Grammar has no '" .. name .. "' rule.")
+   local tape = assert(mem.tape, "mem is missing the tape, bad clade?")
+   -- first we make sure no keys on the tape are missing a rule
+   for tag in pairs(tape) do
+      if type(tag) ~= 'string' then
+         goto continue
       end
+      if not ruleMap[tag] then
+         local name = vav.synth[1][1][1].token -- absurd thing to do
+         error("Mem has a phyle named " .. tag
+               .. ", no such rule in Peh("
+                .. name .. ").")
+      end
+      ::continue::
    end
-   -- extend the clade for remaining rules
+   -- next we fill out the clade with any rules without genre
    local _;
-   for name in pairs(ruleMap) do
-      -- statement-oriented languages amirites
-      _ = mem[name]
+   for rule in pairs(ruleMap) do
+      _ = tape[rule]
    end
-   -- decorate with tavs
-   for trait, members in pairs(tav) do
-      for elem in pairs(members) do
-         if not ruleMap[elem] then
-            error("Trait '" .. trait
-                  .. "' has unknown member '" .. elem .. "'.")
-         end
-         mem[elem].trait = true
-      end
-   end
+   -- last, coalesce the clade, which might make a clone of mem
+   vav.mem = assert(mem:coalesce())
+
+   return vav
 end
 
 
@@ -190,7 +190,10 @@ end
 
 
 
-function Vav.dji(vav)
+function Vav.Dji(vav)
+   if not vav.mem then
+      vav:Mem()
+   end
    return Qoph(vav)
 end
 
