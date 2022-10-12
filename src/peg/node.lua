@@ -129,7 +129,7 @@ local new, Node, Node_M = cluster.order()
 
 
 local ts = require "repr:repr" . ts_color
-cluster.create(new, function(_new, __, first, t, last, str, offset)
+cluster.create(new, function(_new, first, t, last, str, offset)
    assert(type(first) == 'number', ts(first))
    assert(type(t) == 'table')
    assert(type(last) == 'number', ts(last))

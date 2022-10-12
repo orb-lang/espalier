@@ -128,7 +128,7 @@ local function Qoph(vav)
          return nil
       end
       -- post-process here
-      matched.complete = matched.last == #sub_str + offset
+      matched.complete = matched.stride == #sub_str + offset
       return matched
    end
    vav.dji = dji
