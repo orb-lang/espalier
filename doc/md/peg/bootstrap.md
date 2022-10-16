@@ -39,30 +39,33 @@ local L = require "lpeg"
 local Cp, Ct = L.Cp, L.Ct
 
 local arg1_str, arg2_offset = L.Carg(1), L.Carg(2)
+local insert = table.insert
 
 local function define(vav)
    local l_peh = vav:toLpeg()
    local lvav = assert(load(l_peh))
 
    local grammar, suppressed, env = {}, {}, {}
+   local function suppress(...)
+      local s = ...
+      if s then
+         suppressed[s] = true
+         return suppress(select(2, ...))
+      else
+         return
+      end
+   end
    local env_index = {
       L = L,
       START = function(name)
                  grammar[1] = name
               end,
-      SUPPRESS = function(...)
-                    suppressed = {}
-                    for i = 1, select('#', ...) do
-                       suppressed[select(i, ... )] = true
-                    end
-                 end }
+      SUPPRESS = suppress }
    local seed = assert(vav.mem.seed)
    -- maybe not the place to do this?
    for name, builder in pairs(seed) do
       if type(builder) ~= 'function' then
-         seed[name] = function(...)
-                         return builder(...)
-                      end
+         error "seed is not a function"
       end
    end
 

@@ -15,5 +15,5 @@ end
 ```
 
 ```lua
-return Clade(Node, postindex)
+return Clade(Node, {postindex = postindex, seed_fn = true})
 ```

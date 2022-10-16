@@ -52,6 +52,37 @@ few quirks and extensions:
      post-parse tree reconciliation, and/or the use of subgrammars, to resolve
      the details into the correct parse tree.
 
+
+**** #Todo "Fast-Forward"
+
+  We add a 'fast-forward' rule, =>>=, where =>> patt= is equivalent to
+=(!patt 1) patt=.  This is particularly useful for pattern matching, but we
+use the idiom frequently in grammars as well.
+
+
+**** #Todo pragmas
+
+We've made room between rules for something, where that something is intended
+to be one ore more pragma lines.
+
+These start with =#= and continue to the end of the line, inside this we have
+some kind of DSL.
+
+One should be, say, =#count-by-utf8=, which makes every number a count of
+codepoints, not bytes.
+
+
+*** Peh
+
+Peh, in the extended-combinator system, is a 'shaped'. Any string which is
+recognized by the grammar below is in Peh.
+
+There are a number of ways in which Peh may be found not to be in Vav, read
+"a valid grammar in all ways we can statically discern".
+
+But this is a topic for elsewhere.
+
+
 #!peg @pegpeg #asLua
            `peg`  ←   grammar / pattern
 

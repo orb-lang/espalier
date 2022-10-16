@@ -18,7 +18,9 @@ provide a full zipper during capture, with every child pointing to the parent
 child is found, on the `up` field\.
 
 We do `stride` the Lua way, meaning it can be `-1` for a match with no width,
-and so on\.
+and so on\.  Therefore `#span` for the the substring spanned by the node, which
+we reach with `node:len()`, is simply `stride + 1`, and the last character is
+`node.O + stride` globally, or `node.o + stride` locally\.
 
 This means we must use methods to insert and remove children, so that the
 zipper remains valid\.  It comes with many compensating advantages, notably
@@ -100,6 +102,14 @@ Nodes which aren't mutated, and LuaJIT will remove this one\-sided check from
 traces\.
 
 
+### \[\#Todo\] \.l and \.L
+
+This is to keep track of the relative and absolute line\.
+
+This is really going to come in handy when we go deep on source mapping, which
+is a necessary precondition for out\-of\-order Orb documents\.
+
+
 ## Node
 
   The Node is the base case of a cluster `clade`, which we have yet to
@@ -113,9 +123,6 @@ local core = use "qor:core"
 local cluster, clade = use ("cluster:cluster", "cluster:clade")
 ```
 
-```lua
-local new, Node, Node_M = cluster.order()
-```
 
 Let's write a `new` and get going\. Qoph needs some way to assign, after all\.
 
@@ -128,30 +135,30 @@ We'll need `offset` as well\. The `.class` field is always on the metatable now,
 no more exceptions\.
 
 ```lua
-local ts = require "repr:repr" . ts_color
-cluster.create(new, function(_new, first, t, last, str, offset)
-   assert(type(first) == 'number', ts(first))
-   assert(type(t) == 'table')
-   assert(type(last) == 'number', ts(last))
-   assert(type(str) == 'string')
-   t.v = 0
-   t.o = first
-   t.O = first
-   t.stride = last - first
-   t.str = str
-   if not t.parent then
-      -- root is self, not null
-      t.parent = t
-      t.up = 0
-   end
-   -- we used to 'drop' invalid data which snuck in here,
-   -- that should no longer be necessary
-   for i, child in ipairs(t) do
-      child.parent = t
-      child.up = i
-   end
-   return t
-end)
+local new, Node, Node_M = cluster.order {
+   seed_fn = function(first, t, last, str, offset)
+      assert(type(first) == 'number')
+      assert(type(t) == 'table')
+      assert(type(last) == 'number')
+      assert(type(str) == 'string')
+      t.v = 0
+      t.o = first
+      t.O = first
+      t.stride = last - first
+      t.str = str
+      if not t.parent then
+         -- root is self, not null
+         t.parent = t
+         t.up = 0
+      end
+      -- we used to 'drop' invalid data which snuck in here,
+      -- that should no longer be necessary
+      for i, child in ipairs(t) do
+         child.parent = t
+         child.up = i
+      end
+      return t
+   end, }
 ```
 
 We'll write a custom nodemaker for this and wire it to Vav, meanwhile, some
@@ -194,8 +201,7 @@ end
 ### Node:bounds\(\)
 
 ```lua
-function Node.bounds(node)
-   node:adjust()
+function Node.bounds(node)  node:adjust()
    return node.O, node.O + node.stride
 end
 ```
@@ -204,9 +210,8 @@ end
 ### Node:len\(\)
 
 ```lua
-function Node.len(node)
-   node:adjust()
-   return node.O + node.stride + 1
+function Node.len(node)  node:adjust()
+   return node.stride + 1
 end
 ```
 
@@ -230,6 +235,53 @@ function Node.forward(node, done)
    return node[1]:forward()
 end
 ```
+
+
+### Node:width\(\) \#Todo
+
+Returns the printing width of the node\.
+
+Really? It returns what `utf8.width` returns\.  This is adequate to many
+purposes, but by no means all\.
+
+Annoyingly, we can't pass indexes to `width`, so to get a substring width
+involves a lot of manual labor if we aren't to make a bunch of strings just
+to put them on the tape measure\.
+
+```lua
+local utf8 = require "lua-utf8"
+
+function Node.width(node) node:adjust()
+   local wid = 0
+   local first, last, str = node.o, node.o
+
+end
+```
+
+
+#### \_\_repr
+
+We're going to base the next generation of repr technology on this, but first,
+a simple lens\.
+
+```lua
+local Lens = use "repr:lens"
+local Set = core.set
+
+local suppress, show = Set {
+   'parent',
+   'up'
+}, Set {
+   'tag'
+}
+local lens = { hide_key = suppress,
+               show_key = show,
+               depth = math.huge }
+Node_M.__repr = Lens(lens)
+```
+
+
+
 
 ```lua
 return new
