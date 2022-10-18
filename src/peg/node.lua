@@ -240,6 +240,8 @@ end
 
 
 
+
+
 function Node.forward(node, done, short)
    if short and rawequal(node, short) then
       return node
@@ -291,10 +293,17 @@ end
 
 
 
+local iscallable = assert(core.fn.iscallable)
+
 local function predicator(node, pred)
-   return type(pred) == 'string'
-          and (twig.tag == pred)
-          or pred(twig)
+   return (
+      type(pred) == 'string'
+      and (node.tag == pred)
+
+      or iscallable(pred)
+      and pred(node)
+
+      or false )
 end
 
 

@@ -236,8 +236,10 @@ end
 ### Node:forward\(done: b?, short: Node?\)
 
 Returns the next \(prefix, depth first\) Node in the AST, or `nil` if it's the
-last leaf\.  `done` is a flag we set when we bottom out, `short` is a Node
-value which we look for and return\.
+last leaf\.
+
+`done` is a flag we set when we bottom out, `short` is a Node value which we
+look for and return\.  These are primarily intended for internal use\.
 
 ```lua
 function Node.forward(node, done, short)
@@ -291,10 +293,17 @@ end
 ```
 
 ```lua
+local iscallable = assert(core.fn.iscallable)
+
 local function predicator(node, pred)
-   return type(pred) == 'string'
-          and (twig.tag == pred)
-          or pred(twig)
+   return (
+      type(pred) == 'string'
+      and (node.tag == pred)
+
+      or iscallable(pred)
+      and pred(node)
+
+      or false )
 end
 ```
 
