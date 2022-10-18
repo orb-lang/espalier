@@ -129,36 +129,40 @@ Let's write a =new= and get going. Qoph needs some way to assign, after all.
 This is a simplified signature in the interest of speed.
 
 
-*** Node(t, first, last, str)
-
-We'll need =offset= as well. The =.class= field is always on the metatable now,
-no more exceptions.
+*** Node(first, t, last, str, offset)
 
 #!lua
-local new, Node, Node_M = cluster.order {
-   seed_fn = function(first, t, last, str, offset)
-      assert(type(first) == 'number')
-      assert(type(t) == 'table')
-      assert(type(last) == 'number')
-      assert(type(str) == 'string')
-      t.v = 0
-      t.o = first
-      t.O = first
-      t.stride = last - first
-      t.str = str
-      if not t.parent then
-         -- root is self, not null
-         t.parent = t
-         t.up = 0
-      end
-      -- we used to 'drop' invalid data which snuck in here,
-      -- that should no longer be necessary
-      for i, child in ipairs(t) do
-         child.parent = t
-         child.up = i
-      end
-      return t
-   end, }
+local function onmatch(first, t, last, str, offset)
+   --[[DBG]] --[[
+   assert(type(first) == 'number')
+   assert(type(t) == 'table')
+   assert(type(last) == 'number')
+   assert(type(str) == 'string')
+   assert(type(offset) == 'number')
+   --[[DBG]]
+   t.v = 0
+   t.o = first + offset
+   t.O = t.o
+   t.stride = last - first + offset
+   t.str = str
+   if not t.parent then
+      -- root is self, not null
+      t.parent = t
+      t.up = 0
+   end
+   -- we used to 'drop' invalid data which snuck in here,
+   -- that should no longer be necessary
+   for i, child in ipairs(t) do
+      child.parent = t
+      child.up = i
+   end
+
+   return t
+end
+#/lua
+
+#!lua
+local new, Node, Node_M = cluster.order { seed_fn = onmatch }
 #/lua
 
 We'll write a custom nodemaker for this and wire it to Vav, meanwhile, some
@@ -194,6 +198,13 @@ function Node.span(node)
    end
    -- the fun part
    node:adjust()
+   if string(node.str) then
+      -- we're within a single string, small o
+      return sub(node.str, node.o, node.o + node.stride)
+   else
+      -- palimpsest, big O
+      return node.str:sub(node.O, node.O + node.stride)
+   end
 end
 #/lua
 
@@ -209,8 +220,13 @@ end
 
 *** Node:len()
 
+Returns =#node:span()=.
+
+No need to adjust, any node which changes stride passes the changes up to the
+root.
+
 #!lua
-function Node.len(node)  node:adjust()
+function Node.len(node)
    return node.stride + 1
 end
 #/lua
@@ -224,6 +240,9 @@ last leaf.
 #!lua
 function Node.forward(node, done)
    if done or (#node == 0) then
+      if node.parent == node then
+         return nil
+      end
       local sibling = node.parent[node.up + 1]
       if sibling then
          return sibling
@@ -232,7 +251,69 @@ function Node.forward(node, done)
          return node.parent:forward(true)
       end
    end
-   return node[1]:forward()
+   return node[1]
+end
+#/lua
+
+
+*** Node:walk()
+
+With =:forward= a stateless iterator is easy.
+
+#!lua
+local function walk(base, last)
+   if not last then
+      return base
+   elseif rawequal(base, last) then
+      return nil
+   else
+      return last:forward()
+   end
+end
+#/lua
+
+#!lua
+function Node.walk(node)
+   return walk, node
+end
+#/lua
+
+#!lua
+local function predicator(node, pred)
+   return type(pred) == 'string'
+          and (twig.tag == pred)
+          or pred(twig)
+end
+#/lua
+
+#!lua
+function Node.take(node, pred)
+   for twig in walk, node do
+      if predicator(twig, pred) then
+         return twig
+      end
+   end
+   return nil
+end
+#/lua
+
+
+*** Node:hoist()
+
+Replaces the node with its only child in the parent tree.
+
+Returns =true= if successful, otherwise reporting why it failed.
+
+#!lua
+function Node.hoist(node)
+   if node.parent == node then
+      return nil, "can't hoist root node"
+   end
+   if #node ~= 1 then
+      return nil, "can only hoist a node with one child"
+   end
+   node.parent[node.up] = node[1]
+   return true
 end
 #/lua
 
@@ -250,6 +331,7 @@ to put them on the tape measure.
 
 #!lua
 local utf8 = require "lua-utf8"
+local width = assert(utf8.width)
 
 function Node.width(node) node:adjust()
    local wid = 0
@@ -270,7 +352,7 @@ local Set = core.set
 
 local suppress, show = Set {
    'parent',
-   'up'
+   --'up'
 }, Set {
    'tag'
 }

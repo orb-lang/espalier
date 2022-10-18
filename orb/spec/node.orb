@@ -9,8 +9,19 @@ parsing goodness in Orb to start adding the missing bells and whistles.
 In the meantime, this is some combination of user documentation and raw
 material for sesssions.
 
+
+**** yielding module
+
+This is a weird pattern.
+
+Sessions reset the /environment/ but they don't purge modules and load them
+fresh for each session.
+
+So we wrap everything in an anonymous function call, like this is Javascript
+in the mid Teens.
+
 #!lua
-local elden = use "cluster:library" ()
+return (function()
 #/lua
 
 
@@ -26,7 +37,9 @@ microlisp.
     elden  ←  _ ((atom)+ / list)
      list  ←  pel _ (atom / list)* per _
      atom  ←  _(number / symbol)_
-   symbol  ←  _(alpha / other) (alpha / digit / other)*_
+   symbol  ←  _ sym1 sym2*
+   `sym1`  ←  (alpha / other)
+   `sym2`  ←  (alpha / digit / other)
    number  ←  float / integer
 `integer`  ←  [0-9]+
   `float`  ←  [0-9]+ "." [0-9]+ ; expand
@@ -53,13 +66,13 @@ a mathematical abstraction best /discussed/ in terms of a lazy and immutable
 semantic.
 
 #!lua
-Vav = use "espalier:vav"
+local Vav = use "espalier:vav"
 #/lua
 
 Our topic therefore being
 
 #!lua
-eVav = Vav(elden_peh)
+local eVav = Vav(elden_peh)
 #/lua
 
 Which we apply to Mem to complete the Vav combinator.
@@ -73,7 +86,7 @@ Mem provides all the behavior needed to do useful things with Peh, after the
 parser recognizes a string as conforming to Peh's shape.
 
 #!lua
-Elden = require "espalier:peg/nodeclade"
+local Elden = require "espalier:peg/nodeclade"
 #/lua
 
 This is not the final signature, it can't be, but extending clades is NYI
@@ -83,13 +96,21 @@ With the code in the state that it is, let's just give ourselves a nice
 closure to make a one-liner out of getting to Nodes.
 
 #!lua
-function dji()
+local function dji()
    return eVav:Mem(Elden):Dji()
 end
 #/lua
 
 #!lua
-return elden
+return { eVav = eVav,
+         Elden = Elden,
+         dji = dji }
+#/lua
+
+With a fresh instance for each require:
+
+#!lua
+end) ()
 #/lua
 
 

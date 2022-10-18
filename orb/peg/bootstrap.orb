@@ -62,12 +62,15 @@ local function define(vav)
               end,
       SUPPRESS = suppress }
    local seed = assert(vav.mem.seed)
-   -- maybe not the place to do this?
+   ---[[DBG]] --[[ The clade should handle this when things are mature
    for name, builder in pairs(seed) do
       if type(builder) ~= 'function' then
          error "seed is not a function"
       end
    end
+   --[[DBG]]
+
+
 
    setmetatable(env, {
       __index = env_index,
@@ -84,7 +87,8 @@ local function define(vav)
       end })
 
    setfenv(lvav, env)()(env)
-   --assert(grammar[1], "no start rule defined for:\n" .. l_peh)
+   assert(grammar[1] and grammar[grammar[1]],
+          "no start rule defined for:\n" .. l_peh)
    vav.gmap = grammar
 
    return grammar
