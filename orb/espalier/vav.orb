@@ -194,7 +194,8 @@ function Vav.Dji(vav)
    if not vav.mem then
       vav:Mem()
    end
-   return Qoph(vav)
+   vav.dji = Qoph(vav)
+   return vav.dji
 end
 #/lua
 

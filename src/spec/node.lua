@@ -102,8 +102,27 @@ end
 
 
 
+
+
+
+local insert = assert(table.insert)
+
+local function walker()
+   local eDji = eVav.dji or dji()
+   local one2 = eDji [[ (1 2) ]]
+   local tags = {}
+   for node in one2:walk() do
+      insert(tags, node.tag)
+   end
+   return tags
+end
+
+
+
+
 return { eVav = eVav,
          Elden = Elden,
+         walker = walker,
          dji = dji }
 
 

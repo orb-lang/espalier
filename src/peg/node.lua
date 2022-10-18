@@ -148,7 +148,8 @@ local function onmatch(first, t, last, str, offset)
    if not t.parent then
       -- root is self, not null
       t.parent = t
-      t.up = 0
+      -- since t.parent[t.up] == t, we do this:
+      t.up = 'parent'
    end
    -- we used to 'drop' invalid data which snuck in here,
    -- that should no longer be necessary
@@ -264,10 +265,13 @@ end
 local function walk(base, last)
    if not last then
       return base
-   elseif rawequal(base, last) then
-      return nil
    else
-      return last:forward()
+      local next = last:forward()
+      if rawequal(base, next) then
+         return nil
+      else
+         return next
+      end
    end
 end
 
