@@ -119,10 +119,23 @@ end
 
 
 
+local function subwalker()
+   local eDji = eVav.dji or dji()
+   local walk3 = eDji [[ ( (1 two 3) (4 5))]]
+   local tags = {}
+   for node in walk3[1][1]:walk() do
+      insert(tags, node.tag)
+   end
+   return tags, walk3[1][1]
+end
+
+
+
 
 return { eVav = eVav,
          Elden = Elden,
          walker = walker,
+         subwalker = subwalker,
          dji = dji }
 
 

@@ -233,13 +233,17 @@ end
 ```
 
 
-### Node:forward\(\)
+### Node:forward\(done: b?, short: Node?\)
 
 Returns the next \(prefix, depth first\) Node in the AST, or `nil` if it's the
-last leaf\.
+last leaf\.  `done` is a flag we set when we bottom out, `short` is a Node
+value which we look for and return\.
 
 ```lua
-function Node.forward(node, done)
+function Node.forward(node, done, short)
+   if short and rawequal(node, short) then
+      return node
+   end
    if done or (#node == 0) then
       if node.parent == node then
          return nil
@@ -249,7 +253,7 @@ function Node.forward(node, done)
          return sibling
       else
          -- right-most child returned
-         return node.parent:forward(true)
+         return node.parent:forward(true, short)
       end
    end
    return node[1]
@@ -266,7 +270,11 @@ local function walk(base, last)
    if not last then
       return base
    else
-      local next = last:forward()
+      local short = nil
+      if not rawequal(base, last) then
+         short = base
+      end
+      local next = last:forward(false, short)
       if rawequal(base, next) then
          return nil
       else
