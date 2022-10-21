@@ -61,6 +61,7 @@ local function define(vav)
                  grammar[1] = name
               end,
       SUPPRESS = suppress }
+
    local seed = assert(vav.mem.seed)
    ---[[DBG]] --[[ The clade should handle this when things are mature
    for name, builder in pairs(seed) do
@@ -69,8 +70,6 @@ local function define(vav)
       end
    end
    --[[DBG]]
-
-
 
    setmetatable(env, {
       __index = env_index,

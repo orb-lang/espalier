@@ -15,5 +15,15 @@ end
 
 
 
-return Clade(Node, {postindex = postindex, seed_fn = true})
+local contract = {postindex = postindex, seed_fn = true}
+
+
+
+
+
+
+
+
+
+return Clade(Node, contract):extend(contract)
 

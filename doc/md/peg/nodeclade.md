@@ -15,5 +15,15 @@ end
 ```
 
 ```lua
-return Clade(Node, {postindex = postindex, seed_fn = true})
+local contract = {postindex = postindex, seed_fn = true}
+```
+
+We shouldn't have to pass the contract twice, on the one hand\.
+
+On the other hand, it has to *work*, and right now, we do have to\.
+
+Therefore:
+
+```lua
+return Clade(Node, contract):extend(contract)
 ```

@@ -184,10 +184,27 @@ end
 #/lua
 
 
+*** Metrics
+
+Used to derive information from a given node.
+
+
+*** Node:bounds()
+
+#!lua
+function Node.bounds(node)  node:adjust()
+   return node.O, node.O + node.stride
+end
+#/lua
+
+
 *** Node:span()
 
   This is one of our only opportunities to cross the boundaries of the
 interned strings backing the logical string.
+
+Since the request is for a substring, this is inherently expensive, we let the
+Palimpsest handle any internal changes which result.
 
 #!lua
 local sub = assert(string.sub)
@@ -210,13 +227,7 @@ end
 #/lua
 
 
-*** Node:bounds()
 
-#!lua
-function Node.bounds(node)  node:adjust()
-   return node.O, node.O + node.stride
-end
-#/lua
 
 
 *** Node:len()
@@ -231,6 +242,18 @@ function Node.len(node)
    return node.stride + 1
 end
 #/lua
+
+
+** Traversal
+
+  The fully-linked structure lets us do our basic operations using stateless
+iterators.
+
+This is optimal, and that's essential, given that iterating AST nodes is
+frequently the hottest loop in our programs.
+
+Our first message responds with the next node in a prefixed, depth-first
+traversal of the entire tree.
 
 
 *** Node:forward(done: b?, short: Node?)
@@ -265,7 +288,10 @@ end
 
 *** Node:walk()
 
-With =:forward= a stateless iterator is easy.
+  Produces a prefixed, depth-first search of the Node, starting with itself,
+and containing only the children of that Node.
+
+With =:forward=, we can write this as a pure function.
 
 #!lua
 local function walk(base, last)
@@ -286,11 +312,50 @@ local function walk(base, last)
 end
 #/lua
 
+Which we simply return, when we want the iteraction in a for loop.
+
 #!lua
 function Node.walk(node)
    return walk, node
 end
 #/lua
+
+
+**** Node:walker()
+
+The only downside of this sort of iteration is that we can't make a value out
+of it.
+
+Whether this is necessary is an open question, but adding the affordance is
+simple, and for filtering I can see a case for it.
+
+#!lua
+function Node.walker(node)
+   local last;
+   return function()
+      local next = walk(node, last)
+      if next then
+         last = next
+         return next
+      else
+         return nil
+      end
+   end
+end
+#/lua
+
+
+*** Selection
+
+We'll be able to add an enriched palette here, but we start with the basics.
+
+
+***** predicator(node, pred)
+
+We allow predicates to be a string, which we compare with =.tag=.
+
+Otherwise we call it (if we can).  Invalid predicates are always =false=.
+
 
 #!lua
 local iscallable = assert(core.fn.iscallable)
@@ -301,17 +366,26 @@ local function predicator(node, pred)
       and (node.tag == pred)
 
       or iscallable(pred)
-      and pred(node)
+      and (not not pred(node))
 
       or false )
 end
 #/lua
 
+
+**** Node:take(pred): Node?
+
+Takes the first child node matching the predicate, if any.
+
+Will not match itself, for obvious reasons.
+
 #!lua
 function Node.take(node, pred)
    for twig in walk, node do
       if predicator(twig, pred) then
-         return twig
+         if twig ~= node then
+            return twig
+         end
       end
    end
    return nil
@@ -382,7 +456,6 @@ local lens = { hide_key = suppress,
                depth = math.huge }
 Node_M.__repr = Lens(lens)
 #/lua
-
 
 
 

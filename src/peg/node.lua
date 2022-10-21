@@ -190,6 +190,23 @@ end
 
 
 
+
+
+function Node.bounds(node)  node:adjust()
+   return node.O, node.O + node.stride
+end
+
+
+
+
+
+
+
+
+
+
+
+
 local sub = assert(string.sub)
 
 function Node.span(node)
@@ -213,12 +230,6 @@ end
 
 
 
-function Node.bounds(node)  node:adjust()
-   return node.O, node.O + node.stride
-end
-
-
-
 
 
 
@@ -230,6 +241,18 @@ end
 function Node.len(node)
    return node.stride + 1
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -268,6 +291,9 @@ end
 
 
 
+
+
+
 local function walk(base, last)
    if not last then
       return base
@@ -287,9 +313,48 @@ end
 
 
 
+
+
 function Node.walk(node)
    return walk, node
 end
+
+
+
+
+
+
+
+
+
+
+
+
+function Node.walker(node)
+   local last;
+   return function()
+      local next = walk(node, last)
+      if next then
+         last = next
+         return next
+      else
+         return nil
+      end
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -301,17 +366,26 @@ local function predicator(node, pred)
       and (node.tag == pred)
 
       or iscallable(pred)
-      and pred(node)
+      and (not not pred(node))
 
       or false )
 end
 
 
 
+
+
+
+
+
+
+
 function Node.take(node, pred)
    for twig in walk, node do
       if predicator(twig, pred) then
-         return twig
+         if twig ~= node then
+            return twig
+         end
       end
    end
    return nil
@@ -381,7 +455,6 @@ local lens = { hide_key = suppress,
                show_key = show,
                depth = math.huge }
 Node_M.__repr = Lens(lens)
-
 
 
 
