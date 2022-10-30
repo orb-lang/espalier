@@ -250,9 +250,14 @@ function M.element.toLpeg(elem, feed)
    end
 
    if elem['and'] then
-         feed:push("", "#")
+      feed:push("", "#")
    elseif elem['not'] then
-         feed:push("", "-", "(") :indent()
+      feed:push("", "-", "(") :indent()
+   -- this test is a shim
+   elseif elem.to_match then
+      feed:push("", "(", "-","")
+      part:toLpeg(feed)
+      feed:push("", "*", "", "1", ")^0", "*", "")
    end
 
    part:toLpeg(feed)
@@ -280,6 +285,8 @@ end
 ```
 
 
+### \#Todo backrefs
+
 ```lua
 function backrefBegin()
 
@@ -289,6 +296,7 @@ function backrefEnd()
 
 end
 ```
+
 
 
 ### literal

@@ -119,7 +119,36 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local core = use "qor:core"
+local table, string = core.table, core.string
 local cluster, clade = use ("cluster:cluster", "cluster:clade")
 
 
@@ -235,11 +264,27 @@ end
 
 
 
-
-
-
 function Node.len(node)
    return node.stride + 1
+end
+
+
+
+
+
+
+
+
+function Node.depth(node)
+   if node:isRoot() then
+      return 0
+   end
+   local i = 0
+   repeat
+      i = i + 1
+      node = node.parent
+   until node:isRoot()
+   return i
 end
 
 
@@ -252,6 +297,71 @@ end
 
 
 
+function Node.isRoot(node)
+   return node == node.parent
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local linepos = assert(string.linepos)
+
+function Node.linepos(node)
+   if node.v == 0 then
+      return linepos(node.str, node.o)
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function _root(node)
+   if node.parent == node then
+      return node
+   end
+   return _root(node.parent)
+end
+
+Node.root = _root
 
 
 
@@ -294,15 +404,31 @@ end
 
 
 
-local function walk(base, last)
-   if not last then
+-- #Todo
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function walk(base, latest)
+   if not latest then
       return base
    else
       local short = nil
-      if not rawequal(base, last) then
+      if not rawequal(base, latest) then
          short = base
       end
-      local next = last:forward(false, short)
+      local next = latest:forward(false, short)
       if rawequal(base, next) then
          return nil
       else
@@ -331,17 +457,27 @@ end
 
 
 function Node.walker(node)
-   local last;
+   local latest;
    return function()
-      local next = walk(node, last)
+      local next = walk(node, latest)
       if next then
-         last = next
+         latest = next
          return next
       else
          return nil
       end
    end
 end
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -390,6 +526,90 @@ function Node.take(node, pred)
    end
    return nil
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Node.filter(node, pred)
+   local latest = nil
+   return function()
+      for twig in walk, node, latest do
+         if predicator(twig, pred) then
+            latest = twig
+            return twig
+         end
+      end
+      return nil
+   end
+end
+
+
+
+
+
+
+
+local function searcher(pred, node, latest)
+   if not latest then
+      latest = node
+   end
+   if pred then
+      if predicator(latest, pred) then
+         return latest
+      end
+   end
+   return searcher(pred, nil, latest) or nil
+end
+
+
+
+local curry = core.fn.curry
+
+function Node.search(node, pred)
+   return curry(searcher, pred), node
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

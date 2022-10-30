@@ -469,6 +469,7 @@ end
 
 
 
+
 function Node.walkPost(node)
     local function traverse(ast)
         if not type(ast) == 'table' and ast.isNode then return nil end

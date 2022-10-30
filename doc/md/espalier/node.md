@@ -466,6 +466,7 @@ function Node.next(node, pred)
 end
 ```
 
+
 #### Node\.walkPost
 
 Depth\-first iterator, postfix

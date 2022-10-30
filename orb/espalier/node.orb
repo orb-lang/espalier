@@ -464,6 +464,7 @@ function Node.next(node, pred)
 end
 #/lua
 
+
 **** Node.walkPost
 
 Depth-first iterator, postfix

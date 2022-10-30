@@ -53,11 +53,13 @@ few quirks and extensions:
       the details into the correct parse tree\.
 
 
-#### \#Todo "Fast\-Forward"
+#### \#Todo "Fast\-Forward" aka to\-match
 
-  We add a 'fast\-forward' rule, `>>`, where `>> patt` is equivalent to
+  We add a 'to\-match' rule, `>>`, where `>> patt` is equivalent to
 `(!patt 1) patt`\.  This is particularly useful for pattern matching, but we
 use the idiom frequently in grammars as well\.
+
+The codegen is the interesting part\.
 
 
 #### \#Todo pragmas
@@ -108,7 +110,7 @@ But this is a topic for elsewhere\.
 
          element  ←  prefix? part suffix? backref?
 
-        `prefix`  ←  (and / not) _
+        `prefix`  ←  (and / not / to-match) _
         `suffix`  ←  zero-plus / one-plus / optional / repeat
         `part`    ←  name !(_ into)
                   /   literal
@@ -121,6 +123,7 @@ But this is a topic for elsewhere\.
 
              and  ←  "&"
              not  ←  "!"
+        to-match  ←  ">>"
 
        zero-plus  ←  _ "*"
         one-plus  ←  _ "+"
@@ -148,6 +151,7 @@ But this is a topic for elsewhere\.
          `digit`  ←  [0-9]
 
       back-refer  ←  "("   reference  ")"
+        ; should probably refactor this to "(=" or "(=="
         eq-refer  ←  "(#"  reference  ")"
        gte-refer  ←  "(>=" reference  ")"
         gt-refer  ←  "(>"  reference  ")"

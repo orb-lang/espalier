@@ -83,6 +83,8 @@
 
 
 
+
+
 local pegpeg = [[
            `peg`  ←   grammar / pattern
 
@@ -108,7 +110,7 @@ local pegpeg = [[
 
          element  ←  prefix? part suffix? backref?
 
-        `prefix`  ←  (and / not) _
+        `prefix`  ←  (and / not / to-match) _
         `suffix`  ←  zero-plus / one-plus / optional / repeat
         `part`    ←  name !(_ into)
                   /   literal
@@ -121,6 +123,7 @@ local pegpeg = [[
 
              and  ←  "&"
              not  ←  "!"
+        to-match  ←  ">>"
 
        zero-plus  ←  _ "*"
         one-plus  ←  _ "+"
@@ -148,6 +151,7 @@ local pegpeg = [[
          `digit`  ←  [0-9]
 
       back-refer  ←  "("   reference  ")"
+        ; should probably refactor this to "(=" or "(=="
         eq-refer  ←  "(#"  reference  ")"
        gte-refer  ←  "(>=" reference  ")"
         gt-refer  ←  "(>"  reference  ")"

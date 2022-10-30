@@ -12,7 +12,7 @@ modifying the resulting tree, conforming to the new interface\.
 
 The `first, last, str` triple is gone\.
 
-Instead we have `o, stride`, with no direct reference to the string\.  We also
+Instead we have `o, stride`, We also
 provide a full zipper during capture, with every child pointing to the parent
 \(as in Node\), but also decorated with the index to the parent at which the
 child is found, on the `up` field\.
@@ -21,6 +21,8 @@ We do `stride` the Lua way, meaning it can be `-1` for a match with no width,
 and so on\.  Therefore `#span` for the the substring spanned by the node, which
 we reach with `node:len()`, is simply `stride + 1`, and the last character is
 `node.O + stride` globally, or `node.o + stride` locally\.
+
+
 
 This means we must use methods to insert and remove children, so that the
 zipper remains valid\.  It comes with many compensating advantages, notably
@@ -102,6 +104,32 @@ Nodes which aren't mutated, and LuaJIT will remove this one\-sided check from
 traces\.
 
 
+#### The Parent Trap
+
+  Having the parent/child relationship as bidirectional gives us a lot of
+flexibility\.
+
+The issue is that the parent\-child relationship is one\-to\-one\.  We can
+easily remove a Node, and grafting it is a matter of following to the root,
+and applying the span as a patch\.
+
+If we want to copy though, we're stuck, because the kids can't point two
+places, so we have to optimistically copy everything\.
+
+But what we could do, thanks to our fancy parsers, is store the span, and
+Palimsest version, and make the 'child' a copy on *read*\.  It can answer some
+questions, but any `ipairs` or attempt to access the array summons the subspan
+of the Pal version and parses it according to the rule, in\-place\.
+
+That's pretty neat I think\. The operation we do the most is practically free,
+and the other one just happens when we need it\.  Which we wouldn't often,
+getting the entire subspan of the missing node, not to mention any parent,
+wouldn't reallocate the kids\.
+
+This gets interesting since we can track the provenance of the graft in both
+directions\.
+
+
 ### \[\#Todo\] \.l and \.L
 
 This is to keep track of the relative and absolute line\.
@@ -120,6 +148,7 @@ Cluster, where it belongs\.
 
 ```lua
 local core = use "qor:core"
+local table, string = core.table, core.string
 local cluster, clade = use ("cluster:cluster", "cluster:clade")
 ```
 
@@ -184,7 +213,7 @@ end
 ```
 
 
-### Metrics
+## Metrics
 
 Used to derive information from a given node\.
 
@@ -227,9 +256,6 @@ end
 ```
 
 
-
-
-
 ### Node:len\(\)
 
 Returns `#node:span()`\.
@@ -244,6 +270,65 @@ end
 ```
 
 
+### Node:depth\(\)
+
+Returns the number of parent nodes, which is `0` for the root\.
+
+```lua
+function Node.depth(node)
+   if node:isRoot() then
+      return 0
+   end
+   local i = 0
+   repeat
+      i = i + 1
+      node = node.parent
+   until node:isRoot()
+   return i
+end
+```
+
+
+### Node:isRoot\(\)
+
+This should have been added awhile ago, and buys me time to fix the way we're
+handling root nodes right now\.
+
+Which is like this:
+
+```lua
+function Node.isRoot(node)
+   return node == node.parent
+end
+```
+
+I no longer remember why I did this, and it's a false consistency, opportunity
+for infinite loops, and a waste of allocation\.
+
+It should be a method regardless\.
+
+
+### Node:linepos\(\)
+
+  Returns the line/row and column numbers of `node.O`, so this one gets fancy
+with editing\.
+
+For `.v` of `0` it's simple enough\.
+
+```lua
+local linepos = assert(string.linepos)
+
+function Node.linepos(node)
+   if node.v == 0 then
+      return linepos(node.str, node.o)
+   end
+end
+```
+
+
+#### \#NYI gap reporting
+
+
 ## Traversal
 
   The fully\-linked structure lets us do our basic operations using stateless
@@ -252,8 +337,33 @@ iterators\.
 This is optimal, and that's essential, given that iterating AST nodes is
 frequently the hottest loop in our programs\.
 
-Our first message responds with the next node in a prefixed, depth\-first
-traversal of the entire tree\.
+
+### Node:root\(\)
+
+Returns the root of a given Node tree structure\.
+
+OG Node uses the convention that the root node is its own parent\.
+
+I'm starting to question that choice\.  For one thing, the bootstrap
+optimistically makes every node a root node, which, we try not to leave stuff
+around for the JIT to clean up, but we could improve that, at least, easily\.
+
+The advantage is\.\.\. yeah, how does this help us\.  It shows that the absence of
+a parent isn't an accident?  We could do that with `false` though\.
+
+Yeah\. Gotta bite down on this one\. In the meantime:
+
+```lua
+local function _root(node)
+   if node.parent == node then
+      return node
+   end
+   return _root(node.parent)
+end
+
+Node.root = _root
+```
+
 
 
 ### Node:forward\(done: b?, short: Node?\)
@@ -286,23 +396,39 @@ end
 ```
 
 
+### Node:back\(done: b?\) \#NYI
+
+Returns the prior, postfix, depthfirst Node in the AST, or `nil` at the start\.
+
+We don't provide the short circuit, which is for subsearch\.  If I see a use
+case for reverse iterator, I'll come back to this decision\.
+
+```lua
+-- #Todo
+```
+
+
 ### Node:walk\(\)
 
   Produces a prefixed, depth\-first search of the Node, starting with itself,
 and containing only the children of that Node\.
 
+The Node returns itself first, because `:walk` is best suited to doing the
+same thing to a bunch of nodes, which would lead to duplicated code preceding
+for loops\.
+
 With `:forward`, we can write this as a pure function\.
 
 ```lua
-local function walk(base, last)
-   if not last then
+local function walk(base, latest)
+   if not latest then
       return base
    else
       local short = nil
-      if not rawequal(base, last) then
+      if not rawequal(base, latest) then
          short = base
       end
-      local next = last:forward(false, short)
+      local next = latest:forward(false, short)
       if rawequal(base, next) then
          return nil
       else
@@ -331,11 +457,11 @@ simple, and for filtering I can see a case for it\.
 
 ```lua
 function Node.walker(node)
-   local last;
+   local latest;
    return function()
-      local next = walk(node, last)
+      local next = walk(node, latest)
       if next then
-         last = next
+         latest = next
          return next
       else
          return nil
@@ -343,6 +469,16 @@ function Node.walker(node)
    end
 end
 ```
+
+
+#### \#NYI Breadth\-First
+
+I know this can be done statelessly, but it's tricky\.
+
+I used a breadth\-first search once, and ended up regretting it\.  It
+infrequently resembles the shape of parse\-structured data\.
+
+Worth adding, but not right now\.
 
 
 ### Selection
@@ -391,6 +527,90 @@ function Node.take(node, pred)
    return nil
 end
 ```
+
+
+#### Node:filter\(pred\)
+
+`filter` needs to preserve some sort of state, and I'm not interested in
+getting fancy about it, so this returns a closure for iteration\.
+
+Don't capture these as values, please\.  I provide the synonym `filterer`,
+which will continue to provide a closure in the event that I do get fancy
+about it\.
+
+Fancy is making one curried closure per predicate, rather than one per
+iteration\.  This is worth trying, but only with a mature benchmarking system
+to see whether LuaJIT actually cares\.
+
+```lua
+function Node.filter(node, pred)
+   local latest = nil
+   return function()
+      for twig in walk, node, latest do
+         if predicator(twig, pred) then
+            latest = twig
+            return twig
+         end
+      end
+      return nil
+   end
+end
+```
+
+
+#### Node:search\(pred\) \#Todo test
+
+
+```lua
+local function searcher(pred, node, latest)
+   if not latest then
+      latest = node
+   end
+   if pred then
+      if predicator(latest, pred) then
+         return latest
+      end
+   end
+   return searcher(pred, nil, latest) or nil
+end
+```
+
+```lua
+local curry = core.fn.curry
+
+function Node.search(node, pred)
+   return curry(searcher, pred), node
+end
+```
+
+
+#### Node:searchback\(pred\) \#NYI
+
+
+
+## Edits
+
+This is where we painstakingly make it all work\.
+
+Let's start with: nodes remove themselves, and are attached by the parent\.
+
+That makes it possible to offer a common interface for inserting Nodes or
+strings\.
+
+
+
+### Node:snip\(\)
+
+The primary effect is to remove this node from its parent\.
+
+We should be able to cheaply set the node up so that it's a valid root,
+although I expect that *removing* a node will be an infrequent prelude to
+doing anything with it\.
+
+
+### Node :prepend\(parent\) :append\(parent\) :graft\(parent, i\)
+
+
 
 
 ### Node:hoist\(\)

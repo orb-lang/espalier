@@ -608,7 +608,7 @@ end
 
 
 
-local Prefix = Set {'and', 'not'}
+local Prefix = Set {'and', 'not', 'to_match'}
 local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
 local Backref = Set {'backref'}
 
