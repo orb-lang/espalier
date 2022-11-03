@@ -131,6 +131,9 @@ end
 
 
 
+
+
+
 local function searcher()
    local eDji = eVav.dji or dji()
    local find_syms = eDji [[ ((1 (2 three 4) five (7 seven)))]]

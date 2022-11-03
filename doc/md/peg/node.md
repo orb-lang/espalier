@@ -192,12 +192,6 @@ local function onmatch(first, t, last, str, offset)
    t.O = t.o
    t.stride = last - t.o - 1
    t.str = str
-   if not t.parent then
-      -- root is self, not null
-      t.parent = t
-      -- since t.parent[t.up] == t, we do this:
-      t.up = 'parent'
-   end
    -- we used to 'drop' invalid data which snuck in here,
    -- that should no longer be necessary
    for i, child in ipairs(t) do
@@ -293,37 +287,29 @@ end
 Returns the number of parent nodes, which is `0` for the root\.
 
 ```lua
-function Node.depth(node)
+local function _deep(node, depth)
    if node:isRoot() then
-      return 0
+      return depth
+   else
+      return _deep(node.parent, depth + 1)
    end
-   local i = 0
-   repeat
-      i = i + 1
-      node = node.parent
-   until node:isRoot()
-   return i
+end
+
+function Node.depth(node)
+   return _deep(node, 0)
 end
 ```
 
 
 ### Node:isRoot\(\)
 
-This should have been added awhile ago, and buys me time to fix the way we're
-handling root nodes right now\.
-
-Which is like this:
+Replies `true` if the Node has no parent\.
 
 ```lua
 function Node.isRoot(node)
-   return node == node.parent
+   return node.parent == nil
 end
 ```
-
-I no longer remember why I did this, and it's a false consistency, opportunity
-for infinite loops, and a waste of allocation\.
-
-It should be a method regardless\.
 
 
 ### Node:linepos\(\)
@@ -373,7 +359,7 @@ Yeah\. Gotta bite down on this one\. In the meantime:
 
 ```lua
 local function _root(node)
-   if node.parent == node then
+   if node:isRoot() then
       return node
    end
    return _root(node.parent)
@@ -398,7 +384,7 @@ function Node.forward(node, done, short)
       return node
    end
    if done or (#node == 0) then
-      if node.parent == node then
+      if node:isRoot() then
          return nil
       end
       local sibling = node.parent[node.up + 1]
@@ -650,7 +636,7 @@ Returns `true` if successful, otherwise reporting why it failed\.
 
 ```lua
 function Node.hoist(node)
-   if node.parent == node then
+   if node:isRoot() then
       return nil, "can't hoist root node"
    end
    if #node ~= 1 then
