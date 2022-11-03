@@ -187,7 +187,6 @@ local function onmatch(first, t, last, str, offset)
    assert(type(str) == 'string')
    assert(type(offset) == 'number')
    --[[DBG]]
-   t.v = 0
    t.o = first + offset
    t.O = t.o
    t.stride = last - t.o - 1
@@ -209,6 +208,15 @@ local new, Node, Node_M = cluster.order { seed_fn = onmatch }
 
 We'll write a custom nodemaker for this and wire it to Vav, meanwhile, some
 methods\.
+
+
+#### Node\.v
+
+Basic nodes aren't editable, so we set `v` to `0`\.
+
+```lua
+Node.v = 0
+```
 
 
 ### Node:adjust\(\): b

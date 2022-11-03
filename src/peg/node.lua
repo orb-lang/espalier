@@ -187,7 +187,6 @@ local function onmatch(first, t, last, str, offset)
    assert(type(str) == 'string')
    assert(type(offset) == 'number')
    --[[DBG]]
-   t.v = 0
    t.o = first + offset
    t.O = t.o
    t.stride = last - t.o - 1
@@ -208,6 +207,15 @@ local new, Node, Node_M = cluster.order { seed_fn = onmatch }
 
 
 
+
+
+
+
+
+
+
+
+Node.v = 0
 
 
 
