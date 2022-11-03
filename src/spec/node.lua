@@ -131,11 +131,27 @@ end
 
 
 
+local function searcher()
+   local eDji = eVav.dji or dji()
+   local find_syms = eDji [[ ((1 (2 three 4) five (7 seven)))]]
+   local sym1 = find_syms :take 'symbol'
+   assert(sym1:span() == 'three', "expected a symbol 'three'")
+   local spans = {}
+   for match in sym1:search 'symbol' do
+      insert(spans, match:span())
+   end
+
+   return spans
+end
+
+
+
 
 return { eVav = eVav,
          Elden = Elden,
          walker = walker,
          subwalker = subwalker,
+         searcher = searcher,
          dji = dji }
 
 

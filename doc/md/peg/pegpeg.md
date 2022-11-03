@@ -16,7 +16,13 @@ grammar grammar to parse your parser while you express your grammar\.
   This is a straightforward representation of Brian Ford's PEG syntax with a
 few quirks and extensions:
 
+  -  A rule is captured any time its pattern is recognized\.  To remove that
+      capture from the result, a rule may be hidden with backslashes: ```rule```\.
+
   -  The end of input is presented as `-1`\.
+
+      This was a reasonable mistake, and not a mistake for lpeg, but it was a
+      mistake for us\.
 
       This pattern is used frequently in the existing codebase, but it's too
       Lua/Wirth for my taste, since it implies \(and this is why I excluded
@@ -31,9 +37,14 @@ few quirks and extensions:
       character remaining, and so on\. It's worth making this change while I
       still can\.
 
+    - [#Todo]  Change pegpeg to use `0` to indicate end of string/stream\.
+
   -  Neither `true`, nor `false`, nor any variation, are reserved rule names\.
       The rule which always succeds is the empty literal `""`, which may be
       negated with `!""` to get the rule which always fails\.
+
+  -  The short form `>> patt` may be used to capture every byte between the
+      parse cursor and the pattern\.  This is sugar for `(!patt 1)* patt`\.
 
   -  Supports a limited form of reference capture and back\-reference
       comparison, enough to support a number of common language patterns such
@@ -79,9 +90,9 @@ codepoints, not bytes\.
 Peh, in the extended\-combinator system, is a 'shaped'\. Any string which is
 recognized by the grammar below is in Peh\.
 
-There are a number of ways in which Peh may be found not to be in Vav, read
-"a valid grammar in all ways we can statically discern"\.
+There are a number of ways in which Peh may be found not to be in Vav, reada valid grammar in all ways we can statically discern"\.
 
+"
 But this is a topic for elsewhere\.
 
 

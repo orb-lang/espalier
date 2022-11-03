@@ -1231,6 +1231,13 @@ grammar\.
 `:constrain` requires that the grammar be ordinary, not anomalous: we don't
 bother doing fancy things with under or over\-specified grammars\.
 
+\#Todo
+       integrated with the constraint system\.  Nor have backrefs\.
+
+       `to-match` is syntax sugar, and we probably want to unsugar it\.
+       Backrefs have meaningful semantics we need to be careful with, but in
+       principle it's a lock and gate with unusual semantics\.
+
 
 #### Propagation
 

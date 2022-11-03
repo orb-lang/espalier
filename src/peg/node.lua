@@ -147,9 +147,27 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 local core = use "qor:core"
 local table, string = core.table, core.string
 local cluster, clade = use ("cluster:cluster", "cluster:clade")
+
+
+
+
+
+
+
+
 
 
 
@@ -172,7 +190,7 @@ local function onmatch(first, t, last, str, offset)
    t.v = 0
    t.o = first + offset
    t.O = t.o
-   t.stride = last - first + offset
+   t.stride = last - t.o - 1
    t.str = str
    if not t.parent then
       -- root is self, not null
@@ -562,16 +580,27 @@ end
 
 
 
+
+
+
+
+
 local function searcher(pred, node, latest)
    if not latest then
       latest = node
    end
-   if pred then
-      if predicator(latest, pred) then
-         return latest
-      end
+
+   local further = latest:forward()
+   if further == node then
+      further = further:forward()
    end
-   return searcher(pred, nil, latest) or nil
+   if further == nil then return end
+
+   if predicator(further, pred) then
+      return further
+   end
+
+   return searcher(pred, node, further)
 end
 
 

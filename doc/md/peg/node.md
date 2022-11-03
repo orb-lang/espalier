@@ -1,5 +1,6 @@
 # Node
 
+
 In the last couple of projects using Espalier, I've made 'synthetic nodes',
 but there is no reason to have the original nodes other than expedience:
 the Qoph combinator can generate whatever we need on capture\.
@@ -10,19 +11,19 @@ modifying the resulting tree, conforming to the new interface\.
 
 #### Main change
 
-The `first, last, str` triple is gone\.
+  We still receive `first, last, str, offset`, as well as the table we make
+into the Node\.  But we don't retain any of them but `.str`\.
 
-Instead we have `o, stride`, We also
-provide a full zipper during capture, with every child pointing to the parent
-\(as in Node\), but also decorated with the index to the parent at which the
-child is found, on the `up` field\.
+Instead we have `o, stride`: `o` is the first character of the string,
+`stride` is one less than the length, which is the more convenient value in
+Lua\.  We also provide a full zipper during capture, with every child pointing
+to the parent\(as in Node\), but also decorated with the index to the parent at
+which the child is found, on the `up` field\.
 
 We do `stride` the Lua way, meaning it can be `-1` for a match with no width,
 and so on\.  Therefore `#span` for the the substring spanned by the node, which
 we reach with `node:len()`, is simply `stride + 1`, and the last character is
 `node.O + stride` globally, or `node.o + stride` locally\.
-
-
 
 This means we must use methods to insert and remove children, so that the
 zipper remains valid\.  It comes with many compensating advantages, notably
@@ -63,9 +64,19 @@ The goal is that the string be *local* to the Node, and *relative* to a global
 string which may or may not be the same string\.
 
 We need to be able to stitch together patches on strings, and delay allocating
-and interning a new string indefinitely\.  The Palimpsest, which we use
-in 'Stache, is designed around this principle, the new Node should be more
-'palimpsest native' if you will\.
+and interning a new string indefinitely\.  I've written a second Palimpsest
+which is designed to work with the new Nodes\.
+
+The intention is that any Nodes which don't cross fragment boundaries are
+backed by the Palimpsest, while Nodes which don't are left alone insofar as
+possible\.  So a node with a span of 4 to 8 on the original string might be at
+10 to 14 on the Palimpsest, and 1 to 4 on the fragment, but it would still
+have `.str` as the original string, and `.o` and `.stride` both `4`\.
+
+It's of course fine for any of the possible representations to be in play\.
+Specifically, we can replace any `.str` and a corresponding `.o`, as long as
+the span is identical \(not just the stride\), without having to bump a version\.
+This lets us heal and break the model string at our convenience\.
 
 So every node has two instance slots, `.o` and `.O`, for the offset into
 `.str` and the offset into the 'real string'\.  It also has `.v`, which starts
@@ -78,10 +89,12 @@ The parents, and only the parents, have to keep track of 'cracks', we handle
 this with some heuristics about rule type and length such that a new string
 is made for every change within something like a function\.
 
-Any node crossing these boundaries has what is in effect a Palimpsest, no
-guarantees that exact module is suitable but it points the way\.  It needs to
+Any node crossing these boundaries is backed by the Palimpsest\.  It needs to
 know which patches to apply to get the string understood in common by all
-children, where `o == O` for all nodes `o`\.
+children, where `o == O` for all nodes `o`\.  There is only one Palimpsest
+per Node, so we can stash it if a Node is sectioned into a single string,
+and go looking for any table\-typed `.str` in the parental context if we don't
+find it\.
 
 Version numbers track 1 to 1 with the creation of new strings \(ignoring
 interning since it's not relevant here\), making undo relatively
@@ -140,11 +153,8 @@ is a necessary precondition for out\-of\-order Orb documents\.
 
 ## Node
 
-  The Node is the base case of a cluster `clade`, which we have yet to
-implement\.
-
-So we're going to build it one more time, and this time, we're doing it in
-Cluster, where it belongs\.
+  Nodes are implemented using Cluster's Clade system, which is itself designed
+to suit the peculiar needs of Nodes\.
 
 ```lua
 local core = use "qor:core"
@@ -152,13 +162,21 @@ local table, string = core.table, core.string
 local cluster, clade = use ("cluster:cluster", "cluster:clade")
 ```
 
-
-Let's write a `new` and get going\. Qoph needs some way to assign, after all\.
-
-This is a simplified signature in the interest of speed\.
+Clades are built from a genre\.  In this case we need our seeds to be
+functions, which match the specific capture signature of Qoph, at least, our
+default Qoph\.
 
 
 ### Node\(first, t, last, str, offset\)
+
+`first` and `last` are the bounds of the capture, which is in `t`\.  `str` is
+the reference string, `offset` is positive when the parse begins anywhere but
+the start of the string, otherwise `0`\.
+
+A given `t` will contain the child elements at the time of capture\.
+
+\#Todo
+      root now\.
 
 ```lua
 local function onmatch(first, t, last, str, offset)
@@ -172,7 +190,7 @@ local function onmatch(first, t, last, str, offset)
    t.v = 0
    t.o = first + offset
    t.O = t.o
-   t.stride = last - first + offset
+   t.stride = last - t.o - 1
    t.str = str
    if not t.parent then
       -- root is self, not null
@@ -560,18 +578,29 @@ end
 
 #### Node:search\(pred\) \#Todo test
 
+Search uses the predicate to look for matches in all nodes after the searcher\.
+
+This starts like `:filter` but escapes the containing node, searching the rest
+of the tree\.
+
 
 ```lua
 local function searcher(pred, node, latest)
    if not latest then
       latest = node
    end
-   if pred then
-      if predicator(latest, pred) then
-         return latest
-      end
+
+   local further = latest:forward()
+   if further == node then
+      further = further:forward()
    end
-   return searcher(pred, nil, latest) or nil
+   if further == nil then return end
+
+   if predicator(further, pred) then
+      return further
+   end
+
+   return searcher(pred, node, further)
 end
 ```
 

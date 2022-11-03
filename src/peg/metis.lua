@@ -1257,6 +1257,13 @@ end
 
 
 
+
+
+
+
+
+
+
 function Syndex.constrain(synth, coll)
    for i, elem in ipairs(synth) do
       elem:constrain(coll)
