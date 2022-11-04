@@ -160,6 +160,8 @@ to suit the peculiar needs of Nodes.
 local core = use "qor:core"
 local table, string = core.table, core.string
 local cluster, clade = use ("cluster:cluster", "cluster:clade")
+
+local Pal = use "text:palimpsest2"
 #/lua
 
 Clades are built from a genre.  In this case we need our seeds to be
@@ -212,24 +214,51 @@ Node.v = 0
 #/lua
 
 
-*** Node:adjust(): b
+*** Node:adjust(v: i): skew: i, v_new: i
 
 This we call first for almost anything, and contains the logic which brings a
 node up to date.
 
+Principle: a patch changes the =stride= of all parents, and the =.O= of
+all later Nodes at every level.
+
+We also bump the versions of everything, so every Node can go to the root, get
+the latest version number, and look for the skew: the difference between .o
+and .O for that Node.
+
+Applying the skew repeatedly on the way down should get everything lined up.
+
+Working it out:
+
+- A fourth level is at v1, goes up to third, which is at v2, second is v3,
+  first is also v3, zero skew (not uncommon), second has a skew of 1 (one
+  byte insertion before it), third /had/ a skew of 3, gets bumped to 4, which
+  is what the fourth level gets, all of them are v3 now.
+
+#!lua
+local function adjust(node, v)
+   -- parent version should always be >= child after updates
+   if node.v < v then
+      error ("node ." .. node.tag .. " has .v " .. node.v .. "< " .. v)
+   end
+   if node:isRoot() then
+      return node.O - node.o, node.v
+   end
+
+   local skew, v = adjust(node.parent, node.v)
+   if v > node.v then
+      node.O = node.O + skew
+      node.v = v
+   end
+
+   return node.O - node.o, v
+end
+#/lua
+
 #!lua
 function Node.adjust(node)
-   if node.v == 0 then
-      return true
-   end
-   local root = node:root()
-   if node.v == root.v then
-      return true
-   end
-   -- now what
-   --
-   -- well. we make mutations, then we figure
-   -- this part out.
+   if node.v == 0 then return end
+   adjust(node, node.v)
 end
 #/lua
 
@@ -598,47 +627,27 @@ end
 
 This is where we painstakingly make it all work.
 
-Let's start with: nodes remove themselves, and are attached by the parent.
 
-That makes it possible to offer a common interface for inserting Nodes or
-strings.
+**** thePalimpsest(node): Pal
 
+Fetches the Palimsest, creating it if necessary.
 
-** Format
-
-Principle: a patch changes the =stride= of all parents, and the =.O= of
-all later Nodes at every level.
-
-We also bump the versions of everything, so every Node can go to the root, get
-the latest version number, and look for the skew: the difference between .o
-and .O for that Node.
-
-Applying the skew repeatedly on the way down should get everything lined up.
-
-Working it out:
-
-- A fourth level is at v1, goes up to third, which is at v2, second is v3,
-  first is also v3, zero skew (not uncommon), second has a skew of 1 (one
-  byte insertion before it), third /had/ a skew of 3, gets bumped to 4, which
-  is what the fourth level gets, all of them are v3 now.
+Since any change under a Node means it needs to be backed by the Palimpsest,
+we assign it to all parents on the way back down.
 
 #!lua
-local function adjust(node, v)
-   -- parent version should always be >= child after updates
-   if node.v < v then
-      error ("node ." .. node.tag .. " has .v " .. node.v .. "< " .. v)
+local function thePalimpsest(node)
+   if type(node.str) == 'table' then
+      return node.str
    end
    if node:isRoot() then
-      return node.O - node.o, node.v
+      node.str = Pal(node.str)
+      return node.str
    end
+   local pal = thePalimpsest(node.parent)
+   node.str = pal
 
-   local skew, v = adjust(node.parent)
-   if v > node.v then
-      node.O = node.O + skew
-      node.v = v
-   end
-
-   return node.O - node.o, v
+   return pal
 end
 #/lua
 

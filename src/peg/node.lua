@@ -161,6 +161,8 @@ local core = use "qor:core"
 local table, string = core.table, core.string
 local cluster, clade = use ("cluster:cluster", "cluster:clade")
 
+local Pal = use "text:palimpsest2"
+
 
 
 
@@ -218,18 +220,45 @@ Node.v = 0
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function adjust(node, v)
+   -- parent version should always be >= child after updates
+   if node.v < v then
+      error ("node ." .. node.tag .. " has .v " .. node.v .. "< " .. v)
+   end
+   if node:isRoot() then
+      return node.O - node.o, node.v
+   end
+
+   local skew, v = adjust(node.parent, node.v)
+   if v > node.v then
+      node.O = node.O + skew
+      node.v = v
+   end
+
+   return node.O - node.o, v
+end
+
+
+
 function Node.adjust(node)
-   if node.v == 0 then
-      return true
-   end
-   local root = node:root()
-   if node.v == root.v then
-      return true
-   end
-   -- now what
-   --
-   -- well. we make mutations, then we figure
-   -- this part out.
+   if node.v == 0 then return end
+   adjust(node, node.v)
 end
 
 
@@ -607,38 +636,18 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local function adjust(node, v)
-   -- parent version should always be >= child after updates
-   if node.v < v then
-      error ("node ." .. node.tag .. " has .v " .. node.v .. "< " .. v)
+local function thePalimpsest(node)
+   if type(node.str) == 'table' then
+      return node.str
    end
    if node:isRoot() then
-      return node.O - node.o, node.v
+      node.str = Pal(node.str)
+      return node.str
    end
+   local pal = thePalimpsest(node.parent)
+   node.str = pal
 
-   local skew, v = adjust(node.parent)
-   if v > node.v then
-      node.O = node.O + skew
-      node.v = v
-   end
-
-   return node.O - node.o, v
+   return pal
 end
 
 
