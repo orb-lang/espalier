@@ -791,6 +791,69 @@ end
 ```
 
 
+#### makeready\(node, str, v, offset, skew\)
+
+When we graft, we have a full span, so we can update all the kids to use it,
+give them the right version, and set up `.o` and `.O` to track, respectively,
+the reference and model strings\.
+
+```lua
+local function makeready(node, str, v, offset, skew)
+   node.v = v
+   node.str = str
+   node.o = node.o - offset
+   node.O = node.O + skew
+   for _, child in ipairs(node) do
+      makeready(child, str, v, offset, skew)
+   end
+end
+```
+
+
+### Node:graft\(child, i\)
+
+Attaches the child node as parent at index `i`, which must be provided\.
+
+As for any insertion, there is no return value\.
+
+```lua
+local floor = math.floor
+
+function Node.graft(node, child, i)
+   assert(type(i) == 'number' and i > 0 and floor(i) == i,
+          "i must be a positive integer")
+   if i > #node + 1 then
+      error("Node has " .. #node .. " children, can't insert at " .. i)
+   end
+   local _, cut;
+   if node[i] then
+      _, cut = node[i]:bounds()
+      cut = cut - 1
+   else
+      _, cut = node[#node]:bounds()
+   end
+   local span = child:span()
+
+   if child.unready then
+      --makeready(child, span, node.v)
+      child.unready = nil
+   end
+
+   local pal = thePalimpsest(node)
+   pal:patch(span, cut)
+   update(node, #span)
+   local top = #node
+   local this = child
+   for j = i, top + 1 do
+      this.up = j
+      local sib = node[j]
+      node[j] = this
+      this = sib
+   end
+end
+```
+
+
 ### Node :prepend\(parent\) :append\(parent\) :graft\(parent, i\)
 
 
