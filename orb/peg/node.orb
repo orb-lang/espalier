@@ -180,19 +180,15 @@ A given =t= will contain the child elements at the time of capture.
 
 #!lua
 local function onmatch(first, t, last, str, offset)
-   --[[DBG]] --[[
-   assert(type(first) == 'number')
-   assert(type(t) == 'table')
-   assert(type(last) == 'number')
-   assert(type(str) == 'string')
-   assert(type(offset) == 'number')
-   --[[DBG]]
+   ---[[DBG]] assert(type(first) == 'number')
+   ---[[DBG]] assert(type(t) == 'table')
+   ---[[DBG]] assert(type(last) == 'number')
+   ---[[DBG]] assert(type(str) == 'string')
+   ---[[DBG]] assert(type(offset) == 'number')
    t.o = first + offset
    t.O = t.o
    t.stride = last - t.o - 1
    t.str = str
-   -- we used to 'drop' invalid data which snuck in here,
-   -- that should no longer be necessary
    for i, child in ipairs(t) do
       child.parent = t
       child.up = i
@@ -206,13 +202,10 @@ end
 local new, Node, Node_M = cluster.order { seed_fn = onmatch }
 #/lua
 
-We'll write a custom nodemaker for this and wire it to Vav, meanwhile, some
-methods.
-
 
 **** Node.v
 
-Basic nodes aren't editable, so we set =v= to =0=.
+Nodes aren't editable by default, so we set =v= to =0=.
 
 #!lua
 Node.v = 0
@@ -229,6 +222,14 @@ function Node.adjust(node)
    if node.v == 0 then
       return true
    end
+   local root = node:root()
+   if node.v == root.v then
+      return true
+   end
+   -- now what
+   --
+   -- well. we make mutations, then we figure
+   -- this part out.
 end
 #/lua
 
@@ -252,8 +253,8 @@ end
   This is one of our only opportunities to cross the boundaries of the
 interned strings backing the logical string.
 
-Since the request is for a substring, this is inherently expensive, we let the
-Palimpsest handle any internal changes which result.
+The Palimpsest will produce the substring, but not change the model in the
+process.
 
 #!lua
 local sub = assert(string.sub)
@@ -315,7 +316,7 @@ Replies =true= if the Node has no parent.
 
 #!lua
 function Node.isRoot(node)
-   return node.parent == nil
+   return not node.parent
 end
 #/lua
 
@@ -338,9 +339,6 @@ end
 #/lua
 
 
-**** #NYI gap reporting
-
-
 ** Traversal
 
   The fully-linked structure lets us do our basic operations using stateless
@@ -352,30 +350,16 @@ frequently the hottest loop in our programs.
 
 *** Node:root()
 
-Returns the root of a given Node tree structure.
-
-OG Node uses the convention that the root node is its own parent.
-
-I'm starting to question that choice.  For one thing, the bootstrap
-optimistically makes every node a root node, which, we try not to leave stuff
-around for the JIT to clean up, but we could improve that, at least, easily.
-
-The advantage is... yeah, how does this help us.  It shows that the absence of
-a parent isn't an accident?  We could do that with =false= though.
-
-Yeah. Gotta bite down on this one. In the meantime:
+  Returns the root of a given Node tree structure, which is the first parent
+which does not, itself, have a parent.
 
 #!lua
-local function _root(node)
-   if node:isRoot() then
-      return node
-   end
-   return _root(node.parent)
+function Node.root(node)
+   return not node.parent
+          and node
+           or node.parent:root()
 end
-
-Node.root = _root
 #/lua
-
 
 
 *** Node:forward(done: b?, short: Node?)
@@ -383,15 +367,16 @@ Node.root = _root
 Returns the next (prefix, depth first) Node in the AST, or =nil= if it's the
 last leaf.
 
-=done= is a flag we set when we bottom out, =short= is a Node value which we
-look for and return.  These are primarily intended for internal use.
+=right_side= is a flag we set when we hit the right, =short= is a Node value
+which we look for and return.  These are primarily intended for internal
+use, =short= lets us finish an iteration where we started.
 
 #!lua
-function Node.forward(node, done, short)
+function Node.forward(node, right_side, short)
    if short and rawequal(node, short) then
       return node
    end
-   if done or (#node == 0) then
+   if right_side or (#node == 0) then
       if node:isRoot() then
          return nil
       end
@@ -498,25 +483,23 @@ Worth adding, but not right now.
 We'll be able to add an enriched palette here, but we start with the basics.
 
 
-***** predicator(node, pred)
+***** predicator(pred, node)
 
 We allow predicates to be a string, which we compare with =.tag=.
 
-Otherwise we call it (if we can).  Invalid predicates are always =false=.
-
+Otherwise we call it (if we can), throwing an error for a bad predicate.
 
 #!lua
 local iscallable = assert(core.fn.iscallable)
 
-local function predicator(node, pred)
-   return (
-      type(pred) == 'string'
-      and (node.tag == pred)
-
-      or iscallable(pred)
-      and (not not pred(node))
-
-      or false )
+local function predicator(pred, node)
+   if type(pred) == 'string' then
+      return node.tag == pred
+   elseif iscallable(pred) then
+      return not not pred(node)
+   else
+      error "invalid predicate"
+   end
 end
 #/lua
 
@@ -530,7 +513,7 @@ Will not match itself, for obvious reasons.
 #!lua
 function Node.take(node, pred)
    for twig in walk, node do
-      if predicator(twig, pred) then
+      if predicator(pred, twig) then
          if twig ~= node then
             return twig
          end
@@ -559,7 +542,7 @@ function Node.filter(node, pred)
    local latest = nil
    return function()
       for twig in walk, node, latest do
-         if predicator(twig, pred) then
+         if predicator(pred, twig) then
             latest = twig
             return twig
          end
@@ -590,7 +573,7 @@ local function searcher(pred, node, latest)
    end
    if further == nil then return end
 
-   if predicator(further, pred) then
+   if predicator(pred, further) then
       return further
    end
 
@@ -620,6 +603,63 @@ Let's start with: nodes remove themselves, and are attached by the parent.
 That makes it possible to offer a common interface for inserting Nodes or
 strings.
 
+
+** Format
+
+Principle: a patch changes the =stride= of all parents, and the =.O= of
+all later Nodes at every level.
+
+We also bump the versions of everything, so every Node can go to the root, get
+the latest version number, and look for the skew: the difference between .o
+and .O for that Node.
+
+Applying the skew repeatedly on the way down should get everything lined up.
+
+Working it out:
+
+- A fourth level is at v1, goes up to third, which is at v2, second is v3,
+  first is also v3, zero skew (not uncommon), second has a skew of 1 (one
+  byte insertion before it), third /had/ a skew of 3, gets bumped to 4, which
+  is what the fourth level gets, all of them are v3 now.
+
+#!lua
+local function adjust(node, v)
+   -- parent version should always be >= child after updates
+   if node.v < v then
+      error ("node ." .. node.tag .. " has .v " .. node.v .. "< " .. v)
+   end
+   if node:isRoot() then
+      return node.O - node.o, node.v
+   end
+
+   local skew, v = adjust(node.parent)
+   if v > node.v then
+      node.O = node.O + skew
+      node.v = v
+   end
+
+   return node.O - node.o, v
+end
+#/lua
+
+
+**** update(node, Δ)
+
+
+#!lua
+local function update(node, Δ)
+   repeat
+      local parent = node.parent
+      parent.v = parent.v + 1
+      parent.stride = parent.stride + Δ
+      for i = node.up + 1, #parent do
+         local sib = parent[i]
+         sib.v = sib.v + 1
+         sib.O = sib.O + Δ
+      end
+   until parent:isRoot()
+end
+#/lua
 
 
 *** Node:snip()

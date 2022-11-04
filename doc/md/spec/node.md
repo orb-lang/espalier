@@ -96,9 +96,12 @@ With the code in the state that it is, let's just give ourselves a nice
 closure to make a one\-liner out of getting to Nodes\.
 
 ```lua
+local eDji = eVav:Mem(Elden):Dji()
+
 local function dji()
-   return eVav:Mem(Elden):Dji()
+   return eDji
 end
+
 ```
 
 
@@ -108,7 +111,6 @@ end
 local insert = assert(table.insert)
 
 local function walker()
-   local eDji = eVav.dji or dji()
    local one2 = eDji [[ (1 2) ]]
    local tags = {}
    for node in one2:walk() do
@@ -120,7 +122,6 @@ end
 
 ```lua
 local function subwalker()
-   local eDji = eVav.dji or dji()
    local walk3 = eDji [[ ( (1 two 3) (4 5))]]
    local tags = {}
    for node in walk3[1][1]:walk() do
@@ -135,7 +136,6 @@ end
 
 ```lua
 local function searcher()
-   local eDji = eVav.dji or dji()
    local find_syms = eDji [[ ((1 (2 three 4) five (7 seven)))]]
    local sym1 = find_syms :take 'symbol'
    assert(sym1:span() == 'three', "expected a symbol 'three'")
@@ -148,6 +148,21 @@ local function searcher()
 end
 ```
 
+```lua
+local function filterer()
+   local twos = eDji [[((1 2 3) (2 (2 (3))) (3 (4 (2))))]]
+   local function isTwo(twig)
+      return twig:span() == "2"
+   end
+   local spans = {}
+   for twig in twos :filter(isTwo) do
+      insert(spans, twig:span())
+   end
+   return #spans, spans
+end
+```
+
+
 
 ```lua
 return { eVav = eVav,
@@ -155,6 +170,7 @@ return { eVav = eVav,
          walker = walker,
          subwalker = subwalker,
          searcher = searcher,
+         filterer = filterer,
          dji = dji }
 ```
 

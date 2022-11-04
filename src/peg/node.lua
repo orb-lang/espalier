@@ -180,19 +180,15 @@ local cluster, clade = use ("cluster:cluster", "cluster:clade")
 
 
 local function onmatch(first, t, last, str, offset)
-   --[[DBG]] --[[
-   assert(type(first) == 'number')
-   assert(type(t) == 'table')
-   assert(type(last) == 'number')
-   assert(type(str) == 'string')
-   assert(type(offset) == 'number')
-   --[[DBG]]
+   ---[[DBG]] assert(type(first) == 'number')
+   ---[[DBG]] assert(type(t) == 'table')
+   ---[[DBG]] assert(type(last) == 'number')
+   ---[[DBG]] assert(type(str) == 'string')
+   ---[[DBG]] assert(type(offset) == 'number')
    t.o = first + offset
    t.O = t.o
    t.stride = last - t.o - 1
    t.str = str
-   -- we used to 'drop' invalid data which snuck in here,
-   -- that should no longer be necessary
    for i, child in ipairs(t) do
       child.parent = t
       child.up = i
@@ -204,9 +200,6 @@ end
 
 
 local new, Node, Node_M = cluster.order { seed_fn = onmatch }
-
-
-
 
 
 
@@ -229,6 +222,14 @@ function Node.adjust(node)
    if node.v == 0 then
       return true
    end
+   local root = node:root()
+   if node.v == root.v then
+      return true
+   end
+   -- now what
+   --
+   -- well. we make mutations, then we figure
+   -- this part out.
 end
 
 
@@ -315,7 +316,7 @@ end
 
 
 function Node.isRoot(node)
-   return node.parent == nil
+   return not node.parent
 end
 
 
@@ -353,27 +354,12 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-local function _root(node)
-   if node:isRoot() then
-      return node
-   end
-   return _root(node.parent)
+function Node.root(node)
+   return not node.parent
+          and node
+           or node.parent:root()
 end
 
-Node.root = _root
 
 
 
@@ -386,12 +372,11 @@ Node.root = _root
 
 
 
-
-function Node.forward(node, done, short)
+function Node.forward(node, right_side, short)
    if short and rawequal(node, short) then
       return node
    end
-   if done or (#node == 0) then
+   if right_side or (#node == 0) then
       if node:isRoot() then
          return nil
       end
@@ -505,18 +490,16 @@ end
 
 
 
-
 local iscallable = assert(core.fn.iscallable)
 
-local function predicator(node, pred)
-   return (
-      type(pred) == 'string'
-      and (node.tag == pred)
-
-      or iscallable(pred)
-      and (not not pred(node))
-
-      or false )
+local function predicator(pred, node)
+   if type(pred) == 'string' then
+      return node.tag == pred
+   elseif iscallable(pred) then
+      return not not pred(node)
+   else
+      error "invalid predicate"
+   end
 end
 
 
@@ -530,7 +513,7 @@ end
 
 function Node.take(node, pred)
    for twig in walk, node do
-      if predicator(twig, pred) then
+      if predicator(pred, twig) then
          if twig ~= node then
             return twig
          end
@@ -559,7 +542,7 @@ function Node.filter(node, pred)
    local latest = nil
    return function()
       for twig in walk, node, latest do
-         if predicator(twig, pred) then
+         if predicator(pred, twig) then
             latest = twig
             return twig
          end
@@ -590,7 +573,7 @@ local function searcher(pred, node, latest)
    end
    if further == nil then return end
 
-   if predicator(further, pred) then
+   if predicator(pred, further) then
       return further
    end
 
@@ -619,6 +602,63 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function adjust(node, v)
+   -- parent version should always be >= child after updates
+   if node.v < v then
+      error ("node ." .. node.tag .. " has .v " .. node.v .. "< " .. v)
+   end
+   if node:isRoot() then
+      return node.O - node.o, node.v
+   end
+
+   local skew, v = adjust(node.parent)
+   if v > node.v then
+      node.O = node.O + skew
+      node.v = v
+   end
+
+   return node.O - node.o, v
+end
+
+
+
+
+
+
+
+local function update(node, Δ)
+   repeat
+      local parent = node.parent
+      parent.v = parent.v + 1
+      parent.stride = parent.stride + Δ
+      for i = node.up + 1, #parent do
+         local sib = parent[i]
+         sib.v = sib.v + 1
+         sib.O = sib.O + Δ
+      end
+   until parent:isRoot()
+end
 
 
 
