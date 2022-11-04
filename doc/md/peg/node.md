@@ -770,8 +770,15 @@ This is where shared structure can bite us if we're not careful, and help us
 if we are\.
 
 
+
+#### removeNode\(node\)
+
+This performs the removal and parental healing, while doing nothing for the
+removed Node other than setting it up to be used as a graft\.
+
+
 ```lua
-function Node.snip(node) -- :span will adjust for us
+local function removeNode(node) -- :span will adjust for us
    local span = node:span()
    local pal = thePalimpsest(node)
    pal:patch("", node:bounds())
@@ -784,25 +791,33 @@ function Node.snip(node) -- :span will adjust for us
    node.parent[top] = nil
    node.parent, node.up = nil, nil
    node.str = span
-   node.o, node.O = 1, 1
+   node.o = 1
    node.unready = true
    return node
 end
+
+Node.snip = removeNode
 ```
 
 
-#### makeready\(node, str, v, offset, skew\)
+#### makeready\(node, str, v, cut\)
 
 When we graft, we have a full span, so we can update all the kids to use it,
 give them the right version, and set up `.o` and `.O` to track, respectively,
 the reference and model strings\.
 
 ```lua
-local function makeready(node, str, v, offset, skew)
+local function makeready(node, str, v, cut, skew)
    node.v = v
    node.str = str
-   node.o = node.o - offset
-   node.O = node.O + skew
+   if node.unready then
+      node.unready = nil
+      skew = node.O
+   else
+      node.o = node.o + 0 -- hah
+      node.O = node.O + skew
+   end
+   assert(type(skew) == 'number')
    for _, child in ipairs(node) do
       makeready(child, str, v, offset, skew)
    end
@@ -834,14 +849,12 @@ function Node.graft(node, child, i)
    end
    local span = child:span()
 
-   if child.unready then
-      --makeready(child, span, node.v)
-      child.unready = nil
-   end
-
    local pal = thePalimpsest(node)
    pal:patch(span, cut)
    update(node, #span)
+   if child.unready then
+      makeready(child, span, node.v, cut)
+   end
    local top = #node
    local this = child
    for j = i, top + 1 do
