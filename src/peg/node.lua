@@ -210,7 +210,7 @@ local new, Node, Node_M = cluster.order { seed_fn = onmatch }
 
 
 
-Node.v = 0
+Node.v = 1
 
 
 
@@ -271,7 +271,7 @@ end
 
 
 
-function Node.bounds(node)  node:adjust()
+function Node.bounds(node)   node:adjust()
    return node.O, node.O + node.stride
 end
 
@@ -288,13 +288,7 @@ end
 
 local sub = assert(string.sub)
 
-function Node.span(node)
-   if node.v == 0 then
-      -- means we don't have to use a method to look at the string
-      return sub(node.str, node.o, node.o + node.stride)
-   end
-   -- the fun part
-   node:adjust()
+function Node.span(node)   node:adjust()
    if string(node.str) then
       -- we're within a single string, small o
       return sub(node.str, node.o, node.o + node.stride)
@@ -430,7 +424,15 @@ end
 
 
 
--- #Todo
+function Node:back(node, left_side)
+   if node:isRoot() then return nil end
+
+   if left_side then
+      return node.parent
+   end
+   -- later...
+
+end
 
 
 
@@ -494,6 +496,9 @@ function Node.walker(node)
       end
    end
 end
+
+
+
 
 
 
@@ -588,6 +593,16 @@ end
 
 
 
+Node.filterer = Node.filter
+
+
+
+
+
+
+
+
+
 
 
 
@@ -636,12 +651,76 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function thePalimpsest(node)
    if type(node.str) == 'table' then
       return node.str
    end
    if node:isRoot() then
       node.str = Pal(node.str)
+      -- bump to v1 if we have to
+      if node.v == 0 then
+         for twig in node :walk() do
+            assert(twig.v == 0, "some node was already editable?")
+            twig.v = 1
+         end
+      end
       return node.str
    end
    local pal = thePalimpsest(node.parent)
@@ -656,17 +735,24 @@ end
 
 
 
+
+
+
+
+
+
 local function update(node, Δ)
    repeat
-      local parent = node.parent
-      parent.v = parent.v + 1
-      parent.stride = parent.stride + Δ
-      for i = node.up + 1, #parent do
-         local sib = parent[i]
+      local up = node.up
+      node = node.parent
+      node.v = node.v + 1
+      node.stride = node.stride + Δ
+      for i = up + 1, #node do
+         local sib = node[i]
          sib.v = sib.v + 1
          sib.O = sib.O + Δ
       end
-   until parent:isRoot()
+   until node:isRoot()
 end
 
 
@@ -677,6 +763,30 @@ end
 
 
 
+
+
+
+
+
+
+
+function Node.snip(node) -- :span will adjust for us
+   local span = node:span()
+   local pal = thePalimpsest(node)
+   pal:patch("", node:bounds())
+   update(node, -node:len())
+   local top = #node.parent
+   for i = node.up, top - 1 do
+      node.parent[i] = node.parent[i + 1]
+      node.parent[i].up = i
+   end
+   node.parent[top] = nil
+   node.parent, node.up = nil, nil
+   node.str = span
+   node.o, node.O = 1, 1
+   node.unready = true
+   return node
+end
 
 
 

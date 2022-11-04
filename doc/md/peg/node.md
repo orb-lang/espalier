@@ -210,7 +210,7 @@ local new, Node, Node_M = cluster.order { seed_fn = onmatch }
 Nodes aren't editable by default, so we set `v` to `0`\.
 
 ```lua
-Node.v = 0
+Node.v = 1
 ```
 
 
@@ -272,7 +272,7 @@ Used to derive information from a given node\.
 ### Node:bounds\(\)
 
 ```lua
-function Node.bounds(node)  node:adjust()
+function Node.bounds(node)   node:adjust()
    return node.O, node.O + node.stride
 end
 ```
@@ -289,13 +289,7 @@ process\.
 ```lua
 local sub = assert(string.sub)
 
-function Node.span(node)
-   if node.v == 0 then
-      -- means we don't have to use a method to look at the string
-      return sub(node.str, node.o, node.o + node.stride)
-   end
-   -- the fun part
-   node:adjust()
+function Node.span(node)   node:adjust()
    if string(node.str) then
       -- we're within a single string, small o
       return sub(node.str, node.o, node.o + node.stride)
@@ -392,7 +386,7 @@ end
 ```
 
 
-### Node:forward\(done: b?, short: Node?\)
+### Node:forward\(right\_side: b?, short: Node?\)
 
 Returns the next \(prefix, depth first\) Node in the AST, or `nil` if it's the
 last leaf\.
@@ -431,7 +425,15 @@ We don't provide the short circuit, which is for subsearch\.  If I see a use
 case for reverse iterator, I'll come back to this decision\.
 
 ```lua
--- #Todo
+function Node:back(node, left_side)
+   if node:isRoot() then return nil end
+
+   if left_side then
+      return node.parent
+   end
+   -- later...
+
+end
 ```
 
 
@@ -444,7 +446,7 @@ The Node returns itself first, because `:walk` is best suited to doing the
 same thing to a bunch of nodes, which would lead to duplicated code preceding
 for loops\.
 
-With `:forward`, we can write this as a pure function\.
+With `:forward`, we can write this as a stateless iterator\.
 
 ```lua
 local function walk(base, latest)
@@ -519,6 +521,9 @@ We allow predicates to be a string, which we compare with `.tag`\.
 
 Otherwise we call it \(if we can\), throwing an error for a bad predicate\.
 
+This follows the Bridge principle that a predicate should take the general,
+then the specific, this is a higher\-order predicate but the principle holds\.
+
 ```lua
 local iscallable = assert(core.fn.iscallable)
 
@@ -583,6 +588,16 @@ end
 ```
 
 
+#### Node:filterer\(pred\)
+
+Currently a synonym, but this one is guaranteed to return a stateful iterator
+which may be captured if desired\.
+
+```lua
+Node.filterer = Node.filter
+```
+
+
 #### Node:search\(pred\) \#Todo test
 
 Search uses the predicate to look for matches in all nodes after the searcher\.
@@ -628,6 +643,49 @@ end
 
 This is where we painstakingly make it all work\.
 
+Our invariant is that if the `.str` field is an actual string, then the local
+`.o, .stride` tuple will give the span of the Node over that string\.
+
+This means that any Node which has a model span with more than one fragment
+**must** have the Palimpsest as `.str`, but the opposite is not true: it's fine
+for a Node to have a single span across a fragment, and still point to the
+Palimpsest\.
+
+We don't create this situation for no reason, but if a Node goes solid, we
+may or may not see to it that it points at a string\.  If we're not removing or
+moving the Node, it doesn't make a lot of sense\.
+
+
+##### \.o and Palimpsests
+
+Something to think about carefully: `.o` is probably meaningless for a Node
+with a Palimpsest backing it\.  Do we want to invalidate it?
+
+One way to do this would be an `__index` function which returns `.O`, if
+`.o` is `nil`\.
+
+The thing is, we use it to calculate skew: and skew remains very important
+with Palimpsests, it's the difference between where the Node *thinks* it is
+and where it *actually* is\.
+
+It basically doesn't matter how goofy that number gets as long as we can use
+it to keep the bounds over the span\.
+
+We can legally set the two as equal for a leaf node, I think? Skew is skew,
+it's only a problem to lose track of it if all the children haven't been
+informed\.
+
+Alright, I believe I've talked myself out of it, `.o` is just the difference
+between where the Node is, and where it 'thinks' it is\.
+
+What I do want to remember is that `.o` can be set equal to `.O` as long as:
+the reference string is a Palimpsest, and all child nodes are on the same,
+latest version\.
+
+It's not clear that this will be important\.
+
+What is important is retrieving and creating the Palimpsest\!
+
 
 #### thePalimpsest\(node\): Pal
 
@@ -636,6 +694,20 @@ Fetches the Palimsest, creating it if necessary\.
 Since any change under a Node means it needs to be backed by the Palimpsest,
 we assign it to all parents on the way back down\.
 
+There being no need for a Palimpsest without intending mutation, we take the
+opportunity to bump `.v` up to `1` if we have to\.
+
+Note that, as we do sometimes, we're assuming any table\-valued `.str` will be,
+not only a Palimpsest, but *the* Palimpsest\.
+
+This is important because when we remove a Node, if it has a Palimpsest, we
+need to reduce that to a string for all children which are also backed by a
+Palimpsest\.
+
+As long as we preserve the invariant that no child will have any Palimpsest
+unless the parent does, we can do this with a minimally\-spanning,
+breadth\-first, recursive walk of the children\.
+
 ```lua
 local function thePalimpsest(node)
    if type(node.str) == 'table' then
@@ -643,6 +715,13 @@ local function thePalimpsest(node)
    end
    if node:isRoot() then
       node.str = Pal(node.str)
+      -- bump to v1 if we have to
+      if node.v == 0 then
+         for twig in node :walk() do
+            assert(twig.v == 0, "some node was already editable?")
+            twig.v = 1
+         end
+      end
       return node.str
    end
    local pal = thePalimpsest(node.parent)
@@ -655,30 +734,61 @@ end
 
 #### update\(node, Δ\)
 
+Any patch requires us to call `update`\.
+
+This adjusts the stride of all parent nodes, and the `.O` of all posterior
+siblings of the Node, and all parents with posterior siblings\.
+
+It also bumps the version, so that `adjust` will find changes\.
 
 ```lua
 local function update(node, Δ)
    repeat
-      local parent = node.parent
-      parent.v = parent.v + 1
-      parent.stride = parent.stride + Δ
-      for i = node.up + 1, #parent do
-         local sib = parent[i]
+      local up = node.up
+      node = node.parent
+      node.v = node.v + 1
+      node.stride = node.stride + Δ
+      for i = up + 1, #node do
+         local sib = node[i]
          sib.v = sib.v + 1
          sib.O = sib.O + Δ
       end
-   until parent:isRoot()
+   until node:isRoot()
 end
 ```
 
 
-### Node:snip\(\)
+### Node:snip\(\) :node
 
-The primary effect is to remove this node from its parent\.
+  This removes the Node from the parent, propagates the changes, sets up the
+snipped Node to be a root, and returns it\.
 
-We should be able to cheaply set the node up so that it's a valid root,
-although I expect that *removing* a node will be an infrequent prelude to
-doing anything with it\.
+Actually, we should probably put a signal flag on the Node that says it's
+not ready to be a full\-on Node yet\.
+
+This is where shared structure can bite us if we're not careful, and help us
+if we are\.
+
+
+```lua
+function Node.snip(node) -- :span will adjust for us
+   local span = node:span()
+   local pal = thePalimpsest(node)
+   pal:patch("", node:bounds())
+   update(node, -node:len())
+   local top = #node.parent
+   for i = node.up, top - 1 do
+      node.parent[i] = node.parent[i + 1]
+      node.parent[i].up = i
+   end
+   node.parent[top] = nil
+   node.parent, node.up = nil, nil
+   node.str = span
+   node.o, node.O = 1, 1
+   node.unready = true
+   return node
+end
+```
 
 
 ### Node :prepend\(parent\) :append\(parent\) :graft\(parent, i\)
