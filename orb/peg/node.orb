@@ -893,8 +893,7 @@ function Node.graft(node, child, i)
    end
    local _, cut;
    if node[i] then
-      _, cut = node[i]:bounds()
-      cut = cut - 1
+      cut = node[i]:bounds()
    else
       _, cut = node[#node]:bounds()
    end
