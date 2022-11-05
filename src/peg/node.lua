@@ -271,6 +271,35 @@ end
 
 
 
+
+
+
+
+
+function Node.straighten(node)
+   if #node == 0 then return end
+
+   local V, skew = node.v, node.O - node.o
+   for _, child in ipairs(node) do
+      if child.v < V then
+         child.v = V
+         child.O = child.O + skew
+      elseif child.v > V then
+         error("child version " .. child.v .. " > parent " .. V)
+      end
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
 function Node.bounds(node)   node:adjust()
    return node.O, node.O + node.stride
 end
@@ -340,6 +369,38 @@ end
 
 function Node.isRoot(node)
    return not node.parent
+end
+
+
+
+
+
+
+
+
+
+
+
+function Node.isConcrete(node) node:straighten()
+   if #node == 0 then
+      return true
+   end
+   if node.O < node[1].O or node.O > node[#node].O then
+      -- node is wider than left/right child
+      return false
+   end
+   if #node == 1 then
+      return true
+   end
+   for i = 1, #node - 1 do
+      local first, second = node[i], node[i] + 1
+      local left, right = first.O + first.stride, second.O
+      if right - left ~= 1 then
+         return false
+      end
+   end
+
+   return true
 end
 
 
@@ -742,6 +803,7 @@ end
 
 
 local function update(node, Δ)
+   node.v = node.v + 1
    repeat
       local up = node.up
       node = node.parent
@@ -777,6 +839,8 @@ end
 
 
 
+
+
 local function removeNode(node) -- :span will adjust for us
    local span = node:span()
    local pal = thePalimpsest(node)
@@ -789,37 +853,25 @@ local function removeNode(node) -- :span will adjust for us
    end
    node.parent[top] = nil
    node.parent, node.up = nil, nil
-   node.str = span
-   node.o = 1
    node.unready = true
-   return node
+   return node, span
 end
 
-Node.snip = removeNode
 
 
 
 
-
-
-
-
-
-
-local function makeready(node, str, v, cut, skew)
-   node.v = v
-   node.str = str
-   if node.unready then
-      node.unready = nil
-      skew = node.O
-   else
-      node.o = node.o + 0 -- hah
-      node.O = node.O + skew
+function Node.snip(node)
+   local node, span = removeNode(node)
+   local offset = 1 - node.O
+   for twig in node:walk() do
+      twig.v = 1
+      twig.str = span
+      twig.o = twig.O + offset
+      twig.O = twig.o
    end
-   assert(type(skew) == 'number')
-   for _, child in ipairs(node) do
-      makeready(child, str, v, offset, skew)
-   end
+   node.unready = nil
+   return node
 end
 
 
@@ -851,9 +903,6 @@ function Node.graft(node, child, i)
    local pal = thePalimpsest(node)
    pal:patch(span, cut)
    update(node, #span)
-   if child.unready then
-      makeready(child, span, node.v, cut)
-   end
    local top = #node
    local this = child
    for j = i, top + 1 do
@@ -862,6 +911,7 @@ function Node.graft(node, child, i)
       node[j] = this
       this = sib
    end
+   child.v = node.v
 end
 
 
@@ -920,17 +970,34 @@ end
 
 
 
+local tablib = require "repr:tablib"
+local yieldName = assert(tablib.yieldName)
+local yieldReprs = assert(tablib.yieldReprs)
+local yieldToken = assert(tablib.yieldToken)
+local concat = assert(table.concat)
+
+local function blurb(node, w, c)
+   if not node.span then return end
+   local span = node:span()
+   local phrase = {c.metatable(node.tag)}
+   insert(phrase, ": ")
+   insert(phrase, c.string(span))
+   return concat(phrase)
+end
+
+
+
 local Lens = use "repr:lens"
 local Set = core.set
 
-local suppress, show = Set {
+local suppress = Set {
    'parent',
-   --'up'
-}, Set {
-   'tag'
+   'up',
+   'str',
+   --'o', 'O', 'v', 'stride',
 }
 local lens = { hide_key = suppress,
-               show_key = show,
+               blurb = blurb,
                depth = math.huge }
 Node_M.__repr = Lens(lens)
 
