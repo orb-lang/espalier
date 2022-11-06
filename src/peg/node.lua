@@ -323,6 +323,7 @@ function Node.span(node)   node:adjust()
       return sub(node.str, node.o, node.o + node.stride)
    else
       -- palimpsest, big O
+      assert(type(node.str) == 'table')
       return node.str:sub(node.O, node.O + node.stride)
    end
 end
@@ -804,6 +805,7 @@ end
 
 local function update(node, Δ)
    node.v = node.v + 1
+   node.stride = node.stride + Δ
    repeat
       local up = node.up
       node = node.parent
@@ -854,8 +856,11 @@ local function removeNode(node) -- :span will adjust for us
    node.parent[top] = nil
    node.parent, node.up = nil, nil
    node.unready = true
+   node.str = span
+   node.stride = #span
    return node, span
 end
+
 
 
 
@@ -902,19 +907,37 @@ function Node.graft(node, child, i)
    local pal = thePalimpsest(node)
    pal:patch(span, cut)
    update(node, #span)
+   child.v = node.v
+   child.O = cut
    local top = #node
    local this = child
+   child.parent = node
    for j = i, top + 1 do
       this.up = j
       local sib = node[j]
       node[j] = this
       this = sib
+      if this then
+         this.v = this.v + 1
+         this.O = this.O + #span
+      end
    end
-   child.v = node.v
 end
 
 
 
+
+
+
+
+
+function Node.prepend(node, child)
+   node:graft(child, 1)
+end
+
+function Node.append(node, child)
+   node:graft(child, #node + 1)
+end
 
 
 
@@ -966,6 +989,29 @@ end
 
 
 
+function Node.isZipped(node)
+   if not node.parent then
+      if node.up ~= nil then
+         return nil, "root node has .up", node
+      end
+   end
+   for i, child in ipairs(node) do
+      if child.up ~= i then
+         return nil, ".up ~= i", child.up, i, child, node
+      end
+      local ok, why = child:isZipped()
+      if not ok then
+         return ok, why
+      end
+   end
+   return true
+end
+
+
+
+
+
+
 
 
 
@@ -976,7 +1022,7 @@ local yieldToken = assert(tablib.yieldToken)
 local concat = assert(table.concat)
 
 local function blurb(node, w, c)
-   if not node.span then return end
+   if not (node.o and node.O and node.str) then return end
    local span = node:span()
    local phrase = {c.metatable(node.tag)}
    insert(phrase, ": ")
