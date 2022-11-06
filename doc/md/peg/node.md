@@ -840,7 +840,7 @@ if we are\.
 This performs the removal and parental healing, while doing nothing for the
 removed Node other than setting it up to be used as a graft\.
 
-We tag it `unready` as an aid, just in case it ends up where it shouldn't\.s
+We tag it `unready` as an aid, just in case it ends up where it shouldn't\.
 
 
 ```lua
@@ -855,10 +855,10 @@ local function removeNode(node) -- :span will adjust for us
       node.parent[i].up = i
    end
    node.parent[top] = nil
+
    node.parent, node.up = nil, nil
    node.unready = true
-   node.str = span
-   node.stride = #span
+
    return node, span
 end
 ```
@@ -869,6 +869,7 @@ When we snip a node, intending to reuse it, we rebase it on the span\.
 ```lua
 function Node.snip(node)
    local node, span = removeNode(node)
+   node.str, node.stride = span, #span
    local offset = 1 - node.O
    for twig in node:walk() do
       twig.v = 1
@@ -902,6 +903,7 @@ function Node.graft(node, child, i)
       cut = node[i]:bounds()
    else
       _, cut = node[#node]:bounds()
+      cut = cut + 1
    end
    local span = child:span()
 

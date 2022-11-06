@@ -854,10 +854,10 @@ local function removeNode(node) -- :span will adjust for us
       node.parent[i].up = i
    end
    node.parent[top] = nil
+
    node.parent, node.up = nil, nil
    node.unready = true
-   node.str = span
-   node.stride = #span
+
    return node, span
 end
 
@@ -868,6 +868,7 @@ end
 
 function Node.snip(node)
    local node, span = removeNode(node)
+   node.str, node.stride = span, #span
    local offset = 1 - node.O
    for twig in node:walk() do
       twig.v = 1
@@ -901,6 +902,7 @@ function Node.graft(node, child, i)
       cut = node[i]:bounds()
    else
       _, cut = node[#node]:bounds()
+      cut = cut + 1
    end
    local span = child:span()
 
