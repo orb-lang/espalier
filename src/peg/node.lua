@@ -985,6 +985,23 @@ end
 
 
 
+local clone = table.cloneinstance
+
+function Node.copy(node) -- adjusted by :span()
+   local span = node:span()
+   local _node = clone(node)
+   return rebase(_node, span)
+end
+
+
+
+
+
+
+
+
+
+
 local floor = math.floor
 
 function Node.graft(node, child, i) -- adjusts with :bounds()

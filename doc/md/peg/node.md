@@ -979,6 +979,23 @@ end
 ```
 
 
+### Node:copy\(\)
+
+Makes a full clone of the node, rebases this on the span, and returns it\.
+
+This is the easy way to do the job, but it won't be the only one\.
+
+```lua
+local clone = table.cloneinstance
+
+function Node.copy(node) -- adjusted by :span()
+   local span = node:span()
+   local _node = clone(node)
+   return rebase(_node, span)
+end
+```
+
+
 ### Node:graft\(child, i\)
 
 Attaches the child node as parent at index `i`, which must be provided\.
