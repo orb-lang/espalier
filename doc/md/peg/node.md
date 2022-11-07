@@ -236,6 +236,16 @@ Working it out:
   byte insertion before it\), third *had* a skew of 3, gets bumped to 4, which
   is what the fourth level gets, all of them are v3 now\.
 
+
+\#Note
+   double\-dipping \(or worse for iterations\) on fundamental operations\.
+
+
+#### adjust\(node, v\)
+
+  We make some effort to tag where this is called, in methods which don't
+feature it explicitly, and need to have it\.
+
 ```lua
 local function adjust(node, v)
    -- parent version should always be >= child after updates
@@ -264,7 +274,26 @@ end
 ```
 
 
-## Node:straighten\(\)
+#### skew\(node\)
+
+Finds the skew, and v, without performing any adjustments\.
+
+```lua
+local function skew(node)
+   if node:isRoot() then
+      return node.O - node.o, node.v
+   end
+   local skew, v = skew(node.parent)
+   if v > node.v then
+      return node.O + skew - node.o, v
+   else
+      return skew, v
+   end
+end
+```
+
+
+### Node:straighten\(\)
 
 Where `:adjust` looks up, `:straighten` looks down\.
 
@@ -331,6 +360,28 @@ end
 ```
 
 
+#### spanner\(node\)
+
+  A non\-mutating form of `:span`, which performs no version or offset
+adjustment\.
+
+```lua
+local function spanner(node)
+   if string(node.str) then
+      return sub(node.str, node.o, node.o + node.stride)
+   end
+
+   local skew, v = skew(node)
+   local O = node.O
+   if v > node.v then
+      O = O + skew
+   end
+
+   return node.str:sub(O, O + node.stride)
+end
+```
+
+
 ### Node:len\(\)
 
 Returns `#node:span()`\.
@@ -368,6 +419,9 @@ end
 
 Replies `true` if the Node has no parent\.
 
+Note that, despite the simplicity of the *base implementation*, performing the
+one\-line check is **not** a valid substitute\.
+
 ```lua
 function Node.isRoot(node)
    return not node.parent
@@ -375,7 +429,7 @@ end
 ```
 
 
-### Node:isConcrete\(\)
+### Node:isConcrete\(\) \#Todo session
 
 A Node is concrete if it is a leaf, or if the spans of all children form one
 dense substring with no gaps\.
@@ -407,7 +461,7 @@ end
 ```
 
 
-### Node:linepos\(\)
+### Node:linepos\(\) \#Todo ::incomplete::
 
   Returns the line/row and column numbers of `node.O`, so this one gets fancy
 with editing\.
@@ -718,35 +772,54 @@ may or may not see to it that it points at a string\.  If we're not removing or
 moving the Node, it doesn't make a lot of sense\.
 
 
-##### \.o and Palimpsests
+##### validity
 
-Something to think about carefully: `.o` is probably meaningless for a Node
-with a Palimpsest backing it\.  Do we want to invalidate it?
+Nothing in the Edit collection confirms the validity of the result\.
 
-One way to do this would be an `__index` function which returns `.O`, if
-`.o` is `nil`\.
+While this is in fact central to the entire Bridge project, it will call for
+a fair amount of tail\-swallowing to get right\.
 
-The thing is, we use it to calculate skew: and skew remains very important
-with Palimpsests, it's the difference between where the Node *thinks* it is
-and where it *actually* is\.
+I need to use the editable Node structure to perform the grammar rewrites
+which make it all possible\.
 
-It basically doesn't matter how goofy that number gets as long as we can use
-it to keep the bounds over the span\.
+When the time comes, it will \(probably\) be an extension of the base class\.
 
-We can legally set the two as equal for a leaf node, I think? Skew is skew,
-it's only a problem to lose track of it if all the children haven't been
-informed\.
+This may involve some passive hooks, no\-op function calls being free once the
+JIT kicks in\.
 
-Alright, I believe I've talked myself out of it, `.o` is just the difference
-between where the Node is, and where it 'thinks' it is\.
+It's probably worth separating out the editability into its own genre,
+reimplementing the subset of methods which make sense, for the very frequent
+occasions when a user is parsing something with no intention of it ever
+changing\.
 
-What I do want to remember is that `.o` can be set equal to `.O` as long as:
-the reference string is a Palimpsest, and all child nodes are on the same,
-latest version\.
+This gets into some unimplemented esoterica of Clades, such as rebasing and
+coalescence\.
 
-It's not clear that this will be important\.
 
-What is important is retrieving and creating the Palimpsest\!
+### Node:hoist\(\)
+
+Replaces the node with its only child in the parent tree\.
+
+Returns `true` if successful, otherwise reporting why it failed\.
+
+This is a useful bit of tidying for rules which are containers \(such as the
+PEG `cat` rule\) and sometimes have just one element\.  In such cases, it's
+harmless to call it on all captures of that rule\.
+
+```lua
+function Node.hoist(node)
+   if node:isRoot() then
+      return nil, "can't hoist root node"
+   end
+   if #node ~= 1 then
+      return nil, "can only hoist a node with one child"
+   end
+   node.parent[node.up] = node[1]
+   return true
+end
+```
+
+For edits which change the model string, we need Palimpsest\.
 
 
 #### thePalimpsest\(node\): Pal
@@ -834,7 +907,6 @@ This is where shared structure can bite us if we're not careful, and help us
 if we are\.
 
 
-
 #### removeNode\(node\)
 
 This performs the removal and parental healing, while doing nothing for the
@@ -842,9 +914,11 @@ removed Node other than setting it up to be used as a graft\.
 
 We tag it `unready` as an aid, just in case it ends up where it shouldn't\.
 
+It would be possible to not take the span if we're yeeting the Node, but
+there's not a lot of alpha in it\.
 
 ```lua
-local function removeNode(node) -- :span will adjust for us
+local function removeNode(node) -- adjusts with :span()
    local span = node:span()
    local pal = thePalimpsest(node)
    pal:patch("", node:bounds())
@@ -864,11 +938,12 @@ end
 ```
 
 
+#### rebase\(node, span\)
+
 When we snip a node, intending to reuse it, we rebase it on the span\.
 
 ```lua
-function Node.snip(node)
-   local node, span = removeNode(node)
+local function rebase(node, span)
    node.str, node.stride = span, #span
    local offset = 1 - node.O
    for twig in node:walk() do
@@ -878,7 +953,28 @@ function Node.snip(node)
       twig.O = twig.o
    end
    node.unready = nil
+
    return node
+end
+```
+
+Leaving `:snip` a simple combination:
+
+```lua
+function Node.snip(node)
+   local node, span = removeNode(node)
+   return rebase(node, span)
+end
+```
+
+
+### Node:yeet\(\)
+
+Yeets itself right into the garbage collector's maw\.
+
+```lua
+function Node.yeet(node)
+   removeNode(node)
 end
 ```
 
@@ -892,12 +988,19 @@ As for any insertion, there is no return value\.
 ```lua
 local floor = math.floor
 
-function Node.graft(node, child, i)
+function Node.graft(node, child, i) -- adjusts with :bounds()
    assert(type(i) == 'number' and i > 0 and floor(i) == i,
           "i must be a positive integer")
    if i > #node + 1 then
       error("Node has " .. #node .. " children, can't insert at " .. i)
    end
+   if child.parent then
+      error("graft already has a parent: " .. child.parent.tag)
+   end
+   if child.unready then
+      error "child must be rebased (internal error?)"
+   end
+
    local _, cut;
    if node[i] then
       cut = node[i]:bounds()
@@ -929,7 +1032,7 @@ end
 ```
 
 
-### Node :prepend\(child\) :append\(child\)
+### Node:prepend\(child\), :append\(child\)
 
 The preferred forms of `:graft`, for what they are\.
 
@@ -944,24 +1047,38 @@ end
 ```
 
 
+### Node:splice\(str, i\)
 
-
-### Node:hoist\(\)
-
-Replaces the node with its only child in the parent tree\.
-
-Returns `true` if successful, otherwise reporting why it failed\.
+Inserts `str` into the model string\.
 
 ```lua
-function Node.hoist(node)
-   if node:isRoot() then
-      return nil, "can't hoist root node"
+function Node.splice(node, str, i) -- adjusts with :bounds()
+   assert(type(i) == 'number' and i > 0 and floor(i) == i,
+          "i must be a positive integer")
+   if i > #node + 1 then
+      error("Node has " .. #node .. " children, can't insert at " .. i)
    end
-   if #node ~= 1 then
-      return nil, "can only hoist a node with one child"
+
+   local _, cut;
+   if node[i] then
+      cut = node[i]:bounds()
+   else
+      _, cut = node[#node]:bounds()
+      cut = cut + 1
    end
-   node.parent[node.up] = node[1]
-   return true
+
+   local pal = thePalimpsest(node)
+   pal:patch(str, cut)
+   update(node, #str)
+   -- correct siblings if needed
+   if not node[i] then
+      return
+   end
+
+   for j = i, #node do
+      node[j].v = node[j].v + 1
+      node[j].O = node[j].O + #str
+   end
 end
 ```
 
@@ -1026,7 +1143,7 @@ local concat = assert(table.concat)
 
 local function blurb(node, w, c)
    if not (node.o and node.O and node.str) then return end
-   local span = node:span()
+   local span = spanner(node)
    local phrase = {c.metatable(node.tag)}
    insert(phrase, ": ")
    insert(phrase, c.string(span))

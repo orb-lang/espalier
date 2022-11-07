@@ -236,6 +236,16 @@ Node.v = 1
 
 
 
+
+
+
+
+
+
+
+
+
+
 local function adjust(node, v)
    -- parent version should always be >= child after updates
    if node.v < v then
@@ -259,6 +269,25 @@ end
 function Node.adjust(node)
    if node.v == 0 then return end
    adjust(node, node.v)
+end
+
+
+
+
+
+
+
+
+local function skew(node)
+   if node:isRoot() then
+      return node.O - node.o, node.v
+   end
+   local skew, v = skew(node.parent)
+   if v > node.v then
+      return node.O + skew - node.o, v
+   else
+      return skew, v
+   end
 end
 
 
@@ -336,6 +365,28 @@ end
 
 
 
+local function spanner(node)
+   if string(node.str) then
+      return sub(node.str, node.o, node.o + node.stride)
+   end
+
+   local skew, v = skew(node)
+   local O = node.O
+   if v > node.v then
+      O = O + skew
+   end
+
+   return node.str:sub(O, O + node.stride)
+end
+
+
+
+
+
+
+
+
+
 
 
 function Node.len(node)
@@ -360,6 +411,9 @@ end
 function Node.depth(node)
    return _deep(node, 0)
 end
+
+
+
 
 
 
@@ -752,6 +806,25 @@ end
 
 
 
+function Node.hoist(node)
+   if node:isRoot() then
+      return nil, "can't hoist root node"
+   end
+   if #node ~= 1 then
+      return nil, "can only hoist a node with one child"
+   end
+   node.parent[node.up] = node[1]
+   return true
+end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -843,7 +916,8 @@ end
 
 
 
-local function removeNode(node) -- :span will adjust for us
+
+local function removeNode(node) -- adjusts with :span()
    local span = node:span()
    local pal = thePalimpsest(node)
    pal:patch("", node:bounds())
@@ -866,8 +940,9 @@ end
 
 
 
-function Node.snip(node)
-   local node, span = removeNode(node)
+
+
+local function rebase(node, span)
    node.str, node.stride = span, #span
    local offset = 1 - node.O
    for twig in node:walk() do
@@ -877,7 +952,28 @@ function Node.snip(node)
       twig.O = twig.o
    end
    node.unready = nil
+
    return node
+end
+
+
+
+
+
+function Node.snip(node)
+   local node, span = removeNode(node)
+   return rebase(node, span)
+end
+
+
+
+
+
+
+
+
+function Node.yeet(node)
+   removeNode(node)
 end
 
 
@@ -891,12 +987,19 @@ end
 
 local floor = math.floor
 
-function Node.graft(node, child, i)
+function Node.graft(node, child, i) -- adjusts with :bounds()
    assert(type(i) == 'number' and i > 0 and floor(i) == i,
           "i must be a positive integer")
    if i > #node + 1 then
       error("Node has " .. #node .. " children, can't insert at " .. i)
    end
+   if child.parent then
+      error("graft already has a parent: " .. child.parent.tag)
+   end
+   if child.unready then
+      error "child must be rebased (internal error?)"
+   end
+
    local _, cut;
    if node[i] then
       cut = node[i]:bounds()
@@ -948,19 +1051,33 @@ end
 
 
 
-
-
-
-
-function Node.hoist(node)
-   if node:isRoot() then
-      return nil, "can't hoist root node"
+function Node.splice(node, str, i) -- adjusts with :bounds()
+   assert(type(i) == 'number' and i > 0 and floor(i) == i,
+          "i must be a positive integer")
+   if i > #node + 1 then
+      error("Node has " .. #node .. " children, can't insert at " .. i)
    end
-   if #node ~= 1 then
-      return nil, "can only hoist a node with one child"
+
+   local _, cut;
+   if node[i] then
+      cut = node[i]:bounds()
+   else
+      _, cut = node[#node]:bounds()
+      cut = cut + 1
    end
-   node.parent[node.up] = node[1]
-   return true
+
+   local pal = thePalimpsest(node)
+   pal:patch(str, cut)
+   update(node, #str)
+   -- correct siblings if needed
+   if not node[i] then
+      return
+   end
+
+   for j = i, #node do
+      node[j].v = node[j].v + 1
+      node[j].O = node[j].O + #str
+   end
 end
 
 
@@ -1025,7 +1142,7 @@ local concat = assert(table.concat)
 
 local function blurb(node, w, c)
    if not (node.o and node.O and node.str) then return end
-   local span = node:span()
+   local span = spanner(node)
    local phrase = {c.metatable(node.tag)}
    insert(phrase, ": ")
    insert(phrase, c.string(span))
