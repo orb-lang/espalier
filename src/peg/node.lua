@@ -157,6 +157,42 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local core = use "qor:core"
 local table, string = core.table, core.string
 local cluster, clade = use ("cluster:cluster", "cluster:clade")
@@ -211,6 +247,43 @@ local new, Node, Node_M = cluster.order { seed_fn = onmatch }
 
 
 Node.v = 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Node.G(node)
+   if node.g then
+      return node.g
+   end
+   local _g;
+   local parent = node.parent
+   repeat
+      if node.g then
+         _g = node.g
+         break
+      end
+      parent = parent.parent
+   until node:isRoot()
+   if not _g then
+      _g = {}
+      parent.g = _g
+   end
+   node.g = assert(_g)
+
+   return node.g
+end
 
 
 
@@ -929,7 +1002,7 @@ local function removeNode(node) -- adjusts with :span()
    end
    node.parent[top] = nil
 
-   node.parent, node.up = nil, nil
+   node.parent, node.up, node.g = nil, nil, nil
    node.unready = true
 
    return node, span
@@ -946,6 +1019,7 @@ local function rebase(node, span)
    node.str, node.stride = span, #span
    local offset = 1 - node.O
    for twig in node:walk() do
+      twig.g = nil
       twig.v = 1
       twig.str = span
       twig.o = twig.O + offset

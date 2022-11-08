@@ -151,6 +151,42 @@ This is really going to come in handy when we go deep on source mapping, which
 is a necessary precondition for out-of-order Orb documents.
 
 
+*** [#Todo] common table: .g, :G()
+
+It would be straightforward to smuggle in global state with a constant capture
+of a table in =match=.
+
+Pros
+
+  -  The big one is getting to check for =.v= locally, with a logic-free
+     operation, in two lookups.
+
+  -  There is a pattern I get into where the top Node starts wearing all the
+     clothes, so to speak, just because I, and the children, can both get at
+     it.  But really, these are global state.
+
+Cons:
+
+  - It's another thing to have to provide?  That part seems easy though,
+    there's only one, so as long as we remove them all when rebasing, we know
+    the one we can find with a parent walk is the one.
+
+I'm writing the Clade without 'magic': the magic way would be an =__index=
+which finds this table for you if the slot is nil.
+
+I'd rather call it =.g= and offer =node:G()= to retrieve it.
+
+Yeah.  I like this.  Because we don't even have to pass =.g= in as a capture,
+in fact, we /don't need to have one/ if the Node isn't using it, and that
+seems key: it's a basic enough pattern to provide with the base genre, but
+I imagine many occasions when we just don't need one.
+
+One extra key/value pair per node isn't /that/ much bulk, but I'm taking pains
+to only get what I want to pay for here.
+
+This is easy, I'm going to do it right now.
+
+
 ** Node
 
   Nodes are implemented using Cluster's Clade system, which is itself designed
@@ -211,6 +247,43 @@ Nodes aren't editable by default, so we set =v= to =0=.
 
 #!lua
 Node.v = 1
+#/lua
+
+
+*** Node:G()
+
+  This finds =.g=, a field defined as an optional table shared by the entire
+AST.
+
+The Clade basis doesn't use =.g= for anything, and only creates it if it can't
+find it.  It will =nil= out the field during rebasing, that's it.
+
+=Node:G()= will assign the global table to the root, if it needed to be
+created, and to the Node which asked for it, but /not/ intermediate Nodes.
+
+
+#!lua
+function Node.G(node)
+   if node.g then
+      return node.g
+   end
+   local _g;
+   local parent = node.parent
+   repeat
+      if node.g then
+         _g = node.g
+         break
+      end
+      parent = parent.parent
+   until node:isRoot()
+   if not _g then
+      _g = {}
+      parent.g = _g
+   end
+   node.g = assert(_g)
+
+   return node.g
+end
 #/lua
 
 
@@ -929,7 +1002,7 @@ local function removeNode(node) -- adjusts with :span()
    end
    node.parent[top] = nil
 
-   node.parent, node.up = nil, nil
+   node.parent, node.up, node.g = nil, nil, nil
    node.unready = true
 
    return node, span
@@ -946,6 +1019,7 @@ local function rebase(node, span)
    node.str, node.stride = span, #span
    local offset = 1 - node.O
    for twig in node:walk() do
+      twig.g = nil
       twig.v = 1
       twig.str = span
       twig.o = twig.O + offset
