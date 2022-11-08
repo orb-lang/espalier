@@ -101,7 +101,15 @@ local eDji = eVav:Mem(Elden):Dji()
 local function dji()
    return eDji
 end
+#/lua
 
+*** Vav
+
+#!lua
+local pegpeg = use "espalier:peg/peg"
+local function vav()
+   return eVav
+end
 #/lua
 
 
@@ -171,7 +179,8 @@ return { eVav = eVav,
          subwalker = subwalker,
          searcher = searcher,
          filterer = filterer,
-         dji = dji }
+         dji = dji,
+         vav = vav, }
 #/lua
 
 With a fresh instance for each require:

@@ -102,6 +102,9 @@ local function dji()
    return eDji
 end
 
+local function vav()
+   return eVav
+end
 
 
 
@@ -171,7 +174,8 @@ return { eVav = eVav,
          subwalker = subwalker,
          searcher = searcher,
          filterer = filterer,
-         dji = dji }
+         dji = dji,
+         vav = vav, }
 
 
 

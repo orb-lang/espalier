@@ -815,7 +815,7 @@ function Node.hoist(node)
       return nil, "can only hoist a node with one child"
    end
    node.parent[node.up] = node[1]
-   return true
+   return true -- node[1] probably a better choice
 end
 ```
 
