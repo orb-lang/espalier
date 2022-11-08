@@ -101,9 +101,16 @@ local eDji = eVav:Mem(Elden):Dji()
 local function dji()
    return eDji
 end
+```
+
+### Vav
+
+```lua
+local pegpeg = use "espalier:peg/pegpeg"
+local mem = use "espalier:peg/mem"
 
 local function vav()
-   return eVav
+   return Vav(pegpeg, mem)
 end
 ```
 
@@ -175,6 +182,7 @@ return { eVav = eVav,
          searcher = searcher,
          filterer = filterer,
          dji = dji,
+         pegpeg = pegpeg,
          vav = vav, }
 ```
 

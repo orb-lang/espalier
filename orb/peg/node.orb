@@ -1156,13 +1156,23 @@ local yieldName = assert(tablib.yieldName)
 local yieldReprs = assert(tablib.yieldReprs)
 local yieldToken = assert(tablib.yieldToken)
 local concat = assert(table.concat)
+local floor = math.floor
 
 local function blurb(node, w, c)
    if not (node.o and node.O and node.str) then return end
    local span = spanner(node)
+   local width = w.width
+   if #span > width - 6 then
+      local half = floor((width - 6) / 2)
+      local head, tail = sub(span, 1, half), sub(span, -half -1, -1)
+      span = c.string(head) .. c.stresc(" ⋯ ") .. c.string(tail)
+      span:gsub("\n", c.stresc("\\n")):gsub("%s+", " ")
+   else
+      span = c.string(span)
+   end
    local phrase = {c.metatable(node.tag)}
    insert(phrase, ": ")
-   insert(phrase, c.string(span))
+   insert(phrase, span)
    return concat(phrase)
 end
 #/lua

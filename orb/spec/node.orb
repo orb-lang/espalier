@@ -106,9 +106,11 @@ end
 *** Vav
 
 #!lua
-local pegpeg = use "espalier:peg/peg"
+local pegpeg = use "espalier:peg/pegpeg"
+local mem = use "espalier:peg/mem"
+
 local function vav()
-   return eVav
+   return Vav(pegpeg, mem)
 end
 #/lua
 
@@ -180,6 +182,7 @@ return { eVav = eVav,
          searcher = searcher,
          filterer = filterer,
          dji = dji,
+         pegpeg = pegpeg,
          vav = vav, }
 #/lua
 
