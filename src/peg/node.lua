@@ -263,6 +263,9 @@ Node.v = 1
 
 
 
+
+
+
 function Node.G(node)
    if node.g then
       return node.g
@@ -304,6 +307,48 @@ end
 
 
 
+function Node.V(node)
+   return node:root().v
+end
+
+
+
+
+
+
+
+
+function Node.beEditable(node)
+   if node.v > 0 then return end
+   for twig in node :root() :walk() do
+      if twig.v == 0 then
+         twig.v = 1
+      elseif twig.v > 1 then
+         error("trying to make node editable, found a "
+               .. twig.tag .. " with .v = " .. twig.v)
+      end
+   end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -320,6 +365,9 @@ end
 
 
 local function adjust(node, v)
+   if node.v == 0 then
+      node:beEditable()
+   end
    -- parent version should always be >= child after updates
    if node.v < v then
       error ("node ." .. node.tag .. " has .v " .. node.v .. "< " .. v)
@@ -341,6 +389,8 @@ end
 
 function Node.adjust(node)
    if node.v == 0 then return end
+   -- add this?
+   -- if node.g and node.g.v == node.v then return end
    adjust(node, node.v)
 end
 
@@ -916,6 +966,20 @@ end
 
 
 
+
+
+
+
+
+local function oneUp(node)
+   for twig in node :walk() do
+      assert(twig.v == 0, "some node was already editable?")
+      twig.v = 1
+   end
+end
+
+
+
 local function thePalimpsest(node)
    if type(node.str) == 'table' then
       return node.str
@@ -924,10 +988,7 @@ local function thePalimpsest(node)
       node.str = Pal(node.str)
       -- bump to v1 if we have to
       if node.v == 0 then
-         for twig in node :walk() do
-            assert(twig.v == 0, "some node was already editable?")
-            twig.v = 1
-         end
+         node:beEditable()
       end
       return node.str
    end
@@ -1090,7 +1151,6 @@ function Node.graft(node, child, i) -- adjusts with :bounds()
    if child.unready then
       error "child must be rebased (internal error?)"
    end
-
    local _, cut;
    if node[i] then
       cut = node[i]:bounds()
@@ -1148,7 +1208,6 @@ function Node.splice(node, str, i) -- adjusts with :bounds()
    if i > #node + 1 then
       error("Node has " .. #node .. " children, can't insert at " .. i)
    end
-
    local _, cut;
    if node[i] then
       cut = node[i]:bounds()

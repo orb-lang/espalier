@@ -261,6 +261,9 @@ find it\.  It will `nil` out the field during rebasing, that's it\.
 `Node:G()` will assign the global table to the root, if it needed to be
 created, and to the Node which asked for it, but *not* intermediate Nodes\.
 
+\#Note
+such that `.g.v == root.v` at all times\.
+
 
 ```lua
 function Node.G(node)
@@ -283,6 +286,48 @@ function Node.G(node)
    node.g = assert(_g)
 
    return node.g
+end
+```
+
+
+### Node:V\(\)
+
+This finds the *correct* version of the Node, without changing anything\.
+
+The idea is that this can be overridden with, specifically, `node:G().v` if
+we're using a global table\.
+
+\#Note
+   standing in the same relationship with `.o` as the other do with their
+   miniscules\.
+
+   The answer is to rename `.O` to something else, I think\.
+
+   Or just accept the irregularity, which is easier\.  I do have to resist the
+   urge to fiddle with Node too much while working on Mem\.
+
+```lua
+function Node.V(node)
+   return node:root().v
+end
+```
+
+
+### Node:beEditable\(\)
+
+Sees to it that a Node is editable\.
+
+```lua
+function Node.beEditable(node)
+   if node.v > 0 then return end
+   for twig in node :root() :walk() do
+      if twig.v == 0 then
+         twig.v = 1
+      elseif twig.v > 1 then
+         error("trying to make node editable, found a "
+               .. twig.tag .. " with .v = " .. twig.v)
+      end
+   end
 end
 ```
 
@@ -321,6 +366,9 @@ feature it explicitly, and need to have it\.
 
 ```lua
 local function adjust(node, v)
+   if node.v == 0 then
+      node:beEditable()
+   end
    -- parent version should always be >= child after updates
    if node.v < v then
       error ("node ." .. node.tag .. " has .v " .. node.v .. "< " .. v)
@@ -342,6 +390,8 @@ end
 ```lua
 function Node.adjust(node)
    if node.v == 0 then return end
+   -- add this?
+   -- if node.g and node.g.v == node.v then return end
    adjust(node, node.v)
 end
 ```
@@ -916,6 +966,20 @@ As long as we preserve the invariant that no child will have any Palimpsest
 unless the parent does, we can do this with a minimally\-spanning,
 breadth\-first, recursive walk of the children\.
 
+
+##### oneUp\(node\)
+
+Makes a non\-editable node editable, if something editable is done to it\.
+
+```lua
+local function oneUp(node)
+   for twig in node :walk() do
+      assert(twig.v == 0, "some node was already editable?")
+      twig.v = 1
+   end
+end
+```
+
 ```lua
 local function thePalimpsest(node)
    if type(node.str) == 'table' then
@@ -925,10 +989,7 @@ local function thePalimpsest(node)
       node.str = Pal(node.str)
       -- bump to v1 if we have to
       if node.v == 0 then
-         for twig in node :walk() do
-            assert(twig.v == 0, "some node was already editable?")
-            twig.v = 1
-         end
+         node:beEditable()
       end
       return node.str
    end
@@ -1013,7 +1074,7 @@ end
 
 #### rebase\(node, span\)
 
-When we snip a node, intending to reuse it, we rebase it on the span\.
+When we snip a node, intending to reuse it, we rebase it on the span\.f
 
 ```lua
 local function rebase(node, span)
@@ -1091,7 +1152,6 @@ function Node.graft(node, child, i) -- adjusts with :bounds()
    if child.unready then
       error "child must be rebased (internal error?)"
    end
-
    local _, cut;
    if node[i] then
       cut = node[i]:bounds()
@@ -1149,7 +1209,6 @@ function Node.splice(node, str, i) -- adjusts with :bounds()
    if i > #node + 1 then
       error("Node has " .. #node .. " children, can't insert at " .. i)
    end
-
    local _, cut;
    if node[i] then
       cut = node[i]:bounds()
