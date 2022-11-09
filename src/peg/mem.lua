@@ -239,24 +239,25 @@ local analyzeElement;
 local Hoist = Set {'element', 'alt', 'cat'}
 
 local function synthesize(node)
+   if Hoist[node.tag] and #node == 1 then
+      local kid = node[1]
+      node:hoist()
+      node = kid
+   end
    for _, twig in ipairs(node) do
-      if Hoist[twig.tag] and #twig == 1 then
-         local kid = twig[1]
-         twig:hoist()
-         twig = kid
-      end
-
-      if SpecialSnowflake[node.tag] then
-         extraSpecial(twig)
-      end
-      -- elements
-      if twig.tag == 'element' then
-         analyzeElement(twig)
-      end
-      if node.tag == 'rule' then
-         node.token = normalize(node :take 'rule_name' :span())
-      end
       synthesize(twig)
+   end
+   if SpecialSnowflake[node.tag] then
+      extraSpecial(node)
+   end
+   -- elements
+   if node.tag == 'element' then
+      analyzeElement(node)
+      -- this may make the element have a single child,
+      -- so we need to hoist:
+      node.parent:hoist()
+   elseif node.tag == 'rule' then
+      node.token = normalize(node :take 'rule_name' :span())
    end
    return node
 end
@@ -1196,19 +1197,19 @@ local Trait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
 
 local function copyTraits(rule, name)
    local changed = false
-   for trait, state in pairs(rule) do
-      if Trait[trait] then
-         local differs = name[trait] ~= state
+   for trait in pairs(Trait) do
+      if rule[trait] then
+         local differs = name[trait] ~= rule[trait]
          changed = changed or differs
-         name[trait] = state
+         name[trait] = rule[trait]
       end
    end
    local body = rule :take 'rhs' [1]
-   for trait, state in pairs(body) do
-      if Trait[trait] then
-         local differs = name[trait] ~= state
+   for trait in pairs(Trait) do
+      if body[trait] then
+         local differs = name[trait] ~= body[trait]
          changed = changed or differs
-         name[trait] = state
+         name[trait] = body[trait]
       end
    end
    if body.constrained then
