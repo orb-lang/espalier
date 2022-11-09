@@ -975,6 +975,12 @@ end
 Constrains an individual rule\.
 
 ```lua
+local Trait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
+                   'unbounded', 'compound', 'failsucceeds', 'nofail',
+                   'recursive', 'self_recursive'}
+```
+
+```lua
 function Mem.rule.constrain(rule, coll)
    local rhs = assert(rule :take 'rhs')
    assert(#rhs == 1, "bad arity on RHS")
@@ -985,6 +991,11 @@ function Mem.rule.constrain(rule, coll)
       rhs.constrained = true
    else
       queueUp(coll.shuttle, rule)
+   end
+   for trait in pairs(Trait) do
+      if body[trait] then
+        rule[trait] = body[trait]
+      end
    end
    rule:propagateConstraints(coll)
 end
@@ -1191,11 +1202,9 @@ here\.
 Copies over traits, returning `true` if any of the copied traits has changed
 the state of `name`\.
 
-```lua
-local Trait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
-                   'unbounded', 'compound', 'failsucceeds', 'nofail',
-                   'recursive', 'self_recursive'}
+\#Note
 
+```lua
 local function copyTraits(rule, name)
    local changed = false
    for trait in pairs(Trait) do
@@ -1205,15 +1214,7 @@ local function copyTraits(rule, name)
          name[trait] = rule[trait]
       end
    end
-   local body = rule :take 'rhs' [1]
-   for trait in pairs(Trait) do
-      if body[trait] then
-         local differs = name[trait] ~= body[trait]
-         changed = changed or differs
-         name[trait] = body[trait]
-      end
-   end
-   if body.constrained then
+   if rule.constrained then
       name.constrained = true
       name.constrained_by_rule = true
    else
