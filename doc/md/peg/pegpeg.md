@@ -186,9 +186,7 @@ But this is a topic for elsewhere\.
                            / '"'
                            / "\\" )
                          / digit digit? digit? ; digit%1..3
-                         / "x" higit higit )
-
-    `hex-escape`  ←  "\\" {Xx} higit higit
+                         / {Xx} higit higit )
          `higit`  ←  digit / [A-F] / [a-f]
 
              EOS  ←  "-1"

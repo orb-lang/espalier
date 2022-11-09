@@ -347,6 +347,375 @@ function Mem.grammar.synthesize(grammar)
 end
 ```
 
+### grammar:collectRules\(\)
+
+This builds up a large collection of relational information, while decorating
+rules and names with tokens representing their normalized value\.
+
+
+- returns a map of the following:
+
+  - nameSet:  The set of every name in normalized token form\.
+
+  - nameMap:  The tokens of nameSet mapped to an array of all right hand side
+      references in the grammar\.
+
+  - ruleMap:  A map from the rule name \(token\) to the synthesized rule\.
+
+  - ruleCalls:  A map of the token for a rule to an array of the name of each
+      rule it calls\. This overwrites duplicate rules, which don't
+      interest me very much except as something we lint and prune\.
+
+  - ruleSet:  A set containing the name of all defined rules\.
+
+  - dupe:  An array of any rule synth which has been duplicated later\.  The
+      tools follow the semantics of lpeg, which overwrites a `V"rule"`
+      definition if it sees a second one\.
+
+  - surplus:  An array of any rule which isn't referenced by name on the
+      right hand side\.
+
+  - missing:  Any rule referenced by name which isn't defined in the grammar\.
+
+
+```lua
+local sort, nonempty = table.sort, assert(table.nonempty)
+
+function Mem.grammar.collectRules(grammar)
+   -- our containers:
+   local nameSet, nameMap = Set {}, {} -- #{token*}, token => {name*}
+   local dupe, surplus, missing = {}, {}, {} -- {rule*}, {rule*}, {token*}
+   local ruleMap = {}   -- token => synth
+   local ruleCalls = {} -- token => {name*}
+   local ruleSet = Set {}   -- #{rule_name}
+
+   for name in grammar :filter 'name' do
+      local token = normalize(name:span())
+      name.token = token
+      nameSet[token] = true
+      local refs = nameMap[token] or {}
+      insert(refs, name)
+      nameMap[token] = refs
+   end
+
+   local start_rule = grammar :take 'rule'
+
+   for rule in grammar :filter 'rule' do
+      local token = assert(rule.token)
+      rule.references = nameMap[token]
+      ruleSet[token] = true
+      if ruleMap[token] then
+         -- lpeg uses the *last* rule defined so we do likewise
+         ruleMap[token].duplicate = true
+         insert(dupe, ruleMap[token])
+      end
+      ruleMap[token] = rule
+      if not nameSet[token] then
+         --  While it is valid to refer to the top rule, it isn't noteworthy
+         --  when a grammar does not.
+         --  Rules which are not findable from the start rule aren't part of
+         --  the grammar, and are therefore surplus
+         if rule ~= start_rule then
+            rule.surplus = true
+            insert(surplus, rule)
+         end
+      end
+      -- build call graph
+      local calls = {}
+      ruleCalls[token] = calls
+      for name in rule :filter 'name' do
+         local tok = normalize(name:span())
+         insert(calls, tok)
+      end
+   end
+
+   -- account for missing rules (referenced but not defined)
+   for name in pairs(nameSet) do
+      if not ruleMap[name] then
+         insert(missing, name)
+      end
+   end
+   sort(missing)
+
+   return { nameSet   =  nameSet,
+            nameMap   =  nameMap,
+            ruleMap   =  ruleMap,
+            ruleCalls =  ruleCalls,
+            ruleSet   =  ruleSet,
+            dupe      =  nonempty(dupe),
+            surplus   =  nonempty(surplus),
+            missing   =  nonempty(missing), }
+end
+```
+
+
+#### partition\(ruleCalls\)
+
+This partitions the rules into regular and recursive\.
+
+'Regular' here is not 100% identical to 'regular language' due to references
+and lookahead, but it's suitably close\.
+
+\#improve
+it as an accumulator i\.e\. `set = set + newSet` is generally wasteful and
+we can drop some allocation pressure by iteration and setting to true\.  This
+would call for profiling, and is only worth considering because programmatic
+generation of fairly complex grammar is on the horizon\.
+
+```lua
+local function partition(ruleCalls, callSet)
+   local base_rules = Set()
+   for name, calls in pairs(ruleCalls) do
+      if #calls == 0 then
+         base_rules[name] = true
+         callSet[name] = nil
+      end
+   end
+
+   local rule_order = {base_rules}
+   local all_rules, next_rules = base_rules, Set()
+   local TRIP_AT = 512
+   local relaxing, trip = true, 1
+   while relaxing do
+      trip = trip + 1
+      for name, calls in pairs(callSet) do
+         local based = true
+         for call in pairs(calls) do
+            if not all_rules[call] then
+               based = false
+            end
+         end
+         if based then
+            next_rules[name] = true
+            callSet[name] = nil
+         end
+      end
+      if #next_rules == 0 then
+         relaxing = false
+      else
+         insert(rule_order, next_rules)
+         all_rules = all_rules + next_rules
+         next_rules = Set()
+      end
+
+      if trip > TRIP_AT then
+         relaxing = false
+         error "512 attempts to relax rule order, something is off"
+      end
+   end
+
+   return rule_order, callSet
+end
+```
+
+### Mem\.grammar\.callSet\(grammar\)
+
+This makes Sets non\-destructively out of arrays of rule names, which might not
+have to be non\-destructive, but comes with no disadvantages at this point\.
+
+```lua
+local clone1 = assert(table.clone1)
+
+local function _callSet(ruleCalls)
+   local callSet = {}
+   for name, calls in pairs(ruleCalls) do
+      callSet[name] = Set(clone1(calls))
+   end
+   return callSet
+end
+```
+
+```lua
+function Mem.grammar.callSet(grammar)
+   local collection = grammar.collection or grammar:collectRules()
+   return _callSet(collection.ruleCalls)
+end
+```
+
+
+#### graphCalls\(grammar\)
+
+  Now that we've obtained all the terminal rules, we can use more set
+addition and a queue to obtain the full rule set seen by any other given
+rule\.
+
+This returns a map of names to a Set of every rule which can be visited from
+that rule name, followed by the regular and recursive halves, which we do not
+currently collect\.
+
+```lua
+local function setFor(tab)
+   return Set(clone1(tab))
+end
+
+local function graphCalls(grammar)
+   local collection = assert(grammar.collection)
+   local ruleCalls, ruleMap = assert(collection.ruleCalls),
+                               assert(collection.ruleMap)
+   local regulars = assert(collection.regulars)
+
+   -- go through each layer and build the full dependency tree for regular
+   -- rules
+   local regSets = {}
+
+   -- first set of rules have no named subrules
+   -- which we call 'final'
+   local depSet = regulars[1]
+   for name in pairs(depSet) do
+      ---[[DBG]] ruleMap[name].final = true
+      regSets[name] = Set {}
+   end
+   -- second tier has only the already-summoned direct calls
+   depSet = regulars[2] or {}
+   for name in pairs(depSet) do
+      regSets[name] = setFor(ruleCalls[name])
+   end
+   -- the rest is set arithmetic
+   for i = 3, #regulars do
+      depSet = regulars[i]
+      for name in pairs(depSet) do
+         local callSet = setFor(ruleCalls[name])
+         for _, called in ipairs(ruleCalls[name]) do
+            callSet = callSet + regSets[called]
+         end
+         regSets[name] = callSet
+      end
+   end
+
+   --  the regulars collected, we turn to the recursives and roll 'em up
+   local recursive = assert(collection.recursive)
+   local recurSets = {}
+
+   -- make a full recurrence graph for one set
+   local function oneGraph(name, callSet)
+      local recurSet = callSet + {}
+      -- start with known subsets
+      for elem in pairs(callSet) do
+         local subSet = regSets[elem] or recurSets[elem]
+         if subSet then
+            recurSet = recurSet + subSet
+         end
+      end
+      -- run a queue until we're out of names
+      local shuttle = Deque()
+      for elem in pairs(recurSet) do
+         shuttle:push(elem)
+      end
+      for elem in shuttle:popAll() do
+         for _, name in ipairs(ruleCalls[elem] or {}) do
+            if not recurSet[name] then
+               shuttle:push(name)
+               recurSet[name] = true
+            end
+         end
+      end
+
+      recurSets[name] = recurSet
+   end
+
+   for name, callSet in pairs(recursive) do
+      oneGraph(name, callSet)
+   end
+   local allCalls = clone1(regSets)
+   for name, set in pairs(recurSets) do
+      allCalls[name] = set
+   end
+   return allCalls, regSets, recurSets
+end
+```
+
+
+#### trimRecursive\(recursive\)
+
+```lua
+local function trimRecursive(recursive, ruleMap)
+   for rule, callset in pairs(recursive) do
+      for elem in pairs(callset) do
+         if (not ruleMap[elem])
+            or (not ruleMap[elem].recursive) then
+            callset[elem] = nil
+         end
+      end
+   end
+
+   return recursive
+end
+```
+
+
+### grammar:analyze\(\)
+
+Pulls together the caller\-callee relationships\.
+
+```lua
+function Mem.grammar.analyze(grammar)
+   grammar.collection = grammar:collectRules()
+   local coll = assert(grammar.collection)
+
+   local regulars, recursive = partition(coll.ruleCalls, grammar:callSet())
+   local ruleMap = assert(coll.ruleMap)
+   for name in pairs(recursive) do
+      ruleMap[name].recursive = true
+   end
+   coll.regulars, coll.recursive = regulars, trimRecursive(recursive, ruleMap)
+   coll.calls = graphCalls(grammar)
+   if coll.missing then
+      grammar:makeDummies()
+   end
+
+   -- we'll switch to using these directly
+   for k, v in pairs(coll) do
+      grammar[k] = v
+   end
+
+
+   return grammar:anomalies()
+end
+```
+
+
+## Anomalous Grammars
+
+A grammar is anomalous if it has missing, duplicate, or surplus rules\.
+
+Duplicate rules are a simple error, since the only semantic of a duplicate
+rule is to overwrite the earlier with the latter, so we have no further
+action to take in the moments before the mistake is corrected by the user\.
+
+Missing rules we can account for by building placeholders, which we do\.
+
+Surplus rules are an interesting case, because there is a coherent kind of
+surplus rule or rules: an alternate grammar built partially or wholly from
+rules referenced from the start rule of the grammar\.
+
+The intention of the Vav framework is that it will be tractable to assemble
+this sort of rule from parts, and this is more clear than embedding several
+grammars into one\.
+
+But it's a coherent action to take on surplus rules, the semantic is clear
+enough, and we'll consider doing it\.
+
+
+### grammar:anomalies\(\)
+
+If everything is in order, returns `nil, message`, otherwise, the
+less\-than\-perfect aspects of the grammar as\-is\.
+
+```lua
+function Mem.grammar.anomalies(grammar)
+   local coll = grammar.collection
+   if not coll then return nil, "collectRules first" end
+   if not (grammar.missing or grammar.surplus or grammar.dupe) then
+      return nil, "no anomalies detected"
+   else
+      return { missing = grammar.missing,
+               surplus = grammar.surplus,
+               dupe   = grammar.dupe }
+   end
+end
+```
+
+
 
 ### Codegen Mixin
 

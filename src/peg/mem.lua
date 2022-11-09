@@ -353,6 +353,374 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local sort, nonempty = table.sort, assert(table.nonempty)
+
+function Mem.grammar.collectRules(grammar)
+   -- our containers:
+   local nameSet, nameMap = Set {}, {} -- #{token*}, token => {name*}
+   local dupe, surplus, missing = {}, {}, {} -- {rule*}, {rule*}, {token*}
+   local ruleMap = {}   -- token => synth
+   local ruleCalls = {} -- token => {name*}
+   local ruleSet = Set {}   -- #{rule_name}
+
+   for name in grammar :filter 'name' do
+      local token = normalize(name:span())
+      name.token = token
+      nameSet[token] = true
+      local refs = nameMap[token] or {}
+      insert(refs, name)
+      nameMap[token] = refs
+   end
+
+   local start_rule = grammar :take 'rule'
+
+   for rule in grammar :filter 'rule' do
+      local token = assert(rule.token)
+      rule.references = nameMap[token]
+      ruleSet[token] = true
+      if ruleMap[token] then
+         -- lpeg uses the *last* rule defined so we do likewise
+         ruleMap[token].duplicate = true
+         insert(dupe, ruleMap[token])
+      end
+      ruleMap[token] = rule
+      if not nameSet[token] then
+         --  While it is valid to refer to the top rule, it isn't noteworthy
+         --  when a grammar does not.
+         --  Rules which are not findable from the start rule aren't part of
+         --  the grammar, and are therefore surplus
+         if rule ~= start_rule then
+            rule.surplus = true
+            insert(surplus, rule)
+         end
+      end
+      -- build call graph
+      local calls = {}
+      ruleCalls[token] = calls
+      for name in rule :filter 'name' do
+         local tok = normalize(name:span())
+         insert(calls, tok)
+      end
+   end
+
+   -- account for missing rules (referenced but not defined)
+   for name in pairs(nameSet) do
+      if not ruleMap[name] then
+         insert(missing, name)
+      end
+   end
+   sort(missing)
+
+   return { nameSet   =  nameSet,
+            nameMap   =  nameMap,
+            ruleMap   =  ruleMap,
+            ruleCalls =  ruleCalls,
+            ruleSet   =  ruleSet,
+            dupe      =  nonempty(dupe),
+            surplus   =  nonempty(surplus),
+            missing   =  nonempty(missing), }
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function partition(ruleCalls, callSet)
+   local base_rules = Set()
+   for name, calls in pairs(ruleCalls) do
+      if #calls == 0 then
+         base_rules[name] = true
+         callSet[name] = nil
+      end
+   end
+
+   local rule_order = {base_rules}
+   local all_rules, next_rules = base_rules, Set()
+   local TRIP_AT = 512
+   local relaxing, trip = true, 1
+   while relaxing do
+      trip = trip + 1
+      for name, calls in pairs(callSet) do
+         local based = true
+         for call in pairs(calls) do
+            if not all_rules[call] then
+               based = false
+            end
+         end
+         if based then
+            next_rules[name] = true
+            callSet[name] = nil
+         end
+      end
+      if #next_rules == 0 then
+         relaxing = false
+      else
+         insert(rule_order, next_rules)
+         all_rules = all_rules + next_rules
+         next_rules = Set()
+      end
+
+      if trip > TRIP_AT then
+         relaxing = false
+         error "512 attempts to relax rule order, something is off"
+      end
+   end
+
+   return rule_order, callSet
+end
+
+
+
+
+
+
+
+
+local clone1 = assert(table.clone1)
+
+local function _callSet(ruleCalls)
+   local callSet = {}
+   for name, calls in pairs(ruleCalls) do
+      callSet[name] = Set(clone1(calls))
+   end
+   return callSet
+end
+
+
+
+function Mem.grammar.callSet(grammar)
+   local collection = grammar.collection or grammar:collectRules()
+   return _callSet(collection.ruleCalls)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function setFor(tab)
+   return Set(clone1(tab))
+end
+
+local function graphCalls(grammar)
+   local collection = assert(grammar.collection)
+   local ruleCalls, ruleMap = assert(collection.ruleCalls),
+                               assert(collection.ruleMap)
+   local regulars = assert(collection.regulars)
+
+   -- go through each layer and build the full dependency tree for regular
+   -- rules
+   local regSets = {}
+
+   -- first set of rules have no named subrules
+   -- which we call 'final'
+   local depSet = regulars[1]
+   for name in pairs(depSet) do
+      ---[[DBG]] ruleMap[name].final = true
+      regSets[name] = Set {}
+   end
+   -- second tier has only the already-summoned direct calls
+   depSet = regulars[2] or {}
+   for name in pairs(depSet) do
+      regSets[name] = setFor(ruleCalls[name])
+   end
+   -- the rest is set arithmetic
+   for i = 3, #regulars do
+      depSet = regulars[i]
+      for name in pairs(depSet) do
+         local callSet = setFor(ruleCalls[name])
+         for _, called in ipairs(ruleCalls[name]) do
+            callSet = callSet + regSets[called]
+         end
+         regSets[name] = callSet
+      end
+   end
+
+   --  the regulars collected, we turn to the recursives and roll 'em up
+   local recursive = assert(collection.recursive)
+   local recurSets = {}
+
+   -- make a full recurrence graph for one set
+   local function oneGraph(name, callSet)
+      local recurSet = callSet + {}
+      -- start with known subsets
+      for elem in pairs(callSet) do
+         local subSet = regSets[elem] or recurSets[elem]
+         if subSet then
+            recurSet = recurSet + subSet
+         end
+      end
+      -- run a queue until we're out of names
+      local shuttle = Deque()
+      for elem in pairs(recurSet) do
+         shuttle:push(elem)
+      end
+      for elem in shuttle:popAll() do
+         for _, name in ipairs(ruleCalls[elem] or {}) do
+            if not recurSet[name] then
+               shuttle:push(name)
+               recurSet[name] = true
+            end
+         end
+      end
+
+      recurSets[name] = recurSet
+   end
+
+   for name, callSet in pairs(recursive) do
+      oneGraph(name, callSet)
+   end
+   local allCalls = clone1(regSets)
+   for name, set in pairs(recurSets) do
+      allCalls[name] = set
+   end
+   return allCalls, regSets, recurSets
+end
+
+
+
+
+
+
+local function trimRecursive(recursive, ruleMap)
+   for rule, callset in pairs(recursive) do
+      for elem in pairs(callset) do
+         if (not ruleMap[elem])
+            or (not ruleMap[elem].recursive) then
+            callset[elem] = nil
+         end
+      end
+   end
+
+   return recursive
+end
+
+
+
+
+
+
+
+
+function Mem.grammar.analyze(grammar)
+   grammar.collection = grammar:collectRules()
+   local coll = assert(grammar.collection)
+
+   local regulars, recursive = partition(coll.ruleCalls, grammar:callSet())
+   local ruleMap = assert(coll.ruleMap)
+   for name in pairs(recursive) do
+      ruleMap[name].recursive = true
+   end
+   coll.regulars, coll.recursive = regulars, trimRecursive(recursive, ruleMap)
+   coll.calls = graphCalls(grammar)
+   if coll.missing then
+      grammar:makeDummies()
+   end
+
+   -- we'll switch to using these directly
+   for k, v in pairs(coll) do
+      grammar[k] = v
+   end
+
+
+   return grammar:anomalies()
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Mem.grammar.anomalies(grammar)
+   local coll = grammar.collection
+   if not coll then return nil, "collectRules first" end
+   if not (grammar.missing or grammar.surplus or grammar.dupe) then
+      return nil, "no anomalies detected"
+   else
+      return { missing = grammar.missing,
+               surplus = grammar.surplus,
+               dupe   = grammar.dupe }
+   end
+end
+
+
+
+
+
+
+
+
+
 local codegen = require "espalier:peg/codegen"
 
 for class, mixin in pairs(codegen) do

@@ -1323,7 +1323,7 @@ local suppress = Set {
    'up',
    'str',
    'o', 'O', 'v',
-   --'stride',
+   'stride',
 }
 local lens = { hide_key = suppress,
                blurb = blurb,
