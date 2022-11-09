@@ -938,7 +938,12 @@ function Node.hoist(node)
    if #node ~= 1 then
       return nil, "can only hoist a node with one child"
    end
-   node.parent[node.up] = node[1]
+   local kid = node[1]
+   node.parent[node.up] = kid
+   kid.up = node.up
+   kid.parent = node.parent
+   --node.parent, node.up, node[1] = nil, nil, nil
+   node.stranded = true
    return true -- node[1] probably a better choice
 end
 

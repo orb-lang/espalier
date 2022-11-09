@@ -240,10 +240,10 @@ local Hoist = Set {'element', 'alt', 'cat'}
 
 local function synthesize(node)
    for _, twig in ipairs(node) do
-      if Hoist[twig.tag] then
-         if twig:hoist() then
-            twig = assert(twig[1])
-         end
+      if Hoist[twig.tag] and #twig == 1 then
+         local kid = twig[1]
+         twig:hoist()
+         twig = kid
       end
 
       if SpecialSnowflake[node.tag] then
@@ -1190,7 +1190,7 @@ end
 
 
 
-local Trait = Set {'locked', 'predicate', 'nullable', 'terminal',
+local Trait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
                    'unbounded', 'compound', 'failsucceeds', 'nofail',
                    'recursive', 'self_recursive'}
 
