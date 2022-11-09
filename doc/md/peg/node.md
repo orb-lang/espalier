@@ -943,9 +943,9 @@ function Node.hoist(node)
    node.parent[node.up] = kid
    kid.up = node.up
    kid.parent = node.parent
-   --node.parent, node.up, node[1] = nil, nil, nil
+   node.parent, node.up, node[1] = nil, nil, nil
    node.stranded = true
-   return true -- node[1] probably a better choice
+   return true -- kid probably a better choice #blocker @session-edit
 end
 ```
 

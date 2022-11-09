@@ -65,7 +65,7 @@ end
 Aka Traits,
 
 #!lua
-local Q = {}
+local Q = MemClade.quality
 #/lua
 
 

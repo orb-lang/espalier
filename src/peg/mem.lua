@@ -65,7 +65,7 @@ end
 
 
 
-local Q = {}
+local Q = MemClade.quality
 
 
 
