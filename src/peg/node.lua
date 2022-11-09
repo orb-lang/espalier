@@ -246,6 +246,8 @@ local new, Node, Node_M = cluster.order { seed_fn = onmatch }
 
 
 
+
+
 Node.v = 1
 
 
@@ -1299,7 +1301,9 @@ local function blurb(node, w, c)
       local half = floor((width - 6) / 2)
       local head, tail = sub(span, 1, half), sub(span, -half -1, -1)
       span = c.string(head) .. c.stresc(" ⋯ ") .. c.string(tail)
-      span:gsub("\n", c.stresc("\\n")):gsub("%s+", " ")
+      span = span
+                :gsub("\n+", c.greyscale("◼︎") .. c.string())
+                :gsub("[ ]+", c.greyscale("␣") .. c.string())
    else
       span = c.string(span)
    end
