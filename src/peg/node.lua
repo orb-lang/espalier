@@ -1307,10 +1307,10 @@ local function blurb(node, w, c)
    else
       span = c.string(span)
    end
-   local phrase = {c.metatable(node.tag)}
-   insert(phrase, ": ")
-   insert(phrase, span)
-   return concat(phrase)
+
+   local V = c.number("v" .. node.v)
+   local skew = c.bold(tostring(node.O - node.o))
+   return V .. skew .. " " .. c.metatable(node.tag) .. ": " .. " " .. span
 end
 
 
@@ -1322,7 +1322,8 @@ local suppress = Set {
    'parent',
    'up',
    'str',
-   --'o', 'O', 'v', 'stride',
+   'o', 'O', 'v',
+   --'stride',
 }
 local lens = { hide_key = suppress,
                blurb = blurb,

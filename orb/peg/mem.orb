@@ -239,10 +239,11 @@ local analyzeElement;
 local Hoist = Set {'element', 'alt', 'cat'}
 
 local function synthesize(node)
-   for twig in ipairs(node) do
-      if Hoist[twig] then
-         twig:hoist()
-         twig = assert(twig[1])
+   for _, twig in ipairs(node) do
+      if Hoist[twig.tag] then
+         if twig:hoist() then
+            twig = assert(twig[1])
+         end
       end
 
       if SpecialSnowflake[node.tag] then
@@ -253,9 +254,9 @@ local function synthesize(node)
          analyzeElement(twig)
       end
       if node.tag == 'rule' then
-         node.token = assert(node :take 'rule_name' . token)
+         node.token = normalize(node :take 'rule_name' :span())
       end
-      synthesize(node)
+      synthesize(twig)
    end
    return node
 end
