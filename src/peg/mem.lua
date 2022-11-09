@@ -721,6 +721,595 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+local find, gsub = string.find, string.gsub
+
+local function dumbRule(name, pad, patt)
+   return   name .. "  <-  " .. pad .. patt .. pad .. "\n"
+end
+
+function Mem.grammar.makeDummies(grammar)
+   if not grammar.collection then
+      return nil, 'no analysis has been performed'
+   end
+   local missing = grammar.missing
+   if (not missing) or #missing == 0 then
+      return nil, 'no rules are missing'
+   end
+   local dummy_str, pad = {"\n\n"}, " "
+   if grammar.ruleMap['_'] then
+      pad = " _ "
+   end
+   for _, name in ipairs(missing) do
+      local patt;
+      if find(name, "_") then
+         patt = '"' .. (gsub(name, "_", '" {-_} "') .. '"')
+      else
+         patt = '"' .. name .. '"'
+      end
+      insert(dummy_str, dumbRule(name, pad, patt))
+   end
+   grammar.dummy_rules = concat(dummy_str)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+function Mem.grammar.pehFor(grammar, rule)
+   if not grammar.collection then
+      grammar:collectRules()
+   end
+
+   local calls, ruleMap, missing = grammar.calls,
+                                   grammar.ruleMap,
+                                   grammar.missing
+   local phrase =  {}
+   insert(phrase, ruleMap[rule]:span())
+
+   local shuttle = Deque()
+   shuttle :push(calls[rule])
+   local added = {rule = true}
+   for call_set in shuttle :popAll() do
+      for rule_name in pairs(call_set) do
+         if not added[rule_name] then
+            added[rule_name] = true
+            if ruleMap[rule_name] then
+               insert(phrase, ruleMap[rule_name]:span())
+               shuttle :push(calls[rule_name])
+            end
+         end
+      end
+   end
+
+   return concat(phrase, "\n\n")
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Basis.constrain(synth, coll)
+   for i, elem in ipairs(synth) do
+      elem:constrain(coll)
+   end
+   synth.base_constraint_rule = true
+   synth.constrained = true
+end
+
+
+
+
+
+
+
+
+
+
+local function queueUp(shuttle, node)
+   if node.on then return end
+   node.on = true
+   shuttle:push(node)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local BAIL_AT = 16384
+
+
+
+local mutate = assert(table.mutate)
+
+function Mem.grammar.constrain(grammar)
+   local coll;
+   if grammar.collection then
+      coll = grammar.collection
+   else
+      grammar:analyze()
+      coll = assert(grammar.collection)
+   end
+   if grammar:anomalies() then
+      return nil, "can't constrain imperfect grammar (yet)", grammar:anomalies()
+   end
+
+   local regulars, ruleMap = coll.regulars, coll.ruleMap
+   local nameMap = coll.nameMap
+   coll.nameQ = Deque()
+   local shuttle = Deque()
+   coll.shuttle = shuttle
+   local seen = {}
+   for i, tier in ipairs(regulars) do
+      for name in pairs(tier) do
+         coll.nameQ:push(name)
+         ruleMap[name]:constrain(coll)
+         seen[name] = true
+      end
+      for name_str in pairs(tier) do
+         if not nameMap[name_str] then
+            error("missing from nameMap: " .. name_str)
+         end
+         for _, name in ipairs(nameMap[name_str]) do
+            ---[[DBG]] name.seen_at = i
+            name:constrain(coll)
+         end
+      end
+   end
+   for rule in grammar :filter 'rule' do
+      -- should be redundant to include the rules already in
+      -- seen above
+      if not seen[rule.token] then
+         queueUp(shuttle, rule)
+      end
+   end
+   local bail = 0
+   for node in shuttle:popAll() do
+      if type(node) == 'table' then
+         ---[[DBG]] node.popped = node.popped and node.popped + 1 or 1
+         node.on = nil
+         bail = bail + 1
+         node:constrain(coll)
+         if bail > BAIL_AT then
+            grammar.had_to_bail = true
+            grammar.no_constraint = {}
+            for rule in grammar :filter 'rule' do
+               if not rule.constrained then
+                  grammar.no_constraint[rule.token] = rule
+               end
+            end
+
+            mutate(shuttle, queuetate)
+            break
+         end
+      else
+         -- bad shape?
+         local ts = require "repr:repr".ts_color
+         local bare = require "valiant:replkit".bare
+         error((
+            "weird result %s from queue %s")
+                :format(tostring(node), ts(bare(shuttle))))
+      end
+   end
+   grammar.nodes_seen = bail
+   grammar.had_to_bail = not not grammar.had_to_bail
+end
+
+
+
+
+
+
+
+
+
+function Mem.rule.constrain(rule, coll)
+   local rhs = assert(rule :take 'rhs')
+   assert(#rhs == 1, "bad arity on RHS")
+   local body = rhs[1]
+   body:constrain(coll)
+   if body.constrained then
+      rule.constrained = true
+      rhs.constrained = true
+   else
+      queueUp(coll.shuttle, rule)
+   end
+   rule:propagateConstraints(coll)
+end
+
+
+
+
+
+
+
+
+function Mem.rule.propagateConstraints(rule, coll)
+   if rule.references then -- could be the start rule
+      for _, ref in ipairs(rule.references) do
+         ref:constrain(coll)
+         -- this should only be necessary on change
+         -- we make sure the rule is looked at again
+         if ref.changed then
+            local rule = ref:parentRule()
+            queueUp(coll.shuttle, rule)
+         end
+      end
+   end
+end
+
+
+
+
+
+
+local function termConstrain(terminal)
+   terminal.constrained = true
+end
+
+for class in pairs(Q.terminal) do
+   Mem[class].constrain = termConstrain
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Mem.cat.constrain(cat, coll)
+   local locked;
+   local gate;
+   local idx;
+   local again;
+   local terminal = true
+   local nofail = true
+   local nullable = true
+   for i, sub in ipairs(cat) do
+      -- reset our conditions because we routinely do this several times
+      sub.lock, sub.dam, sub.gate, sub.gate_lock = nil, nil, nil, nil
+
+      sub:constrain(coll)
+
+      if not sub.constrained then
+         again = true
+      end
+
+      if (not sub.nullable) or sub.predicate then
+         idx = i
+         gate = sub
+         if (not locked) then
+            sub.lock = true
+            locked = true
+         else
+            sub.dam = true
+         end
+      end
+
+      if sub.terminal or sub.predicate then
+         terminal = terminal and true
+      else
+         terminal = false
+      end
+
+      if sub.unbounded then
+         cat.unbounded = true
+      end
+      nofail = nofail and sub.nofail
+      nullable = nullable and sub.nullable
+   end
+
+   cat.terminal = terminal or nil
+   cat.nofail   = nofail or nil
+   cat.nullable = nullable or nil
+   cat.constrained = not again
+
+   if gate then
+      gate.dam = nil
+      if gate.lock then
+         gate.gate_lock = true
+         gate.lock = nil
+      else
+         gate.gate = true
+         -- look for other unfailable /terminal/ rules
+         -- at-most-one unbounded gate at the end
+         if not gate.unbounded then
+            for i = idx-1, 1, -1 do
+               local sub = cat[i]
+               if not sub.terminal then break end
+               sub.gate = true
+               sub.dam = nil
+            end
+         end
+      end
+   else
+      locked = false -- right? lock but no gate = not locked
+   end
+
+   if locked then
+      cat.locked = true
+   end
+end
+
+
+
+function Mem.alt.constrain(alt, coll)
+   local nofail, nullable = nil, nil
+   local again;
+   local locked = true
+   local terminal = true
+   for _, sub in ipairs(alt) do
+      sub:constrain(coll)
+      if not sub.constrained then
+         again = true
+      end
+      if sub.unbounded then
+         alt.unbounded = true
+      end
+      terminal = terminal and sub.terminal
+
+      nofail = nofail or sub.nofail
+      nullable = nullable or sub.nullable
+      locked = locked and sub.locked
+   end
+   alt.nofail      = nofail
+   alt.nullable    = nullable
+   alt.terminal    = terminal or nil
+   alt.locked      = locked   or nil
+   alt.constrained = not again
+end
+
+
+
+
+
+
+
+function Mem.element.constrain(element, coll)
+   -- ??
+   local again;
+   for _, sub in ipairs(element) do
+      sub:constrain(coll)
+      if not sub.constrained then
+         again = true
+      end
+   end
+   element.constrained = not again
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local Trait = Set {'locked', 'predicate', 'nullable', 'terminal',
+                   'unbounded', 'compound', 'failsucceeds', 'nofail',
+                   'recursive', 'self_recursive'}
+
+local function copyTraits(rule, name)
+   local changed = false
+   for trait, state in pairs(rule) do
+      if Trait[trait] then
+         local differs = name[trait] ~= state
+         changed = changed or differs
+         name[trait] = state
+      end
+   end
+   local body = rule :take 'rhs' [1]
+   for trait, state in pairs(body) do
+      if Trait[trait] then
+         local differs = name[trait] ~= state
+         changed = changed or differs
+         name[trait] = state
+      end
+   end
+   if body.constrained then
+      name.constrained = true
+      name.constrained_by_rule = true
+   else
+      name.constrained_by_rule = false
+   end
+
+   return changed
+end
+
+
+
+
+
+
+
+
+local FIX_POINT = 1
+
+
+
+
+function Mem.name.constrain(name, coll)
+   if name.constrained then return end
+   local token = assert(name.token)
+   local rule = assert(coll.ruleMap[token])
+   local self_ref = token == name:withinRule()
+   if self_ref then
+      rule.self_recursive = true
+      rule.unbounded = true
+      if name.seen_self then
+         name.seen_self = nil
+      else
+         name.seen_self = true
+         queueUp(coll.shuttle, rule)
+         return
+      end
+   end
+   local changed = copyTraits(rule, name)
+   ---[[DBG]] name.changed = changed
+   if not changed then
+      name.no_change = name.no_change and name.no_change + 1 or 1
+      if name.no_change > FIX_POINT then
+         ---[[DBG]] --[[
+         name.no_change = nil --]]
+         name.constrained_by_rule = nil
+         name.constrained_by_fixed_point = true
+         name.constrained = true
+      end
+   end
+   if not name.constrained then
+      queueUp(coll.shuttle, rule)
+   else ---[[DBG]] --[[
+      name.no_change = nil -- no longer relevant --]]
+   end
+end
+
+
+
+
+
+
+function Mem.repeated.constrain(repeated, coll)
+   local range = repeated :take 'integer_range'
+   if not range then return end
+   local start = tonumber(range[1])
+   if start == 0 then
+      repeated.nofail = true
+      repeated.nullable = true
+   end
+   repeated.constrained = true
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local codegen = require "espalier:peg/codegen"
 
 for class, mixin in pairs(codegen) do

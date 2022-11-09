@@ -122,7 +122,7 @@ But this is a topic for elsewhere\.
          element  ←  prefix? part suffix? backref?
 
         `prefix`  ←  (and / not / to-match) _
-        `suffix`  ←  zero-plus / one-plus / optional / repeat
+        `suffix`  ←  zero-plus / one-plus / optional / repeated
         `part`    ←  name !(_ into)
                   /   literal
                   /   group
@@ -139,7 +139,7 @@ But this is a topic for elsewhere\.
        zero-plus  ←  _ "*"
         one-plus  ←  _ "+"
         optional  ←  _ "?"
-          repeat  ←  _ "%" _ slice
+        repeated  ←  _ "%" _ slice
 
          backref  ←  "@" _ ( reference
                             / back-refer

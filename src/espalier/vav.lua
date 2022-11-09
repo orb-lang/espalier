@@ -119,7 +119,7 @@ function Vav.Mem(vav, mem)
          goto continue
       end
       if not ruleMap[tag] then
-         local name = vav.synth[1][1][1].token -- absurd thing to do
+         local name = vav.synth[1][1][1].token or "!" -- absurd thing to do
          error("Mem has a phyle named " .. tag
                .. ", no such rule in Peh("
                 .. name .. ").")

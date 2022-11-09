@@ -1324,6 +1324,13 @@ local suppress = Set {
    'str',
    'o', 'O', 'v',
    'stride',
+   ---[[DBG]] --[=[
+   'constrained',
+   'constrained_by_rule',
+   'constrained_by_fixed_point',
+   'references',
+   'compound',
+   --]=]
 }
 local lens = { hide_key = suppress,
                blurb = blurb,
