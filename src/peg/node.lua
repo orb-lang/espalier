@@ -271,23 +271,30 @@ Node.v = 1
 function Node.G(node)
    if node.g then
       return node.g
+   elseif node:isRoot() then
+      node.g = {}
+      return node.g
    end
+
    local _g;
-   local parent = node.parent
-   repeat
+   while node.parent do
+      node = node.parent
       if node.g then
          _g = node.g
          break
       end
-      parent = parent.parent
-   until node:isRoot()
+   end
    if not _g then
       _g = {}
-      parent.g = _g
+   end
+
+   if node.g then
+      assert(node.g == _g)
+      return _g
    end
    node.g = assert(_g)
 
-   return node.g
+   return _g
 end
 
 
@@ -737,6 +744,8 @@ function Node.walker(node)
       end
    end
 end
+
+
 
 
 

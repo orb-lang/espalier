@@ -187,6 +187,8 @@ end
 
 
 
+
+
 local SpecialSnowflake = Set {'set', 'range', 'name',
                                'number', 'literal', 'rule_name'}
 local Hoist = Set {'element', 'alt', 'cat'}
@@ -201,9 +203,17 @@ local Surrounding = Prefix + Suffix + Backref
 
 
 
+
+
+
+
+
 local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
                    'unbounded', 'compound', 'failsucceeds', 'nofail',
                    'recursive', 'self_recursive'}
+
+
+
 
 
 
@@ -418,6 +428,7 @@ end
 
 
 
+
 local sort, nonempty = table.sort, assert(table.nonempty)
 
 function Mem.grammar.collectRules(grammar)
@@ -475,6 +486,17 @@ function Mem.grammar.collectRules(grammar)
       end
    end
    sort(missing)
+
+   local g = grammar:G()
+   g.nameSet   = nameSet
+   g.nameMap   = nameMap
+   g.ruleMap   = ruleMap
+   g.ruleCalls = ruleCalls
+   g.ruleSet   = ruleSet
+   g.dupe      = nonempty(dupe)
+   g.surplus   = nonempty(surplus)
+   g.missing   = nonempty(missing)
+
 
    return { nameSet   =  nameSet,
             nameMap   =  nameMap,
@@ -553,6 +575,7 @@ end
 
 
 
+
 local clone1 = assert(table.clone1)
 
 local function _callSet(ruleCalls)
@@ -566,8 +589,7 @@ end
 
 
 function Mem.grammar.callSet(grammar)
-   local collection = grammar.collection or grammar:collectRules()
-   return _callSet(collection.ruleCalls)
+   return _callSet(grammar:G().ruleCalls)
 end
 
 
@@ -588,7 +610,7 @@ local function setFor(tab)
 end
 
 local function graphCalls(grammar)
-   local collection = assert(grammar.collection)
+   local collection = assert(grammar:G())
    local ruleCalls, ruleMap = assert(collection.ruleCalls),
                                assert(collection.ruleMap)
    local regulars = assert(collection.regulars)
@@ -688,8 +710,8 @@ end
 
 
 function Mem.grammar.analyze(grammar)
-   grammar.collection = grammar:collectRules()
-   local coll = assert(grammar.collection)
+   grammar:collectRules()
+   local coll = assert(grammar:G())
 
    local regulars, recursive = partition(coll.ruleCalls, grammar:callSet())
    local ruleMap = assert(coll.ruleMap)
@@ -742,14 +764,14 @@ end
 
 
 function Mem.grammar.anomalies(grammar)
-   local coll = grammar.collection
+   local coll = grammar:G()
    if not coll then return nil, "collectRules first" end
-   if not (grammar.missing or grammar.surplus or grammar.dupe) then
+   if not (coll.missing or coll.surplus or coll.dupe) then
       return nil, "no anomalies detected"
    else
-      return { missing = grammar.missing,
-               surplus = grammar.surplus,
-               dupe   = grammar.dupe }
+      return { missing = coll.missing,
+               surplus = coll.surplus,
+               dupe   = coll.dupe }
    end
 end
 

@@ -186,6 +186,8 @@ all in one spot\.
 
 Clades should have a way to check the validity of this sort of construct\.
 
+We use these to massage rules into shape:
+
 ```lua
 local SpecialSnowflake = Set {'set', 'range', 'name',
                                'number', 'literal', 'rule_name'}
@@ -200,13 +202,21 @@ local Backref = Set {'backref'}
 local Surrounding = Prefix + Suffix + Backref
 ```
 
+
+###### Copy Traits
+
+These propagate from rules to their references\.
+
 ```lua
 local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
                    'unbounded', 'compound', 'failsucceeds', 'nofail',
                    'recursive', 'self_recursive'}
 ```
 
+
 ## Mem Basis
+
+Methods in common to the entire Phyle\.
 
 
 ##### mem:parentRule\(\)
@@ -387,6 +397,7 @@ function Mem.grammar.synthesize(grammar)
 end
 ```
 
+
 ### grammar:collectRules\(\)
 
 This builds up a large collection of relational information, while decorating
@@ -477,6 +488,17 @@ function Mem.grammar.collectRules(grammar)
    end
    sort(missing)
 
+   local g = grammar:G()
+   g.nameSet   = nameSet
+   g.nameMap   = nameMap
+   g.ruleMap   = ruleMap
+   g.ruleCalls = ruleCalls
+   g.ruleSet   = ruleSet
+   g.dupe      = nonempty(dupe)
+   g.surplus   = nonempty(surplus)
+   g.missing   = nonempty(missing)
+
+
    return { nameSet   =  nameSet,
             nameMap   =  nameMap,
             ruleMap   =  ruleMap,
@@ -548,6 +570,7 @@ local function partition(ruleCalls, callSet)
 end
 ```
 
+
 ### Mem\.grammar\.callSet\(grammar\)
 
 This makes Sets non\-destructively out of arrays of rule names, which might not
@@ -567,8 +590,7 @@ end
 
 ```lua
 function Mem.grammar.callSet(grammar)
-   local collection = grammar.collection or grammar:collectRules()
-   return _callSet(collection.ruleCalls)
+   return _callSet(grammar:G().ruleCalls)
 end
 ```
 
@@ -589,7 +611,7 @@ local function setFor(tab)
 end
 
 local function graphCalls(grammar)
-   local collection = assert(grammar.collection)
+   local collection = assert(grammar:G())
    local ruleCalls, ruleMap = assert(collection.ruleCalls),
                                assert(collection.ruleMap)
    local regulars = assert(collection.regulars)
@@ -689,8 +711,8 @@ Pulls together the caller\-callee relationships\.
 
 ```lua
 function Mem.grammar.analyze(grammar)
-   grammar.collection = grammar:collectRules()
-   local coll = assert(grammar.collection)
+   grammar:collectRules()
+   local coll = assert(grammar:G())
 
    local regulars, recursive = partition(coll.ruleCalls, grammar:callSet())
    local ruleMap = assert(coll.ruleMap)
@@ -743,14 +765,14 @@ less\-than\-perfect aspects of the grammar as\-is\.
 
 ```lua
 function Mem.grammar.anomalies(grammar)
-   local coll = grammar.collection
+   local coll = grammar:G()
    if not coll then return nil, "collectRules first" end
-   if not (grammar.missing or grammar.surplus or grammar.dupe) then
+   if not (coll.missing or coll.surplus or coll.dupe) then
       return nil, "no anomalies detected"
    else
-      return { missing = grammar.missing,
-               surplus = grammar.surplus,
-               dupe   = grammar.dupe }
+      return { missing = coll.missing,
+               surplus = coll.surplus,
+               dupe   = coll.dupe }
    end
 end
 ```
