@@ -1195,9 +1195,6 @@ function Mem.cat.constrain(cat)
    if locked then
       cat.locked = true
    end
-   if again then
-      cat:enqueue()
-   end
 end
 
 
@@ -1226,9 +1223,6 @@ function Mem.alt.constrain(alt)
    alt.terminal    = terminal or nil
    alt.locked      = locked   or nil
    alt.constrained = not again
-   if again then
-      alt:enqueue()
-   end
 end
 
 
