@@ -427,9 +427,14 @@ rules and names with tokens representing their normalized value\.
 
 
 ```lua
-local sort, nonempty = table.sort, assert(table.nonempty)
+local sort, nonempty, getset = table.sort,
+                               assert(table.nonempty),
+                               assert(table.getset)
 
 function Mem.grammar.collectRules(grammar)
+   if not grammar:G().is_synthesized then
+      grammar:synthesize()
+   end
    -- our containers:
    local nameSet, nameMap = Set {}, {} -- #{token*}, token => {name*}
    local dupe, surplus, missing = {}, {}, {} -- {rule*}, {rule*}, {token*}
@@ -441,9 +446,8 @@ function Mem.grammar.collectRules(grammar)
       local token = normalize(name:span())
       name.token = token
       nameSet[token] = true
-      local refs = nameMap[token] or {}
+      local refs = getset(nameMap, token)
       insert(refs, name)
-      nameMap[token] = refs
    end
 
    local start_rule = grammar :take 'rule'
@@ -712,8 +716,9 @@ function Mem.grammar.analyze(grammar)
    if not g.is_synthesized then
       grammar:synthesize()
    end
-
-   grammar:collectRules()
+   if not g.ruleMap then
+      grammar:collectRules()
+   end
 
    local regulars, recursive = partition(g.ruleCalls, grammar:callSet())
    local ruleMap = assert(g.ruleMap)
@@ -726,13 +731,11 @@ function Mem.grammar.analyze(grammar)
       grammar:makeDummies()
    end
 
-   -- we'll switch to using these directly
-   for k, v in pairs(g) do
-      grammar[k] = v
+   local any, why = grammar:anomalies()
+   if not any then
+      g.is_analyzed = true
    end
-
-
-   return grammar:anomalies()
+   return any, why
 end
 ```
 
@@ -905,19 +908,17 @@ and we can do things with them\.
 
 ### Base :constrain
 
-Tags the class as having been constrained by the base rule and visits the
-kids\.
-
-In the fully mature system we won't have this, it's only here to provide
-plausible behavior for classes we hadn't specified\.
+Is a placeholder while we chase down things\.
 
 ```lua
-function Basis.constrain(synth, coll)
-   for i, elem in ipairs(synth) do
+function Basis.constrain(basis, coll)
+   for i, elem in ipairs(basis) do
       elem:constrain(coll)
    end
-   synth.base_constraint_rule = true
-   synth.constrained = true
+   basis.base_constraint_rule = true
+   basis.constrained = true
+   local g = basis:G()
+   insert(getset(g, 'unconstrainted'), basis.tag)
 end
 ```
 
@@ -967,34 +968,17 @@ function Mem.grammar.constrain(grammar)
       return nil, "can't constrain imperfect grammar (yet)", grammar:anomalies()
    end
 
-   local regulars, ruleMap = coll.regulars, coll.ruleMap
-   local nameMap = coll.nameMap
-   coll.nameQ = Deque()
+   local regulars, ruleMap = g.regulars, g.ruleMap
    local shuttle = Deque()
-   coll.shuttle = shuttle
+   g.shuttle = shuttle
    local seen = {}
-   for i, tier in ipairs(regulars) do
+   for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
-         coll.nameQ:push(name)
-         ruleMap[name]:constrain(coll)
-         seen[name] = true
-      end
-      for name_str in pairs(tier) do
-         if not nameMap[name_str] then
-            error("missing from nameMap: " .. name_str)
-         end
-         for _, name in ipairs(nameMap[name_str]) do
-            ---[[DBG]] name.seen_at = i
-            name:constrain(coll)
-         end
+         queueUp(shuttle, ruleMap[name])
       end
    end
-   for rule in grammar :filter 'rule' do
-      -- should be redundant to include the rules already in
-      -- seen above
-      if not seen[rule.token] then
-         queueUp(shuttle, rule)
-      end
+   for name in pairs(g.recursive) do
+      queueUp(shuttle, ruleMap[name])
    end
    local bail = 0
    for node in shuttle:popAll() do
@@ -1035,23 +1019,23 @@ end
 Constrains an individual rule\.
 
 ```lua
-function Mem.rule.constrain(rule, coll)
+function Mem.rule.constrain(rule)
    local rhs = assert(rule :take 'rhs')
    assert(#rhs == 1, "bad arity on RHS")
    local body = rhs[1]
-   body:constrain(coll)
+   body:constrain()
    if body.constrained then
       rule.constrained = true
       rhs.constrained = true
    else
-      queueUp(coll.shuttle, rule)
+      queueUp(rule:G().shuttle, rule)
    end
    for trait in pairs(CopyTrait) do
       if body[trait] then
         rule[trait] = body[trait]
       end
    end
-   rule:propagateConstraints(coll)
+   rule:propagateConstraints()
 end
 ```
 
@@ -1061,15 +1045,15 @@ end
 Sends all changes to the rule to each name\.
 
 ```lua
-function Mem.rule.propagateConstraints(rule, coll)
+function Mem.rule.propagateConstraints(rule)
    if rule.references then -- could be the start rule
       for _, ref in ipairs(rule.references) do
-         ref:constrain(coll)
+         ref:constrain()
          -- this should only be necessary on change
          -- we make sure the rule is looked at again
          if ref.changed then
             local rule = ref:parentRule()
-            queueUp(coll.shuttle, rule)
+            queueUp(rule:G().shuttle, rule)
          end
       end
    end
@@ -1103,8 +1087,7 @@ This is where the most intricate stuff happens, which I will document when it
 settles all the way down\.
 
 ```lua
-function Mem.cat.constrain(cat, coll)
-   cat.seen = true
+function Mem.cat.constrain(cat)
    local locked;
    local gate;
    local idx;
@@ -1116,7 +1099,7 @@ function Mem.cat.constrain(cat, coll)
       -- reset our conditions because we routinely do this several times
       sub.lock, sub.dam, sub.gate, sub.gate_lock = nil, nil, nil, nil
 
-      sub:constrain(coll)
+      sub:constrain()
 
       if not sub.constrained then
          again = true
@@ -1177,19 +1160,19 @@ function Mem.cat.constrain(cat, coll)
       cat.locked = true
    end
    if again then
-      queueUp(assert(cat:G().shuttle), cat)
+      queueUp(cat:G().shuttle, cat)
    end
 end
 ```
 
 ```lua
-function Mem.alt.constrain(alt, coll)
+function Mem.alt.constrain(alt)
    local nofail, nullable = nil, nil
    local again;
    local locked = true
    local terminal = true
    for _, sub in ipairs(alt) do
-      sub:constrain(coll)
+      sub:constrain()
       if not sub.constrained then
          again = true
       end
@@ -1218,11 +1201,11 @@ end
 ### element:constrain\(coll\)
 
 ```lua
-function Mem.element.constrain(element, coll)
+function Mem.element.constrain(element)
    -- ??
    local again;
    for _, sub in ipairs(element) do
-      sub:constrain(coll)
+      sub:constrain()
       if sub.constrained then
          for trait in pairs(CopyTrait) do
             element[trait] = element[trait] or sub[trait]
@@ -1232,7 +1215,7 @@ function Mem.element.constrain(element, coll)
       end
    end
    if again then
-      queueUp(coll.shuttle, element)
+      queueUp(element:G().shuttle, element)
    end
    element.constrained = not again
 end
@@ -1302,10 +1285,10 @@ local FIX_POINT = 2
 
 
 ```lua
-function Mem.name.constrain(name, coll)
+function Mem.name.constrain(name)
    if name.constrained then return end
    local token = assert(name.token)
-   local rule = assert(coll.ruleMap[token])
+   local rule = name:G().ruleMap[token]
    local self_ref = token == name:withinRule()
    if self_ref then
       rule.self_recursive = true
@@ -1314,7 +1297,7 @@ function Mem.name.constrain(name, coll)
          name.seen_self = nil
       else
          name.seen_self = true
-         queueUp(coll.shuttle, rule)
+         queueUp(name:G().shuttle, rule)
          return
       end
    end
@@ -1331,7 +1314,7 @@ function Mem.name.constrain(name, coll)
       end
    end
    if not name.constrained then
-      queueUp(coll.shuttle, rule)
+      queueUp(name:G().shuttle, rule)
    else ---[[DBG]] --[[
       name.no_change = nil -- no longer relevant --]]
    end
@@ -1366,7 +1349,7 @@ help with the madcap combinator scheme I have in mind for re\-parsing trees\.\.\
 ##### Catching optional repeats
 
 ```lua
-function Mem.repeated.constrain(repeated, coll)
+function Mem.repeated.constrain(repeated)
    local range = repeated :take 'integer_range'
    if not range then return end
    local start = tonumber(range[1])
@@ -1375,6 +1358,24 @@ function Mem.repeated.constrain(repeated, coll)
       repeated.nullable = true
    end
    repeated.constrained = true
+end
+```
+
+
+###
+
+```lua
+function Mem.group.constrain(group)
+   local again = false
+   for _, sub in ipairs(group) do
+      sub:constrain()
+      if not sub.constrained then
+         again = true
+      end
+   end
+   if not again then
+      group.constrained = true
+   end
 end
 ```
 
