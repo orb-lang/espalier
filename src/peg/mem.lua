@@ -910,6 +910,13 @@ end
 
 
 
+
+
+
+
+
+
+
 function Basis.constrain(basis, coll)
    for i, elem in ipairs(basis) do
       elem:constrain(coll)
@@ -917,7 +924,7 @@ function Basis.constrain(basis, coll)
    basis.base_constraint_rule = true
    basis.constrained = true
    local g = basis:G()
-   insert(getset(g, 'unconstrainted'), basis.tag)
+   insert(getset(g, 'unconstrained'), basis.tag)
 end
 
 
@@ -933,6 +940,16 @@ local function queueUp(shuttle, node)
    if node.on then return end
    node.on = true
    shuttle:push(node)
+end
+
+
+
+
+
+
+function Basis.enqueue(basis)
+   if basis.on then return end
+   basis:G().shuttle:push(basis)
 end
 
 
@@ -973,11 +990,11 @@ function Mem.grammar.constrain(grammar)
    local seen = {}
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
-         queueUp(shuttle, ruleMap[name])
+         ruleMap[name]:enqueue()
       end
    end
    for name in pairs(g.recursive) do
-      queueUp(shuttle, ruleMap[name])
+      ruleMap[name]:enqueue()
    end
    local bail = 0
    for node in shuttle:popAll() do
@@ -985,7 +1002,7 @@ function Mem.grammar.constrain(grammar)
          ---[[DBG]] node.popped = node.popped and node.popped + 1 or 1
          node.on = nil
          bail = bail + 1
-         node:constrain(coll)
+         node:constrain()
          if bail > BAIL_AT then
             grammar.had_to_bail = true
             grammar.no_constraint = {}
@@ -999,7 +1016,7 @@ function Mem.grammar.constrain(grammar)
             break
          end
       else
-         -- bad shape?
+         -- something got on the queue?
          local ts = require "repr:repr".ts_color
          local bare = require "valiant:replkit".bare
          error((
@@ -1027,7 +1044,7 @@ function Mem.rule.constrain(rule)
       rule.constrained = true
       rhs.constrained = true
    else
-      queueUp(rule:G().shuttle, rule)
+      rule:enqueue()
    end
    for trait in pairs(CopyTrait) do
       if body[trait] then
@@ -1050,9 +1067,9 @@ function Mem.rule.propagateConstraints(rule)
          ref:constrain()
          -- this should only be necessary on change
          -- we make sure the rule is looked at again
-         if ref.changed then
+         if not ref.changed then
             local rule = ref:parentRule()
-            queueUp(rule:G().shuttle, rule)
+            rule:enqueue()
          end
       end
    end
@@ -1159,7 +1176,7 @@ function Mem.cat.constrain(cat)
       cat.locked = true
    end
    if again then
-      queueUp(cat:G().shuttle, cat)
+      cat:enqueue()
    end
 end
 
@@ -1190,11 +1207,9 @@ function Mem.alt.constrain(alt)
    alt.locked      = locked   or nil
    alt.constrained = not again
    if again then
-      queueUp(assert(alt:G().shuttle), alt)
+      alt:enqueue()
    end
 end
-
-
 
 
 
@@ -1214,7 +1229,7 @@ function Mem.element.constrain(element)
       end
    end
    if again then
-      queueUp(element:G().shuttle, element)
+      element:enqueue()
    end
    element.constrained = not again
 end
@@ -1279,7 +1294,7 @@ end
 
 
 
-local FIX_POINT = 2
+local FIX_POINT = 3
 
 
 
@@ -1296,7 +1311,7 @@ function Mem.name.constrain(name)
          name.seen_self = nil
       else
          name.seen_self = true
-         queueUp(name:G().shuttle, rule)
+         name:enqueue()
          return
       end
    end
@@ -1305,7 +1320,7 @@ function Mem.name.constrain(name)
    if not changed then
       name.no_change = name.no_change and name.no_change + 1 or 1
       if name.no_change > FIX_POINT then
-         ---[[DBG]] --[[
+         --[[DBG]] --[[
          name.no_change = nil --]]
          name.constrained_by_rule = nil
          name.constrained_by_fixed_point = true
@@ -1313,9 +1328,7 @@ function Mem.name.constrain(name)
       end
    end
    if not name.constrained then
-      queueUp(name:G().shuttle, rule)
-   else ---[[DBG]] --[[
-      name.no_change = nil -- no longer relevant --]]
+      name:enqueue()
    end
 end
 
