@@ -765,6 +765,13 @@ end
 
 
 
+
+
+
+
+
+
+
 local iscallable = assert(core.fn.iscallable)
 
 local function predicator(pred, node)
@@ -772,6 +779,12 @@ local function predicator(pred, node)
       return node.tag == pred
    elseif iscallable(pred) then
       return not not pred(node)
+   elseif type(pred) == 'table' then
+      local same = true
+      for k, v in pairs(pred) do
+         same = same and node[k] == v
+      end
+      return same
    else
       error "invalid predicate"
    end
@@ -835,6 +848,25 @@ end
 
 
 Node.filterer = Node.filter
+
+
+
+
+
+
+
+
+
+local function gathering(filter)
+   local match = filter()
+   if not match then return end
+   return match, gathering(filter)
+end
+
+function Node.gather(node, pred)
+   return gathering(node:filterer(pred))
+end
+
 
 
 

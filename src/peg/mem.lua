@@ -11,6 +11,30 @@ local Clade, Node = use ("cluster:clade", "espalier:peg/node")
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local function postindex(tab, field)
    tab[field].tag = field
    return tab[field]
@@ -142,6 +166,7 @@ Q.unbounded = Set { 'zero_plus', 'one_plus' }
 
 
 local Prop = {}
+
 for trait, classSet in pairs(Q) do
    for class in pairs(classSet) do
       Prop[class] = Prop[class] or {}
@@ -974,7 +999,7 @@ end
 
 
 
-local Trait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
+local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
                    'unbounded', 'compound', 'failsucceeds', 'nofail',
                    'recursive', 'self_recursive'}
 
@@ -991,7 +1016,7 @@ function Mem.rule.constrain(rule, coll)
    else
       queueUp(coll.shuttle, rule)
    end
-   for trait in pairs(Trait) do
+   for trait in pairs(CopyTrait) do
       if body[trait] then
         rule[trait] = body[trait]
       end
@@ -1202,11 +1227,9 @@ end
 
 
 
-
-
 local function copyTraits(rule, name)
    local changed = false
-   for trait in pairs(Trait) do
+   for trait in pairs(CopyTrait) do
       if rule[trait] then
          local differs = name[trait] ~= rule[trait]
          changed = changed or differs
@@ -1269,6 +1292,30 @@ function Mem.name.constrain(name, coll)
       name.no_change = nil -- no longer relevant --]]
    end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

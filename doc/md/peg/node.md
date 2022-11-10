@@ -762,6 +762,13 @@ We allow predicates to be a string, which we compare with `.tag`\.
 
 Otherwise we call it \(if we can\), throwing an error for a bad predicate\.
 
+If that doesn't work, and the predicate is a table, the keys of that table are
+used to check the value \(with `__eq`, not `raweq`\), this is not recursive, if
+all values fits the mold, we return\.
+
+\#Todo
+without the logic, so we can cache the string and function ones\.
+
 This follows the Bridge principle that a predicate should take the general,
 then the specific, this is a higher\-order predicate but the principle holds\.
 
@@ -773,6 +780,12 @@ local function predicator(pred, node)
       return node.tag == pred
    elseif iscallable(pred) then
       return not not pred(node)
+   elseif type(pred) == 'table' then
+      local same = true
+      for k, v in pairs(pred) do
+         same = same and node[k] == v
+      end
+      return same
    else
       error "invalid predicate"
    end
@@ -837,6 +850,25 @@ which may be captured if desired\.
 ```lua
 Node.filterer = Node.filter
 ```
+
+
+#### Node:gather\(pred\)
+
+  Returns all matches as return values, this may of course be made into an
+array with `pack`\.
+
+```lua
+local function gathering(filter)
+   local match = filter()
+   if not match then return end
+   return match, gathering(filter)
+end
+
+function Node.gather(node, pred)
+   return gathering(node:filterer(pred))
+end
+```
+
 
 
 #### Node:search\(pred\) \#Todo test

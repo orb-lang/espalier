@@ -8,6 +8,30 @@ local Clade, Node = use ("cluster:clade", "espalier:peg/node")
 #/lua
 
 
+*** [#Todo] Refactor
+
+This is in pretty good shape, I can add some sessions which will stabilize the
+key operations, I think.
+
+
+**** [#Todo] Use :G()
+
+We have this awkward "collection" we pass around, I've added a method which
+causes Nodes to have a table =.g=, which is the tree-global state.
+
+I was originally going to keep =.v= on it, but that's kind of dodgy.  It adds
+complexity, and the algorithm based on finding root and adjusting everything
+only has bad behavior for very deep trees.
+
+It's a good fit for a lot of existing Node patterns, honestly.
+
+
+**** [#Todo] Vector the Mixin
+
+This isn't inherently useful for Mem, but it's critical for composability that
+the codegen mixin be stored in the vector by the name of the method.
+
+
 **** Clade Extension
 
 #!lua
@@ -62,7 +86,7 @@ end
 
 *** Qualia
 
-Aka Traits,
+Our categories which cut across rule identities.
 
 #!lua
 local Q = MemClade.quality
@@ -142,6 +166,7 @@ Which we can also represent inside-out as traits pertaining to a class:
 
 #!lua
 local Prop = {}
+
 for trait, classSet in pairs(Q) do
    for class in pairs(classSet) do
       Prop[class] = Prop[class] or {}
@@ -974,7 +999,7 @@ end
 Constrains an individual rule.
 
 #!lua
-local Trait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
+local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
                    'unbounded', 'compound', 'failsucceeds', 'nofail',
                    'recursive', 'self_recursive'}
 #/lua
@@ -991,7 +1016,7 @@ function Mem.rule.constrain(rule, coll)
    else
       queueUp(coll.shuttle, rule)
    end
-   for trait in pairs(Trait) do
+   for trait in pairs(CopyTrait) do
       if body[trait] then
         rule[trait] = body[trait]
       end
@@ -1201,11 +1226,10 @@ here.
 Copies over traits, returning =true= if any of the copied traits has changed
 the state of =name=.
 
-
 #!lua
 local function copyTraits(rule, name)
    local changed = false
-   for trait in pairs(Trait) do
+   for trait in pairs(CopyTrait) do
       if rule[trait] then
          local differs = name[trait] ~= rule[trait]
          changed = changed or differs
@@ -1271,6 +1295,30 @@ end
 #/lua
 
 
+*** Next
+
+We need to analyze =alt= groupings for "lock fails rule".
+
+This gets intricate!  We have to compare literals, sets, ranges, with
+repetition and lookahead.
+
+I think the trick is simple: we reduce sets and ranges to the literals, and
+test anything else against them.
+
+Yeah. Just... make the pattern on the spot, try it out.
+
+If we even have to, because repetitions nest in each other, or don't.
+
+While we're in there, we're looking for choice shadowing: if a rule will
+always consume a rule after it in the choice order, that's a bug.
+
+With lock fails rule, we can the unhappy paths out of the grammar.
+
+Then we can start putting together the fragment parser, the error-recovering
+parser with =lpeglable.T=, and all that other fun stuff.  I expect it will
+help with the madcap combinator scheme I have in mind for re-parsing trees...
+
+
 ***** Catching optional repeats
 
 #!lua
@@ -1308,7 +1356,7 @@ belong.
 
 *** Codegen Mixin
 
-This should be a Clade vector.
+#Todo This should be a Clade vector.
 
 #!lua
 local codegen = require "espalier:peg/codegen"
