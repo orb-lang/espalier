@@ -1154,10 +1154,8 @@ function Mem.cat.constrain(cat)
          end
       end
 
-      if sub.terminal or sub.predicate then
-         terminal = terminal and true
-      else
-         terminal = false
+      if sub.terminal and not sub.predicate then
+         terminal = true
       end
 
       if sub.unbounded then
