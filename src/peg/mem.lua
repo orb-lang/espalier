@@ -799,15 +799,16 @@ local function dumbRule(name, pad, patt)
 end
 
 function Mem.grammar.makeDummies(grammar)
-   if not grammar.collection then
-      return nil, 'no analysis has been performed'
+   local g = grammar:G()
+   if not g.ruleMap then
+      g:analyze()
    end
-   local missing = grammar.missing
+   local missing = g.missing
    if (not missing) or #missing == 0 then
       return nil, 'no rules are missing'
    end
    local dummy_str, pad = {"\n\n"}, " "
-   if grammar.ruleMap['_'] then
+   if g.ruleMap['_'] then
       pad = " _ "
    end
    for _, name in ipairs(missing) do
@@ -819,7 +820,7 @@ function Mem.grammar.makeDummies(grammar)
       end
       insert(dummy_str, dumbRule(name, pad, patt))
    end
-   grammar.dummy_rules = concat(dummy_str)
+   g.dummy_rules = concat(dummy_str)
 end
 
 
@@ -834,13 +835,13 @@ end
 
 
 function Mem.grammar.pehFor(grammar, rule)
-   if not grammar.collection then
+   if not grammar:G().ruleMap then
       grammar:collectRules()
    end
-
-   local calls, ruleMap, missing = grammar.calls,
-                                   grammar.ruleMap,
-                                   grammar.missing
+   local g = grammar.g
+   local calls, ruleMap, missing = g.calls,
+                                   g.ruleMap,
+                                   g.missing
    local phrase =  {}
    insert(phrase, ruleMap[rule]:span())
 
@@ -955,12 +956,10 @@ local BAIL_AT = 16384
 local mutate = assert(table.mutate)
 
 function Mem.grammar.constrain(grammar)
-   local coll;
-   if grammar.collection then
-      coll = grammar.collection
-   else
+   local g = grammar:G()
+   local coll = g
+   if not g.ruleMap then
       grammar:analyze()
-      coll = assert(grammar.collection)
    end
    if grammar:anomalies() then
       return nil, "can't constrain imperfect grammar (yet)", grammar:anomalies()
