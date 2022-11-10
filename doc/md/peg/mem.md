@@ -1104,6 +1104,7 @@ settles all the way down\.
 
 ```lua
 function Mem.cat.constrain(cat, coll)
+   cat.seen = true
    local locked;
    local gate;
    local idx;
@@ -1175,6 +1176,9 @@ function Mem.cat.constrain(cat, coll)
    if locked then
       cat.locked = true
    end
+   if again then
+      queueUp(assert(cat:G().shuttle), cat)
+   end
 end
 ```
 
@@ -1203,6 +1207,9 @@ function Mem.alt.constrain(alt, coll)
    alt.terminal    = terminal or nil
    alt.locked      = locked   or nil
    alt.constrained = not again
+   if again then
+      queueUp(assert(alt:G().shuttle), alt)
+   end
 end
 ```
 
@@ -1225,7 +1232,7 @@ function Mem.element.constrain(element, coll)
       end
    end
    if again then
-      queueup(coll.shuttle, element)
+      queueUp(coll.shuttle, element)
    end
    element.constrained = not again
 end
@@ -1290,7 +1297,7 @@ end
 If we see a name twice with no changes that *should* be it\. So far, so good\.
 
 ```lua
-local FIX_POINT = 1
+local FIX_POINT = 2
 ```
 
 

@@ -1371,11 +1371,11 @@ local suppress = Set {
    'str',
    'o', 'O', 'v',
    'stride',
-   ---[[DBG]] --[=[
+   'references',
+   --[[DBG]] --[=[
    'constrained',
    'constrained_by_rule',
    'constrained_by_fixed_point',
-   'references',
    'compound',
    --]=]
 }
