@@ -368,11 +368,8 @@ function analyzeElement(elem)
    for _, mod in pairs(modifier) do
       if mod then
          elem[mod.tag] = true
-         local traits = Prop[mod.tag]
-         if traits then
-            for trait in pairs(traits) do
-               elem[trait] = true
-            end
+         for trait in pairs(CopyTrait) do
+            elem[trait] = mod[trait]
          end
       end
    end
@@ -392,7 +389,7 @@ end
 function Mem.grammar.synthesize(grammar)
    grammar.start = grammar :take 'rule'
    synthesize(grammar)
-
+   grammar:G().is_synthesized = true
    return grammar
 end
 
@@ -710,22 +707,26 @@ end
 
 
 function Mem.grammar.analyze(grammar)
-   grammar:collectRules()
-   local coll = assert(grammar:G())
+   local g = grammar:G()
+   if not g.is_synthesized then
+      grammar:synthesize()
+   end
 
-   local regulars, recursive = partition(coll.ruleCalls, grammar:callSet())
-   local ruleMap = assert(coll.ruleMap)
+   grammar:collectRules()
+
+   local regulars, recursive = partition(g.ruleCalls, grammar:callSet())
+   local ruleMap = assert(g.ruleMap)
    for name in pairs(recursive) do
       ruleMap[name].recursive = true
    end
-   coll.regulars, coll.recursive = regulars, trimRecursive(recursive, ruleMap)
-   coll.calls = graphCalls(grammar)
-   if coll.missing then
+   g.regulars, g.recursive = regulars, trimRecursive(recursive, ruleMap)
+   g.calls = graphCalls(grammar)
+   if g.missing then
       grammar:makeDummies()
    end
 
    -- we'll switch to using these directly
-   for k, v in pairs(coll) do
+   for k, v in pairs(g) do
       grammar[k] = v
    end
 
@@ -1214,9 +1215,16 @@ function Mem.element.constrain(element, coll)
    local again;
    for _, sub in ipairs(element) do
       sub:constrain(coll)
-      if not sub.constrained then
+      if sub.constrained then
+         for trait in pairs(CopyTrait) do
+            element[trait] = element[trait] or sub[trait]
+         end
+      else
          again = true
       end
+   end
+   if again then
+      queueup(coll.shuttle, element)
    end
    element.constrained = not again
 end

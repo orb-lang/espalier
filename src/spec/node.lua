@@ -106,6 +106,7 @@ end
 
 
 
+
 local pegpeg = use "espalier:peg/pegpeg"
 local mem = use "espalier:peg/mem"
 
@@ -175,6 +176,18 @@ end
 
 
 
+
+local lua_peh = use "scry:lua-peg"
+
+local function lvav()
+   local Dji = vav():Dji()
+   return Dji(lua_peh)
+end
+
+
+
+
+
 return { eVav = eVav,
          Elden = Elden,
          walker = walker,
@@ -183,7 +196,9 @@ return { eVav = eVav,
          filterer = filterer,
          dji = dji,
          pegpeg = pegpeg,
-         vav = vav, }
+         lua_peh = lua_peh,
+         vav = vav,
+         lvav = lvav, }
 
 
 

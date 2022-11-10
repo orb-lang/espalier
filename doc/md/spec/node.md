@@ -103,6 +103,7 @@ local function dji()
 end
 ```
 
+
 ### Vav
 
 ```lua
@@ -173,6 +174,18 @@ end
 ```
 
 
+### Lua Parser
+
+```lua
+local lua_peh = use "scry:lua-peg"
+
+local function lvav()
+   local Dji = vav():Dji()
+   return Dji(lua_peh)
+end
+```
+
+
 
 ```lua
 return { eVav = eVav,
@@ -183,7 +196,9 @@ return { eVav = eVav,
          filterer = filterer,
          dji = dji,
          pegpeg = pegpeg,
-         vav = vav, }
+         lua_peh = lua_peh,
+         vav = vav,
+         lvav = lvav, }
 ```
 
 With a fresh instance for each require:
