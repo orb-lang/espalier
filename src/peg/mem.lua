@@ -187,6 +187,33 @@ end
 
 
 
+local SpecialSnowflake = Set {'set', 'range', 'name',
+                               'number', 'literal', 'rule_name'}
+local Hoist = Set {'element', 'alt', 'cat'}
+
+
+
+local Prefix = Set {'and', 'not', 'to_match'}
+local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
+local Backref = Set {'backref'}
+
+local Surrounding = Prefix + Suffix + Backref
+
+
+
+local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
+                   'unbounded', 'compound', 'failsucceeds', 'nofail',
+                   'recursive', 'self_recursive'}
+
+
+
+
+
+
+
+
+
+
 function Basis.parentRule(mem)
    if mem.tag == 'rule' then return nil, 'this is a rule' end
    if mem.tag == 'grammar' then return nil, 'this is a grammar' end
@@ -241,9 +268,6 @@ end
 
 
 
-local SpecialSnowflake = Set {'set', 'range', 'name',
-                               'number', 'literal', 'rule_name'}
-
 local function extraSpecial(node)
    local c = node.tag
    if c == 'range' then
@@ -260,8 +284,6 @@ end
 
 
 local analyzeElement;
-
-local Hoist = Set {'element', 'alt', 'cat'}
 
 local function synthesize(node)
    if Hoist[node.tag] and #node == 1 then
@@ -298,14 +320,6 @@ end
 
 
 
-
-
-
-local Prefix = Set {'and', 'not', 'to_match'}
-local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
-local Backref = Set {'backref'}
-
-local Surrounding = Prefix + Suffix + Backref
 
 
 
@@ -995,13 +1009,6 @@ end
 
 
 
-
-
-
-
-local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
-                   'unbounded', 'compound', 'failsucceeds', 'nofail',
-                   'recursive', 'self_recursive'}
 
 
 

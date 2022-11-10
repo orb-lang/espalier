@@ -179,6 +179,33 @@ end
 #/lua
 
 
+***** Other Trait Sets
+
+  These are used in various places in the module, and it's useful to have them
+all in one spot.
+
+Clades should have a way to check the validity of this sort of construct.
+
+#!lua
+local SpecialSnowflake = Set {'set', 'range', 'name',
+                               'number', 'literal', 'rule_name'}
+local Hoist = Set {'element', 'alt', 'cat'}
+#/lua
+
+#!lua
+local Prefix = Set {'and', 'not', 'to_match'}
+local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
+local Backref = Set {'backref'}
+
+local Surrounding = Prefix + Suffix + Backref
+#/lua
+
+#!lua
+local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
+                   'unbounded', 'compound', 'failsucceeds', 'nofail',
+                   'recursive', 'self_recursive'}
+#/lua
+
 ** Mem Basis
 
 
@@ -241,9 +268,6 @@ Here we decorate particular Nodes with useful representations and
 contextual information.
 
 #!lua
-local SpecialSnowflake = Set {'set', 'range', 'name',
-                               'number', 'literal', 'rule_name'}
-
 local function extraSpecial(node)
    local c = node.tag
    if c == 'range' then
@@ -260,8 +284,6 @@ end
 
 #!lua
 local analyzeElement;
-
-local Hoist = Set {'element', 'alt', 'cat'}
 
 local function synthesize(node)
    if Hoist[node.tag] and #node == 1 then
@@ -299,14 +321,6 @@ element, and copy it to the component part, such that we no longer need to
 consider those synth nodes.
 
 We then dispose of the surroundings, except for back references.
-
-#!lua
-local Prefix = Set {'and', 'not', 'to_match'}
-local Suffix = Set {'zero_plus', 'one_plus', 'optional', 'repeat'}
-local Backref = Set {'backref'}
-
-local Surrounding = Prefix + Suffix + Backref
-#/lua
 
 #!lua
 function analyzeElement(elem)
@@ -993,16 +1007,9 @@ end
 #/lua
 
 
-
 *** rule:constrain(coll)
 
 Constrains an individual rule.
-
-#!lua
-local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
-                   'unbounded', 'compound', 'failsucceeds', 'nofail',
-                   'recursive', 'self_recursive'}
-#/lua
 
 #!lua
 function Mem.rule.constrain(rule, coll)
