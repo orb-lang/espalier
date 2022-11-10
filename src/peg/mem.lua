@@ -1061,15 +1061,37 @@ end
 
 
 
+
+
+
+
+
+
+
+
+local function copyTraits(rule, ref)
+   local changed = false
+   for trait in pairs(CopyTrait) do
+      if rule[trait] then
+         local differs = ref[trait] ~= rule[trait]
+         changed = changed or differs
+         ref[trait] = rule[trait]
+      end
+   end
+
+   return changed
+end
+
+
+
 function Mem.rule.propagateConstraints(rule)
    if rule.references then -- could be the start rule
       for _, ref in ipairs(rule.references) do
-         ref:constrain()
-         -- this should only be necessary on change
-         -- we make sure the rule is looked at again
-         if not ref.changed then
-            local rule = ref:parentRule()
-            rule:enqueue()
+         local changed = copyTraits(rule, ref)
+         if changed then
+            ref:parentRule():enqueue()
+         else
+            ref.constrained = true
          end
       end
    end
@@ -1240,95 +1262,9 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-local function copyTraits(rule, name)
-   local changed = false
-   for trait in pairs(CopyTrait) do
-      if rule[trait] then
-         local differs = name[trait] ~= rule[trait]
-         changed = changed or differs
-         name[trait] = rule[trait]
-      end
-   end
-   if rule.constrained then
-      name.constrained = true
-      name.constrained_by_rule = true
-   else
-      name.constrained_by_rule = false
-   end
-
-   return changed
-end
-
-
-
-
-
-
-
-
-local FIX_POINT = 3
-
-
-
-
 function Mem.name.constrain(name)
-   if name.constrained then return end
-   local token = assert(name.token)
-   local rule = name:G().ruleMap[token]
-   local self_ref = token == name:withinRule()
-   if self_ref then
-      rule.self_recursive = true
-      rule.unbounded = true
-      if name.seen_self then
-         name.seen_self = nil
-      else
-         name.seen_self = true
-         name:enqueue()
-         return
-      end
-   end
-   local changed = copyTraits(rule, name)
-   ---[[DBG]] name.changed = changed
-   if not changed then
-      name.no_change = name.no_change and name.no_change + 1 or 1
-      if name.no_change > FIX_POINT then
-         --[[DBG]] --[[
-         name.no_change = nil --]]
-         name.constrained_by_rule = nil
-         name.constrained_by_fixed_point = true
-         name.constrained = true
-      end
-   end
    if not name.constrained then
-      name:enqueue()
+      name:G().ruleMap[name.token]:enqueue()
    end
 end
 

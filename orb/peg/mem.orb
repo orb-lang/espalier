@@ -1060,16 +1060,38 @@ end
 
 Sends all changes to the rule to each name.
 
+If this produces any changes, queues up the parent rule for another go-around,
+and if not, marks it constrained.
+
+**** copyTraits(rule, ref): changed: b
+
+Copies over traits, returning =true= if any of the copied traits has changed
+the state of =name=.
+
+#!lua
+local function copyTraits(rule, ref)
+   local changed = false
+   for trait in pairs(CopyTrait) do
+      if rule[trait] then
+         local differs = ref[trait] ~= rule[trait]
+         changed = changed or differs
+         ref[trait] = rule[trait]
+      end
+   end
+
+   return changed
+end
+#/lua
+
 #!lua
 function Mem.rule.propagateConstraints(rule)
    if rule.references then -- could be the start rule
       for _, ref in ipairs(rule.references) do
-         ref:constrain()
-         -- this should only be necessary on change
-         -- we make sure the rule is looked at again
-         if not ref.changed then
-            local rule = ref:parentRule()
-            rule:enqueue()
+         local changed = copyTraits(rule, ref)
+         if changed then
+            ref:parentRule():enqueue()
+         else
+            ref.constrained = true
          end
       end
    end
@@ -1239,96 +1261,10 @@ end
 
 *** name:constrain(coll)
 
-This is all about copying traits from the rule body to the reference.
-
-We have to handle a self-reference carefully: the first time we see it, we're
-still collecting the other properties, so we push the rule again and tag the
-name.
-
-Welp. Obvious once I see it but, self-recursion only breaks the tie sometimes,
-and we have to handle arbitrary cycles.
-
-What we do is count "copy with no change" and if we see it four times, we're
-done.
-
-Four? It's not correct, I'm reasonably confident.  One 'no change' can/does
-happen if a rule body hasn't been constrained at all, two in a row is waiting
-on one level of indirection, this is satisfied in three, so four takes care of
-two.
-
-I need some sessions demonstrating the accomplishments and limits here,
-because all of this needs to be /correct/ and that will involve more
-sophistication than this "lol doesn't seem like it's moving" approach shown
-here.
-
-
-**** copyTraits(rule, name): changed: b
-
-Copies over traits, returning =true= if any of the copied traits has changed
-the state of =name=.
-
-#!lua
-local function copyTraits(rule, name)
-   local changed = false
-   for trait in pairs(CopyTrait) do
-      if rule[trait] then
-         local differs = name[trait] ~= rule[trait]
-         changed = changed or differs
-         name[trait] = rule[trait]
-      end
-   end
-   if rule.constrained then
-      name.constrained = true
-      name.constrained_by_rule = true
-   else
-      name.constrained_by_rule = false
-   end
-
-   return changed
-end
-#/lua
-
-
-*** FIX_POINT
-
-If we see a name twice with no changes that /should/ be it. So far, so good.
-
-#!lua
-local FIX_POINT = 3
-#/lua
-
-
 #!lua
 function Mem.name.constrain(name)
-   if name.constrained then return end
-   local token = assert(name.token)
-   local rule = name:G().ruleMap[token]
-   local self_ref = token == name:withinRule()
-   if self_ref then
-      rule.self_recursive = true
-      rule.unbounded = true
-      if name.seen_self then
-         name.seen_self = nil
-      else
-         name.seen_self = true
-         name:enqueue()
-         return
-      end
-   end
-   local changed = copyTraits(rule, name)
-   ---[[DBG]] name.changed = changed
-   if not changed then
-      name.no_change = name.no_change and name.no_change + 1 or 1
-      if name.no_change > FIX_POINT then
-         --[[DBG]] --[[
-         name.no_change = nil --]]
-         name.constrained_by_rule = nil
-         name.constrained_by_fixed_point = true
-         name.constrained = true
-      end
-   end
    if not name.constrained then
-      name:enqueue()
+      name:G().ruleMap[name.token]:enqueue()
    end
 end
 #/lua
