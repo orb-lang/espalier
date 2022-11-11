@@ -968,8 +968,7 @@ Replaces the node with its only child in the parent tree.
 Returns =true= if successful, otherwise reporting why it failed.
 
 This is a useful bit of tidying for rules which are containers (such as the
-PEG =cat= rule) and sometimes have just one element.  In such cases, it's
-harmless to call it on all captures of that rule.
+PEG =cat= rule) and sometimes have just one element.
 
 #!lua
 function Node.hoist(node)
@@ -1343,8 +1342,8 @@ local function blurb(node, w, c)
    if not (node.o and node.O and node.str) then return end
    local span = spanner(node)
    local width = w.width
-   if #span > width - 6 then
-      local half = floor((width - 6) / 2)
+   if #span > width - 12 then
+      local half = floor(width / 4)
       local head, tail = sub(span, 1, half), sub(span, -half -1, -1)
       span = c.string(head) .. c.stresc(" ⋯ ") .. c.string(tail)
       span = span

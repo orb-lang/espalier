@@ -205,7 +205,8 @@ local Surrounding = Prefix + Suffix + Backref
 
 ###### Copy Traits
 
-These propagate from rules to their references\.
+  These are traits such that, if a rule has them, the reference/name must also
+have them\.
 
 ```lua
 local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
@@ -214,12 +215,87 @@ local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
 ```
 
 
+#### \_\_repr
+
+Some copypasta while we figure out a better way\.
+
+```lua
+local tablib = require "repr:tablib"
+local yieldName = assert(tablib.yieldName)
+local yieldReprs = assert(tablib.yieldReprs)
+local yieldToken = assert(tablib.yieldToken)
+local concat = assert(table.concat)
+local floor = math.floor
+local sort = table.sort
+local sub = string.sub
+
+local function blurb(node, w, c)
+   if not (node.o and node.O and node.str) then return end
+   local span = node:span()
+   local width = w.width
+   if #span > width - 12 then
+      local half = floor(width / 4)
+      local head, tail = sub(span, 1, half), sub(span, -half -1, -1)
+      span = c.string(head) .. c.stresc(" ⋯ ") .. c.string(tail)
+      span = span
+                :gsub("\n+", c.greyscale("◼︎") .. c.string())
+                :gsub("[ ]+", c.greyscale("␣") .. c.string())
+   else
+      span = c.string(span)
+   end
+
+   local V = c.number("v" .. node.v)
+   local skew = c.bold(tostring(node.O - node.o))
+   local first = V..skew.." "..c.metatable(node.tag)..": ".." "..span.."\n"
+   local second = {}
+   for trait in pairs(CopyTrait) do
+      if node[trait] then
+         insert(second, c["true"](trait))
+      end
+   end
+   sort(second)
+   if #second == 0 then
+      return first
+   else
+      return first .. concat(second, "::")
+   end
+end
+```
+
+```lua
+local Lens = use "repr:lens"
+local Set = core.set
+
+local suppress = Set {
+   'parent',
+   'up',
+   'str',
+   'o', 'O', 'v',
+   'stride',
+   'references',
+   --[[DBG]] --[=[
+   'constrained',
+   'constrained_by_rule',
+   'constrained_by_fixed_point',
+   'compound',
+   --]=]
+} + CopyTrait
+
+local lens = { hide_key = suppress,
+               blurb = blurb,
+               depth = math.huge }
+Mem_M.__repr = Lens(lens)
+```
+
+
 ## Mem Basis
 
 Methods in common to the entire Phyle\.
 
+Other basis methods are presented along with their specified versions\.
 
-##### mem:parentRule\(\)
+
+##### Basis:parentRule\(\)
 
 Returns the parent rule of the part\.
 
@@ -241,7 +317,7 @@ end
 ```
 
 
-##### mem:nameOfRule\(\) \#deprecated :withinRule\(\)
+##### Basis:nameOfRule\(\)
 
 Returns the name of the enclosing rule\.
 
@@ -253,35 +329,41 @@ function Basis.nameOfRule(mem)
    end
    return rule.token
 end
-
-function Basis.withinRule(mem)
-   s:chat "use .nameOfRule"
-   return mem:nameOfRule()
-end
 ```
 
 
-#### mem:nameOf\(\)
+#### Basis:nameFor\(\)
 
-
+Gives us something to call the Node\.
 
 ```lua
 function Basis.nameOf(mem)
-   return mem.name or mem.tag
+   return mem.token or mem.tag
 end
 ```
 
 
-##### Synthesis
+### Synthesis
 
 Here we decorate particular Nodes with useful representations and
 contextual information\.
+
+
+\#Todo
+
+
+#### extraSpecial\(node\)
+
+  Decorates [certain rules](https://gitlab.com/special-circumstance/espalier/-/blob/trunk/doc/md/other-trait-sets.md) with useful additional
+information\.
 
 ```lua
 local function extraSpecial(node)
    local c = node.tag
    if c == 'range' then
       node.from_char, node.to_char = node[1]:span(), node[2]:span()
+      -- we'll use this in codegen #todo
+      node.ASCII = #node.from_char == 1 and #node.to_char == 1
    elseif c == 'set' then
       node.value = node:span()
    elseif c == 'name' or c == 'rule_name' then
@@ -296,11 +378,6 @@ end
 local analyzeElement;
 
 local function synthesize(node)
-   if Hoist[node.tag] and #node == 1 then
-      local kid = node[1]
-      node:hoist()
-      node = kid
-   end
    for _, twig in ipairs(node) do
       synthesize(twig)
    end
@@ -310,9 +387,6 @@ local function synthesize(node)
    -- elements
    if node.tag == 'element' then
       analyzeElement(node)
-      -- this may make the element have a single child,
-      -- so we need to hoist:
-      node.parent:hoist()
    elseif node.tag == 'rule' then
       node.token = normalize(node :take 'rule_name' :span())
    end
@@ -367,6 +441,7 @@ function analyzeElement(elem)
           "weirdness encountered analyzing element")
    for _, mod in pairs(modifier) do
       if mod then
+         elem.modified = true
          elem[mod.tag] = true
          for trait in pairs(CopyTrait) do
             elem[trait] = mod[trait]
@@ -384,24 +459,54 @@ function analyzeElement(elem)
 end
 ```
 
+```lua
+local function toHoist(node)
+   return Hoist[node.tag]
+          and #node == 1
+          and (not node.modified)
+end
+```
+
+We need to first collect the 'hoistable' Nodes, then hoist them, due to the
+sort of problems we would otherwise get when modifying the structure of
+something while iterating over it\.
 
 ```lua
 function Mem.grammar.synthesize(grammar)
    grammar.start = grammar :take 'rule'
    synthesize(grammar)
+   local shuttle = Deque()
+   for twig in grammar :walk() do
+      if toHoist(twig) then
+         shuttle:push(twig)
+      end
+   end
+   for twig in shuttle:popAll() do
+      twig:hoist()
+   end
    grammar:G().is_synthesized = true
    return grammar
 end
 ```
 
 
-### grammar:collectRules\(\)
+### Analysis
 
-This builds up a large collection of relational information, while decorating
+  This is the stage where we establish the primary structural characteristics
+of the grammar\.
+
+This is many variations on who\-calls what, which we establish with:
+
+
+#### grammar:collectRules\(\)
+
+  Builds up a large collection of relational information, while decorating
 rules and names with tokens representing their normalized value\.
 
+This uses the grammar's general table `.g` to accumulate the following\.
 
-- returns a map of the following:
+
+- g:
 
   - nameSet:  The set of every name in normalized token form\.
 
@@ -424,6 +529,9 @@ rules and names with tokens representing their normalized value\.
       right hand side\.
 
   - missing:  Any rule referenced by name which isn't defined in the grammar\.
+
+\#Todo
+   see if we can either do without some of it or reduce some big O\.
 
 
 ```lua
@@ -489,6 +597,7 @@ function Mem.grammar.collectRules(grammar)
    end
    sort(missing)
 
+   -- add our collections to the general table
    local g = grammar:G()
    g.nameSet   = nameSet
    g.nameMap   = nameMap
@@ -498,21 +607,11 @@ function Mem.grammar.collectRules(grammar)
    g.dupe      = nonempty(dupe)
    g.surplus   = nonempty(surplus)
    g.missing   = nonempty(missing)
-
-
-   return { nameSet   =  nameSet,
-            nameMap   =  nameMap,
-            ruleMap   =  ruleMap,
-            ruleCalls =  ruleCalls,
-            ruleSet   =  ruleSet,
-            dupe      =  nonempty(dupe),
-            surplus   =  nonempty(surplus),
-            missing   =  nonempty(missing), }
 end
 ```
 
 
-#### partition\(ruleCalls\)
+##### partition\(ruleCalls\)
 
 This partitions the rules into regular and recursive\.
 
@@ -572,7 +671,7 @@ end
 ```
 
 
-### Mem\.grammar\.callSet\(grammar\)
+#### Mem\.grammar\.callSet\(grammar\)
 
 This makes Sets non\-destructively out of arrays of rule names, which might not
 have to be non\-destructive, but comes with no disadvantages at this point\.
@@ -596,7 +695,7 @@ end
 ```
 
 
-#### graphCalls\(grammar\)
+##### graphCalls\(grammar\)
 
   Now that we've obtained all the terminal rules, we can use more set
 addition and a queue to obtain the full rule set seen by any other given
@@ -688,7 +787,7 @@ end
 ```
 
 
-#### trimRecursive\(recursive\)
+##### trimRecursive\(recursive\)
 
 ```lua
 local function trimRecursive(recursive, ruleMap)
@@ -711,6 +810,8 @@ end
 Pulls together the caller\-callee relationships\.
 
 ```lua
+-- local partition, trimRecursive, graphCalls;
+
 function Mem.grammar.analyze(grammar)
    local g = grammar:G()
    if not g.is_synthesized then
@@ -836,7 +937,7 @@ end
 include rules referenced recursively\.
 
 \#Todo
-      use of a shuttle and `added` check here shouldn't be necessary\.
+       use of a shuttle and `added` check here shouldn't be necessary\.
 
 ```lua
 function Mem.grammar.pehFor(grammar, rule)
@@ -880,7 +981,7 @@ grammar\.
 bother doing fancy things with under or over\-specified grammars\.
 
 \#Todo
-       integrated with the constraint system\.  Nor have backrefs\.
+       meaningfully integrated with the constraint system\.  Nor have backrefs\.
 
        `to-match` is syntax sugar, and we probably want to unsugar it\.
        Backrefs have meaningful semantics we need to be careful with, but in
@@ -950,7 +1051,10 @@ end
 ```lua
 function Basis.enqueue(basis)
    if basis.on then return end
-   basis:G().shuttle:push(basis)
+   basis.seen = basis.seen and basis.seen + 1 or 1
+   local g = basis:G()
+   g.count = g.count + 1
+   g.shuttle:push(basis)
 end
 ```
 
@@ -988,7 +1092,7 @@ function Mem.grammar.constrain(grammar)
    local regulars, ruleMap = g.regulars, g.ruleMap
    local shuttle = Deque()
    g.shuttle = shuttle
-   local seen = {}
+   g.count = 0 ---[[
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
          ruleMap[name]:enqueue()
@@ -997,6 +1101,7 @@ function Mem.grammar.constrain(grammar)
    for name in pairs(g.recursive) do
       ruleMap[name]:enqueue()
    end
+   --]]
    local bail = 0
    for node in shuttle:popAll() do
       if type(node) == 'table' then
@@ -1146,6 +1251,9 @@ function Mem.cat.constrain(cat)
 
       if (not sub.nullable) or sub.predicate then
          idx = i
+         if gate then
+            gate.gate = nil
+         end
          gate = sub
          if (not locked) then
             sub.lock = true
@@ -1183,7 +1291,9 @@ function Mem.cat.constrain(cat)
          if not gate.unbounded then
             for i = idx-1, 1, -1 do
                local sub = cat[i]
-               if not sub.terminal then break end
+               if (not sub.terminal) or sub.lock then
+                  break
+               end
                sub.gate = true
                sub.dam = nil
             end
@@ -1199,31 +1309,38 @@ function Mem.cat.constrain(cat)
 end
 ```
 
+
+### alt:constrain\(\)
+
 ```lua
 function Mem.alt.constrain(alt)
+   local constrained = true
+   -- can be true for any choice
    local nofail, nullable = nil, nil
-   local again;
-   local locked = true
-   local terminal = true
+   -- must be true for all choices
+   local locked, predicate, terminal = true, true, true
+
    for _, sub in ipairs(alt) do
       sub:constrain()
       if not sub.constrained then
-         again = true
+         constrained = false
       end
       if sub.unbounded then
          alt.unbounded = true
       end
       terminal = terminal and sub.terminal
+      locked = locked and sub.locked
+      predicate = predicate and sub.predicate
 
       nofail = nofail or sub.nofail
       nullable = nullable or sub.nullable
-      locked = locked and sub.locked
    end
    alt.nofail      = nofail
    alt.nullable    = nullable
    alt.terminal    = terminal or nil
-   alt.locked      = locked   or nil
-   alt.constrained = not again
+   alt.locked      = locked or nil
+   alt.predicate   = predicate or nil
+   alt.constrained = constrained
 end
 ```
 

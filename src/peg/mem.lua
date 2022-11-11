@@ -208,9 +208,85 @@ local Surrounding = Prefix + Suffix + Backref
 
 
 
+
 local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
                    'unbounded', 'compound', 'failsucceeds', 'nofail',
                    'recursive', 'self_recursive'}
+
+
+
+
+
+
+
+
+local tablib = require "repr:tablib"
+local yieldName = assert(tablib.yieldName)
+local yieldReprs = assert(tablib.yieldReprs)
+local yieldToken = assert(tablib.yieldToken)
+local concat = assert(table.concat)
+local floor = math.floor
+local sort = table.sort
+local sub = string.sub
+
+local function blurb(node, w, c)
+   if not (node.o and node.O and node.str) then return end
+   local span = node:span()
+   local width = w.width
+   if #span > width - 12 then
+      local half = floor(width / 4)
+      local head, tail = sub(span, 1, half), sub(span, -half -1, -1)
+      span = c.string(head) .. c.stresc(" ⋯ ") .. c.string(tail)
+      span = span
+                :gsub("\n+", c.greyscale("◼︎") .. c.string())
+                :gsub("[ ]+", c.greyscale("␣") .. c.string())
+   else
+      span = c.string(span)
+   end
+
+   local V = c.number("v" .. node.v)
+   local skew = c.bold(tostring(node.O - node.o))
+   local first = V..skew.." "..c.metatable(node.tag)..": ".." "..span.."\n"
+   local second = {}
+   for trait in pairs(CopyTrait) do
+      if node[trait] then
+         insert(second, c["true"](trait))
+      end
+   end
+   sort(second)
+   if #second == 0 then
+      return first
+   else
+      return first .. concat(second, "::")
+   end
+end
+
+
+
+local Lens = use "repr:lens"
+local Set = core.set
+
+local suppress = Set {
+   'parent',
+   'up',
+   'str',
+   'o', 'O', 'v',
+   'stride',
+   'references',
+   --[[DBG]] --[=[
+   'constrained',
+   'constrained_by_rule',
+   'constrained_by_fixed_point',
+   'compound',
+   --]=]
+} + CopyTrait
+
+local lens = { hide_key = suppress,
+               blurb = blurb,
+               depth = math.huge }
+Mem_M.__repr = Lens(lens)
+
+
 
 
 
@@ -254,11 +330,6 @@ function Basis.nameOfRule(mem)
    return rule.token
 end
 
-function Basis.withinRule(mem)
-   s:chat "use .nameOfRule"
-   return mem:nameOfRule()
-end
-
 
 
 
@@ -267,8 +338,17 @@ end
 
 
 function Basis.nameOf(mem)
-   return mem.name or mem.tag
+   return mem.token or mem.tag
 end
+
+
+
+
+
+
+
+
+
 
 
 
@@ -282,6 +362,8 @@ local function extraSpecial(node)
    local c = node.tag
    if c == 'range' then
       node.from_char, node.to_char = node[1]:span(), node[2]:span()
+      -- we'll use this in codegen #todo
+      node.ASCII = #node.from_char == 1 and #node.to_char == 1
    elseif c == 'set' then
       node.value = node:span()
    elseif c == 'name' or c == 'rule_name' then
@@ -296,11 +378,6 @@ end
 local analyzeElement;
 
 local function synthesize(node)
-   if Hoist[node.tag] and #node == 1 then
-      local kid = node[1]
-      node:hoist()
-      node = kid
-   end
    for _, twig in ipairs(node) do
       synthesize(twig)
    end
@@ -310,9 +387,6 @@ local function synthesize(node)
    -- elements
    if node.tag == 'element' then
       analyzeElement(node)
-      -- this may make the element have a single child,
-      -- so we need to hoist:
-      node.parent:hoist()
    elseif node.tag == 'rule' then
       node.token = normalize(node :take 'rule_name' :span())
    end
@@ -367,6 +441,7 @@ function analyzeElement(elem)
           "weirdness encountered analyzing element")
    for _, mod in pairs(modifier) do
       if mod then
+         elem.modified = true
          elem[mod.tag] = true
          for trait in pairs(CopyTrait) do
             elem[trait] = mod[trait]
@@ -385,13 +460,46 @@ end
 
 
 
+local function toHoist(node)
+   return Hoist[node.tag]
+          and #node == 1
+          and (not node.modified)
+end
+
+
+
+
+
+
 
 function Mem.grammar.synthesize(grammar)
    grammar.start = grammar :take 'rule'
    synthesize(grammar)
+   local shuttle = Deque()
+   for twig in grammar :walk() do
+      if toHoist(twig) then
+         shuttle:push(twig)
+      end
+   end
+   for twig in shuttle:popAll() do
+      twig:hoist()
+   end
    grammar:G().is_synthesized = true
    return grammar
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -488,6 +596,7 @@ function Mem.grammar.collectRules(grammar)
    end
    sort(missing)
 
+   -- add our collections to the general table
    local g = grammar:G()
    g.nameSet   = nameSet
    g.nameMap   = nameMap
@@ -497,16 +606,6 @@ function Mem.grammar.collectRules(grammar)
    g.dupe      = nonempty(dupe)
    g.surplus   = nonempty(surplus)
    g.missing   = nonempty(missing)
-
-
-   return { nameSet   =  nameSet,
-            nameMap   =  nameMap,
-            ruleMap   =  ruleMap,
-            ruleCalls =  ruleCalls,
-            ruleSet   =  ruleSet,
-            dupe      =  nonempty(dupe),
-            surplus   =  nonempty(surplus),
-            missing   =  nonempty(missing), }
 end
 
 
@@ -709,6 +808,8 @@ end
 
 
 
+
+-- local partition, trimRecursive, graphCalls;
 
 function Mem.grammar.analyze(grammar)
    local g = grammar:G()
@@ -949,7 +1050,10 @@ end
 
 function Basis.enqueue(basis)
    if basis.on then return end
-   basis:G().shuttle:push(basis)
+   basis.seen = basis.seen and basis.seen + 1 or 1
+   local g = basis:G()
+   g.count = g.count + 1
+   g.shuttle:push(basis)
 end
 
 
@@ -987,7 +1091,7 @@ function Mem.grammar.constrain(grammar)
    local regulars, ruleMap = g.regulars, g.ruleMap
    local shuttle = Deque()
    g.shuttle = shuttle
-   local seen = {}
+   g.count = 0 ---[[
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
          ruleMap[name]:enqueue()
@@ -996,6 +1100,7 @@ function Mem.grammar.constrain(grammar)
    for name in pairs(g.recursive) do
       ruleMap[name]:enqueue()
    end
+   --]]
    local bail = 0
    for node in shuttle:popAll() do
       if type(node) == 'table' then
@@ -1145,6 +1250,9 @@ function Mem.cat.constrain(cat)
 
       if (not sub.nullable) or sub.predicate then
          idx = i
+         if gate then
+            gate.gate = nil
+         end
          gate = sub
          if (not locked) then
             sub.lock = true
@@ -1182,7 +1290,9 @@ function Mem.cat.constrain(cat)
          if not gate.unbounded then
             for i = idx-1, 1, -1 do
                local sub = cat[i]
-               if not sub.terminal then break end
+               if (not sub.terminal) or sub.lock then
+                  break
+               end
                sub.gate = true
                sub.dam = nil
             end
@@ -1199,30 +1309,37 @@ end
 
 
 
+
+
+
 function Mem.alt.constrain(alt)
+   local constrained = true
+   -- can be true for any choice
    local nofail, nullable = nil, nil
-   local again;
-   local locked = true
-   local terminal = true
+   -- must be true for all choices
+   local locked, predicate, terminal = true, true, true
+
    for _, sub in ipairs(alt) do
       sub:constrain()
       if not sub.constrained then
-         again = true
+         constrained = false
       end
       if sub.unbounded then
          alt.unbounded = true
       end
       terminal = terminal and sub.terminal
+      locked = locked and sub.locked
+      predicate = predicate and sub.predicate
 
       nofail = nofail or sub.nofail
       nullable = nullable or sub.nullable
-      locked = locked and sub.locked
    end
    alt.nofail      = nofail
    alt.nullable    = nullable
    alt.terminal    = terminal or nil
-   alt.locked      = locked   or nil
-   alt.constrained = not again
+   alt.locked      = locked or nil
+   alt.predicate   = predicate or nil
+   alt.constrained = constrained
 end
 
 

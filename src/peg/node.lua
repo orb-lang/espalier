@@ -971,7 +971,6 @@ end
 
 
 
-
 function Node.hoist(node)
    if node:isRoot() then
       return nil, "can't hoist root node"
@@ -1343,8 +1342,8 @@ local function blurb(node, w, c)
    if not (node.o and node.O and node.str) then return end
    local span = spanner(node)
    local width = w.width
-   if #span > width - 6 then
-      local half = floor((width - 6) / 2)
+   if #span > width - 12 then
+      local half = floor(width / 4)
       local head, tail = sub(span, 1, half), sub(span, -half -1, -1)
       span = c.string(head) .. c.stresc(" ⋯ ") .. c.string(tail)
       span = span
