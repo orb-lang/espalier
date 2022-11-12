@@ -599,6 +599,7 @@ function Mem.grammar.collectRules(grammar)
 
    -- add our collections to the general table
    local g = grammar:G()
+   g.start = start_rule
    g.nameSet   = nameSet
    g.nameMap   = nameMap
    g.ruleMap   = ruleMap
@@ -1115,8 +1116,6 @@ function Mem.grammar.constrain(grammar)
                   grammar.no_constraint[rule.token] = rule
                end
             end
-
-            mutate(shuttle, queuetate)
             break
          end
       else
@@ -1198,6 +1197,26 @@ function Mem.rule.propagateConstraints(rule)
          else
             ref.constrained = true
          end
+      end
+   end
+end
+```
+
+
+#### rule:propagate\('prop', value?\)
+
+Sets `name['prop'] = value` for all references to the rule\.
+
+If value isn't given, it's `rule['prop']`\.
+
+```lua
+function Mem.rule.propagate(rule, prop, value)
+   if rule.references then
+      if value == nil then
+         value = rule[prop]
+      end
+      for _, ref in ipairs(rule.references) do
+         ref[prop] =  value
       end
    end
 end
@@ -1358,6 +1377,13 @@ end
 
 ### element:constrain\(coll\)
 
+All remaining `element` nodes carry some modifier, so we copy over the traits
+of the element proper, then remove the `terminal` trait if the modifiers
+prevent it\.
+
+A terminal rule produces an excursion down the string, no exceptions: this is
+never true of predicates and sometimes untrue of optionals of every stripe\.
+
 ```lua
 function Mem.element.constrain(element)
    -- ??
@@ -1386,6 +1412,8 @@ end
   Groups should always have one kid, so we just lift the qualities when we're
 constrained\.
 
+I think we could hoist groups, but just tag the child element as 'grouped' so
+that codegen does the right thing\.  It's not clear that we want to\.
 
 ```lua
 function Mem.group.constrain(group)
@@ -1400,9 +1428,10 @@ end
 ```
 
 
-
 ### name:constrain\(coll\)
 
+  Simply checks if the rule it references has already constrained it, if not,
+puts that rule back on the shuttle for another try\.
 
 ```lua
 function Mem.name.constrain(name)
@@ -1418,7 +1447,15 @@ function Mem.name.ruleOf(name)
 end
 ```
 
+
 ##### Catching optional repeats
+
+If the lower bound on a repeat is zero, it's optional\.
+
+\#Todo
+not sure I actually use repeat rules, so I need some tests to get it right\.
+
+The flip side being, like `to-match`, I don't actually *need* it yet\.\.\.
 
 ```lua
 function Mem.repeated.constrain(repeated)
@@ -1429,10 +1466,16 @@ function Mem.repeated.constrain(repeated)
       repeated.nofail = true
       repeated.nullable = true
    end
+   repeated.needs_work = true -- just a little reminder
    repeated.constrained = true
 end
 ```
 
+
+## Deduce
+
+  The deduction phase is where we take our constraints and use them to build a
+complete view of the parser\.
 
 
 ### Next
@@ -1459,8 +1502,77 @@ parser with `lpeglable.T`, and all that other fun stuff\.  I expect it will
 help with the madcap combinator scheme I have in mind for re\-parsing trees\.\.\.
 
 
+#### Lock Promotion
 
-### Rule Ordering and Grouping
+This is where we bundle up the full lock reference for each `cat`, attaching
+it to the rule, then propagate that up to any `alt` that uses the rule\.
+
+This lets us compare the rules, to see which ones are eliminated, and to
+determine whether a later choice is shadowed by an earlier choice\.
+
+
+### grammar:deduce\(\)
+
+```lua
+function Mem.grammar.deduce(grammar)
+   local g = grammar:G()
+   if not g.start.constrained then
+      grammar:constrain()
+   end
+   if not g.start.constrained then
+      return nil, "grammar can't be constrained"
+   end
+   for rule in grammar :filter 'rule' do
+      rule:enqueue()
+   end
+   for rule in g.shuttle :popAll() do
+      rule:acquireLock()
+      rule:propagate 'the_lock'
+   end
+end
+```
+
+
+#### rule:acquireLock\(\)
+
+```lua
+function Mem.rule.acquireLock(rule)
+   if not rule.locked then
+      rule.the_lock = 'no_lock'
+   else
+      rule.the_lock = 'the lock!'
+      if rule:bodyTag() == 'cat' then
+         local the_lock = rule :take 'cat' :acquireLock()
+         if the_lock then
+            rule.the_lock = the_lock
+         end
+      end
+   end
+end
+```
+
+
+#### rule:bodyTag\(\)
+
+```lua
+function Mem.rule.bodyTag(rule)
+   return rule :take 'rhs' [1] .tag
+end
+```
+
+
+#### cat:acquireLock\(\)
+
+```lua
+function Mem.cat.acquireLock(cat)
+   return "cat lock!"
+end
+```
+
+
+
+\#== ::note::
+##### Rule Ordering and Grouping
 
 We want this for formatting and a bunch of other good reasons\.
 
@@ -1475,7 +1587,7 @@ Second block is everything mentioned in the first block, and so on\.
 This is for a **normal form**, not necessarily how we pretty\-print, which can be
 more intelligent about putting things like whitespace at the end where they
 belong\.
-
+\#/==
 
 
 

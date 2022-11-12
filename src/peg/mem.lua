@@ -598,6 +598,7 @@ function Mem.grammar.collectRules(grammar)
 
    -- add our collections to the general table
    local g = grammar:G()
+   g.start = start_rule
    g.nameSet   = nameSet
    g.nameMap   = nameMap
    g.ruleMap   = ruleMap
@@ -1114,8 +1115,6 @@ function Mem.grammar.constrain(grammar)
                   grammar.no_constraint[rule.token] = rule
                end
             end
-
-            mutate(shuttle, queuetate)
             break
          end
       else
@@ -1197,6 +1196,26 @@ function Mem.rule.propagateConstraints(rule)
          else
             ref.constrained = true
          end
+      end
+   end
+end
+
+
+
+
+
+
+
+
+
+
+function Mem.rule.propagate(rule, prop, value)
+   if rule.references then
+      if value == nil then
+         value = rule[prop]
+      end
+      for _, ref in ipairs(rule.references) do
+         ref[prop] =  value
       end
    end
 end
@@ -1358,6 +1377,13 @@ end
 
 
 
+
+
+
+
+
+
+
 function Mem.element.constrain(element)
    -- ??
    local again
@@ -1387,6 +1413,8 @@ end
 
 
 
+
+
 function Mem.group.constrain(group)
    assert(#group == 1, "group has too many kids (or no kid?)")
    group[1]:constrain()
@@ -1396,6 +1424,7 @@ function Mem.group.constrain(group)
       end
    end
 end
+
 
 
 
@@ -1420,6 +1449,14 @@ end
 
 
 
+
+
+
+
+
+
+
+
 function Mem.repeated.constrain(repeated)
    local range = repeated :take 'integer_range'
    if not range then return end
@@ -1428,6 +1465,7 @@ function Mem.repeated.constrain(repeated)
       repeated.nofail = true
       repeated.nullable = true
    end
+   repeated.needs_work = true -- just a little reminder
    repeated.constrained = true
 end
 
@@ -1454,6 +1492,80 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Mem.grammar.deduce(grammar)
+   local g = grammar:G()
+   if not g.start.constrained then
+      grammar:constrain()
+   end
+   if not g.start.constrained then
+      return nil, "grammar can't be constrained"
+   end
+   for rule in grammar :filter 'rule' do
+      rule:enqueue()
+   end
+   for rule in g.shuttle :popAll() do
+      rule:acquireLock()
+      rule:propagate 'the_lock'
+   end
+end
+
+
+
+
+
+
+function Mem.rule.acquireLock(rule)
+   if not rule.locked then
+      rule.the_lock = 'no_lock'
+   else
+      rule.the_lock = 'the lock!'
+      if rule:bodyTag() == 'cat' then
+         local the_lock = rule :take 'cat' :acquireLock()
+         if the_lock then
+            rule.the_lock = the_lock
+         end
+      end
+   end
+end
+
+
+
+
+
+
+function Mem.rule.bodyTag(rule)
+   return rule :take 'rhs' [1] .tag
+end
+
+
+
+
+
+
+function Mem.cat.acquireLock(cat)
+   return "cat lock!"
+end
 
 
 
