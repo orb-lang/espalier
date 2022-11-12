@@ -3,9 +3,18 @@
 
 
 
+
 local core, cluster = use("qor:core", "cluster:cluster")
 local Feed = use "text:formfeed"
 local Set = core.set
+
+
+
+
+
+
+local V = {toLpeg = {}, toPikchr = {} }
+local toLpeg = V.toLpeg
 
 
 
@@ -75,6 +84,12 @@ end
 
 
 
+toLpeg[1] = function(node)
+  error ("no :toLpeg for " .. node.tag)
+end
+
+
+
 
 
 
@@ -106,7 +121,7 @@ end
 
 
 
-function M.grammar.toLpeg(grammar, extraLpeg)
+function toLpeg.grammar(grammar, extraLpeg)
    local feed = Feed ()
    insert(feed, _PREFACE)
    -- reserve extra space at [2] for backref rules
@@ -147,7 +162,7 @@ end
 
 
 
-function M.rule.toLpeg(rule, feed)
+function toLpeg.rule(rule, feed)
    local token = '"' .. assert(rule :take 'rule_name' . token) .. '"'
    feed :push("_ENV", "[", token, "]", " ", "=", " ")
         :indent() :nudge(1)
@@ -158,7 +173,7 @@ end
 
 
 
-function M.rhs.toLpeg(rhs, feed)
+function toLpeg.rhs(rhs, feed)
    assert(#rhs == 1, "more than one child on rhs?")
    rhs[1]:toLpeg(feed)
 end
@@ -168,7 +183,7 @@ end
 
 
 
-function M.cat.toLpeg(rule, feed)
+function toLpeg.cat(rule, feed)
    for i, element in ipairs(rule) do
       feed:push("")
       element:toLpeg(feed)
@@ -181,7 +196,7 @@ end
 
 
 
-function M.alt.toLpeg(rule, feed)
+function toLpeg.alt(rule, feed)
    for i, element in ipairs(rule) do
       feed:push("")
       element:toLpeg(feed)
@@ -197,7 +212,7 @@ end
 
 
 
-function M.group.toLpeg(group, feed)
+function toLpeg.group(group, feed)
    feed :push("", "(") :indent()
    assert(#group == 1, "group has other than one child")
    group[1]:toLpeg(feed)
@@ -209,7 +224,7 @@ end
 
 
 
-function M.name.toLpeg(name, feed)
+function toLpeg.name(name, feed)
    feed:push("", 'V"' .. name.token .. '"', "")
 end
 
@@ -241,7 +256,7 @@ local Surrounding = Prefix + Suffix + Backref
 
 local backrefBegin, backrefEnd
 
-function M.element.toLpeg(elem, feed)
+function toLpeg.element(elem, feed)
    local part, backref = elem[1], elem[2]
 
    -- backrefs enclose everything including lookahead prefixes
@@ -302,7 +317,7 @@ end
 
 
 
-function M.literal.toLpeg(literal, feed)
+function toLpeg.literal(literal, feed)
    feed:push("", "P" .. literal.token, "")
 end
 
@@ -311,7 +326,7 @@ end
 
 
 
-function M.number.toLpeg(number, feed)
+function toLpeg.number(number, feed)
    feed:push("", number.token, "")
 end
 
@@ -328,13 +343,13 @@ end
 
 
 
-function M.set.toLpeg(set, feed)
+function toLpeg.set(set, feed)
    feed:push("", 'S"' .. set.value ..'"',  "")
 end
 
 
 
-function M.range.toLpeg(range, feed)
+function toLpeg.range(range, feed)
    feed:push("", 'R"' .. range.from_char, range.to_char .. '"', "")
 end
 
@@ -348,8 +363,10 @@ end
 
 
 
+
+
 local upper = string.upper
-function M.rule.toPikchr(rule)
+function V.toPikchr.rule(rule)
    local feed = Feed()
    feed:push [[
      debug_label_color = 1
@@ -368,5 +385,5 @@ end
 
 
 
-return M
+return V
 

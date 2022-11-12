@@ -1643,13 +1643,14 @@ belong\.
 ### Codegen Mixin
 
 \#Todo
+reversing it by hand\.
 
 ```lua
 local codegen = require "espalier:peg/codegen"
 
-for class, mixin in pairs(codegen) do
-   for trait, method in pairs(mixin) do
-      Mem[class][trait] = method
+for property, impl in pairs(codegen) do
+   for tag, method in pairs(impl) do
+      Mem[tag][property] = method
    end
 end
 ```

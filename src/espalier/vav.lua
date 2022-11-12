@@ -207,6 +207,8 @@ function Vav.toLpeg(vav)
    if vav.lpeg_engine then
       return vav.lpeg_engine
    end
+   assert(vav.mem)
+   vav.mem:coalesce()
    vav.lpeg_engine = vav.synth :toLpeg() :string()
    if not vav.lpeg_engine then
       error "Lpeg function was not created"

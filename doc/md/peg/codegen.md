@@ -1,11 +1,20 @@
 # Codegen
 
-A mixin for generating an lpeg \(and probably parseIR\) parser from Vav\.
+A \[Vector\[@cluster:clade\#vector\]\] for generating an lpeg \(and probably
+parseIR\) parser from Vav\.
 
 ```lua
 local core, cluster = use("qor:core", "cluster:cluster")
 local Feed = use "text:formfeed"
 local Set = core.set
+```
+
+
+## Codegen vector
+
+```lua
+local V = {toLpeg = {}, toPikchr = {} }
+local toLpeg = V.toLpeg
 ```
 
 
@@ -74,6 +83,12 @@ end
 }
 ```
 
+```lua
+toLpeg[1] = function(node)
+  error ("no :toLpeg for " .. node.tag)
+end
+```
+
 
 #### Helper functions
 
@@ -106,7 +121,7 @@ end
 ```
 
 ```lua
-function M.grammar.toLpeg(grammar, extraLpeg)
+function toLpeg.grammar(grammar, extraLpeg)
    local feed = Feed ()
    insert(feed, _PREFACE)
    -- reserve extra space at [2] for backref rules
@@ -147,7 +162,7 @@ end
 ### rule :toLpeg\(\)
 
 ```lua
-function M.rule.toLpeg(rule, feed)
+function toLpeg.rule(rule, feed)
    local token = '"' .. assert(rule :take 'rule_name' . token) .. '"'
    feed :push("_ENV", "[", token, "]", " ", "=", " ")
         :indent() :nudge(1)
@@ -158,7 +173,7 @@ end
 ```
 
 ```lua
-function M.rhs.toLpeg(rhs, feed)
+function toLpeg.rhs(rhs, feed)
    assert(#rhs == 1, "more than one child on rhs?")
    rhs[1]:toLpeg(feed)
 end
@@ -168,7 +183,7 @@ end
 ### cat, alt
 
 ```lua
-function M.cat.toLpeg(rule, feed)
+function toLpeg.cat(rule, feed)
    for i, element in ipairs(rule) do
       feed:push("")
       element:toLpeg(feed)
@@ -181,7 +196,7 @@ end
 ```
 
 ```lua
-function M.alt.toLpeg(rule, feed)
+function toLpeg.alt(rule, feed)
    for i, element in ipairs(rule) do
       feed:push("")
       element:toLpeg(feed)
@@ -197,7 +212,7 @@ end
 ### group
 
 ```lua
-function M.group.toLpeg(group, feed)
+function toLpeg.group(group, feed)
    feed :push("", "(") :indent()
    assert(#group == 1, "group has other than one child")
    group[1]:toLpeg(feed)
@@ -209,7 +224,7 @@ end
 ### name
 
 ```lua
-function M.name.toLpeg(name, feed)
+function toLpeg.name(name, feed)
    feed:push("", 'V"' .. name.token .. '"', "")
 end
 ```
@@ -241,7 +256,7 @@ local Surrounding = Prefix + Suffix + Backref
 
 local backrefBegin, backrefEnd
 
-function M.element.toLpeg(elem, feed)
+function toLpeg.element(elem, feed)
    local part, backref = elem[1], elem[2]
 
    -- backrefs enclose everything including lookahead prefixes
@@ -302,7 +317,7 @@ end
 ### literal
 
 ```lua
-function M.literal.toLpeg(literal, feed)
+function toLpeg.literal(literal, feed)
    feed:push("", "P" .. literal.token, "")
 end
 ```
@@ -311,7 +326,7 @@ end
 ### number
 
 ```lua
-function M.number.toLpeg(number, feed)
+function toLpeg.number(number, feed)
    feed:push("", number.token, "")
 end
 ```
@@ -328,13 +343,13 @@ They're also supposed to handle unicode transparently, and don't\.
 That is, however, a library issue, rather than a codegen issue\.
 
 ```lua
-function M.set.toLpeg(set, feed)
+function toLpeg.set(set, feed)
    feed:push("", 'S"' .. set.value ..'"',  "")
 end
 ```
 
 ```lua
-function M.range.toLpeg(range, feed)
+function toLpeg.range(range, feed)
    feed:push("", 'R"' .. range.from_char, range.to_char .. '"', "")
 end
 ```
@@ -347,9 +362,11 @@ Let's give it a shot\!
 
 Stitching the SVGs together is a biiiig bonus, let's get a rule right first\.
 
+\#Note
+
 ```lua
 local upper = string.upper
-function M.rule.toPikchr(rule)
+function V.toPikchr.rule(rule)
    local feed = Feed()
    feed:push [[
      debug_label_color = 1
@@ -368,6 +385,6 @@ end
 
 
 ```lua
-return M
+return V
 ```
 
