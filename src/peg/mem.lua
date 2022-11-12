@@ -1172,6 +1172,7 @@ end
 
 
 
+
 local function copyTraits(rule, ref)
    local changed = false
    for trait in pairs(CopyTrait) do
@@ -1228,6 +1229,12 @@ end
 
 
 
+
+
+
+
+
+
 function Mem.cat.constrain(cat)
    local locked;
    local gate;
@@ -1246,7 +1253,7 @@ function Mem.cat.constrain(cat)
          again = true
       end
 
-      if (not sub.nullable) or sub.predicate then
+      if sub.predicate or sub.terminal then
          idx = i
          if gate then
             gate.gate = nil
@@ -1265,7 +1272,7 @@ function Mem.cat.constrain(cat)
          end
       end
 
-      if sub.terminal and not sub.predicate then
+      if sub.terminal then
          terminal = true
       end
 

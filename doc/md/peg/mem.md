@@ -1164,8 +1164,9 @@ end
 
 Sends all changes to the rule to each name\.
 
-If this produces any changes, queues up the parent rule for another go\-around,
-and if not, marks it constrained\.
+If this produces any changes, queues up the parent rule of the referenced name
+for another go\-around, and if not, marks it constrained\.
+
 
 #### copyTraits\(rule, ref\): changed: b
 
@@ -1223,10 +1224,16 @@ rules: those which, once started, will fail if they don't reach a specific
 end rule and succeed\.
 
 
-#### cat
+#### cat:constrain\(\)
 
-This is where the most intricate stuff happens, which I will document when it
-settles all the way down\.
+This is the most complex part of the constraint algorithm\.
+
+We're looking for locks, dams, and gates\.
+
+A lock is a pattern which, once passed, will fail the rule if the match
+doesn't reach the gate pattern\.
+
+A dam is any intermediate rule with the same property\.
 
 ```lua
 function Mem.cat.constrain(cat)
@@ -1247,7 +1254,7 @@ function Mem.cat.constrain(cat)
          again = true
       end
 
-      if (not sub.nullable) or sub.predicate then
+      if sub.predicate or sub.terminal then
          idx = i
          if gate then
             gate.gate = nil
@@ -1266,7 +1273,7 @@ function Mem.cat.constrain(cat)
          end
       end
 
-      if sub.terminal and not sub.predicate then
+      if sub.terminal then
          terminal = true
       end
 
@@ -1314,7 +1321,7 @@ end
 ```
 
 
-### alt:constrain\(\)
+#### alt:constrain\(\)
 
 ```lua
 function Mem.alt.constrain(alt)
