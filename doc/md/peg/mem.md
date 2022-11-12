@@ -1052,8 +1052,8 @@ end
 ```lua
 function Basis.enqueue(basis)
    if basis.on then return end
-   basis.seen = basis.seen and basis.seen + 1 or 1
    local g = basis:G()
+   basis.seen = basis.seen and basis.seen + 1 or 1
    g.count = g.count + 1
    if g.count > 2^16 then
       error "shuttle is wandering, infinite loop likely"
@@ -1315,7 +1315,6 @@ function Mem.cat.constrain(cat)
       gate.dam = nil
       if gate.lock then
          gate.gate_lock = true
-         gate.lock = nil
       else
          gate.gate = true
          -- look for other unfailable /terminal/ rules
@@ -1548,10 +1547,13 @@ function Mem.rule.acquireLock(rule)
    else
       rule.the_lock = 'the lock!'
       local body_tag = rule:bodyTag()
-      if body_tag == 'cat' or body_tag == 'alt' then
+      if body_tag == 'cat'
+         -- or body_tag == 'element'
+         or body_tag == 'alt' then
          local the_lock = rule :take(body_tag) :acquireLock()
          if the_lock then
             rule.the_lock = the_lock
+            rule :propagate 'the_lock'
          else
             rule:enqueue()
          end
@@ -1608,6 +1610,7 @@ end
 ```
 
 
+
 #### alt:acquireLock\(\)
 
 This is, of course, the hard one\.
@@ -1617,6 +1620,24 @@ function Mem.alt.acquireLock(alt)
    return "alt lock!"
 end
 ```
+
+
+### element:acquireLock\(\)
+
+```lua
+function Mem.element.acquireLock(element)
+   return "element lock!"
+end
+```
+
+```lua
+function Mem.group.acquireLock(group)
+   return "group lock!"
+end
+```
+
+
+#### group:acquireLock\(\)
 
 
 
