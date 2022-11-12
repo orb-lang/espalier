@@ -273,8 +273,8 @@ local suppress = Set {
    'o', 'O', 'v',
    'stride',
    'references',
-   --[[DBG]] --[=[
-   'constrained',
+   'modified',
+   ---[[DBG]] --[=[
    'constrained_by_rule',
    'constrained_by_fixed_point',
    'compound',
@@ -1252,11 +1252,16 @@ function Mem.cat.constrain(cat)
          if gate then
             gate.gate = nil
          end
+         if locked and gate.lock and sub.failsucceeds then
+            sub.lock = true
+         end
          gate = sub
          if (not locked) then
             sub.lock = true
             locked = true
-         else
+         elseif not (sub.lock or sub.nullable) then
+            sub.dam = true
+         elseif sub.failsucceeds then
             sub.dam = true
          end
       end
@@ -1289,9 +1294,10 @@ function Mem.cat.constrain(cat)
          if not gate.unbounded then
             for i = idx-1, 1, -1 do
                local sub = cat[i]
-               if (not sub.terminal) or sub.lock then
+               if (not sub.terminal) or sub.lock or sub.unbounded then
                   break
                end
+               --[[DBG]] sub.back_gate = true
                sub.gate = true
                sub.dam = nil
             end
@@ -1352,8 +1358,12 @@ function Mem.element.constrain(element)
    for _, sub in ipairs(element) do
       sub:constrain()
       if sub.constrained then
+         -- copy then reconcile
          for trait in pairs(CopyTrait) do
             element[trait] = element[trait] or sub[trait]
+         end
+         if element.nullable or element.predicate then
+            element.terminal = nil
          end
       else
          again = true
