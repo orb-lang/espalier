@@ -1054,6 +1054,9 @@ function Basis.enqueue(basis)
    basis.seen = basis.seen and basis.seen + 1 or 1
    local g = basis:G()
    g.count = g.count + 1
+   if g.count > 2^16 then
+      error "shuttle is wandering, infinite loop likely"
+   end
    g.shuttle:push(basis)
 end
 
@@ -1422,6 +1425,7 @@ function Mem.group.constrain(group)
       for trait in pairs(CopyTrait) do
          group[trait] = group[trait] or group[1][trait]
       end
+      group.constrained = true
    end
 end
 
@@ -1515,7 +1519,9 @@ end
 
 function Mem.grammar.deduce(grammar)
    local g = grammar:G()
-   if not g.start.constrained then
+   g.constrain_count = g.count
+   g.count = 0
+   if not (g.start and g.start.constrained) then
       grammar:constrain()
    end
    if not g.start.constrained then
@@ -1540,10 +1546,13 @@ function Mem.rule.acquireLock(rule)
       rule.the_lock = 'no_lock'
    else
       rule.the_lock = 'the lock!'
-      if rule:bodyTag() == 'cat' then
-         local the_lock = rule :take 'cat' :acquireLock()
+      local body_tag = rule:bodyTag()
+      if body_tag == 'cat' or body_tag == 'alt' then
+         local the_lock = rule :take(body_tag) :acquireLock()
          if the_lock then
             rule.the_lock = the_lock
+         else
+            rule:enqueue()
          end
       end
    end
@@ -1564,7 +1573,47 @@ end
 
 
 function Mem.cat.acquireLock(cat)
-   return "cat lock!"
+   if not cat.locked then
+      -- surely this is an error, since we checked: the rule is locked.
+      -- but there are no guarantees in life, including a guarantee that we
+      -- check the rule before calling the method, so:
+      return false
+   end
+   local again = false
+   local the_lock = { the_lock = true }
+   for _, sub in ipairs(cat) do
+      if not sub.lock then
+         break
+      else
+         if sub.tag == 'name' then
+            if not sub.the_lock then
+               again = true
+               sub:ruleOf():enqueue()
+            else
+               insert(the_lock, sub.the_lock)
+            end
+         else
+            insert(the_lock, sub)
+         end
+      end
+   end
+   if again or #the_lock == 0 then
+      return false
+   else
+      cat.the_lock = the_lock
+      return the_lock
+   end
+end
+
+
+
+
+
+
+
+
+function Mem.alt.acquireLock(alt)
+   return "alt lock!"
 end
 
 
