@@ -180,7 +180,7 @@ local pegpeg = [[
  `integer-range`  ←  integer ".." integer
 
         `letter`  ←  [A-Z] / [a-z]
-      ; every Lua escape except \⏎
+      ; every Lua escape except \⏎ and \z
       `escaped`  ←  "\\" ( ( {abfnrtv}
                            / "'"
                            / '"'

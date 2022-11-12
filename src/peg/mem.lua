@@ -1091,7 +1091,7 @@ function Mem.grammar.constrain(grammar)
    local regulars, ruleMap = g.regulars, g.ruleMap
    local shuttle = Deque()
    g.shuttle = shuttle
-   g.count = 0 ---[[
+   g.count = 0
    for _, tier in ipairs(regulars) do
       for name in pairs(tier) do
          ruleMap[name]:enqueue()
@@ -1100,11 +1100,9 @@ function Mem.grammar.constrain(grammar)
    for name in pairs(g.recursive) do
       ruleMap[name]:enqueue()
    end
-   --]]
    local bail = 0
    for node in shuttle:popAll() do
       if type(node) == 'table' then
-         ---[[DBG]] node.popped = node.popped and node.popped + 1 or 1
          node.on = nil
          bail = bail + 1
          node:constrain()
@@ -1346,9 +1344,10 @@ end
 
 
 
+
 function Mem.element.constrain(element)
    -- ??
-   local again;
+   local again
    for _, sub in ipairs(element) do
       sub:constrain()
       if sub.constrained then
@@ -1359,9 +1358,6 @@ function Mem.element.constrain(element)
          again = true
       end
    end
-   if again then
-      element:enqueue()
-   end
    element.constrained = not again
 end
 
@@ -1371,9 +1367,16 @@ end
 
 
 
-function Mem.name.constrain(name)
-   if not name.constrained then
-      name:G().ruleMap[name.token]:enqueue()
+
+
+
+function Mem.group.constrain(group)
+   assert(#group == 1, "group has too many kids (or no kid?)")
+   group[1]:constrain()
+   if group[1].constrained then
+      for trait in pairs(CopyTrait) do
+         group[trait] = group[trait] or group[1][trait]
+      end
    end
 end
 
@@ -1384,23 +1387,17 @@ end
 
 
 
+function Mem.name.constrain(name)
+   if not name.constrained then
+      name:ruleOf():enqueue()
+   end
+end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+function Mem.name.ruleOf(name)
+   return name:G().ruleMap[name.token]
+end
 
 
 
@@ -1422,18 +1419,26 @@ end
 
 
 
-function Mem.group.constrain(group)
-   local again = false
-   for _, sub in ipairs(group) do
-      sub:constrain()
-      if not sub.constrained then
-         again = true
-      end
-   end
-   if not again then
-      group.constrained = true
-   end
-end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
