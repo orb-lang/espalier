@@ -1323,7 +1323,7 @@ function Mem.cat.constrain(cat)
       nullable = nullable and sub.nullable
    end
 
-   cat.terminal = terminal or nil
+   cat.terminal = (terminal and not nullable) or nil
    cat.nofail   = nofail or nil
    cat.nullable = nullable or nil
    cat.constrained = not again
@@ -1757,6 +1757,7 @@ function Mem.element.acquireLock(element)
       element.the_lock = the_lock
       return the_lock
    else
+      element:enqueue()
       return false
    end
 end
@@ -1786,6 +1787,7 @@ function Mem.group.acquireLock(group)
       group.the_lock = the_lock
       return the_lock
    else
+      group:enqueue()
       return false
    end
 end
