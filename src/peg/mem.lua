@@ -1182,6 +1182,9 @@ function Mem.rule.constrain(rule)
    if body.constrained then
       rule.constrained = true
       rhs.constrained = true
+      if Q.terminal[body.tag] then
+         rule.locked = true
+      end
    else
       rule:enqueue()
    end
@@ -1645,30 +1648,33 @@ function Mem.cat.acquireLock(cat)
    if not cat.locked then
       return false
    end
-   cat.saw_it = true
    if cat.the_lock then
       return cat.the_lock
    end
+   cat.on = true
    local again = false
    local the_lock = { the_lock = true }
    local seen_lock = false
    for _, sub in ipairs(cat) do
       if seen_lock and (not sub.lock) then
-         break
-      end
-      if Q.terminal[sub.tag] and sub.lock then
-         insert(the_lock, sub)
-         seen_lock = true
-      elseif sub.the_lock then
-         insert(the_lock, sub.the_lock)
-         seen_lock = true
-      elseif Locks[sub.tag] and (sub.lock or sub.locked) then
-         seen_lock = true
-         local a_lock = sub:acquireLock()
-         if a_lock then
-            insert(the_lock, a_lock)
-         else
-            again = true
+         if Locks[sub.tag] then
+            sub:acquireLock()
+         end
+      elseif sub.lock then
+         if sub.the_lock then
+            insert(the_lock, sub.the_lock)
+            seen_lock = true
+         elseif Q.terminal[sub.tag] then
+            insert(the_lock, sub)
+            seen_lock = true
+         elseif Locks[sub.tag] then
+            seen_lock = true
+            local a_lock = sub:acquireLock()
+            if a_lock then
+               insert(the_lock, a_lock)
+            else
+               again = true
+            end
          end
       end
    end
@@ -1676,6 +1682,7 @@ function Mem.cat.acquireLock(cat)
       cat:parentRule():enqueue()
       return false
    else
+      cat.on = false
       cat.the_lock = the_lock
       return the_lock
    end
@@ -1717,9 +1724,6 @@ function Mem.alt.acquireLock(alt)
          end
       end
    end
-   if the_lock then
-      return the_lock
-   end
    if again then
       alt:parentRule():enqueue()
       return false
@@ -1741,13 +1745,20 @@ function Mem.element.acquireLock(element)
    if element.the_lock then
       return element.the_lock
    end
+   local the_lock;
+
    local body = element[1]
    if Locks[body.tag] and body.locked then
-      return body:acquireLock()
+      the_lock = body:acquireLock()
    elseif body.terminal then
-      return element
+      the_lock = body
    end
-   return "element lock?"
+   if the_lock then
+      element.the_lock = the_lock
+      return the_lock
+   else
+      return false
+   end
 end
 
 
@@ -1762,21 +1773,21 @@ function Mem.group.acquireLock(group)
    if group.lock then
       return group
    end
-
+   group.on = true
+   local the_lock;
    local elem = group[1]
    if Locks[elem.tag] and elem.locked then
-      return elem:acquireLock()
-   elseif elem.tag == 'name' then
-      if elem.the_lock then
-         return elem.the_lock
-      else
-         elem:ruleOf():enqueue()
-         return false
-      end
+      the_lock = elem:acquireLock()
    elseif elem.terminal then
-      return elem
+      the_lock = elem
    end
-   return "group lock?"
+   if the_lock then
+      group.on = false
+      group.the_lock = the_lock
+      return the_lock
+   else
+      return false
+   end
 end
 
 
