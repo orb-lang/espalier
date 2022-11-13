@@ -220,6 +220,15 @@ local CopyTrait = Set {'locked', 'predicate', 'nullable', 'null', 'terminal',
 
 
 
+local Locks = Set {'cat', 'alt', 'group', 'element', 'name'}
+
+
+
+
+
+
+
+
 local tablib = require "repr:tablib"
 local yieldName = assert(tablib.yieldName)
 local yieldReprs = assert(tablib.yieldReprs)
@@ -1055,6 +1064,10 @@ function Basis.enqueue(basis)
    basis.seen = basis.seen and basis.seen + 1 or 1
    g.count = g.count + 1
    if g.count > 2^16 then
+      for term in g.shuttle:popAll() do
+         term.on = nil
+         term.stuck_in_limbo = true
+      end
       error "shuttle is wandering, infinite loop likely"
    end
    g.shuttle:push(basis)
@@ -1269,6 +1282,7 @@ function Mem.cat.constrain(cat)
       -- reset our conditions because we routinely do this several times
       sub.lock, sub.dam, sub.gate, sub.gate_lock = nil, nil, nil, nil
 
+      --[[DBG]] sub.back_gate = nil
       sub:constrain()
 
       if not sub.constrained then
@@ -1309,8 +1323,7 @@ function Mem.cat.constrain(cat)
    cat.nofail   = nofail or nil
    cat.nullable = nullable or nil
    cat.constrained = not again
-
-   if gate then
+   if (not again) and gate then
       gate.dam = nil
       if gate.lock then
          gate.gate_lock = true
@@ -1330,7 +1343,7 @@ function Mem.cat.constrain(cat)
             end
          end
       end
-   else
+   elseif not again then
       locked = false -- right? lock but no gate = not locked
    end
 
@@ -1541,21 +1554,22 @@ end
 
 
 function Mem.rule.acquireLock(rule)
-   if not rule.locked then
-      rule.the_lock = 'no_lock'
-   else
-      rule.the_lock = 'the lock!'
-      local body_tag = rule:bodyTag()
-      if body_tag == 'cat'
-         -- or body_tag == 'element'
-         or body_tag == 'alt' then
-         local the_lock = rule :take(body_tag) :acquireLock()
+   local body = rule :take 'rhs' [1]
+   if rule.locked then
+      rule.the_lock = "rule lock!"
+      if Locks[body.tag] then
+         local the_lock = body:acquireLock()
          if the_lock then
             rule.the_lock = the_lock
             rule :propagate 'the_lock'
          else
             rule:enqueue()
          end
+      elseif body.terminal then
+         rule.the_lock = body
+         rule :propagate 'the_lock'
+      else
+         rule.body_does_not_lock = true
       end
    end
 end
@@ -1574,6 +1588,18 @@ end
 
 
 
+function Mem.name.acquireLock(name)
+   if name.the_lock then
+      return name.the_lock
+   end
+   name:ruleOf():enqueue()
+end
+
+
+
+
+
+
 function Mem.cat.acquireLock(cat)
    if not cat.locked then
       -- surely this is an error, since we checked: the rule is locked.
@@ -1583,23 +1609,28 @@ function Mem.cat.acquireLock(cat)
    end
    local again = false
    local the_lock = { the_lock = true }
+   local seen_lock = false
    for _, sub in ipairs(cat) do
-      if not sub.lock then
+      if seen_lock and (not sub.lock) then
          break
-      else
-         if sub.tag == 'name' then
-            if not sub.the_lock then
-               again = true
-               sub:ruleOf():enqueue()
-            else
-               insert(the_lock, sub.the_lock)
-            end
+      elseif sub.the_lock then
+         insert(the_lock, sub.the_lock)
+         seen_lock = true
+      elseif Locks[sub.tag] and (sub.lock or sub.locked) then
+         local a_lock = sub:acquireLock()
+         if a_lock then
+            insert(the_lock, a_lock)
+            seen_lock = true
          else
-            insert(the_lock, sub)
+            again = true
          end
+      elseif Q.terminal[sub.tag] then
+         insert(the_lock, sub)
+         seen_lock = true
       end
    end
    if again or #the_lock == 0 then
+      cat:parentRule():enqueue()
       return false
    else
       cat.the_lock = the_lock
@@ -1625,17 +1656,47 @@ end
 
 
 function Mem.element.acquireLock(element)
-   return "element lock!"
+   local body = element[1]
+   if Locks[body.tag] then
+      return body:acquireLock()
+   elseif body.tag == 'name' then
+      if body.the_lock then
+         return body.the_lock
+      else
+         body:ruleOf():enqueue()
+         return false
+      end
+   elseif body.terminal then
+      return element
+   end
+   return "element lock?"
 end
+
+
+
 
 
 
 function Mem.group.acquireLock(group)
-   return "group lock!"
+   if group.lock then
+      return group
+   end
+
+   local elem = group[1]
+   if Locks[elem.tag] then
+      return elem:acquireLock()
+   elseif elem.tag == 'name' then
+      if elem.the_lock then
+         return elem.the_lock
+      else
+         elem:ruleOf():enqueue()
+         return false
+      end
+   elseif elem.terminal then
+      return elem
+   end
+   return "group lock?"
 end
-
-
-
 
 
 
