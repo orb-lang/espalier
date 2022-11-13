@@ -1239,26 +1239,6 @@ end
 #/lua
 
 
-**** rule:propagate('prop', value?)
-
-Sets ==name['prop'] = value== for all references to the rule.
-
-If value isn't given, it's =rule['prop']=.
-
-#!lua
-function Mem.rule.propagate(rule, prop, value)
-   if rule.references then
-      if value == nil then
-         value = rule[prop]
-      end
-      for _, ref in ipairs(rule.references) do
-         ref[prop] =  value
-      end
-   end
-end
-#/lua
-
-
 *** terminals
 
 #!lua
@@ -1568,7 +1548,6 @@ function Mem.grammar.deduce(grammar)
    end
    for rule in g.shuttle :popAll() do
       rule:acquireLock()
-      rule:propagate 'the_lock'
    end
 end
 #/lua
@@ -1578,22 +1557,27 @@ end
 
 #!lua
 function Mem.rule.acquireLock(rule)
+   if rule.the_lock then
+      rule:propagateLock()
+      return rule.the_lock
+   end
    if rule.locked then
       local body = rule :body()
       if Locks[body.tag] then
          local the_lock = body:acquireLock()
          if the_lock then
             rule.the_lock = the_lock
-            rule :propagate 'the_lock'
          else
             rule:enqueue()
          end
       elseif body.terminal then
          rule.the_lock = body
-         rule :propagate 'the_lock'
       else
          rule.body_does_not_lock = true
       end
+
+      rule:propagateLock()
+      return rule.the_lock
    end
 end
 #/lua
@@ -1611,6 +1595,32 @@ end
 #/lua
 
 
+**** rule:propagateLock()
+
+Sets ==name['prop'] = value== for all references to the rule.
+
+If value isn't given, it's =rule['prop']=.
+
+#!lua
+function Mem.rule.propagateLock(rule)
+   local the_lock = rule.the_lock
+   if not the_lock then
+      return
+   end
+
+   if rule.references then
+      for _, ref in ipairs(rule.references) do
+         local has_lock = ref.the_lock
+         ref.the_lock = the_lock
+         if not has_lock then
+            ref:parentRule():enqueue()
+         end
+      end
+   end
+end
+#/lua
+
+
 **** name:acquireLock()
 
 #!lua
@@ -1618,7 +1628,9 @@ function Mem.name.acquireLock(name)
    if name.the_lock then
       return name.the_lock
    end
-   name:ruleOf():enqueue()
+   if name.locked then
+      name:ruleOf():enqueue()
+   end
 end
 #/lua
 
@@ -1633,26 +1645,30 @@ function Mem.cat.acquireLock(cat)
    if not cat.locked then
       return false
    end
+   if cat.the_lock then
+      return cat.the_lock
+   end
    local again = false
    local the_lock = { the_lock = true }
    local seen_lock = false
    for _, sub in ipairs(cat) do
       if seen_lock and (not sub.lock) then
          break
+      end
+      if Q.terminal[sub.tag] and sub.lock then
+         insert(the_lock, sub)
+         seen_lock = true
       elseif sub.the_lock then
          insert(the_lock, sub.the_lock)
          seen_lock = true
       elseif Locks[sub.tag] and (sub.lock or sub.locked) then
+         seen_lock = true
          local a_lock = sub:acquireLock()
          if a_lock then
             insert(the_lock, a_lock)
-            seen_lock = true
          else
             again = true
          end
-      elseif Q.terminal[sub.tag] then
-         insert(the_lock, sub)
-         seen_lock = true
       end
    end
    if again or #the_lock == 0 then
@@ -1676,30 +1692,39 @@ performed after.
 #!lua
 function Mem.alt.acquireLock(alt)
    if not alt.locked then
-      return false
+      return "don't lock unlocked"
+   end
+   if alt.the_lock then
+      alt.stuck, alt.stuck_on = nil, nil
+      return alt.the_lock
    end
    local the_lock = { the_lock = true, alt_lock = true}
    local again = false
    for _, choice in ipairs(alt) do
       if choice.the_lock then
          insert(the_lock, choice.the_lock)
-      elseif Locks[choice.tag] and (choice.lock or choice.locked) then
+      elseif Q.terminal[choice.tag] then
+         insert(the_lock, choice)
+      elseif Locks[choice.tag] then
          local a_lock = choice:acquireLock()
          if a_lock then
             insert(the_lock, a_lock)
-         elseif choice.tag == 'alt' then
-            insert(the_lock, "no match")
          else
+            alt.stuck = true
+            alt.stuck_on = {_, choice.tag}
             again = true
          end
-      elseif Q.terminal[choice.tag] then
-         insert(the_lock, choice)
       end
+   end
+   if the_lock then
+      return the_lock
    end
    if again then
       alt:parentRule():enqueue()
-      return 'alt lock!'
+      return false
    else
+      alt.stuck = nil
+      alt.stuck_on = nil
       alt.the_lock = the_lock
       return the_lock
    end
@@ -1707,20 +1732,17 @@ end
 #/lua
 
 
+
 *** element:acquireLock()
 
 #!lua
 function Mem.element.acquireLock(element)
+   if element.the_lock then
+      return element.the_lock
+   end
    local body = element[1]
-   if Locks[body.tag] then
+   if Locks[body.tag] and body.locked then
       return body:acquireLock()
-   elseif body.tag == 'name' then
-      if body.the_lock then
-         return body.the_lock
-      else
-         body:ruleOf():enqueue()
-         return false
-      end
    elseif body.terminal then
       return element
    end
@@ -1733,12 +1755,15 @@ end
 
 #!lua
 function Mem.group.acquireLock(group)
+   if group.the_lock then
+      return group.the_lock
+   end
    if group.lock then
       return group
    end
 
    local elem = group[1]
-   if Locks[elem.tag] then
+   if Locks[elem.tag] and elem.locked then
       return elem:acquireLock()
    elseif elem.tag == 'name' then
       if elem.the_lock then
