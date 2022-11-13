@@ -510,6 +510,27 @@ end
 
 
 
+function Mem.grammar.rule(grammar, name)
+   local g = grammar:G()
+   if not g.ruleMap then
+      grammar:collectRules()
+   end
+   return g.ruleMap[normalize(name)]
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1529,6 +1550,9 @@ end
 
 
 
+
+
+
 function Mem.grammar.deduce(grammar)
    local g = grammar:G()
    g.constrain_count = g.count
@@ -1554,9 +1578,8 @@ end
 
 
 function Mem.rule.acquireLock(rule)
-   local body = rule :take 'rhs' [1]
    if rule.locked then
-      rule.the_lock = "rule lock!"
+      local body = rule :body()
       if Locks[body.tag] then
          local the_lock = body:acquireLock()
          if the_lock then
@@ -1579,8 +1602,11 @@ end
 
 
 
+function Mem.rule.body(rule)
+   return rule :take 'rhs' [1]
+end
 function Mem.rule.bodyTag(rule)
-   return rule :take 'rhs' [1] .tag
+   return rule:body().tag
 end
 
 
@@ -1600,11 +1626,11 @@ end
 
 
 
+
+
+
 function Mem.cat.acquireLock(cat)
    if not cat.locked then
-      -- surely this is an error, since we checked: the rule is locked.
-      -- but there are no guarantees in life, including a guarantee that we
-      -- check the rule before calling the method, so:
       return false
    end
    local again = false
@@ -1646,8 +1672,37 @@ end
 
 
 
+
+
 function Mem.alt.acquireLock(alt)
-   return "alt lock!"
+   if not alt.locked then
+      return false
+   end
+   local the_lock = { the_lock = true, alt_lock = true}
+   local again = false
+   for _, choice in ipairs(alt) do
+      if choice.the_lock then
+         insert(the_lock, choice.the_lock)
+      elseif Locks[choice.tag] and (choice.lock or choice.locked) then
+         local a_lock = choice:acquireLock()
+         if a_lock then
+            insert(the_lock, a_lock)
+         elseif choice.tag == 'alt' then
+            insert(the_lock, "no match")
+         else
+            again = true
+         end
+      elseif Q.terminal[choice.tag] then
+         insert(the_lock, choice)
+      end
+   end
+   if again then
+      alt:parentRule():enqueue()
+      return 'alt lock!'
+   else
+      alt.the_lock = the_lock
+      return the_lock
+   end
 end
 
 
