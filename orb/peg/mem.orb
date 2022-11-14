@@ -1942,16 +1942,20 @@ function Mem.grammar.wander(grammar)
       haveQ:push(name)
    end ---[[
    for name in haveQ:popAll() do
-      local awaits = assert(wanting[name])
-      local calls = assert(wanting[awaits].calls)
-      for co in awaiting:popAll() do
+      local calls;
+      if having[name] then
+         calls = having[name]
+      else
+         local awaits = assert(wanting[name])
+         calls = assert(wanting[awaits.await].calls)
+      end
+      for co in await[name]:popAll() do
          local ok, wants = Resume(co, calls)
          assert(ok, wants)
          if waiting(co) then
             await[wants.await]:push(co)
             push(wants.await)
          else
-            having[name] = wants
             push(name)
          end
       end
