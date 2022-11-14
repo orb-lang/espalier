@@ -2002,6 +2002,10 @@ function Mem.grammar.wander(grammar)
       end
    end
 
+   for name, waitlist in pairs(waitsFor) do
+      waitsFor[name] = Set(waitlist)
+   end
+
 
    -- I think this gets missing rules?
    g.suspended = {}
@@ -2016,33 +2020,37 @@ function Mem.grammar.wander(grammar)
    local done = true
    local recurrence = Set(table.keys(waitsFor))
    local bail = 1
-   g.R = recurrence
+   local twice = false
+   g.R = recurrence + {}
    repeat
-      --[[
-      done = true
+      done = false
       bail = bail + 1
-      for name in pairs(recurrence) do
-         if waitsFor[name] then
-            done = false
-            local rule = ruleMap[name]
-            local ruleCalls = rule.calls
-            local finished = true
-            for ref, waitSet in pairs(waitsFor[name]) do
-                local refCalls = ruleMap[ref].calls
-                for elem in pairs(refCalls) do
-                  if not ruleCalls[elem] then
-                     finished = false
-                  end
-                  ruleCalls[elem] = true
+      local change = false
+      for name, refs in pairs(recurrence) do
+         local ruleCalls = ruleMap[name].calls
+         local waitSet = waitsFor[name]
+         for ref in pairs(waitSet) do
+            local refCalls = ruleMap[ref].calls
+            for ref in pairs(refCalls) do
+               if not ruleCalls[ref] then
+                  change = true
+                  ruleCalls[ref] = true
                end
-            end
-            if finished then
-               recurrence[name] = nil
             end
          end
       end
-            --]]
-   until true -- done
+      if not change then
+         if twice then
+            done = true
+         else
+            done = false
+            twice = true
+         end
+      else
+         done = false
+         twice = false
+      end
+   until done or bail > 512
    g.bail = bail
 
    ---[[ which we can check worked:
