@@ -1854,32 +1854,59 @@ function Mem.grammar.wander(grammar)
    local thread, ruleMap, dupe_thread, having = {},{},{},{}
    local await = Dequer()
    g.thread, g.await, g.having = thread, await, having
+   local coMap = {}
 
    for rule in grammar :filter 'rule' do
-      if thread[rule.token] then
+      local token = rule.token
+      if thread[token] then
          -- surplus rule
-         getset(dupe_thread, rule.token)
-         insert(dupe_thread[rule.token], thread[rule.token])
+         getset(dupe_thread, token)
+         insert(dupe_thread[token], thread[token])
       end
-      thread[rule.token] = Create(rule.wander)
-      ruleMap[rule.token] = rule
+      local co = Create(rule.wander)
+      thread[token]= co
+      coMap[co] = token
+      ruleMap[token] = rule
    end
    for rule_name, co in pairs(thread) do
       local ok, wants = Resume(co, ruleMap[rule_name])
-      if wants.token then
-         await[wants.token]:push(co)
+      if wants.await then
+         await[wants.await]:push(co)
       else
          -- for now, we collect returns
          having[rule_name] = wants
          local awaiting = await[rule_name]
          for co in awaiting:popAll() do
+            if type(co) ~= 'thread' then
+               error ("offended by element of type " .. type(co))
+            end
             ok, wants = Resume(co, wants)
-            if wants.token then
-               await[wants.token]:push(wants)
+            if wants.await then
+               await[wants.await]:push(co)
+            else
+               having[rule_name] = wants
             end
          end
       end
    end
+   -- at this point, all rules are either back, or awaiting returns.
+   -- we just have to drive it forward until all the coroutines return.
+   for rule_name, wants in pairs(having) do
+      local awaiting = await[rule_name]
+      for co in awaiting:popAll() do
+         if not type(co) == 'thread' then
+            error ("offended by element of type " .. type(co))
+         end
+         local ok, wants = Resume(co, wants)
+         if wants.await then
+            await[wants.await]:push(co)
+         else
+            local tok = coMap[co]
+            having[tok] = wants
+         end
+      end
+   end
+
    return true
 end
 ```
@@ -1888,7 +1915,7 @@ end
 ```lua
 function Mem.rule.wander(rule)
    for name in rule :filter 'name' do
-      local response = Yield {token = name.token, ref = name}
+      local response = Yield {await = name.token, ref = name}
    end
    return {'done with', rule.token}
 end
