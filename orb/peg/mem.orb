@@ -1837,11 +1837,23 @@ local Create, Yield, Resume = assert(nest.create),
 
 
 #!lua
+local function Dequer()
+   local function index(deq, key)
+      deq[key] = Deque()
+      return deq[key]
+   end
+   return setmetatable({}, { __index = index })
+end
+#/lua
+
+
+#!lua
 function Mem.grammar.wander(grammar)
    local g = grammar:G()
-   local thread, await, dupe_thread, having = {},{},{},{}
+   local thread, ruleMap, dupe_thread, having = {},{},{},{}
+   local await = Dequer()
+   g.thread, g.await, g.having = thread, await, having
 
-   local ruleMap = {}
    for rule in grammar :filter 'rule' do
       if thread[rule.token] then
          -- surplus rule
@@ -1854,13 +1866,19 @@ function Mem.grammar.wander(grammar)
    for rule_name, co in pairs(thread) do
       local ok, wants = Resume(co, ruleMap[rule_name])
       if wants.token then
-         insert(getset(await, wants.token), co)
+         await[wants.token]:push(co)
       else
          -- for now, we collect returns
          having[rule_name] = wants
+         local awaiting = await[rule_name]
+         for co in awaiting:popAll() do
+            ok, wants = Resume(co, wants)
+            if wants.token then
+               await[wants.token]:push(wants)
+            end
+         end
       end
    end
-   g.thread, g.await, g.having = thread, await, having
    return true
 end
 #/lua
