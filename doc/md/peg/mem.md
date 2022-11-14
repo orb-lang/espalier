@@ -1853,12 +1853,21 @@ end
 ```
 
 
+##### waiting\(co\)
+
+```lua
+local function waiting(co)
+   return status(co) == 'suspended'
+end
+```
+
+
 ```lua
 function Mem.grammar.wander(grammar)
    local g = grammar:G()
-   local thread, ruleMap, dupe_thread, having = {},{},{},{}
+   local thread, ruleMap, dupe_thread, having, wanting = {},{},{},{},{}
    local await = Dequer()
-   g.thread, g.await, g.having = thread, await, having
+   g.thread, g.await, g.having, g.wanting = thread, await, having, wanting
    local coMap = {}
    local haveQ = Deque()
    -- we want to move a rule back every time we await it, to capture as many
@@ -1884,10 +1893,11 @@ function Mem.grammar.wander(grammar)
    for rule_name, co in pairs(thread) do
       local ok, wants = Resume(co, ruleMap[rule_name])
       assert(ok, wants)
-      if status(co) == 'suspended' then
+      if waiting(co) then
+         wanting[rule_name] = wants
          await[wants.await]:push(co)
       else
-         -- for now, we collect returns
+         wanting[rule_name] = nil
          having[rule_name] = wants
          push(rule_name)
       end
@@ -1901,26 +1911,53 @@ function Mem.grammar.wander(grammar)
          if not type(co) == 'thread' then
             error ("offended by element of type " .. type(co))
          end
+         wanting[coMap[co]] = nil
          local ok, wants = Resume(co, wants)
          assert(ok, wants)
-         if status(co) == 'suspended' then
+         if waiting(co) then
             await[wants.await]:push(co)
             if having[wants.await] then
                push(wants.await)
+            else
+               wanting[coMap[co]] = wants
             end
          else
-            local tok = coMap[co]
-            having[tok] = wants
-            push(tok)
+            having[coMap[co]] = wants
+            push(coMap[co])
          end
       end
    end
+   -- this gets every regular rule... now what.
+   -- step one: trim
    for name, Q in pairs(await) do
       if #Q == 0 then
          await[name] = nil
       end
-      -- these should be missing rules
+      -- these are recursive
+      -- what comes after can probably live here
    end
+   -- so now we need to send what we have to everthing which is still
+   -- awaiting, but keep track of them.
+   for name, Q in pairs(await) do
+      -- no sense in a bunch of :offqueue we know we don't need
+      haveQ:push(name)
+   end ---[[
+   for name in haveQ:popAll() do
+      local awaits = assert(wanting[name])
+      local calls = assert(wanting[awaits].calls)
+      for co in awaiting:popAll() do
+         local ok, wants = Resume(co, calls)
+         assert(ok, wants)
+         if waiting(co) then
+            await[wants.await]:push(co)
+            push(wants.await)
+         else
+            having[name] = wants
+            push(name)
+         end
+      end
+   end --]]
+
    setmetatable(await, nil) -- something is indexing it in helm :/
 
    return true
@@ -1932,7 +1969,7 @@ end
 function Mem.rule.wander(rule)
    local callSet = {}
    for name in rule :filter 'name' do
-      local response = Yield {await = name.token, ref = name}
+      local response = Yield {await = name.token, calls = callSet}
       for k, v in pairs(response) do
          callSet[k] = v
       end
