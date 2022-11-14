@@ -1873,6 +1873,7 @@ function Mem.grammar.wander(grammar)
    local thread, ruleMap, dupe_thread, having, wanting = {},{},{},{},{}
    local await = Dequer()
    g.thread, g.await, g.having, g.wanting = thread, await, having, wanting
+   g.newRM = ruleMap
    local coMap = {}
 
    --  We want to move a rule back every time we await it,
@@ -1894,17 +1895,16 @@ function Mem.grammar.wander(grammar)
          getset(dupe_thread, token)
          insert(dupe_thread[token], thread[token])
       end
+      ruleMap[token] = rule
       local co = Create(rule.wander)
       thread[token]= co
       coMap[co] = token
-      ruleMap[token] = rule
       local ok, wants = Resume(co, rule)
       assert(ok, wants)
       if waiting(co) then
          wanting[token] = wants
          await[wants.await]:push(co)
       else
-         wanting[token] = nil
          having[token] = wants
          push(token)
       end
@@ -1937,27 +1937,50 @@ function Mem.grammar.wander(grammar)
       end
    end
 
-   -- After that, all regular rules are settled.
-   -- So we remove the empty queues and load up our remaining names, which
-   -- are recursive.
-   for name, Q in pairs(await) do
-      if #Q == 0 then
-         await[name] = nil
-      else
+   --  At this point, all regular rules have dead coroutines, leaving the
+   --  recursives, which are waiting on one of potentially several recursive
+   --  references.
+
+   local regSet, recurSet = Set {}, Set {}
+
+   for name, co in pairs(thread) do
+      if waiting(co) then
+         recurSet[name] = true
          shuttle:push(name)
+      else
+         regSet[name] = true
       end
    end
+   g.regs, g.recurs = regSet, recurSet
+   g.inSets = #regSet + #recurSet
+
+   --  As this pass begins, the recursive rules are all waiting on another
+   --  recursive rule, but they might have a subsequent regular rule.
+   --
+   --  So we're going to do a couple things here: copy over what we have,
+   --  and track which rule we gave it to, and on behalf of which reference,
+   --  so that when that reference returns, we can copy over everything else.
+   local waitsFor = {}
+   g.waitsFor = waitsFor
    for name in shuttle:popAll() do
+      local complete = having[name]
       local calls;
-      if having[name] then
-         calls = having[name]
+
+      if complete then
+         calls = complete
       else
          local awaits = assert(wanting[name])
          calls = assert(wanting[awaits.await].calls)
       end
       for co in await[name]:popAll() do
+         local rule_name = coMap[co]
          local ok, wants = Resume(co, calls)
          assert(ok, wants)
+         if not complete then
+            -- recursive
+            waitsFor[rule_name] = waitsFor[rule_name] or Set {}
+            waitsFor[rule_name][name] = true
+         end
          if waiting(co) then
             await[wants.await]:push(co)
             push(wants.await)
@@ -1966,7 +1989,7 @@ function Mem.grammar.wander(grammar)
             push(name)
          end
       end
-   end --]]
+   end -- I think this gets missing rules?
    g.suspended = {}
    for name, co in pairs(thread) do
       if waiting(co) then
@@ -1974,21 +1997,55 @@ function Mem.grammar.wander(grammar)
       end
    end
 
-   for rule in grammar :filter 'rule' do
-      for name in grammar :filter 'name' do
-         for elem in pairs(having[name.token]) do
-            rule.calls[elem] = true
+   -- last, we go over recursive rules, and copy over the call sets
+   -- which might have been missed
+   local done = true
+   local recurrence = Set(table.keys(waitsFor))
+   local bail = 1
+   g.R = recurrence
+   repeat
+      done = true
+      bail = bail + 1
+      for name in pairs(recurrence) do
+         if waitsFor[name] then
+            done = false
+            local rule = ruleMap[name]
+            local ruleCalls = rule.calls
+            local finished = true
+            for ref, waitSet in pairs(waitsFor[name]) do
+                local refCalls = ruleMap[ref].calls
+                for elem in pairs(refCalls) do
+                  if not ruleCalls[elem] then
+                     finished = false
+                  end
+                  ruleCalls[elem] = true
+               end
+            end
+            if finished then
+               recurrence[name] = nil
+            end
          end
       end
-   end
-   -- just as a spit test, let's check the rules against the existing call
-   -- set
-   local diffs = {}
-   g.diffs = diffs
+   until done
+   g.bail = bail
+
+   ---[[ which we can check worked:
    grammar:constrain()
-   for rule in grammar :filter 'rule' do
-      diffs[rule.token] = g.calls[rule.token] - rule.calls
+   g.diffs = {}
+   for name, calls in pairs(g.calls) do
+      g.diffs[name] = calls - ruleMap[name].calls
+      if #g.diffs[name] == 0 then
+         g.diffs[name] = nil
+      end
+   end --]]
+   g.Recurs = Set(table.keys(g.recursive))
+   g.missedRecurs = g.Recurs - g.recurs
+   local Regs = Set {}
+   for _, set in ipairs(g.regulars) do
+      Regs = Regs + set
    end
+   g.Regs = Regs
+   g.notRegular = g.regs - Regs
 
    setmetatable(await, nil) -- something is indexing it in helm :/
 
