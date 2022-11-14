@@ -1949,6 +1949,7 @@ function Mem.grammar.wander(grammar)
          shuttle:push(name)
       else
          regSet[name] = true
+         assert(having[name])
       end
    end
    g.regs, g.recurs = regSet, recurSet
@@ -1957,39 +1958,53 @@ function Mem.grammar.wander(grammar)
    --  As this pass begins, the recursive rules are all waiting on another
    --  recursive rule, but they might have a subsequent regular rule.
    --
-   --  So we're going to do a couple things here: copy over what we have,
-   --  and track which rule we gave it to, and on behalf of which reference,
-   --  so that when that reference returns, we can copy over everything else.
+   --  So we make note of the awaiteds, without trying to apply them in any
+   --  way, while we get the regulars in play.
    local waitsFor = {}
    g.waitsFor = waitsFor
    for name in shuttle:popAll() do
-      local complete = having[name]
-      local calls;
-
-      if complete then
-         calls = complete
-      else
-         local awaits = assert(wanting[name])
-         calls = assert(wanting[awaits.await].calls)
-      end
-      for co in await[name]:popAll() do
-         local rule_name = coMap[co]
-         local ok, wants = Resume(co, calls)
+      -- this is waiting for:
+      local awaits = wanting[name]
+      -- or has:
+      local has = having[name]
+      -- via
+      local co = thread[name]
+      local ok, wants;
+      if has then
+         ::again::
+         local ok, wants = Resume(co, has)
          assert(ok, wants)
-         if not complete then
-            -- recursive
-            waitsFor[rule_name] = waitsFor[rule_name] or Set {}
-            waitsFor[rule_name][name] = true
-         end
          if waiting(co) then
-            await[wants.await]:push(co)
-            push(wants.await)
-         else
-            having[coMap[co]] = wants
+            if having[wants.await] then
+               awaits = nil
+               has = having[wants.await]
+               goto again
+            end
+            wanting[name] = wants
             push(name)
+         else
+            wanting[name] = nil
+            having[name] = wants
+         end
+      elseif awaits then
+         local waitlist = getset(waitsFor, name)
+         insert(waitlist, awaits.await)
+         local ok, wants = Resume(co, {})
+         assert(ok, wants)
+         if waiting(co) then
+             push(name)
+             if not having[wants.await] then
+                wanting[name] = wants
+             end
+         else
+            wanting[name] = nil
+            having[name] = wants
          end
       end
-   end -- I think this gets missing rules?
+   end
+
+
+   -- I think this gets missing rules?
    g.suspended = {}
    for name, co in pairs(thread) do
       if waiting(co) then
@@ -2004,6 +2019,7 @@ function Mem.grammar.wander(grammar)
    local bail = 1
    g.R = recurrence
    repeat
+      --[[
       done = true
       bail = bail + 1
       for name in pairs(recurrence) do
@@ -2026,7 +2042,8 @@ function Mem.grammar.wander(grammar)
             end
          end
       end
-   until done
+            --]]
+   until true -- done
    g.bail = bail
 
    ---[[ which we can check worked:
