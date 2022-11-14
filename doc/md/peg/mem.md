@@ -1834,6 +1834,7 @@ local nest = core.thread.nest 'Mem'
 local Create, Yield, Resume = assert(nest.create),
                               assert(nest.yield),
                               assert(nest.resume)
+local status = coroutine.status
 ```
 
 
@@ -1882,7 +1883,8 @@ function Mem.grammar.wander(grammar)
    end
    for rule_name, co in pairs(thread) do
       local ok, wants = Resume(co, ruleMap[rule_name])
-      if wants.await then
+      assert(ok, wants)
+      if status(co) == 'suspended' then
          await[wants.await]:push(co)
       else
          -- for now, we collect returns
@@ -1900,9 +1902,12 @@ function Mem.grammar.wander(grammar)
             error ("offended by element of type " .. type(co))
          end
          local ok, wants = Resume(co, wants)
-         if wants.await then
+         assert(ok, wants)
+         if status(co) == 'suspended' then
             await[wants.await]:push(co)
-            push(wants.await)
+            if having[wants.await] then
+               push(wants.await)
+            end
          else
             local tok = coMap[co]
             having[tok] = wants
@@ -1910,6 +1915,13 @@ function Mem.grammar.wander(grammar)
          end
       end
    end
+   for name, Q in pairs(await) do
+      if #Q == 0 then
+         await[name] = nil
+      end
+      -- these should be missing rules
+   end
+   setmetatable(await, nil) -- something is indexing it in helm :/
 
    return true
 end
@@ -1918,10 +1930,16 @@ end
 
 ```lua
 function Mem.rule.wander(rule)
+   local callSet = {}
    for name in rule :filter 'name' do
       local response = Yield {await = name.token, ref = name}
+      for k, v in pairs(response) do
+         callSet[k] = v
+      end
+      callSet[name.token] = true
    end
-   return {'done with', rule.token}
+   rule.calls = Set(callSet)
+   return rule.calls
 end
 ```
 
