@@ -1909,18 +1909,15 @@ function Mem.grammar.wander(grammar)
       end
    end
 
-   -- at this point, all rules are either back, or awaiting returns.
-   -- so we run the shuttle as many times as we can, delivering return values
-   -- as they appear.
+   -- After that, all rules are either back, or awaiting returns.
+   -- We run the shuttle as many times as we can, delivering return
+   -- values as they appear.
    for rule_name in shuttle:popAll() do
-      local wants = having[rule_name]
+      local needs = having[rule_name]
       local awaiting = await[rule_name]
       for co in awaiting:popAll() do
-         if not type(co) == 'thread' then
-            error ("offended by element of type " .. type(co))
-         end
          wanting[coMap[co]] = nil
-         local ok, wants = Resume(co, wants)
+         local ok, wants = Resume(co, needs)
          assert(ok, wants)
          if waiting(co) then
             await[wants.await]:push(co)
@@ -1957,101 +1954,58 @@ function Mem.grammar.wander(grammar)
    --  As this pass begins, the recursive rules are all waiting on another
    --  recursive rule, but they might have a subsequent regular rule.
    --
-   --  So we make note of the awaiteds, without trying to apply them in any
-   --  way, while we get the regulars in play.
-   local waitsFor = {}
-   g.waitsFor = waitsFor
+   --  So we pass dummy returns for the recursives, to fill up their call
+   --  sets.
    for name in shuttle:popAll() do
-      -- this is waiting for:
-      local awaits = wanting[name]
-      -- or has:
-      local has = having[name]
+      -- this has
+      local has = having[name] or {}
       -- via
       local co = thread[name]
       local ok, wants;
-      if has then
-         ::again::
-         local ok, wants = Resume(co, has)
-         assert(ok, wants)
-         if waiting(co) then
-            if having[wants.await] then
-               awaits = nil
-               has = having[wants.await]
-               goto again
-            end
-            wanting[name] = wants
-            push(name)
-         else
-            wanting[name] = nil
-            having[name] = wants
-         end
-      elseif awaits then
-         local waitlist = getset(waitsFor, name)
-         insert(waitlist, awaits.await)
-         local ok, wants = Resume(co, {})
-         assert(ok, wants)
-         if waiting(co) then
-             push(name)
-             if not having[wants.await] then
-                wanting[name] = wants
-             end
-         else
-            wanting[name] = nil
-            having[name] = wants
-         end
-      end
-   end
-
-   for name, waitlist in pairs(waitsFor) do
-      waitsFor[name] = Set(waitlist)
-   end
-
-
-   -- I think this gets missing rules?
-   g.suspended = {}
-   for name, co in pairs(thread) do
+      local ok, wants = Resume(co, has)
+      assert(ok, wants)
       if waiting(co) then
-         g.suspended[name] = co
+         push(name)
       end
    end
 
    -- last, we go over recursive rules, and copy over the call sets
-   -- which might have been missed
+   -- we skipped, until it stops changing.
    local done = true
    local bail = 1
-   local twice = false
+   local changes = 0
    repeat
-      done = false
       bail = bail + 1
       local change = false
       for name in pairs(recurSet) do
-         local ruleCalls = ruleMap[name].calls
-         local waitSet = waitsFor[name]
+         local rule = ruleMap[name]
+         local refcounts = getset(rule, "counts")
+         local rule_same = true
+         local ruleCalls = rule.calls
          for ref in pairs(ruleCalls) do
+            local count = refcounts[ref] or 0
             local refCalls = ruleMap[ref].calls
-            for ref in pairs(refCalls) do
-               if not ruleCalls[ref] then
-                  change = true
-                  ruleCalls[ref] = true
+            if #refCalls > count then
+               refcounts[ref] = #refCalls
+               for ref in pairs(refCalls) do
+                  if not ruleCalls[ref] then
+                     rule_same = false
+                     change = true
+                     changes = changes + 1
+                     ruleCalls[ref] = true
+                  end
                end
             end
          end
-      end
-      if not change then
-         if twice then
-            done = true
-         else
-            done = false
-            twice = true
+         if rule_same then
+            rule.counts = nil
          end
-      else
-         done = false
-         twice = false
       end
+      done = not change
    until done or bail > 512
    g.bail = bail
-
-   ---[[ which we can check worked:
+   g.changes = changes
+   ---[[DBG]] --[[ which we can check worked:
    grammar:constrain()
    g.diffs = {}
    for name, calls in pairs(g.calls) do
@@ -2059,7 +2013,9 @@ function Mem.grammar.wander(grammar)
       if #g.diffs[name] == 0 then
          g.diffs[name] = nil
       end
-   end --]]
+   end
+
+   -- along with a bunch of miscellany:
    g.Recurs = Set(table.keys(g.recursive))
    g.missedRecurs = g.Recurs - g.recurs
    local Regs = Set {}
@@ -2068,6 +2024,8 @@ function Mem.grammar.wander(grammar)
    end
    g.Regs = Regs
    g.notRegular = g.regs - Regs
+
+   --]]
 
    setmetatable(await, nil) -- something is indexing it in helm :/
 
