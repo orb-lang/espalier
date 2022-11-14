@@ -2019,18 +2019,16 @@ function Mem.grammar.wander(grammar)
    -- last, we go over recursive rules, and copy over the call sets
    -- which might have been missed
    local done = true
-   local recurrence = Set(table.keys(waitsFor))
    local bail = 1
    local twice = false
-   g.R = recurrence + {}
    repeat
       done = false
       bail = bail + 1
       local change = false
-      for name, refs in pairs(recurrence) do
+      for name in pairs(recurSet) do
          local ruleCalls = ruleMap[name].calls
          local waitSet = waitsFor[name]
-         for ref in pairs(waitSet) do
+         for ref in pairs(ruleCalls) do
             local refCalls = ruleMap[ref].calls
             for ref in pairs(refCalls) do
                if not ruleCalls[ref] then
