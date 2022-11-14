@@ -1820,6 +1820,118 @@ end
 
 
 
+
+
+
+
+
+
+
+
+local nest = core.thread.nest 'Mem'
+
+local Create, Yield, Resume = assert(nest.create),
+                              assert(nest.yield),
+                              assert(nest.resume)
+
+
+
+
+function Mem.grammar.wander(grammar)
+   local g = grammar:G()
+   local thread, await, dupe_thread, having = {},{},{},{}
+
+   local ruleMap = {}
+   for rule in grammar :filter 'rule' do
+      if thread[rule.token] then
+         -- surplus rule
+         getset(dupe_thread, rule.token)
+         insert(dupe_thread[rule.token], thread[rule.token])
+      end
+      thread[rule.token] = Create(rule.wander)
+      ruleMap[rule.token] = rule
+   end
+   for rule_name, co in pairs(thread) do
+      local ok, wants = Resume(co, ruleMap[rule_name])
+      if wants.token then
+         insert(getset(await, wants.token), co)
+      else
+         -- for now, we collect returns
+         having[rule_name] = wants
+      end
+   end
+   g.thread, g.await, g.having = thread, await, having
+   return true
+end
+
+
+
+
+function Mem.rule.wander(rule)
+   for name in rule :filter 'name' do
+      local response = Yield {token = name.token, ref = name}
+   end
+   return {'done with', rule.token}
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local codegen = require "espalier:peg/codegen"
 
 for class, mixin in pairs(codegen) do

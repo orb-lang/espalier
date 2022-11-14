@@ -1795,6 +1795,118 @@ end
 
 
 
+**** Interlude
+
+  So the above code is producing plausible results, I'd be surprised if it was
+correct in detail but I can squash bugs as I find them.
+
+It's just not the correct algorithm, not by a long shot.  We're just trying
+rules over and over until their references happen to have something useful
+to say, which we only ever see from the top.
+
+One possibility would be to have a coroutine per rule, and /yield/ instead of
+just shrugging when a name isn't ready and loading up the queue.  Eventually
+we have to find a rule which is either basic, or has only a self-reference in
+addition to some terminal.
+
+At that point, we can /reply/ to every name waiting on that rule, with a
+resume, and whatever compound it was constraining can continue until it finds
+another name that it needs to wait for.
+
+The other possibility is to stay single-threaded, but register an interest.
+
+So if we find a reference which is waiting on a rule, we register the
+reference with the rule, marking all the parents up to the parent rule as
+pending.  When a rule completes, it propagates to all the names, when we've
+done all the rules once, we're done.
+
+For the algorithm I just banged out, the coroutine approach is closer to what
+I already have, and lock propagation doesn't have the issue with cycles which
+trait propagation does.
+
+It's also a better algorithm for building the call graph, and otherwise
+collecting the rule information, so, let's start there.
+
+#!lua
+local nest = core.thread.nest 'Mem'
+
+local Create, Yield, Resume = assert(nest.create),
+                              assert(nest.yield),
+                              assert(nest.resume)
+#/lua
+
+
+#!lua
+function Mem.grammar.wander(grammar)
+   local g = grammar:G()
+   local thread, await, dupe_thread, having = {},{},{},{}
+
+   local ruleMap = {}
+   for rule in grammar :filter 'rule' do
+      if thread[rule.token] then
+         -- surplus rule
+         getset(dupe_thread, rule.token)
+         insert(dupe_thread[rule.token], thread[rule.token])
+      end
+      thread[rule.token] = Create(rule.wander)
+      ruleMap[rule.token] = rule
+   end
+   for rule_name, co in pairs(thread) do
+      local ok, wants = Resume(co, ruleMap[rule_name])
+      if wants.token then
+         insert(getset(await, wants.token), co)
+      else
+         -- for now, we collect returns
+         having[rule_name] = wants
+      end
+   end
+   g.thread, g.await, g.having = thread, await, having
+   return true
+end
+#/lua
+
+
+#!lua
+function Mem.rule.wander(rule)
+   for name in rule :filter 'name' do
+      local response = Yield {token = name.token, ref = name}
+   end
+   return {'done with', rule.token}
+end
+#/lua
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #== ::note::
 ***** Rule Ordering and Grouping
 
