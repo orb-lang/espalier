@@ -1836,6 +1836,10 @@ local Create, Yield, Resume = assert(nest.create),
 #/lua
 
 
+**** Dequer()
+
+Do you like my owl?
+
 #!lua
 local function Dequer()
    local function index(deq, key)
@@ -1854,6 +1858,14 @@ function Mem.grammar.wander(grammar)
    local await = Dequer()
    g.thread, g.await, g.having = thread, await, having
    local coMap = {}
+   local haveQ = Deque()
+   -- we want to move a rule back every time we await it, to capture as many
+   -- awaits as possible before resuming any of them
+   local function push(tok)
+      haveQ:offqueue(tok)
+      haveQ:push(tok)
+   end
+   g.haveQ = haveQ
 
    for rule in grammar :filter 'rule' do
       local token = rule.token
@@ -1874,23 +1886,13 @@ function Mem.grammar.wander(grammar)
       else
          -- for now, we collect returns
          having[rule_name] = wants
-         local awaiting = await[rule_name]
-         for co in awaiting:popAll() do
-            if type(co) ~= 'thread' then
-               error ("offended by element of type " .. type(co))
-            end
-            ok, wants = Resume(co, wants)
-            if wants.await then
-               await[wants.await]:push(co)
-            else
-               having[rule_name] = wants
-            end
-         end
+         push(rule_name)
       end
    end
    -- at this point, all rules are either back, or awaiting returns.
    -- we just have to drive it forward until all the coroutines return.
-   for rule_name, wants in pairs(having) do
+   for rule_name in haveQ:popAll() do
+      local wants = having[rule_name]
       local awaiting = await[rule_name]
       for co in awaiting:popAll() do
          if not type(co) == 'thread' then
@@ -1899,9 +1901,11 @@ function Mem.grammar.wander(grammar)
          local ok, wants = Resume(co, wants)
          if wants.await then
             await[wants.await]:push(co)
+            push(wants.await)
          else
             local tok = coMap[co]
             having[tok] = wants
+            push(tok)
          end
       end
    end
