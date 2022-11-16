@@ -1867,6 +1867,8 @@ end
 
 
 
+
+
 function Mem.grammar.wander(grammar)
    local g = grammar:G()
    local thread, ruleMap, dupe_thread, having, wanting = {},{},{},{},{}
@@ -1885,8 +1887,8 @@ function Mem.grammar.wander(grammar)
    end
    g.shuttle = shuttle
 
-   -- Step 1: start a coroutine for each rule, and collect
-   -- everything
+   --  Step 1: start a coroutine for each rule, and collect
+   --  everything.
    for rule in grammar :filter 'rule' do
       local token = rule.token
       if thread[token] then
@@ -1909,9 +1911,9 @@ function Mem.grammar.wander(grammar)
       end
    end
 
-   -- After that, all rules are either back, or awaiting returns.
-   -- We run the shuttle as many times as we can, delivering return
-   -- values as they appear.
+   --  Now all rules are either back, or awaiting returns.
+   --  We run the shuttle as many times as we can, delivering
+   --  return values as they appear.
    for rule_name in shuttle:popAll() do
       local needs = having[rule_name]
       local awaiting = await[rule_name]
@@ -1936,7 +1938,6 @@ function Mem.grammar.wander(grammar)
    --  At this point, all regular rules have dead coroutines, leaving the
    --  recursives, which are waiting on one of potentially several recursive
    --  references.
-
    local regSet, recurSet = Set {}, Set {}
 
    for name, co in pairs(thread) do
@@ -1954,12 +1955,10 @@ function Mem.grammar.wander(grammar)
    --  As this pass begins, the recursive rules are all waiting on another
    --  recursive rule, but they might have a subsequent regular rule.
    --
-   --  So we pass dummy returns for the recursives, to fill up their call
-   --  sets.
+   --  So we resume the recursive rules without an argument, and settle the
+   --  score later.
    for name in shuttle:popAll() do
-      -- this has
-      local has = having[name] or {}
-      -- via
+      local has = having[name]
       local co = thread[name]
       local ok, wants;
       local ok, wants = Resume(co, has)
@@ -1969,8 +1968,11 @@ function Mem.grammar.wander(grammar)
       end
    end
 
-   -- last, we go over recursive rules, and copy over the call sets
-   -- we skipped, until it stops changing.
+   --  Last, we go over recursive rules, and copy over the call sets
+   --  we skipped, until it stops changing.
+
+   --  As an optimization, we track how many keys we saw the last
+   --  time, and don't copy if it hasn't increased.
    local done = true
    local bail = 1
    local changes = 0
@@ -2005,7 +2007,8 @@ function Mem.grammar.wander(grammar)
    until done or bail > 512
    g.bail = bail
    g.changes = changes
-   ---[[DBG]] --[[ which we can check worked:
+
+   --[=[DBG]]  which we can check worked:
    grammar:constrain()
    g.diffs = {}
    for name, calls in pairs(g.calls) do
@@ -2025,7 +2028,7 @@ function Mem.grammar.wander(grammar)
    g.Regs = Regs
    g.notRegular = g.regs - Regs
 
-   --]]
+   --]=]
 
    setmetatable(await, nil) -- something is indexing it in helm :/
 
@@ -2041,36 +2044,16 @@ function Mem.rule.wander(rule)
       local response = Yield { await = name.token,
                                rule = rule.token,
                                calls = callSet}
-      for k, v in pairs(response) do
-         callSet[k] = v
+      if response then
+         for k, v in pairs(response) do
+            callSet[k] = v
+         end
       end
       callSet[name.token] = true
    end
    rule.calls = Set(callSet)
    return rule.calls
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2115,6 +2098,14 @@ for class, mixin in pairs(codegen) do
       Mem[class][trait] = method
    end
 end
+
+
+
+
+
+
+local bozo = use "espalier:peg/bozo" . bozo
+MemClade.vector.bozo = bozo
 
 
 
