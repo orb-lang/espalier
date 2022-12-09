@@ -55,7 +55,7 @@ few quirks and extensions:
       performance, but require the paired references to either be a part of the
       same rule, or part of a subrule with is suppressed ```thus``` in its
       definition; these rules perform no captures of their own, returning all
-      captures
+      captures\.
 
       This will pose some difficulty in parsing languages, Python in
       particular, which rely heavily on semantic indentation\.  PEGPEG is
@@ -64,7 +64,7 @@ few quirks and extensions:
       the details into the correct parse tree\.
 
 
-#### \#Todo "Fast\-Forward" aka to\-match
+#### \[1/2\] \#td "Fast\-Forward" aka to\-match
 
   We add a 'to\-match' rule, `>>`, where `>> patt` is equivalent to
 `(!patt 1) patt`\.  This is particularly useful for pattern matching, but we
@@ -87,7 +87,7 @@ codepoints, not bytes\.
 
 ### Peh
 
-Peh, in the extended\-combinator system, is a 'shaped'\. Any string which is
+  Peh, in the extended\-combinator system, is a 'shaped'\. Any string which is
 recognized by the grammar below is in Peh\.
 
 There are a number of ways in which Peh may be found not to be in Vav, reada valid grammar in all ways we can statically discern"\.
