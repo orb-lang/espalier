@@ -1975,11 +1975,10 @@ function Mem.grammar.wander(grammar)
    local done = true
    local bail = 1
    local changes = 0
-   local recurrence = recurSet + {}
    repeat
       bail = bail + 1
       local change = false
-      for name in pairs(recurrence) do
+      for name in pairs(recurSet) do
          local rule = ruleMap[name]
          local refcounts = getset(rule, "counts")
          local rule_same = true
@@ -2001,7 +2000,6 @@ function Mem.grammar.wander(grammar)
          end
          if rule_same then
             rule.counts = nil
-            recurrence[name] = nil
          end
       end
       done = not change

@@ -154,7 +154,6 @@ end
 
 
 
-
 function Vav.complete(vav)
    -- obvious stub
    return true
