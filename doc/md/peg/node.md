@@ -1,7 +1,7 @@
 # Node
 
 
-In the last couple of projects using Espalier, I've made 'synthetic nodes',
+  In the last couple of projects using Espalier, I've made 'synthetic nodes',
 but there is no reason to have the original nodes other than expedience:
 the Qoph combinator can generate whatever we need on capture\.
 

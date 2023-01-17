@@ -14,7 +14,7 @@ grammar grammar to parse your parser while you express your grammar\.
 ### PEGPEG
 
   This is a straightforward representation of Brian Ford's PEG syntax with a
-few quirks and extensions:
+few quirks and extensios:
 
   -  A rule is captured any time its pattern is recognized\.  To remove that
       capture from the result, a rule may be hidden with backslashes: ```rule```\.
@@ -94,7 +94,6 @@ There are a number of ways in which Peh may be found not to be in Vav, reada val
 
 "
 But this is a topic for elsewhere\.
-
 
 ```peg
            `peg`  ←   grammar / pattern

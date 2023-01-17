@@ -66,7 +66,7 @@
 
 
 
-local Node = require "espalier:espalier/node"
+local Node = require "espalier:peg/node"
 local Set = require "qor:core/set"
 local Deque = require "deque:deque"
 
@@ -218,6 +218,7 @@ local function linker(is_operator, unary, Metas)
                                          str = expr.str }, Metas[id])
             if unary[id] then
                child[1] = stack:pop()
+               -- elem.first, .last, &c.
                child.first, child.last = elem.first, child[1].last
                child[1].parent = child
             else
@@ -261,37 +262,17 @@ end
 
 
 
-
-
-
-
-
-
-
-
 local function new(cfg)
    local precedence = assert(cfg.precedence)
    local right_assoc = Set(assert(cfg.right_assoc))
    local unary = Set(assert(cfg.unary))
 
    -- Set up the metatables
-   local _Twig = cfg[1]
-   local id = cfg[2]
-   local Twig, Expr;
-   if id then
-      Expr = _Twig :inherit(id)
-   else
-      Expr = _Twig
-   end
-   if _Twig then
-      Twig = _Twig
-   else
-      Twig = Node
-   end
+   local Twig = assert(cfg[1])
 
    local Metas = {}
    for id in pairs(precedence) do
-      Metas[id] = Twig:inherit(id)
+      Metas[id] = Twig
    end
 
    local higher = comparator(precedence, right_assoc)
@@ -300,21 +281,17 @@ local function new(cfg)
    local shunt = shunter(precedence, unary, higher, link)
 
    local function Expression(expr)
-      -- no need to shunt #expr == 1
-      if #expr == 1 then
-         return setmetatable(expr, Expr)
-      end
       local out = shunt(expr)
       local _expr = { link(out, expr),
-                id    = expr.id,
-                str   = expr.str,
-                first = expr.first,
-                last  = expr.last }
+                      id    = expr.id,
+                      str   = expr.str,
+                      first = expr.first,
+                      last  = expr.last }
 
-      return setmetatable(_expr, Expr)
+      return _expr
    end
 
-   return Expression, Metas, Expr
+   return Expression, Metas
 end
 
 

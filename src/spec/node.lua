@@ -187,7 +187,6 @@ end
 
 
 
-
 return { eVav = eVav,
          Elden = Elden,
          walker = walker,

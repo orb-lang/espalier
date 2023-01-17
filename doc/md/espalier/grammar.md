@@ -15,8 +15,8 @@ While `helm` was built from a repl provided by Tim Caswell in `luv`, that is a
 case of taking a sketch and painting a picture\.
 
 Many difficult aspects of this algorithm are found directly in the source
-material upon which this is based\.
-Don Phillipe has my thanks, and my fervent hope that he enjoys what follows\.
+material upon which this is based\. Doña Phillipe has my thanks, and my
+fervent hope that 'he' enjoys what follows\.
 
 
 ## Parameters of the Grammar Function

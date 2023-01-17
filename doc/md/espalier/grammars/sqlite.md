@@ -417,7 +417,7 @@ the result, if that should prove useful for whatever reason\.
 
 #### name
 
-  The rules for what is actually a valid identifier are cunningle reverse\-
+  The rules for what is actually a valid identifier are cunningly reverse\-
 engineered here, with a bit of help from stack and the source code\.
 
 Sources\[\{\*\}\]\[\{\*\*\}\]:
