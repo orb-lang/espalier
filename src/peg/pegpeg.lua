@@ -121,7 +121,7 @@ local pegpeg = [[
 
      `rule-sep`   ←   prag-line / _
 
-     `prag-line`  ←  "\n#" pragma rule-sep
+     `prag-line`  ←  "\n"+ "#" pragma rule-sep
           pragma  ←  verb body?
             verb  ←  (!{\t\r\n } 1)+
             body  ←  (!"\n" 1)+
