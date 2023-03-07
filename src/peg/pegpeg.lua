@@ -167,7 +167,8 @@ local pegpeg = [[
                            / lt-refer )
 
             name  ←  name-space / symbol
-      name-space  ←  symbol _ "." _ name
+      name-space  ←  domain _ "." _ name
+          domain  ←  symbol
 
          literal  ←  single-string / double-string
            group  ←  "(" _ alt _ ")"
