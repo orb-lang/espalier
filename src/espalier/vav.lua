@@ -23,7 +23,6 @@ local core, cluster = use("qor:core", "cluster:cluster")
 
 local pegpeg = use "espalier:peg/pegpeg"
 local Metis = use "espalier:peg/metis"
-local NodeClade = use "espalier:peg/nodeclade"
 
 local Qoph = use "espalier:peg/bootstrap"
 
@@ -68,8 +67,6 @@ local new, Vav, Vav_M = cluster.order()
 
 Vav.pegparse = VavPeg
 
-local _reconcile;
-
 cluster.construct(new,
    function(_new, vav, peh, mem)
       vav.peh = peh
@@ -102,13 +99,30 @@ cluster.construct(new,
 
 
 
---- WARNING!!!
---  This mutates NodeClade, which is intended as an 'abstract' base genre.
---  Specialization of Clades should be added ASAP.
+
+
+local Clade, Node = use ("cluster:clade", "espalier:peg/node")
+
+
+
+local function postindex(tab, field)
+   tab[field].tag = field
+   return tab[field]
+end
+
+
+
+local contract = {postindex = postindex, seed_fn = true}
+
+
+
+
+
+
 
 function Vav.Mem(vav, mem)
    if not mem then
-      mem = NodeClade
+      mem = Clade(Node, contract):extend(contract)
    end
    local ruleMap = assert(vav.synth.ruleMap)
    local tape = assert(mem.tape, "mem is missing the tape, bad clade?")
