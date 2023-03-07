@@ -64,7 +64,7 @@ few quirks and extensios:
      the details into the correct parse tree.
 
 
-**** [1/2] #td "Fast-Forward" aka to-match
+**** [2/2] #done "Fast-Forward" aka to-match
 
   We add a 'to-match' rule, =>>=, where =>> patt= is equivalent to
 =(!patt 1) patt=.  This is particularly useful for pattern matching, but we
@@ -73,7 +73,7 @@ use the idiom frequently in grammars as well.
 The codegen is the interesting part.
 
 
-**** #Todo pragmas
+**** #Done pragmas
 
 We've made room between rules for something, where that something is intended
 to be one ore more pragma lines.
@@ -88,7 +88,7 @@ Another useful pragma might be =#use symbol number category=, which brings
 these in from the bestiary / zoo.
 
 
-**** #Todo namespaces
+**** #Done namespaces
 
 We should be able to refer to several rules from an adjacent peh, in the form
 =C.string=, =C.number=, and so on, providing simply the grammar =C=, which
