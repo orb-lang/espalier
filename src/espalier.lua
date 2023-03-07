@@ -1,50 +1,5 @@
 
 
 
-
-
-
-
-
-
-local Phrase  = require "singletons/phrase"
-local Stator  = require "singletons/stator"
-local dot     = require "espalier/dot"
-local elpatt  = require "espalier/elpatt"
-local Node    = require "espalier/node"
-local Grammar = require "espalier/grammar"
-local Peg  = require "espalier/peg"
-
-local ortho8600 = require "espalier/grammars/ortho-8600"
-
-local dot_grammar  = require "espalier/grammars/dot"
-
-local lua_grammar  = require "espalier/grammars/lua"
-
-
-
-local lisp_grammar = require "espalier/grammars/microlisp"
-
-local date_grammar = require "espalier/grammars/date"
-
-local luatoken_grammar = require "espalier/grammars/luatoken"
-
-local lexemes = require "espalier/lexemes"
-
-local grammars = { ortho8600 = ortho8600,
-                   dot       = dot_grammar,
-                   lua       = lua_grammar,
-                   lisp      = lisp_grammar,
-                   date      = date_grammar,
-                   luatoken  = luatoken_grammar }
-
-return { dot      = dot,
-         elpatt   = elpatt,
-         node     = Node,
-         lex      = lexemes,
-         peg      = Peg,
-         phrase   = Phrase,
-         grammar  = Grammar,
-         grammars = grammars,
-         stator   = Stator }
+return { espalier = "'espalier:espalier' not yet provided" }
 

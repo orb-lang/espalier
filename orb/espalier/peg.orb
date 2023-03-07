@@ -1,5 +1,8 @@
 * Parsing Expression Grammar
 
+#Legacy  This is used to bootstrap Vav, which we intend to kick out in the
+         near future.
+
 
 Now, at last, we are ready to swallow the tail.
 

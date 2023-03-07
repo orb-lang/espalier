@@ -1,5 +1,7 @@
 # Recognize
 
+\#Legacy
+
 
 Takes the same sort of grammar\-defining function as the Grammar module,
 returning a recognizer over the same language\.

@@ -1,5 +1,6 @@
 # Subgrammar
 
+\#Legacy
 
   A metatable function can do anything, and so long as it returns a valid
 Node over the appropriate range, everything else should still work\.
