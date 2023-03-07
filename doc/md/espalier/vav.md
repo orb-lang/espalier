@@ -6,7 +6,6 @@ Mem is a [clade](https://gitlab.com/special-circumstance//cluster/-/blob/trunk/d
 of our PEG specification [pegpeg](https://gitlab.com/special-circumstance/espalier/-/blob/trunk/doc/md/peg/pegpeg.md)\.
 
 
-
 ## Rationale
 
   The various operations and rearrangements which I propose to perform on

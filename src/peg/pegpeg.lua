@@ -95,23 +95,43 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 local pegpeg = [[
            `peg`  ←   grammar / pattern
 
-         grammar  ←  (rule_sep rule)+ (_ -1 / Error)
+         grammar  ←  (rule-sep rule)+ (_ -1 / Error)
 
          pattern  ←  _ rhs (-1 / Error)
 
-            rule  ←  lhs rhs
+            rule  ←  lhs _ rhs
 
-     `rule-sep`   ←   _ ; pragma lines go here
+     `rule-sep`   ←   prag-line / _
 
-             lhs  ←  (suppressed / rule-name) _ into _
+     `prag-line`  ←  "\n#" pragma rule-sep
+          pragma  ←  verb body?
+            verb  ←  (!{\t\r\n } 1)+
+            body  ←  (!"\n" 1)+
+
+             lhs  ←  (suppressed / rule-name) _ into
              rhs  ←  alt
 
       suppressed  ←  "`" rule-name "`"
        rule-name  ←  symbol
-          `into`  ←  ":=" / "←" / "<-" / "="''
+          `into`  ←  ":=" / "←" / "<-" / "="
         `symbol`  ←  letter (letter / digit /  {-_})*
                   /   "_"
 
@@ -129,8 +149,6 @@ local pegpeg = [[
                   /   range
                   /   number
 
-
-
              and  ←  "&"
              not  ←  "!"
         to-match  ←  ">>"
@@ -141,14 +159,16 @@ local pegpeg = [[
         repeated  ←  _ "%" _ slice
 
          backref  ←  "@" _ ( reference
-                            / back-refer
-                            / eq-refer
-                            / gte-refer
-                            / gt-refer
-                            / lte-refer
-                            / lt-refer )
+                           / back-refer
+                           / eq-refer
+                           / gte-refer
+                           / gt-refer
+                           / lte-refer
+                           / lt-refer )
 
-            name  ←  symbol
+            name  ←  name-space / symbol
+      name-space  ←  symbol _ "." _ name
+
          literal  ←  single-string / double-string
            group  ←  "(" _ alt _ ")"
    `set-capture`  ←  "{" set "}"

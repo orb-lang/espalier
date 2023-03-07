@@ -58,7 +58,7 @@ few quirks and extensios:
      captures.
 
      This will pose some difficulty in parsing languages, Python in
-     particular, which rely heavily on semantic indentation.  PEGPEG is
+     particular, which rely heavily on semantic indentation.  Espalier is
      capable of recognizing these rules, but may need some combination of
      post-parse tree reconciliation, and/or the use of subgrammars, to resolve
      the details into the correct parse tree.
@@ -84,6 +84,21 @@ some kind of DSL.
 One should be, say, =#count-by-utf8=, which makes every number a count of
 codepoints, not bytes.
 
+Another useful pragma might be =#use symbol number category=, which brings
+these in from the bestiary / zoo.
+
+
+**** #Todo namespaces
+
+We should be able to refer to several rules from an adjacent peh, in the form
+=C.string=, =C.number=, and so on, providing simply the grammar =C=, which
+then populates the rules.
+
+This keys by the name of the Peh, not the start rule, because many of these
+collections might not have a start rule in a non-trivial way.  Reminder that
+Vav, not Peh, has the requirement of being derived from a single starting
+recognition rule: Peh merely meets the shape described in this document.
+
 
 *** Peh
 
@@ -98,20 +113,25 @@ But this is a topic for elsewhere.
 #!peg @pegpeg #asLua
            `peg`  ←   grammar / pattern
 
-         grammar  ←  (rule_sep rule)+ (_ -1 / Error)
+         grammar  ←  (rule-sep rule)+ (_ -1 / Error)
 
          pattern  ←  _ rhs (-1 / Error)
 
-            rule  ←  lhs rhs
+            rule  ←  lhs _ rhs
 
-     `rule-sep`   ←   _ ; pragma lines go here
+     `rule-sep`   ←   prag-line / _
 
-             lhs  ←  (suppressed / rule-name) _ into _
+     `prag-line`  ←  "\n#" pragma rule-sep
+          pragma  ←  verb body?
+            verb  ←  (!{\t\r\n } 1)+
+            body  ←  (!"\n" 1)+
+
+             lhs  ←  (suppressed / rule-name) _ into
              rhs  ←  alt
 
       suppressed  ←  "`" rule-name "`"
        rule-name  ←  symbol
-          `into`  ←  ":=" / "←" / "<-" / "="''
+          `into`  ←  ":=" / "←" / "<-" / "="
         `symbol`  ←  letter (letter / digit /  {-_})*
                   /   "_"
 
@@ -129,8 +149,6 @@ But this is a topic for elsewhere.
                   /   range
                   /   number
 
-
-
              and  ←  "&"
              not  ←  "!"
         to-match  ←  ">>"
@@ -141,14 +159,16 @@ But this is a topic for elsewhere.
         repeated  ←  _ "%" _ slice
 
          backref  ←  "@" _ ( reference
-                            / back-refer
-                            / eq-refer
-                            / gte-refer
-                            / gt-refer
-                            / lte-refer
-                            / lt-refer )
+                           / back-refer
+                           / eq-refer
+                           / gte-refer
+                           / gt-refer
+                           / lte-refer
+                           / lt-refer )
 
-            name  ←  symbol
+            name  ←  name-space / symbol
+      name-space  ←  symbol _ "." _ name
+
          literal  ←  single-string / double-string
            group  ←  "(" _ alt _ ")"
    `set-capture`  ←  "{" set "}"
